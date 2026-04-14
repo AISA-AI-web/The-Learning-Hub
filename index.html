@@ -1503,21 +1503,21 @@
                       <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.79 4 4 0 1.98-1.79 4-4 4-1.742 0-3.223-.835-3.772-2M12 18.5v.01M12 4.5v.01M4.5 12v.01M19.5 12v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <h1 class="text-3xl font-bold text-blue-900 mb-2">Need Assistance?</h1>
-                    <p class="text-gray-600 mb-8">Contact the Head of AI Integration and Educational Innovation for any questions or support with the T&L Guide.</p>
-                    
+                    <p class="text-gray-600 mb-8">Contact the Head of AI Integration and Educational Innovation or the Head of Teaching and Learning for any questions or support with the T&L Guide.</p>
+
                     <div class="space-y-4 text-left bg-gray-50 p-6 rounded-lg">
                         <div>
-                            <strong class="text-gray-900">Email:</strong>
-                            <div class="flex items-center space-x-2">
+                            <strong class="text-gray-900">Head of AI Integration and Educational Innovation</strong>
+                            <div class="flex items-center space-x-2 mt-1">
                                 <p id="copy-email" class="block text-blue-600 cursor-pointer hover:underline">bbaki@aisa.sch.ae</p>
                                 <span id="email-copied-msg" class="text-sm text-green-600 hidden">Copied!</span>
                             </div>
                         </div>
                         <div>
-                            <strong class="text-gray-900">Phone / WhatsApp:</strong>
-                            <div class="flex items-center space-x-2">
-                                <p id="copy-phone" class="block text-blue-600 cursor-pointer hover:underline">+971 50 789 6519</p>
-                                <span id="phone-copied-msg" class="text-sm text-green-600 hidden">Copied!</span>
+                            <strong class="text-gray-900">Head of Teaching and Learning</strong>
+                            <div class="flex items-center space-x-2 mt-1">
+                                <p id="copy-email-tl" class="block text-blue-600 cursor-pointer hover:underline">aturabi@aisa.sch.ae</p>
+                                <span id="email-tl-copied-msg" class="text-sm text-green-600 hidden">Copied!</span>
                             </div>
                         </div>
                     </div>
@@ -1660,8 +1660,10 @@
 
         // --- 5. CLIPBOARD LOGIC ---
         const copyEmailEl = document.getElementById('copy-email');
+        const copyEmailTlEl = document.getElementById('copy-email-tl');
         const copyPhoneEl = document.getElementById('copy-phone');
         const emailCopiedMsg = document.getElementById('email-copied-msg');
+        const emailTlCopiedMsg = document.getElementById('email-tl-copied-msg');
         const phoneCopiedMsg = document.getElementById('phone-copied-msg');
 
         // Twinkl Elements
@@ -1695,6 +1697,12 @@
         if (copyEmailEl) {
             copyEmailEl.addEventListener('click', () => {
                 copyToClipboard('bbaki@aisa.sch.ae', emailCopiedMsg);
+            });
+        }
+
+        if (copyEmailTlEl) {
+            copyEmailTlEl.addEventListener('click', () => {
+                copyToClipboard('aturabi@aisa.sch.ae', emailTlCopiedMsg);
             });
         }
 
