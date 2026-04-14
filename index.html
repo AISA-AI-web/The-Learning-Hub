@@ -1,66 +1,96 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AISA | Teaching & Learning Guide</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Canvas Confetti for Gamification -->
+    <!-- Canvas Confetti for Gamification (NotebookLM module) -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-    <!-- Tailwind Config for the AI Masterclass Integration -->
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                        heading: ['Poppins', 'sans-serif'],
-                    },
-                    colors: {
-                        primary: '#4f46e5', // Indigo 600
-                        secondary: '#2563eb', // Blue 600
-                        accent: '#06b6d4', // Cyan 500
-                        surface: '#ffffff',
-                    },
-                    animation: {
-                        'blob': 'blob 7s infinite',
-                        'gradient-x': 'gradient-x 15s ease infinite',
-                    },
-                    keyframes: {
-                        blob: {
-                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
-                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
-                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
-                            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            heading: ['Poppins', 'sans-serif'],
                         },
-                        'gradient-x': {
-                            '0%, 100%': {
-                                'background-size': '200% 200%',
-                                'background-position': 'left center'
-                            },
-                            '50%': {
-                                'background-size': '200% 200%',
-                                'background-position': 'right center'
-                            },
+                        colors: {
+                            primary: '#4f46e5',
+                            secondary: '#2563eb',
+                            accent: '#06b6d4',
                         },
+                        animation: {
+                            'blob': 'blob 7s infinite',
+                            'gradient-x': 'gradient-x 15s ease infinite',
+                        },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            },
+                            'gradient-x': {
+                                '0%, 100%': { 'background-size': '200% 200%', 'background-position': 'left center' },
+                                '50%': { 'background-size': '200% 200%', 'background-position': 'right center' },
+                            },
+                        }
                     }
                 }
             }
         }
     </script>
-
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        /* NotebookLM module styles */
+        .bg-dot-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255,255,255,0.5) inset;
+            background: #000;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        .timeline-container { position: relative; }
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            bottom: 2rem;
+            left: 1.25rem;
+            width: 2px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+        .checkbox-custom:checked + div {
+            background-color: #10b981;
+            border-color: #10b981;
+            transform: scale(1.05);
+        }
+        .checkbox-custom:checked + div svg { display: block; }
         .hero-section {
+            /* Updated to a modern, high-quality generic school campus image */
             background-image: linear-gradient(rgba(0, 51, 102, 0.8), rgba(0, 31, 62, 0.8)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
             background-size: cover;
             background-position: center;
@@ -95,67 +125,21 @@
         .searchable-item {
             transition: opacity 0.3s ease;
         }
-
-        /* --- Styles for NotebookLM Module --- */
-        .bg-dot-pattern {
-            background-color: #f8fafc;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 24px 24px;
-        }
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 */
-            height: 0;
-            overflow: hidden;
-            border-radius: 1rem;
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255,255,255,0.5) inset;
-            background: #000;
-        }
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        .timeline-container {
-            position: relative;
-        }
-        .timeline-container::before {
-            content: '';
-            position: absolute;
-            top: 1rem;
-            bottom: 2rem;
-            left: 1.25rem; 
-            width: 2px;
-            background: #e2e8f0;
-            z-index: 0;
-        }
-        .checkbox-custom:checked + div {
-            background-color: #10b981; 
-            border-color: #10b981;
-            transform: scale(1.05);
-        }
-        .checkbox-custom:checked + div svg {
-            display: block;
-        }
-        select option {
-            background-color: #1e293b;
-            color: white;
-        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 selection:bg-primary selection:text-white">
+<body class="bg-gray-50 text-gray-800">
 
     <!-- Wrapper for Sticky Footer -->
     <div id="app-container" class="flex flex-col min-h-screen">
         
-        <!-- HEADER -->
+        <!-- NEW HEADER: Modern, Sleek, Glassmorphism -->
         <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-gray-100 transition-all">
+            <!-- Brand Color Strip -->
             <div class="h-1 bg-blue-900 w-full"></div>
             
             <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+                
+                <!-- Logo Section -->
                 <div class="flex items-center gap-4 cursor-pointer group" onclick="window.location.hash=''">
                     <img src="AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/003366/FFFFFF?text=AISA'">
                     <div class="flex flex-col justify-center">
@@ -164,32 +148,43 @@
                     </div>
                 </div>
 
+                <!-- Center Navigation: Clean & Minimalist -->
                 <div class="hidden md:flex items-center gap-2">
+                    
+                    <!-- PD Button -->
                     <a href="#pd-section" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-gray-500 transition-all duration-300 hover:bg-blue-50 hover:text-blue-900 focus:ring-2 focus:ring-blue-500/50">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
                         Modules
                     </a>
+
+                    <!-- Resources Button -->
                     <a href="#resources-section" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-gray-500 transition-all duration-300 hover:bg-blue-50 hover:text-blue-900 focus:ring-2 focus:ring-blue-500/50">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
                         Resources
                     </a>
+
+                    <!-- Media Hub Button -->
                     <a href="#media-section" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-gray-500 transition-all duration-300 hover:bg-blue-50 hover:text-blue-900 focus:ring-2 focus:ring-blue-500/50">
                         <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
                         Media Hub
                     </a>
                 </div>
 
+                <!-- Right Side (ESOL School) -->
                 <div class="hidden lg:flex items-center pl-6 border-l border-gray-200 h-8">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-[0.2em] select-none">An ESOL School</p>
                 </div>
+
             </nav>
         </header>
 
-        <!-- MAIN CONTENT AREA -->
+        <!-- Main Content Area (Grows to push footer down) -->
         <main class="flex-grow bg-gray-50">
             
             <!-- HOME PAGE VIEW -->
             <div id="main-content">
+                
+                <!-- Hero Section with Search -->
                 <section class="hero-section text-white relative">
                     <div class="container mx-auto px-6 py-24 text-center">
                         <h2 class="text-4xl md:text-5xl font-extrabold leading-tight mb-4 drop-shadow-lg">Elevating Education, Together.</h2>
@@ -213,6 +208,7 @@
                 </section>
 
                 <div class="container mx-auto px-6 py-12">
+                    <!-- Intro Video Section -->
                     <section class="mb-16 searchable-item" data-keywords="intro welcome video orientation">
                         <div class="max-w-4xl mx-auto">
                             <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
@@ -233,7 +229,9 @@
 
                     <!-- Professional Development Section -->
                     <section id="pd-section" class="mb-20 bg-white rounded-3xl shadow-lg border border-indigo-100 overflow-hidden">
+                        <!-- Colored Header Banner -->
                         <div class="bg-gradient-to-r from-blue-700 to-indigo-800 p-8 md:p-10 text-white text-center relative overflow-hidden">
+                            <!-- Background Decoration -->
                             <div class="absolute top-0 right-0 -mt-10 -mr-10 opacity-10">
                                 <svg width="200" height="200" fill="currentColor" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg>
                             </div>
@@ -243,10 +241,12 @@
                             <p class="text-blue-100 max-w-2xl mx-auto text-lg relative z-10">Engage in continuous learning with our curated workshops and training sessions designed to foster innovation in the classroom.</p>
                         </div>
                         
+                        <!-- Section Body -->
                         <div class="p-6 md:p-10 bg-indigo-50/30">
+                            <!-- Main Grid -->
                             <div class="grid md:grid-cols-2 lg:grid-cols-2 gap-8 mb-12">
                                 
-                                <!-- Module 1: Success Criteria -->
+                                <!-- Module: Success Criteria -->
                                 <div class="searchable-item bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 border-l-4 border-indigo-600" data-keywords="objectives success criteria lesson planning goals cognitive">
                                     <div class="flex justify-between items-start mb-3">
                                         <span class="inline-block bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full">New Module</span>
@@ -262,19 +262,19 @@
                                     </button>
                                 </div>
 
-                                <!-- Module 2: NotebookLM AI Presentations -->
-                                <div class="searchable-item bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 border-l-4 border-emerald-500" data-keywords="notebooklm ai powerpoint presentations slides masterclass chatgpt generation">
+                                <!-- Module: NotebookLM for Presentations -->
+                                <div class="searchable-item bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 border-l-4 border-purple-600" data-keywords="notebooklm ai presentations powerpoint slides deck masterclass gemini lesson planning">
                                     <div class="flex justify-between items-start mb-3">
-                                        <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">New Masterclass</span>
-                                        <span class="text-emerald-600 text-xs uppercase font-bold tracking-wide">Highly Rated</span>
+                                        <span class="inline-block bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full">New Module</span>
+                                        <span class="text-purple-600 text-xs uppercase font-bold tracking-wide">Masterclass</span>
                                     </div>
-                                    <h4 class="text-xl font-bold mb-2 text-gray-900">AI-Powered Presentations</h4>
-                                    <p class="text-gray-600 mb-4 text-sm">Transform lesson planning by generating world-class slide decks in minutes using NotebookLM.</p>
+                                    <h4 class="text-xl font-bold mb-2 text-gray-900">Crafting AI Presentations with NotebookLM</h4>
+                                    <p class="text-gray-600 mb-4 text-sm">Transform your lesson planning by generating, resourcing, and refining world-class slide decks in minutes.</p>
                                     <div class="text-sm text-gray-500 mb-4 border-t pt-3">
-                                        <p class="flex items-center"><svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 10 min Masterclass + Sandbox</p>
+                                        <p class="flex items-center"><svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 3 videos + Interactive Sandbox</p>
                                     </div>
-                                    <button onclick="window.location.hash='module-notebooklm'" class="w-full bg-slate-900 text-white py-2 rounded-lg hover:bg-emerald-600 transition-colors shadow-md flex items-center justify-center font-bold">
-                                        Start Masterclass
+                                    <button onclick="window.location.hash='module-notebooklm'" class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors shadow-md flex items-center justify-center">
+                                        Start Module
                                     </button>
                                 </div>
 
@@ -299,6 +299,7 @@
                                 </div>
                             </div>
 
+                            <!-- Featured Banner: AI Training -->
                             <div class="searchable-item mt-8 bg-gradient-to-r from-purple-50 to-white rounded-xl p-8 border border-purple-100 flex flex-col md:flex-row items-center justify-between shadow-sm hover:shadow-md transition-shadow" data-keywords="ai artificial intelligence training robot workshop">
                                 <div class="mb-6 md:mb-0 md:mr-8 max-w-2xl">
                                     <div class="flex items-center mb-3">
@@ -320,6 +321,7 @@
 
                     <!-- Resources & Strategies Section -->
                     <section id="resources-section" class="mb-20 bg-white rounded-3xl shadow-lg border border-teal-100 overflow-hidden">
+                         <!-- Colored Header Banner -->
                         <div class="bg-gradient-to-r from-teal-600 to-green-700 p-8 md:p-10 text-white text-center relative overflow-hidden">
                             <div class="absolute top-0 right-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
                                 <svg width="250" height="250" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
@@ -330,90 +332,103 @@
                             <p class="text-teal-100 max-w-2xl mx-auto text-lg relative z-10">Access a library of proven teaching strategies, innovative tools, and downloadable resources to support your daily instruction.</p>
                         </div>
                          
+                        <!-- Section Body -->
                         <div class="p-6 md:p-10 bg-teal-50/30">
+                             <!-- Grid for filtering -->
                              <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                <a href="https://sites.google.com/aisa.sch.ae/aisa-secondary" target="_blank" rel="noopener noreferrer" class="block searchable-item" data-keywords="aisa secondary hub portal school resources site google schedule">
-                                    <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border-2 border-blue-100">
-                                        <div class="text-4xl mb-3">🏫</div>
-                                        <h4 class="text-lg font-bold text-blue-900 mb-2">Secondary Hub</h4>
-                                        <p class="text-sm text-gray-600">The central portal for Secondary School faculty, schedules, and essential daily information.</p>
-                                    </div>
-                                </a>
-                                
-                                <a href="https://gemini.google/overview/storybook/" target="_blank" rel="noopener noreferrer" class="block searchable-item" data-keywords="gemini storybooks ai reading english">
-                                    <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-purple-50">
-                                        <div class="text-4xl text-blue-600 mb-3">✨</div>
-                                        <h4 class="text-lg font-semibold mb-2">Gemini Storybooks</h4>
-                                        <p class="text-sm text-gray-600">Create engaging, personalized stories for your students with AI.</p>
-                                    </div>
-                                </a>
 
-                                <a href="https://notebooklm.google/" target="_blank" rel="noopener noreferrer" class="block searchable-item" data-keywords="notebooklm research ai study notes google">
-                                    <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-blue-50">
-                                        <div class="text-4xl text-blue-600 mb-3">📓</div>
-                                        <h4 class="text-lg font-semibold mb-2">NotebookLM</h4>
-                                        <p class="text-sm text-gray-600">Your personalized AI research assistant and study companion.</p>
-                                    </div>
-                                </a>
-
-                                <a href="https://www.magicschool.ai/" target="_blank" rel="noopener noreferrer" class="block searchable-item" data-keywords="magic school ai lesson planning tools generator">
-                                    <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-green-50">
-                                        <div class="text-4xl text-blue-600 mb-3">🪄</div>
-                                        <h4 class="text-lg font-semibold mb-2">Magic School AI</h4>
-                                        <p class="text-sm text-gray-600">The leading AI platform for educators to help with lesson planning, grading, and more.</p>
-                                    </div>
-                                </a>
-
-                                <a href="https://gemini.google.com/gem/11QD4AkTJjpXVgEGw8SJ74nq99ntDfv8V?usp=sharing" target="_blank" rel="noopener noreferrer" class="block searchable-item" data-keywords="edusim simulation ai agent coding generator interactive experiences gemini">
-                                    <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-yellow-100">
-                                        <div class="text-4xl text-blue-600 mb-3">🤖</div>
-                                        <h4 class="text-lg font-semibold mb-2">EduSim</h4>
-                                        <p class="text-sm text-gray-600">An advanced AI agent that instantly codes high-quality, interactive educational simulations tailored to your curriculum.</p>
-                                    </div>
-                                </a>
-
-                                <a href="#" class="maintenance-link block searchable-item" data-keywords="differentiation needs inclusive support">
-                                    <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full">
-                                        <div class="text-4xl text-blue-600 mb-3">🧠</div>
-                                        <h4 class="text-lg font-semibold mb-2">Differentiated Instruction</h4>
-                                        <p class="text-sm text-gray-600">Techniques to meet the needs of every learner.</p>
-                                    </div>
-                                </a>
-
-                                <a href="https://brandonabaki-design.github.io/PIRLS-pal/" target="_blank" rel="noopener noreferrer" class="block searchable-item" data-keywords="pirls test reading literacy pal students parents teachers expectations">
-                                    <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-indigo-100">
-                                        <div class="text-4xl mb-3">📚</div>
-                                        <h4 class="text-lg font-semibold mb-2">PIRLSpal</h4>
-                                        <p class="text-sm text-gray-600">A guide to help students, teachers, and parents prepare for the PIRLS test.</p>
-                                    </div>
-                                </a>
-                                 
-                                <div class="searchable-item h-full" data-keywords="map testing growth rit score assessment adaptive">
-                                    <button onclick="window.location.hash='module-twinkl'" class="block w-full text-left h-full">
-                                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-pink-100 flex flex-col items-center justify-center">
-                                            <div class="mb-3 h-12 w-full flex items-center justify-center">
-                                                <img src="nwea_MAP_logo.jpg" alt="NWEA MAP Logo" class="h-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                                <span style="display:none;" class="text-4xl">📈</span>
-                                            </div>
-                                            <h4 class="text-lg font-bold mb-2">MAP Growth Guide</h4>
-                                            <p class="text-sm text-gray-600">Understand the adaptive nature of MAP testing and RIT scores.</p>
-                                        </div>
-                                    </button>
+                            <!-- Tool: AISA Secondary Hub -->
+                            <a href="https://sites.google.com/aisa.sch.ae/aisa-secondary" target="_blank" rel="noopener noreferrer" class="block searchable-item" data-keywords="aisa secondary hub portal school resources site google schedule">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border-2 border-blue-100">
+                                    <div class="text-4xl mb-3">🏫</div>
+                                    <h4 class="text-lg font-bold text-blue-900 mb-2">Secondary Hub</h4>
+                                    <p class="text-sm text-gray-600">The central portal for Secondary School faculty, schedules, and essential daily information.</p>
                                 </div>
+                            </a>
+                            
+                            <!-- Tool 1: Gemini Storybooks -->
+                            <a href="https://gemini.google/overview/storybook/" target="_blank" rel="noopener noreferrer" class="block searchable-item" data-keywords="gemini storybooks ai reading english">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-purple-50">
+                                    <div class="text-4xl text-blue-600 mb-3">✨</div>
+                                    <h4 class="text-lg font-semibold mb-2">Gemini Storybooks</h4>
+                                    <p class="text-sm text-gray-600">Create engaging, personalized stories for your students with AI.</p>
+                                </div>
+                            </a>
 
-                                <a href="#" class="maintenance-link block searchable-item" data-keywords="online learning guide distance remote virtual instruction e-learning">
-                                    <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-teal-100">
-                                        <div class="text-4xl mb-3">💻</div>
-                                        <h4 class="text-lg font-semibold mb-2">Online Learning Guide</h4>
-                                        <p class="text-sm text-gray-600">Essential guidelines and best practices for effective virtual instruction.</p>
+                            <!-- Tool 2: NotebookLM -->
+                            <a href="https://notebooklm.google/" target="_blank" rel="noopener noreferrer" class="block searchable-item" data-keywords="notebooklm research ai study notes google">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-blue-50">
+                                    <div class="text-4xl text-blue-600 mb-3">📓</div>
+                                    <h4 class="text-lg font-semibold mb-2">NotebookLM</h4>
+                                    <p class="text-sm text-gray-600">Your personalized AI research assistant and study companion.</p>
+                                </div>
+                            </a>
+
+                            <!-- Tool 3: Magic School AI -->
+                            <a href="https://www.magicschool.ai/" target="_blank" rel="noopener noreferrer" class="block searchable-item" data-keywords="magic school ai lesson planning tools generator">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-green-50">
+                                    <div class="text-4xl text-blue-600 mb-3">🪄</div>
+                                    <h4 class="text-lg font-semibold mb-2">Magic School AI</h4>
+                                    <p class="text-sm text-gray-600">The leading AI platform for educators to help with lesson planning, grading, and more.</p>
+                                </div>
+                            </a>
+
+                            <!-- Tool 4: EduSim -->
+                            <a href="https://gemini.google.com/gem/11QD4AkTJjpXVgEGw8SJ74nq99ntDfv8V?usp=sharing" target="_blank" rel="noopener noreferrer" class="block searchable-item" data-keywords="edusim simulation ai agent coding generator interactive experiences gemini">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-yellow-100">
+                                    <div class="text-4xl text-blue-600 mb-3">🤖</div>
+                                    <h4 class="text-lg font-semibold mb-2">EduSim</h4>
+                                    <p class="text-sm text-gray-600">An advanced AI agent that instantly codes high-quality, interactive educational simulations tailored to your curriculum.</p>
+                                </div>
+                            </a>
+
+                            <!-- Strategy Card -->
+                            <a href="#" class="maintenance-link block searchable-item" data-keywords="differentiation needs inclusive support">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full">
+                                    <div class="text-4xl text-blue-600 mb-3">🧠</div>
+                                    <h4 class="text-lg font-semibold mb-2">Differentiated Instruction</h4>
+                                    <p class="text-sm text-gray-600">Techniques to meet the needs of every learner.</p>
+                                </div>
+                            </a>
+
+                            <!-- Tool: PIRLSpal -->
+                            <a href="https://brandonabaki-design.github.io/PIRLS-pal/" target="_blank" rel="noopener noreferrer" class="block searchable-item" data-keywords="pirls test reading literacy pal students parents teachers expectations">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-indigo-100">
+                                    <div class="text-4xl mb-3">📚</div>
+                                    <h4 class="text-lg font-semibold mb-2">PIRLSpal</h4>
+                                    <p class="text-sm text-gray-600">A guide to help students, teachers, and parents prepare for the PIRLS test.</p>
+                                </div>
+                            </a>
+                             
+                            <!-- Module: MAP Test Guide -->
+                            <div class="searchable-item h-full" data-keywords="map testing growth rit score assessment adaptive">
+                                <button onclick="window.location.hash='module-twinkl'" class="block w-full text-left h-full">
+                                    <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-pink-100 flex flex-col items-center justify-center">
+                                        <div class="mb-3 h-12 w-full flex items-center justify-center">
+                                            <img src="nwea_MAP_logo.jpg" alt="NWEA MAP Logo" class="h-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                            <span style="display:none;" class="text-4xl">📈</span>
+                                        </div>
+                                        <h4 class="text-lg font-bold mb-2">MAP Growth Guide</h4>
+                                        <p class="text-sm text-gray-600">Understand the adaptive nature of MAP testing and RIT scores.</p>
                                     </div>
-                                </a>
+                                </button>
                             </div>
+
+                            <!-- Tool: Online Learning Guide -->
+                            <a href="#" class="maintenance-link block searchable-item" data-keywords="online learning guide distance remote virtual instruction e-learning">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-teal-100">
+                                    <div class="text-4xl mb-3">💻</div>
+                                    <h4 class="text-lg font-semibold mb-2">Online Learning Guide</h4>
+                                    <p class="text-sm text-gray-600">Essential guidelines and best practices for effective virtual instruction.</p>
+                                </div>
+                            </a>
+                        </div>
                         </div>
                     </section>
 
                     <!-- Media Hub Section -->
                     <section id="media-section" class="mb-20 bg-white rounded-3xl shadow-lg border border-purple-100 overflow-hidden">
+                         <!-- Colored Header Banner -->
                         <div class="bg-gradient-to-r from-purple-700 to-pink-700 p-8 md:p-10 text-white text-center relative overflow-hidden">
                             <div class="absolute bottom-0 left-0 opacity-10 transform -translate-x-1/4 translate-y-1/4">
                                 <svg width="250" height="250" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
@@ -424,38 +439,42 @@
                             <p class="text-purple-100 max-w-2xl mx-auto text-lg relative z-10">Catch up on our latest podcasts and community updates.</p>
                         </div>
 
+                        <!-- Section Body -->
                         <div class="p-6 md:p-10 bg-purple-50/30">
                             <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-8 relative z-10">
+                                <!-- Podcasts -->
                                 <div class="bg-white p-8 rounded-lg shadow-lg searchable-item text-center flex flex-col h-full" data-keywords="podcast audio media listen educator echo">
-                                    <p class="text-gray-600 mb-6 flex-grow">Listen to interviews, strategies, and insights from the Teaching & Learning Department. Access our complete library of episodes below.</p>
-                                    <a href="#" target="_blank" rel="noopener noreferrer" class="mt-auto block">
-                                        <button class="bg-blue-800 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-900 transition-transform hover:scale-105 shadow-md flex items-center justify-center mx-auto w-full">
-                                            <span class="mr-2">📂</span> Access Full Podcast Archive
-                                        </button>
-                                    </a>
-                                </div>
-
-                                <div class="bg-white p-8 rounded-lg shadow-lg searchable-item text-center flex flex-col h-full" data-keywords="newsletter updates news reading">
-                                    <div class="flex items-center justify-center mb-4">
-                                        <div class="p-3 bg-purple-100 rounded-full">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15M9 11l3 3m0 0l3-3m-3 3V8" /></svg>
-                                        </div>
-                                    </div>
-                                    <h4 class="text-2xl font-bold mb-2 text-purple-900">T&L Newsletters</h4>
-                                    <p class="text-gray-600 mb-6 flex-grow">Read the latest updates, teaching tips, and community highlights in our weekly newsletters.</p>
-                                    <a href="#" class="maintenance-link mt-auto block">
-                                        <button class="bg-purple-800 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-purple-900 transition-transform hover:scale-105 shadow-md flex items-center justify-center mx-auto w-full">
-                                            <span class="mr-2">📰</span> Read Newsletters
-                                        </button>
-                                    </a>
-                                </div>
+                                <p class="text-gray-600 mb-6 flex-grow">Listen to interviews, strategies, and insights from the Teaching & Learning Department. Access our complete library of episodes below.</p>
+                                
+                                <a href="#" target="_blank" rel="noopener noreferrer" class="mt-auto block">
+                                    <button class="bg-blue-800 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-900 transition-transform hover:scale-105 shadow-md flex items-center justify-center mx-auto w-full">
+                                        <span class="mr-2">📂</span> Access Full Podcast Archive
+                                    </button>
+                                </a>
                             </div>
+
+                            <!-- Newsletters -->
+                            <div class="bg-white p-8 rounded-lg shadow-lg searchable-item text-center flex flex-col h-full" data-keywords="newsletter updates news reading">
+                                <div class="flex items-center justify-center mb-4">
+                                    <div class="p-3 bg-purple-100 rounded-full">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15M9 11l3 3m0 0l3-3m-3 3V8" /></svg>
+                                    </div>
+                                </div>
+                                <h4 class="text-2xl font-bold mb-2 text-purple-900">T&L Newsletters</h4>
+                                <p class="text-gray-600 mb-6 flex-grow">Read the latest updates, teaching tips, and community highlights in our weekly newsletters.</p>
+                                <a href="#" class="maintenance-link mt-auto block">
+                                    <button class="bg-purple-800 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-purple-900 transition-transform hover:scale-105 shadow-md flex items-center justify-center mx-auto w-full">
+                                        <span class="mr-2">📰</span> Read Newsletters
+                                    </button>
+                                </a>
+                            </div>
+                        </div>
                         </div>
                     </section>
                 </div>
             </div>
 
-            <!-- Maintenance Section -->
+            <!-- Maintenance Section (Hidden by default) -->
             <section id="maintenance-section" class="hidden min-h-screen bg-gray-50 flex items-center justify-center p-4">
                 <div class="text-center bg-white p-8 sm:p-12 rounded-lg shadow-xl max-w-md w-full">
                     <div class="text-6xl mb-4">🚧</div>
@@ -470,17 +489,19 @@
             <!-- HOTS Details Section -->
             <section id="hots-details-section" class="hidden min-h-screen bg-gray-100 p-4 lg:p-12">
                 <div class="container mx-auto max-w-5xl">
+                    <!-- Header -->
                     <div class="mb-8 flex items-center justify-between">
                         <div>
                             <h1 class="text-3xl lg:text-4xl font-extrabold text-blue-900 leading-tight">Higher Order Thinking (HOTS)</h1>
                             <p class="text-blue-600 font-medium text-lg mt-2">Moving Beyond Recall</p>
                         </div>
-                        <button onclick="window.location.hash=''" class="hidden md:flex items-center text-gray-500 hover:text-blue-900 transition-colors font-bold">
+                        <button onclick="window.location.hash=''" class="hidden md:flex items-center text-gray-500 hover:text-blue-900 transition-colors">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                             Back to Guide
                         </button>
                     </div>
 
+                    <!-- Video Container -->
                     <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
                         <div class="aspect-video bg-black relative w-full">
                             <iframe class="w-full h-full absolute top-0 left-0" 
@@ -499,10 +520,180 @@
                             <p class="text-sm text-blue-800 mt-1">Explore the 6 levels of cognitive complexity and learn how to ask questions that challenge students to apply, analyze, and create.</p>
                         </div>
                     </div>
-                    
+
+                    <!-- Infographic: The Thinking Ladder -->
+                    <div class="mb-12">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">The Thinking Ladder: From Recall to Creation</h3>
+                        <div class="flex flex-col space-y-3 max-w-4xl mx-auto">
+                            <!-- Levels 1-6 -->
+                            <!-- Level 6: Create -->
+                            <div class="ladder-step flex flex-col md:flex-row bg-purple-600 text-white rounded-lg shadow-lg overflow-hidden relative z-50 transform md:-translate-x-0">
+                                <div class="p-6 md:w-1/3 font-bold text-xl flex items-center justify-center bg-purple-700"><span>🚀 Create</span></div>
+                                <div class="p-6 md:w-2/3 bg-purple-600 flex flex-col justify-center"><p class="font-semibold mb-1 opacity-90">Combining parts to make a new whole</p><p class="text-sm italic text-purple-100">"How would you design...?" "What would happen if...?"</p></div>
+                            </div>
+                            <!-- Level 5: Evaluate -->
+                            <div class="ladder-step flex flex-col md:flex-row bg-pink-600 text-white rounded-lg shadow-lg overflow-hidden relative z-40 md:ml-4">
+                                <div class="p-6 md:w-1/3 font-bold text-xl flex items-center justify-center bg-pink-700"><span>⚖️ Evaluate</span></div>
+                                <div class="p-6 md:w-2/3 bg-pink-600 flex flex-col justify-center"><p class="font-semibold mb-1 opacity-90">Judging the value of information</p><p class="text-sm italic text-pink-100">"Do you agree with...?" "Prioritize the best solution..."</p></div>
+                            </div>
+                            <!-- Level 4: Analyze -->
+                            <div class="ladder-step flex flex-col md:flex-row bg-orange-500 text-white rounded-lg shadow-lg overflow-hidden relative z-30 md:ml-8">
+                                <div class="p-6 md:w-1/3 font-bold text-xl flex items-center justify-center bg-orange-600"><span>🔍 Analyze</span></div>
+                                <div class="p-6 md:w-2/3 bg-orange-500 flex flex-col justify-center"><p class="font-semibold mb-1 opacity-90">Breaking down information into component parts</p><p class="text-sm italic text-orange-100">"What is the relationship between...?" "Compare and contrast..."</p></div>
+                            </div>
+                            <!-- Level 3: Apply -->
+                            <div class="ladder-step flex flex-col md:flex-row bg-yellow-500 text-white rounded-lg shadow-lg overflow-hidden relative z-20 md:ml-12">
+                                <div class="p-6 md:w-1/3 font-bold text-xl flex items-center justify-center bg-yellow-600"><span>🛠️ Apply</span></div>
+                                <div class="p-6 md:w-2/3 bg-yellow-500 flex flex-col justify-center"><p class="font-semibold mb-1 opacity-90">Applying the facts to a new situation</p><p class="text-sm italic text-yellow-100">"How would you use...?" "Solve this using..."</p></div>
+                            </div>
+                             <!-- Level 2: Understand -->
+                            <div class="ladder-step flex flex-col md:flex-row bg-green-500 text-white rounded-lg shadow-lg overflow-hidden relative z-10 md:ml-16">
+                                <div class="p-6 md:w-1/3 font-bold text-xl flex items-center justify-center bg-green-600"><span>💡 Understand</span></div>
+                                <div class="p-6 md:w-2/3 bg-green-500 flex flex-col justify-center"><p class="font-semibold mb-1 opacity-90">Understanding what the facts mean</p><p class="text-sm italic text-green-100">"Summarize the main idea..." "Explain in your own words..."</p></div>
+                            </div>
+                             <!-- Level 1: Remember -->
+                            <div class="ladder-step flex flex-col md:flex-row bg-blue-500 text-white rounded-lg shadow-lg overflow-hidden relative z-0 md:ml-20">
+                                <div class="p-6 md:w-1/3 font-bold text-xl flex items-center justify-center bg-blue-600"><span>🧠 Remember</span></div>
+                                <div class="p-6 md:w-2/3 bg-blue-500 flex flex-col justify-center"><p class="font-semibold mb-1 opacity-90">Recognizing and recalling facts</p><p class="text-sm italic text-blue-100">"List the..." "Define..." "Who, What, Where...?"</p></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- NEW: Question Transformation Lab -->
+                    <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden mb-16">
+                        <div class="bg-gradient-to-r from-slate-800 to-blue-900 p-8 text-white">
+                            <div class="flex items-center justify-center mb-2">
+                                <span class="text-4xl mr-3">⚗️</span>
+                                <h3 class="text-3xl font-extrabold tracking-tight">Question Transformation Lab</h3>
+                            </div>
+                            <p class="text-blue-100 text-center font-medium text-lg">The Art of Upgrading Cognitive Demand</p>
+                        </div>
+                        
+                        <div class="p-8 lg:p-12 bg-gray-50">
+                            
+                            <!-- Example 1 -->
+                            <div class="relative bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8 group hover:shadow-md transition-shadow">
+                                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-100 text-blue-800 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest border border-blue-200">
+                                    Science Example
+                                </div>
+                                
+                                <div class="flex flex-col md:flex-row items-stretch gap-6">
+                                    <!-- LOTS Side -->
+                                    <div class="flex-1 bg-red-50/50 rounded-xl p-6 border-l-4 border-red-300 relative">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">Level 1: Remember</span>
+                                            <span class="text-2xl opacity-50">🧠</span>
+                                        </div>
+                                        <p class="text-gray-500 font-mono text-sm mb-2">The Ask:</p>
+                                        <p class="text-lg font-bold text-gray-800">"What is photosynthesis?"</p>
+                                        <p class="text-xs text-red-400 mt-3 italic">⚠️ Requires only memory recall.</p>
+                                    </div>
+
+                                    <!-- Transformation Arrow (Desktop) -->
+                                    <div class="hidden md:flex flex-col justify-center items-center w-16 relative">
+                                        <div class="h-full w-0.5 bg-gray-200 absolute"></div>
+                                        <div class="z-10 bg-white border-2 border-green-500 rounded-full p-2 text-green-600 shadow-sm">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                                        </div>
+                                        <div class="z-10 mt-2 bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded-full whitespace-nowrap shadow-sm">
+                                            + Comparison & Context
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Transformation Arrow (Mobile) -->
+                                    <div class="flex md:hidden justify-center items-center py-2 text-green-500">
+                                        <svg class="w-8 h-8 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                    </div>
+
+                                    <!-- HOTS Side -->
+                                    <div class="flex-1 bg-green-50/50 rounded-xl p-6 border-l-4 border-green-500 relative">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">Level 4: Analyze</span>
+                                            <span class="text-2xl opacity-50">🔬</span>
+                                        </div>
+                                        <p class="text-gray-500 font-mono text-sm mb-2">The Upgrade:</p>
+                                        <p class="text-lg font-bold text-gray-900">"Compare how photosynthesis differs in a cactus versus a fern given their environments."</p>
+                                        <p class="text-xs text-green-600 mt-3 italic">✅ Requires analysis of conditions and biological adaptation.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Example 2 -->
+                            <div class="relative bg-white rounded-2xl shadow-sm border border-gray-200 p-6 group hover:shadow-md transition-shadow">
+                                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-purple-100 text-purple-800 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest border border-purple-200">
+                                    Literature Example
+                                </div>
+                                
+                                <div class="flex flex-col md:flex-row items-stretch gap-6">
+                                    <!-- LOTS Side -->
+                                    <div class="flex-1 bg-red-50/50 rounded-xl p-6 border-l-4 border-red-300 relative">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">Level 2: Understand</span>
+                                            <span class="text-2xl opacity-50">📖</span>
+                                        </div>
+                                        <p class="text-gray-500 font-mono text-sm mb-2">The Ask:</p>
+                                        <p class="text-lg font-bold text-gray-800">"Identify the main character's decision in Chapter 3."</p>
+                                        <p class="text-xs text-red-400 mt-3 italic">⚠️ Requires identifying facts from text.</p>
+                                    </div>
+
+                                    <!-- Transformation Arrow (Desktop) -->
+                                    <div class="hidden md:flex flex-col justify-center items-center w-16 relative">
+                                        <div class="h-full w-0.5 bg-gray-200 absolute"></div>
+                                        <div class="z-10 bg-white border-2 border-purple-500 rounded-full p-2 text-purple-600 shadow-sm">
+                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                                        </div>
+                                        <div class="z-10 mt-2 bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-1 rounded-full whitespace-nowrap shadow-sm">
+                                            + "What If" Scenario
+                                        </div>
+                                    </div>
+
+                                    <!-- Transformation Arrow (Mobile) -->
+                                    <div class="flex md:hidden justify-center items-center py-2 text-purple-500">
+                                        <svg class="w-8 h-8 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                    </div>
+
+                                    <!-- HOTS Side -->
+                                    <div class="flex-1 bg-purple-50/50 rounded-xl p-6 border-l-4 border-purple-500 relative">
+                                        <div class="flex justify-between items-start mb-3">
+                                            <span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">Level 6: Create</span>
+                                            <span class="text-2xl opacity-50">🚀</span>
+                                        </div>
+                                        <p class="text-gray-500 font-mono text-sm mb-2">The Upgrade:</p>
+                                        <p class="text-lg font-bold text-gray-900">"Predict how the story would end if the character made the opposite choice in Chapter 3."</p>
+                                        <p class="text-xs text-purple-600 mt-3 italic">✅ Requires synthesis of character traits and plot projection.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pro Tip Box -->
+                            <div class="mt-8 p-5 bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl flex items-start shadow-sm">
+                                <div class="bg-yellow-100 p-2 rounded-lg mr-4">
+                                    <span class="text-2xl">💡</span>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-yellow-900 text-lg">Instant Upgrade Formula</h4>
+                                    <p class="text-yellow-800 mt-1">Don't rewrite the whole lesson. Just add one of these stems to your existing question:</p>
+                                    <div class="flex flex-wrap gap-2 mt-3">
+                                        <span class="bg-white border border-yellow-200 text-yellow-800 px-3 py-1 rounded-md text-sm font-semibold shadow-sm">"How would you change..."</span>
+                                        <span class="bg-white border border-yellow-200 text-yellow-800 px-3 py-1 rounded-md text-sm font-semibold shadow-sm">"Justify why..."</span>
+                                        <span class="bg-white border border-yellow-200 text-yellow-800 px-3 py-1 rounded-md text-sm font-semibold shadow-sm">"What if..."</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Call to Action -->
                     <div class="text-center">
                          <button onclick="window.location.hash=''" class="bg-blue-800 text-white py-3 px-8 rounded-full hover:bg-blue-900 transition-colors shadow-lg font-semibold">
                             Return to Dashboard
+                        </button>
+                    </div>
+                     <!-- Mobile Return Button -->
+                    <div class="mt-8 md:hidden text-center">
+                         <button class="text-gray-500 hover:text-blue-900 underline" onclick="window.location.hash=''">
+                            Return to Homepage
                         </button>
                     </div>
                 </div>
@@ -511,17 +702,19 @@
             <!-- Objectives Details Section -->
             <section id="objectives-details-section" class="hidden min-h-screen bg-gray-100 p-4 lg:p-12">
                 <div class="container mx-auto max-w-5xl">
+                    <!-- Header -->
                     <div class="mb-8 flex items-center justify-between">
                         <div>
                             <h1 class="text-3xl lg:text-4xl font-extrabold text-blue-900 leading-tight">Objectives & Success Criteria</h1>
                             <p class="text-indigo-600 font-medium text-lg mt-2">The Roadmap to Student Success</p>
                         </div>
-                        <button onclick="window.location.hash=''" class="hidden md:flex items-center text-gray-500 hover:text-blue-900 transition-colors font-bold">
+                        <button onclick="window.location.hash=''" class="hidden md:flex items-center text-gray-500 hover:text-blue-900 transition-colors">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                             Back to Guide
                         </button>
                     </div>
 
+                    <!-- Video Container -->
                     <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
                         <div class="aspect-video bg-black relative w-full">
                             <video controls class="w-full h-full absolute top-0 left-0">
@@ -529,367 +722,220 @@
                                 Your browser does not support the video tag.
                             </video>
                         </div>
+                        <div class="p-6 bg-indigo-50 border-t border-indigo-100">
+                            <h3 class="font-bold text-indigo-900 flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                About this Module
+                            </h3>
+                            <p class="text-sm text-indigo-800 mt-1">A comprehensive guide on transforming lesson plans from "To-Do lists" into meaningful learning journeys using tiered success criteria.</p>
+                        </div>
+                    </div>
+
+                    <!-- Comparison Table -->
+                    <div class="mb-16">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Comparing Components</h3>
+                        <div class="grid md:grid-cols-2 gap-0 overflow-hidden rounded-2xl shadow-2xl border border-gray-200">
+                            <!-- Column 1: Objectives -->
+                            <div class="bg-blue-900 text-white p-8">
+                                <div class="flex items-center mb-4">
+                                    <span class="text-4xl mr-3">🎯</span>
+                                    <h3 class="text-2xl font-bold">Lesson Objective</h3>
+                                </div>
+                                <p class="text-blue-200 font-medium mb-6 uppercase tracking-wide text-xs">The Destination</p>
+                                <ul class="space-y-4">
+                                    <li class="flex items-start">
+                                        <span class="mt-1 mr-3 text-green-400">✓</span>
+                                        <span class="text-blue-50">Defines <strong>WHAT</strong> students will learn conceptually.</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="mt-1 mr-3 text-green-400">✓</span>
+                                        <span class="text-blue-50">Teacher-focused perspective.</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="mt-1 mr-3 text-green-400">✓</span>
+                                        <span class="text-blue-50">Broad & Skill-based (e.g., "Analyze", "Evaluate").</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <!-- Column 2: Success Criteria -->
+                            <div class="bg-teal-600 text-white p-8">
+                                <div class="flex items-center mb-4">
+                                    <span class="text-4xl mr-3">🔍</span>
+                                    <h3 class="text-2xl font-bold">Success Criteria</h3>
+                                </div>
+                                <p class="text-teal-200 font-medium mb-6 uppercase tracking-wide text-xs">The Roadmap</p>
+                                <ul class="space-y-4">
+                                    <li class="flex items-start">
+                                        <span class="mt-1 mr-3 text-yellow-300">✓</span>
+                                        <span class="text-teal-50">Shows <strong>HOW</strong> to demonstrate learning.</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="mt-1 mr-3 text-yellow-300">✓</span>
+                                        <span class="text-teal-50">Student-focused checklist.</span>
+                                    </li>
+                                    <li class="flex items-start">
+                                        <span class="mt-1 mr-3 text-yellow-300">✓</span>
+                                        <span class="text-teal-50">Specific & Measurable actions.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tiered Success Criteria Section -->
+                    <div class="mb-12">
+                        <div class="text-center mb-8">
+                            <h3 class="text-3xl font-bold text-gray-900">Tiered Differentiation</h3>
+                            <p class="text-gray-600 mt-2">Maximize learning by offering multiple entry points.</p>
+                        </div>
+                        
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <!-- Level 1 -->
+                            <div class="bg-white rounded-xl shadow-lg border-t-8 border-green-500 overflow-hidden card-hover">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h4 class="text-xl font-bold text-gray-800">Level 1</h4>
+                                        <span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded">Support</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                                        Scaffolding for students who need concrete representations.
+                                    </p>
+                                    <div class="bg-green-50 p-3 rounded text-sm text-green-900 italic">
+                                        "I can use physical blocks to show the problem."
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Level 2 -->
+                            <div class="bg-white rounded-xl shadow-lg border-t-8 border-blue-500 overflow-hidden card-hover transform md:-translate-y-2">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h4 class="text-xl font-bold text-gray-800">Level 2</h4>
+                                        <span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded">Core</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                                        Standard expectation for independent work.
+                                    </p>
+                                    <div class="bg-blue-50 p-3 rounded text-sm text-blue-900 italic">
+                                        "I can solve the problem using standard formulas."
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Level 3 -->
+                            <div class="bg-white rounded-xl shadow-lg border-t-8 border-purple-500 overflow-hidden card-hover">
+                                <div class="p-6">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h4 class="text-xl font-bold text-gray-800">Level 3</h4>
+                                        <span class="bg-purple-100 text-purple-800 text-xs font-bold px-2 py-1 rounded">Challenge</span>
+                                    </div>
+                                    <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                                        Extension requiring explanation, justification, or creation.
+                                    </p>
+                                    <div class="bg-purple-50 p-3 rounded text-sm text-purple-900 italic">
+                                        "I can teach a peer how to solve this complex version."
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Call to Action -->
+                    <div class="bg-gradient-to-r from-indigo-600 to-blue-700 rounded-xl p-8 text-center text-white shadow-xl">
+                        <h3 class="text-2xl font-bold mb-4">🚀 This Week's Challenge: Extreme Makeover</h3>
+                        <p class="max-w-2xl mx-auto text-lg text-indigo-100 mb-8">
+                            Take one of your lesson plans this week and give one objective an "Extreme Makeover." Ensure it focuses on cognitive skills and includes tiered success criteria.
+                        </p>
+                        <button onclick="window.location.hash=''" class="bg-white text-indigo-700 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition-colors shadow-lg">
+                            I'm Ready! Return to Dashboard
+                        </button>
                     </div>
                     
-                    <div class="text-center">
-                        <button onclick="window.location.hash=''" class="bg-indigo-700 text-white font-bold py-3 px-8 rounded-full hover:bg-indigo-800 transition-colors shadow-lg">
-                            Return to Dashboard
+                     <!-- Mobile Return Button -->
+                    <div class="mt-8 md:hidden text-center">
+                         <button class="text-gray-500 hover:text-blue-900 underline" onclick="window.location.hash=''">
+                            Return to Homepage
                         </button>
                     </div>
                 </div>
             </section>
 
-            <!-- NOTEBOOKLM MASTERCLASS (Integrated from index 3) -->
-            <section id="notebooklm-details-section" class="hidden min-h-screen bg-dot-pattern text-slate-800 pb-20 overflow-x-hidden font-sans">
-                
-                <!-- Inner Section Navigation / Header -->
-                <div class="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-[68px] z-40 lg:top-[76px]">
-                    <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-                        <div class="flex items-center space-x-3 w-full md:w-auto">
-                            <button onclick="window.location.hash=''" class="mr-2 text-slate-400 hover:text-emerald-600 transition-colors">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
-                            </button>
-                            <h1 class="font-heading font-extrabold text-xl lg:text-2xl text-slate-900 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600">NotebookLM Masterclass</h1>
+            <!-- MAP Details Section -->
+            <section id="map-details-section" class="hidden min-h-screen bg-gray-100 p-4 lg:p-12">
+                <div class="container mx-auto max-w-5xl">
+                    <!-- Header -->
+                    <div class="mb-8 flex items-center justify-between">
+                        <div>
+                            <h1 class="text-3xl lg:text-4xl font-extrabold text-blue-900 leading-tight">MAP Growth Testing</h1>
+                            <p class="text-orange-600 font-medium text-lg mt-2">Measures of Academic Progress</p>
                         </div>
-                        
-                        <!-- Progress Bar Container -->
-                        <div class="flex items-center space-x-5 bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-2xl shadow-inner w-full md:w-auto justify-end">
-                            <span id="progress-text" class="text-sm font-bold text-slate-500 transition-colors duration-300 uppercase tracking-widest">0% Done</span>
-                            <div class="w-32 md:w-48 h-3 bg-slate-200 rounded-full overflow-hidden shadow-inner relative">
-                                <div id="progress-bar" class="h-full bg-gradient-to-r from-primary via-secondary to-accent w-0 transition-all duration-700 ease-out relative">
-                                    <div class="absolute inset-0 bg-white/20 w-full animate-[shimmer_2s_infinite]"></div>
-                                </div>
-                            </div>
+                        <button onclick="window.location.hash=''" class="hidden md:flex items-center text-gray-500 hover:text-blue-900 transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            Back to Guide
+                        </button>
+                    </div>
+
+                    <!-- Video Container -->
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+                        <div class="aspect-video bg-black relative w-full">
+                            <iframe class="w-full h-full absolute top-0 left-0" 
+                                    src="https://www.youtube.com/embed/79h958Qd8sA" 
+                                    title="What is the MAP Growth test?" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div class="p-6 bg-orange-50 border-t border-orange-100">
+                            <h3 class="font-bold text-orange-900 flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                About this Module
+                            </h3>
+                            <p class="text-sm text-orange-800 mt-1">An essential guide for teachers and parents to understand how MAP Growth works, what RIT scores mean, and how to use the data to support student learning.</p>
                         </div>
                     </div>
-                </div>
 
-                <!-- Hero Section with Animated Blobs -->
-                <header class="relative pt-16 pb-20 lg:pt-24 lg:pb-28 overflow-hidden">
-                    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-full pointer-events-none opacity-60">
-                        <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob"></div>
-                        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-accent/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" style="animation-delay: 2s;"></div>
-                        <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-purple-500/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" style="animation-delay: 4s;"></div>
+                    <!-- Content Grid -->
+                    <div class="grid md:grid-cols-2 gap-8 mb-12">
+                        <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                <span class="bg-blue-100 p-2 rounded-full mr-3 text-blue-600 text-sm">🧩</span>
+                                What is MAP Growth?
+                            </h3>
+                            <p class="text-gray-600 mb-4">MAP Growth is not a traditional standardized test. It is an <strong>adaptive assessment</strong> designed to measure a student's academic growth over time, regardless of their grade level.</p>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex items-start"><span class="text-green-500 mr-2">✓</span> If a student answers correctly, the next question gets harder.</li>
+                                <li class="flex items-start"><span class="text-green-500 mr-2">✓</span> If they answer incorrectly, the next question gets easier.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                            <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                                <span class="bg-purple-100 p-2 rounded-full mr-3 text-purple-600 text-sm">📊</span>
+                                Understanding RIT Scores
+                            </h3>
+                            <p class="text-gray-600 mb-4">The result of the test is a <strong>RIT Score</strong> (Rasch Unit). Think of this like a ruler for academic growth.</p>
+                            <ul class="space-y-2 text-sm text-gray-600">
+                                <li class="flex items-start"><span class="text-purple-500 mr-2">➜</span> It is an equal-interval scale (like inches on a ruler).</li>
+                                <li class="flex items-start"><span class="text-purple-500 mr-2">➜</span> It tracks progress from year to year, not just within a single grade.</li>
+                                <li class="flex items-start"><span class="text-purple-500 mr-2">➜</span> It connects directly to instructional areas students are ready to learn.</li>
+                            </ul>
+                        </div>
                     </div>
                     
-                    <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
-                        <div class="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-full px-5 py-2 mb-8 shadow-sm">
-                            <span class="flex h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse"></span>
-                            <span class="text-sm font-semibold text-slate-700 tracking-wide uppercase">AI for Educators Integration</span>
-                        </div>
-                        <h1 class="font-heading text-4xl lg:text-6xl font-black text-slate-900 tracking-normal leading-tight mb-8 drop-shadow-sm">
-                            Transform Lesson <br class="hidden lg:block"/> Planning with <br class="hidden lg:block"/>
-                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-600 to-accent animate-gradient-x inline-block pb-2">AI Presentations</span>
-                        </h1>
-                        <p class="text-lg lg:text-2xl text-slate-600 mb-12 max-w-3xl mx-auto leading-relaxed font-medium">
-                            Learn how to leverage NotebookLM to automatically generate, resource, and refine world-class PowerPoint slide decks in minutes.
-                        </p>
+                    <!-- Mobile Return Button -->
+                    <div class="mt-8 md:hidden text-center">
+                         <button class="text-gray-500 hover:text-blue-900 underline" onclick="window.location.hash=''">
+                            Return to Homepage
+                        </button>
                     </div>
-                </header>
-
-                <!-- Main Course Content -->
-                <div class="max-w-7xl mx-auto px-6 relative space-y-24 lg:space-y-36">
-                    
-                    <!-- Module 1 -->
-                    <div class="bg-white/90 backdrop-blur-xl rounded-[2.5rem] p-6 lg:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white relative group">
-                        <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-transparent rounded-t-[2.5rem] opacity-50"></div>
-                        
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
-                            <div>
-                                <div class="flex items-center gap-3 mb-3">
-                                    <div class="w-10 h-10 bg-indigo-50 text-primary rounded-xl flex items-center justify-center font-black text-lg border border-indigo-100 shadow-sm">1</div>
-                                    <span class="text-primary font-bold tracking-widest uppercase text-sm">The Foundation</span>
-                                    <span class="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-lg ml-2 border border-slate-200">⏱️ 3 Min Watch</span>
-                                </div>
-                                <h2 class="text-4xl font-heading font-black text-slate-900 tracking-tight">Creating Your First Deck</h2>
-                            </div>
-                            <label class="cursor-pointer flex items-center gap-4 bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 px-5 py-3 rounded-2xl transition-all duration-300 shadow-sm hover:shadow" title="Mark as completed">
-                                <span class="text-sm font-bold text-slate-600 group-hover/btn:text-emerald-600">Mark Complete</span>
-                                <div class="relative">
-                                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
-                                    <div class="w-7 h-7 rounded-xl border-2 border-slate-300 bg-white flex items-center justify-center transition-all duration-300 shadow-inner">
-                                        <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                        
-                        <p class="text-slate-600 mb-12 text-[1.2rem] leading-relaxed max-w-3xl font-medium tracking-tight border-l-4 border-indigo-200 pl-6">Learn how to upload your existing materials into NotebookLM and use customized prompts to generate the perfect baseline presentation tailored to your classroom.</p>
-                        
-                        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
-                            <div class="lg:sticky lg:top-32 z-10">
-                                <div class="video-container mb-6 ring-4 ring-slate-50">
-                                    <iframe src="https://www.youtube.com/embed/9xeFK6nyleE" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                                </div>
-                            </div>
-
-                            <div class="bg-slate-50/50 rounded-[2rem] p-6 lg:p-10 border border-slate-200/60 shadow-inner">
-                                <h4 class="font-heading font-black text-slate-900 mb-8 flex items-center text-2xl tracking-tight">
-                                    <span class="bg-gradient-to-r from-primary to-indigo-500 text-transparent bg-clip-text">Step-by-Step Guide</span>
-                                </h4>
-                                
-                                <div class="space-y-8 timeline-container">
-                                    <div class="flex items-start gap-5 relative z-10 group">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center font-black text-lg border-2 border-primary shadow-[0_0_15px_rgba(79,70,229,0.2)] mt-1">1</div>
-                                        <div class="leading-relaxed text-slate-700 text-[1.1rem] pt-2">
-                                            <strong class="text-slate-900">Create a new notebook</strong> in NotebookLM and <strong class="text-slate-900">upload your sources</strong> (lesson plans, CV, or web links).
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-5 relative z-10 group">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center font-black text-lg border-2 border-primary shadow-[0_0_15px_rgba(79,70,229,0.2)] mt-1">2</div>
-                                        <div class="leading-relaxed text-slate-700 text-[1.1rem] pt-2">
-                                            Click the customization arrow next to <strong class="text-slate-900 bg-slate-200 px-2 py-1 rounded-md text-sm border border-slate-300">"Slide Deck"</strong> to access advanced settings.
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-5 relative z-10 group">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center font-black text-lg border-2 border-primary shadow-[0_0_15px_rgba(79,70,229,0.2)] mt-1">3</div>
-                                        <div class="leading-relaxed text-slate-700 text-[1.1rem] pt-2">
-                                            Choose your format: <em class="text-primary not-italic font-bold bg-indigo-50 px-2 py-1 rounded-md">Detailed slides</em> vs. <em class="text-primary not-italic font-bold bg-indigo-50 px-2 py-1 rounded-md">Presenter slides</em> (for a guided presentation).
-                                        </div>
-                                    </div>
-
-                                    <div class="flex items-start gap-5 relative z-10 group">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center font-black text-lg border-2 border-primary shadow-[0_0_15px_rgba(79,70,229,0.2)] mt-1">4</div>
-                                        <div class="leading-relaxed text-slate-700 text-[1.1rem] pt-2 w-full">
-                                            <strong class="text-slate-900 block mb-4">Write a highly specific prompt.</strong> 
-                                            <div class="bg-white p-5 rounded-2xl border-2 border-dashed border-indigo-200 shadow-sm relative overflow-hidden">
-                                                <div class="absolute top-0 left-0 w-1.5 h-full bg-primary"></div>
-                                                <em class="not-italic font-black text-slate-900 text-xs uppercase tracking-widest block mb-2 opacity-60">Example Prompt</em> 
-                                                <span class="italic text-slate-600 font-medium">"Include real-life UAE examples and ensure it is culturally sensitive to Islamic values."</span>
-                                            </div>
-                                            <button onclick="fillSandbox('High School Teacher', 'High School Students (Grades 9-12)', 'Local UAE Geography and Culture', 'UAE MOE (Ministry of Education)', 'Include real-life UAE examples and ensure it is culturally sensitive to Islamic values.')" class="mt-5 text-sm font-bold text-white bg-primary hover:bg-indigo-700 px-6 py-2.5 rounded-xl transition-all shadow-md flex items-center w-fit">
-                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
-                                                Try this in Sandbox
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Module 2 -->
-                    <div class="bg-white/90 backdrop-blur-xl rounded-[2.5rem] p-6 lg:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white relative group">
-                        <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-secondary to-transparent rounded-t-[2.5rem] opacity-50"></div>
-                        
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
-                            <div>
-                                <div class="flex items-center gap-3 mb-3">
-                                    <div class="w-10 h-10 bg-blue-50 text-secondary rounded-xl flex items-center justify-center font-black text-lg border border-blue-100 shadow-sm">2</div>
-                                    <span class="text-secondary font-bold tracking-widest uppercase text-sm">Resource Generation</span>
-                                    <span class="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-lg ml-2 border border-slate-200">⏱️ 2 Min Watch</span>
-                                </div>
-                                <h2 class="text-4xl font-heading font-black text-slate-900 tracking-tight">Building From Scratch</h2>
-                            </div>
-                            <label class="cursor-pointer flex items-center gap-4 bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 px-5 py-3 rounded-2xl transition-all duration-300 shadow-sm hover:shadow" title="Mark as completed">
-                                <span class="text-sm font-bold text-slate-600 group-hover/btn:text-emerald-600">Mark Complete</span>
-                                <div class="relative">
-                                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
-                                    <div class="w-7 h-7 rounded-xl border-2 border-slate-300 bg-white flex items-center justify-center transition-all duration-300 shadow-inner">
-                                        <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                        
-                        <p class="text-slate-600 mb-12 text-[1.2rem] leading-relaxed max-w-3xl font-medium tracking-tight border-l-4 border-blue-200 pl-6">What happens if you don't have a lesson plan ready? Discover how to use AI web search to compile resources and instantly generate a curriculum foundation.</p>
-                        
-                        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
-                            <div class="lg:sticky lg:top-32 z-10">
-                                <div class="video-container mb-6 ring-4 ring-slate-50">
-                                    <iframe src="https://www.youtube.com/embed/kLAlBduxzhU" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                                </div>
-                            </div>
-
-                            <div class="bg-slate-50/50 rounded-[2rem] p-6 lg:p-10 border border-slate-200/60 shadow-inner">
-                                <h4 class="font-heading font-black text-slate-900 mb-8 flex items-center text-2xl tracking-tight">
-                                    <span class="bg-gradient-to-r from-secondary to-blue-400 text-transparent bg-clip-text">Step-by-Step Guide</span>
-                                </h4>
-                                
-                                <div class="space-y-8 timeline-container">
-                                    <div class="flex items-start gap-5 relative z-10 group">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-secondary flex items-center justify-center font-black text-lg border-2 border-secondary shadow-[0_0_15px_rgba(37,99,235,0.2)] mt-1">1</div>
-                                        <div class="leading-relaxed text-slate-700 text-[1.1rem] pt-2">
-                                            In the source selection area, opt to <strong class="text-slate-900">search the web</strong> instead of uploading a file.
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-5 relative z-10 group">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-secondary flex items-center justify-center font-black text-lg border-2 border-secondary shadow-[0_0_15px_rgba(37,99,235,0.2)] mt-1">2</div>
-                                        <div class="leading-relaxed text-slate-700 text-[1.1rem] pt-2 w-full">
-                                            <strong class="text-slate-900 block mb-4">Type your learning objective as a query.</strong>
-                                            <div class="bg-white p-5 rounded-2xl border-2 border-dashed border-blue-200 shadow-sm relative overflow-hidden">
-                                                <div class="absolute top-0 left-0 w-1.5 h-full bg-secondary"></div>
-                                                <em class="not-italic font-black text-slate-900 text-xs uppercase tracking-widest block mb-2 opacity-60">Example Query</em> 
-                                                <span class="italic text-slate-600 font-medium">"I need to teach a lesson about equal groups to grade 3 students."</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Module 3 -->
-                    <div class="bg-white/90 backdrop-blur-xl rounded-[2.5rem] p-6 lg:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white relative group">
-                        <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-accent to-transparent rounded-t-[2.5rem] opacity-50"></div>
-                        
-                        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
-                            <div>
-                                <div class="flex items-center gap-3 mb-3">
-                                    <div class="w-10 h-10 bg-cyan-50 text-accent rounded-xl flex items-center justify-center font-black text-lg border border-cyan-100 shadow-sm">3</div>
-                                    <span class="text-accent font-bold tracking-widest uppercase text-sm">Refinement</span>
-                                    <span class="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-lg ml-2 border border-slate-200">⏱️ 4 Min Watch</span>
-                                </div>
-                                <h2 class="text-4xl font-heading font-black text-slate-900 tracking-tight">Revising & Exporting</h2>
-                            </div>
-                            <label class="cursor-pointer flex items-center gap-4 bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 px-5 py-3 rounded-2xl transition-all duration-300 shadow-sm hover:shadow" title="Mark as completed">
-                                <span class="text-sm font-bold text-slate-600 group-hover/btn:text-emerald-600">Mark Complete</span>
-                                <div class="relative">
-                                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
-                                    <div class="w-7 h-7 rounded-xl border-2 border-slate-300 bg-white flex items-center justify-center transition-all duration-300 shadow-inner">
-                                        <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
-                                    </div>
-                                </div>
-                            </label>
-                        </div>
-                        
-                        <p class="text-slate-600 mb-12 text-[1.2rem] leading-relaxed max-w-3xl font-medium tracking-tight border-l-4 border-cyan-200 pl-6">The AI's first draft is rarely the final draft. Master the revision tool to tweak specific slides, replace text, and finally download your work as a ready-to-teach PowerPoint file.</p>
-                        
-                        <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
-                            <div class="lg:sticky lg:top-32 z-10">
-                                <div class="video-container mb-6 ring-4 ring-slate-50">
-                                    <iframe src="https://www.youtube.com/embed/RhAOqY9taJE" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                                </div>
-                            </div>
-
-                            <div class="bg-slate-50/50 rounded-[2rem] p-6 lg:p-10 border border-slate-200/60 shadow-inner">
-                                <h4 class="font-heading font-black text-slate-900 mb-8 flex items-center text-2xl tracking-tight">
-                                    <span class="bg-gradient-to-r from-accent to-teal-400 text-transparent bg-clip-text">Step-by-Step Guide</span>
-                                </h4>
-                                
-                                <div class="space-y-8 timeline-container">
-                                    <div class="flex items-start gap-5 relative z-10 group">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-accent flex items-center justify-center font-black text-lg border-2 border-accent shadow-[0_0_15px_rgba(6,182,212,0.2)] mt-1">1</div>
-                                        <div class="leading-relaxed text-slate-700 text-[1.1rem] pt-2">
-                                            Click on any generated slide to <strong class="text-slate-900">enlarge the preview</strong>.
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="flex items-start gap-5 relative z-10 group">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-accent flex items-center justify-center font-black text-lg border-2 border-accent shadow-[0_0_15px_rgba(6,182,212,0.2)] mt-1">2</div>
-                                        <div class="leading-relaxed text-slate-700 text-[1.1rem] pt-2">
-                                            Spot an error or something you dislike? Click the <strong class="text-slate-900 bg-slate-200 px-2 py-1 rounded-md text-sm border border-slate-300">Revise</strong> button.
-                                        </div>
-                                    </div>
-
-                                    <div class="flex items-start gap-5 relative z-10 group">
-                                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-accent flex items-center justify-center font-black text-lg border-2 border-accent shadow-[0_0_15px_rgba(6,182,212,0.2)] mt-1">3</div>
-                                        <div class="leading-relaxed text-slate-700 text-[1.1rem] pt-2">
-                                            Click the three dots menu (...) to <strong class="text-slate-900 border-b-2 border-cyan-200 pb-0.5">Download as PowerPoint (.pptx)</strong> or PDF.
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Interactive Sandbox Section -->
-                <div id="sandbox" class="max-w-5xl mx-auto px-6 mt-40 mb-24 scroll-mt-32 relative">
-                    <div class="absolute inset-0 bg-gradient-to-r from-primary/30 via-purple-500/30 to-accent/30 blur-[100px] rounded-full pointer-events-none z-0"></div>
-                    
-                    <div class="bg-slate-900/95 backdrop-blur-2xl rounded-[3rem] p-8 md:p-14 shadow-[0_0_50px_rgba(0,0,0,0.3)] border border-slate-700/60 relative z-10 overflow-hidden">
-                        <div class="relative z-10 text-white">
-                            <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
-                                <h2 class="text-4xl font-heading font-black tracking-tight flex items-center">
-                                    Interactive Prompt Builder
-                                </h2>
-                                <span class="inline-block text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-3 py-1.5 rounded-lg uppercase tracking-widest font-bold shadow-inner w-fit">Practice Tool</span>
-                            </div>
-                            <p class="text-slate-400 mb-10 text-lg max-w-2xl font-medium">A great system prompt is key. Select your criteria below to generate a perfectly structured, hallucination-resistant prompt.</p>
-
-                            <div class="grid md:grid-cols-2 gap-8 mb-10">
-                                <div class="space-y-2">
-                                    <label class="block text-sm font-bold text-slate-300 uppercase tracking-wider">Your Role</label>
-                                    <div class="relative">
-                                        <input type="text" id="role" list="role-options" placeholder="Select or type your role..." class="w-full bg-slate-950/50 border border-slate-700/80 rounded-2xl px-5 py-4 text-white font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner placeholder:text-slate-600">
-                                        <datalist id="role-options">
-                                            <option value="Elementary School Teacher"></option>
-                                            <option value="High School Teacher"></option>
-                                        </datalist>
-                                    </div>
-                                </div>
-                                
-                                <div class="space-y-2">
-                                    <label class="block text-sm font-bold text-slate-300 uppercase tracking-wider">Target Audience</label>
-                                    <div class="relative">
-                                        <input type="text" id="audience" list="audience-options" placeholder="Select target audience..." class="w-full bg-slate-950/50 border border-slate-700/80 rounded-2xl px-5 py-4 text-white font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner placeholder:text-slate-600">
-                                        <datalist id="audience-options">
-                                            <option value="Grade 3"></option>
-                                            <option value="Grade 10"></option>
-                                        </datalist>
-                                    </div>
-                                </div>
-                                
-                                <div class="space-y-2">
-                                    <label class="block text-sm font-bold text-slate-300 uppercase tracking-wider">Lesson Topic</label>
-                                    <input type="text" id="topic" placeholder="e.g., Introduction to the Water Cycle" class="w-full bg-slate-950/50 border border-slate-700/80 rounded-2xl px-5 py-4 text-white font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner placeholder:text-slate-600">
-                                </div>
-                                
-                                <div class="space-y-2">
-                                    <label class="block text-sm font-bold text-slate-300 uppercase tracking-wider">Curriculum Framework</label>
-                                    <input type="text" id="curriculum" placeholder="e.g., US Common Core, IB, MOE..." class="w-full bg-slate-950/50 border border-slate-700/80 rounded-2xl px-5 py-4 text-white font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner placeholder:text-slate-600">
-                                </div>
-
-                                <div class="md:col-span-2 space-y-2">
-                                    <label class="block text-sm font-bold text-slate-300 uppercase tracking-wider">Special Context or Rules <span class="text-slate-500 font-normal lowercase">(Optional)</span></label>
-                                    <input type="text" id="context" placeholder="e.g., Include local UAE geography examples, make it interactive" class="w-full bg-slate-950/50 border border-slate-700/80 rounded-2xl px-5 py-4 text-white font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner placeholder:text-slate-600">
-                                </div>
-                            </div>
-
-                            <button onclick="generatePrompt()" class="w-full relative overflow-hidden group bg-white text-slate-900 font-black py-5 px-8 rounded-2xl transition-all duration-300 mb-10 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:-translate-y-1 text-lg">
-                                <span class="relative z-10">Generate Expert Prompt</span>
-                                <div class="absolute inset-0 h-full w-full bg-gradient-to-r from-primary/20 via-purple-500/20 to-accent/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                            </button>
-
-                            <div class="bg-[#0f172a] border border-slate-700/80 rounded-2xl p-6 relative group mb-6 shadow-inner">
-                                <div class="flex items-center justify-between mb-4 border-b border-slate-700/50 pb-3">
-                                    <p class="text-xs text-slate-500 font-mono uppercase tracking-widest font-bold">Output_Prompt.txt</p>
-                                </div>
-                                <p id="generated-prompt" class="text-slate-300 font-mono text-[0.95rem] leading-loose min-h-[6rem]">
-                                    <span class="text-slate-600 italic">// Fill out the details above and click generate...</span>
-                                </p>
-                            </div>
-
-                            <div id="action-steps" class="hidden mt-10 flex flex-col md:flex-row items-center justify-center gap-6 transition-all duration-500">
-                                <button id="copy-btn" onclick="copyPromptText()" class="inline-flex items-center justify-center px-8 py-5 text-base font-bold text-white transition-all duration-200 bg-slate-800 border border-slate-600 rounded-full shadow-lg hover:bg-slate-700 hover:-translate-y-1 w-full md:w-auto">
-                                    <span id="copy-step-num" class="bg-slate-900 text-slate-300 w-7 h-7 rounded-full flex items-center justify-center mr-3 text-xs transition-colors shadow-inner">1</span>
-                                    <span id="copy-text">Copy Prompt</span>
-                                </button>
-
-                                <a href="https://notebooklm.google.com/" target="_blank" class="inline-flex items-center justify-center px-8 py-5 text-base font-bold text-slate-900 transition-all duration-300 bg-gradient-to-r from-primary via-purple-400 to-accent border border-transparent rounded-full hover:-translate-y-1 w-full md:w-auto">
-                                    <span class="bg-white/30 text-slate-900 w-7 h-7 rounded-full flex items-center justify-center mr-3 text-xs shadow-inner">2</span>
-                                    Try on NotebookLM
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="text-center pb-20">
-                    <button onclick="window.location.hash=''" class="bg-emerald-600 text-white font-bold py-3 px-8 rounded-full hover:bg-emerald-700 transition-colors shadow-lg">
-                        Return to Dashboard
-                    </button>
                 </div>
             </section>
 
             <!-- Twinkl Details Section -->
             <section id="twinkl-details-section" class="hidden min-h-screen bg-pink-50 p-4 lg:p-12">
                 <div class="container mx-auto max-w-4xl">
-                    <!-- ... Twinkl code remains exactly the same ... -->
+                    <!-- Header -->
                     <div class="mb-12 flex items-center justify-between">
                         <div>
                             <h1 class="text-3xl lg:text-4xl font-extrabold text-pink-900 leading-tight">Twinkl Educational Resources</h1>
@@ -901,6 +947,7 @@
                         </button>
                     </div>
 
+                    <!-- Main Info Card -->
                     <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-pink-100 mb-10">
                         <div class="p-10 text-center">
                             <div class="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -908,7 +955,7 @@
                             </div>
                             <h2 class="text-2xl font-bold text-gray-900 mb-4">What is Twinkl?</h2>
                             <p class="text-gray-600 leading-relaxed mb-8 max-w-2xl mx-auto">
-                                Twinkl provides instant access to a complete range of teacher-created, engaging, and inspiring teaching, planning, and assessment materials.
+                                Twinkl provides instant access to a complete range of teacher-created, engaging, and inspiring teaching, planning, and assessment materials. From worksheets and lesson plans to interactive games and PowerPoints, Twinkl supports educators in delivering high-quality lessons across all subjects and age groups.
                             </p>
                             
                             <a href="https://www.twinkl.ae/" target="_blank" rel="noopener noreferrer">
@@ -918,10 +965,525 @@
                             </a>
                         </div>
                     </div>
+
+                    <!-- Credentials Card -->
+                    <div class="bg-white rounded-3xl shadow-xl border-l-8 border-pink-600 p-8 lg:p-10">
+                        <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                            <svg class="w-6 h-6 mr-3 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                            School Login Credentials
+                        </h3>
+                        <p class="text-sm text-gray-500 mb-6">Click on the fields below to copy the login details directly to your clipboard.</p>
+
+                        <div class="space-y-4">
+                            <!-- Username -->
+                            <div class="group relative">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Username</label>
+                                <div id="copy-twinkl-user" class="bg-gray-50 border border-gray-200 rounded-xl p-4 flex justify-between items-center cursor-pointer hover:bg-pink-50 hover:border-pink-200 transition-colors">
+                                    <span class="font-mono text-gray-800 font-medium break-all">hanan.elhalabi@gmail.com</span>
+                                    <svg class="w-5 h-5 text-gray-400 group-hover:text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                </div>
+                                <div id="twinkl-user-msg" class="absolute right-0 top-0 -mt-2 bg-black text-white text-xs py-1 px-2 rounded hidden">Copied!</div>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="group relative">
+                                <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Password</label>
+                                <div id="copy-twinkl-pass" class="bg-gray-50 border border-gray-200 rounded-xl p-4 flex justify-between items-center cursor-pointer hover:bg-pink-50 hover:border-pink-200 transition-colors">
+                                    <span class="font-mono text-gray-800 font-medium">ENS@123456789</span>
+                                    <svg class="w-5 h-5 text-gray-400 group-hover:text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                                </div>
+                                <div id="twinkl-pass-msg" class="absolute right-0 top-0 -mt-2 bg-black text-white text-xs py-1 px-2 rounded hidden">Copied!</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Video Container -->
+                    <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-pink-100 mb-10">
+                        <div class="aspect-video bg-black relative w-full">
+                            <iframe class="w-full h-full absolute top-0 left-0" 
+                                    src="https://www.youtube.com/embed/eJ-1zpEnzbs" 
+                                    title="How to Find Resources on the Twinkl Website" 
+                                    frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                            </iframe>
+                        </div>
+                        <div class="p-6 bg-pink-50 border-t border-pink-100">
+                            <h3 class="font-bold text-pink-900 flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Quick Start Guide
+                            </h3>
+                            <p class="text-sm text-pink-800 mt-1">Learn how to efficiently find and download the exact resources you need for your lessons.</p>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Return -->
+                    <div class="mt-12 text-center md:hidden">
+                         <button class="text-gray-500 hover:text-pink-900 underline" onclick="window.location.hash=''">
+                            Return to Homepage
+                        </button>
+                    </div>
                 </div>
             </section>
 
+            <!-- NotebookLM PD Module Section -->
+            <section id="notebooklm-details-section" class="hidden min-h-screen bg-dot-pattern p-0 overflow-x-hidden">
+                <div class="max-w-5xl mx-auto px-4 lg:px-6 pt-8">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h1 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">Crafting AI Presentations with NotebookLM</h1>
+                            <p class="text-primary font-medium mt-1">A Professional Development Masterclass</p>
+                        </div>
+                        <button onclick="window.location.hash=''" class="flex items-center text-gray-500 hover:text-blue-900 transition-colors">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            <span class="hidden md:inline">Back to Guide</span>
+                        </button>
+                    </div>
+
+                    <!-- Inline progress bar -->
+                    <div class="bg-white/85 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-sm mb-10 p-4 flex items-center justify-between gap-4">
+                        <span class="font-heading font-extrabold text-slate-900 text-base md:text-lg tracking-tight">Masterclass Progress</span>
+                        <div class="flex items-center space-x-4 bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl">
+                            <span id="nb-progress-text" class="text-xs font-bold text-slate-500 uppercase tracking-widest">0% Done</span>
+                            <div class="w-32 md:w-48 h-3 bg-slate-200 rounded-full overflow-hidden shadow-inner">
+                                <div id="nb-progress-bar" class="h-full bg-gradient-to-r from-primary via-secondary to-accent w-0 transition-all duration-700 ease-out"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hero -->
+                    <header class="relative py-12 lg:py-16 overflow-hidden rounded-[2rem] bg-white/70 mb-16 border border-white shadow-sm">
+                        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-full pointer-events-none opacity-60">
+                            <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob"></div>
+                            <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-accent/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob"></div>
+                            <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-purple-500/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob"></div>
+                        </div>
+                        <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
+                            <div class="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-full px-5 py-2 mb-6 shadow-sm">
+                                <span class="flex h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)] animate-pulse"></span>
+                                <span class="text-xs font-semibold text-slate-700 tracking-wide uppercase">Professional Development Masterclass</span>
+                            </div>
+                            <h2 class="font-heading text-4xl lg:text-6xl font-black text-slate-900 tracking-normal leading-tight mb-6">
+                                Transform Lesson Planning with
+                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-purple-600 to-accent animate-gradient-x inline-block pb-2">AI Presentations</span>
+                            </h2>
+                            <p class="text-base lg:text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed font-medium">
+                                Learn how to leverage NotebookLM to automatically generate, resource, and refine world-class PowerPoint slide decks in minutes.
+                            </p>
+                            <a href="#nb-course-content" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-300 bg-slate-900 border border-slate-700 rounded-full hover:bg-primary hover:shadow-[0_0_30px_rgba(79,70,229,0.4)] hover:-translate-y-1 group">
+                                Start the Masterclass
+                                <svg class="w-5 h-5 ml-3 transform group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                            </a>
+                        </div>
+                    </header>
+
+                    <!-- Course Content -->
+                    <section id="nb-course-content" class="space-y-20 lg:space-y-28">
+
+                        <!-- Module 1 -->
+                        <div class="bg-white/90 backdrop-blur-xl rounded-[2rem] p-6 lg:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white relative">
+                            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-primary to-transparent rounded-t-[2rem] opacity-50"></div>
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-3 flex-wrap">
+                                        <div class="w-10 h-10 bg-indigo-50 text-primary rounded-xl flex items-center justify-center font-black text-lg border border-indigo-100 shadow-sm">1</div>
+                                        <span class="text-primary font-bold tracking-widest uppercase text-sm">The Foundation</span>
+                                        <span class="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-200">⏱️ 3 Min Watch</span>
+                                    </div>
+                                    <h2 class="text-3xl lg:text-4xl font-heading font-black text-slate-900 tracking-tight">Creating Your First Deck</h2>
+                                </div>
+                                <label class="cursor-pointer flex items-center gap-4 bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 px-5 py-3 rounded-2xl transition-all duration-300 shadow-sm hover:shadow">
+                                    <span class="text-sm font-bold text-slate-600">Mark Complete</span>
+                                    <div class="relative">
+                                        <input type="checkbox" class="sr-only checkbox-custom nb-module-checkbox" onchange="nbUpdateProgress()">
+                                        <div class="w-7 h-7 rounded-xl border-2 border-slate-300 bg-white flex items-center justify-center transition-all duration-300 shadow-inner">
+                                            <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            <p class="text-slate-600 mb-10 text-lg leading-relaxed max-w-3xl font-medium tracking-tight border-l-4 border-indigo-200 pl-6">Learn how to upload your existing materials into NotebookLM and use customized prompts to generate the perfect baseline presentation tailored to your classroom.</p>
+                            <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+                                <div class="lg:sticky lg:top-4 z-10">
+                                    <div class="video-container mb-4 ring-4 ring-slate-50">
+                                        <iframe src="https://www.youtube.com/embed/9xeFK6nyleE" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    </div>
+                                    <a href="https://www.youtube.com/watch?v=9xeFK6nyleE" target="_blank" class="text-sm font-semibold text-slate-500 hover:text-primary flex items-center transition-colors bg-slate-50 px-4 py-2 rounded-lg border border-slate-200 hover:border-primary/30 w-fit">
+                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                        Watch on YouTube
+                                    </a>
+                                </div>
+                                <div class="bg-slate-50/50 rounded-[2rem] p-6 lg:p-8 border border-slate-200/60 shadow-inner">
+                                    <h4 class="font-heading font-black text-slate-900 mb-6 text-2xl tracking-tight">
+                                        <span class="bg-gradient-to-r from-primary to-indigo-500 text-transparent bg-clip-text">Step-by-Step Guide</span>
+                                    </h4>
+                                    <div class="space-y-6 timeline-container">
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center font-black text-lg border-2 border-primary shadow-[0_0_15px_rgba(79,70,229,0.2)] mt-1">1</div>
+                                            <div class="leading-relaxed text-slate-700 text-base pt-2">
+                                                <strong class="text-slate-900">Create a new notebook</strong> in NotebookLM and <strong class="text-slate-900">upload your sources</strong> (lesson plans, CV, or web links).
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center font-black text-lg border-2 border-primary shadow-[0_0_15px_rgba(79,70,229,0.2)] mt-1">2</div>
+                                            <div class="leading-relaxed text-slate-700 text-base pt-2">
+                                                Click the customization arrow next to <strong class="text-slate-900 bg-slate-200 px-2 py-1 rounded-md text-sm border border-slate-300">"Slide Deck"</strong> to access advanced settings.
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center font-black text-lg border-2 border-primary shadow-[0_0_15px_rgba(79,70,229,0.2)] mt-1">3</div>
+                                            <div class="leading-relaxed text-slate-700 text-base pt-2">
+                                                Choose your format: <em class="text-primary not-italic font-bold bg-indigo-50 px-2 py-1 rounded-md">Detailed slides</em> vs. <em class="text-primary not-italic font-bold bg-indigo-50 px-2 py-1 rounded-md">Presenter slides</em>.
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-primary flex items-center justify-center font-black text-lg border-2 border-primary shadow-[0_0_15px_rgba(79,70,229,0.2)] mt-1">4</div>
+                                            <div class="leading-relaxed text-slate-700 text-base pt-2 w-full">
+                                                <strong class="text-slate-900 block mb-3">Write a highly specific prompt.</strong>
+                                                <div class="bg-white p-5 rounded-2xl border-2 border-dashed border-indigo-200 shadow-sm relative overflow-hidden">
+                                                    <div class="absolute top-0 left-0 w-1.5 h-full bg-primary"></div>
+                                                    <em class="not-italic font-black text-slate-900 text-xs uppercase tracking-widest block mb-2 opacity-60">Example Prompt</em>
+                                                    <span class="italic text-slate-600 font-medium">"Include real-life UAE examples and ensure it is culturally sensitive to Islamic values."</span>
+                                                </div>
+                                                <button onclick="nbFillSandbox('High School Teacher', 'High School Students (Grades 9-12)', 'Local UAE Geography and Culture', 'UAE MOE (Ministry of Education)', 'Include real-life UAE examples and ensure it is culturally sensitive to Islamic values.')" class="mt-4 text-sm font-bold text-white bg-primary hover:bg-indigo-700 px-5 py-2.5 rounded-xl transition-all shadow-md flex items-center w-fit">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                                    Try this in Sandbox
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-amber-400 text-amber-900 flex items-center justify-center font-black text-xl border-2 border-amber-300 shadow-[0_0_15px_rgba(251,191,36,0.4)] mt-1">💡</div>
+                                            <div class="leading-relaxed text-slate-700 text-base pt-2">
+                                                <span class="font-black text-amber-600 tracking-wider uppercase text-sm block mb-1">Pro-Tip</span>
+                                                Save your winning prompts on a sticky note app to easily <strong class="text-slate-900 border-b-2 border-amber-300 pb-0.5">copy/paste them</strong> for future lessons!
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Module 2 -->
+                        <div class="bg-white/90 backdrop-blur-xl rounded-[2rem] p-6 lg:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white relative">
+                            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-secondary to-transparent rounded-t-[2rem] opacity-50"></div>
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-3 flex-wrap">
+                                        <div class="w-10 h-10 bg-blue-50 text-secondary rounded-xl flex items-center justify-center font-black text-lg border border-blue-100 shadow-sm">2</div>
+                                        <span class="text-secondary font-bold tracking-widest uppercase text-sm">Resource Generation</span>
+                                        <span class="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-200">⏱️ 2 Min Watch</span>
+                                    </div>
+                                    <h2 class="text-3xl lg:text-4xl font-heading font-black text-slate-900 tracking-tight">Building From Scratch</h2>
+                                </div>
+                                <label class="cursor-pointer flex items-center gap-4 bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 px-5 py-3 rounded-2xl transition-all duration-300 shadow-sm hover:shadow">
+                                    <span class="text-sm font-bold text-slate-600">Mark Complete</span>
+                                    <div class="relative">
+                                        <input type="checkbox" class="sr-only checkbox-custom nb-module-checkbox" onchange="nbUpdateProgress()">
+                                        <div class="w-7 h-7 rounded-xl border-2 border-slate-300 bg-white flex items-center justify-center transition-all duration-300 shadow-inner">
+                                            <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            <p class="text-slate-600 mb-10 text-lg leading-relaxed max-w-3xl font-medium tracking-tight border-l-4 border-blue-200 pl-6">What happens if you don't have a lesson plan ready? Discover how to use AI web search to compile resources and instantly generate a curriculum foundation.</p>
+                            <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+                                <div class="lg:sticky lg:top-4 z-10">
+                                    <div class="video-container mb-4 ring-4 ring-slate-50">
+                                        <iframe src="https://www.youtube.com/embed/kLAlBduxzhU" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    </div>
+                                    <a href="https://www.youtube.com/watch?v=kLAlBduxzhU" target="_blank" class="text-sm font-semibold text-slate-500 hover:text-secondary flex items-center transition-colors bg-slate-50 px-4 py-2 rounded-lg border border-slate-200 w-fit">
+                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                        Watch on YouTube
+                                    </a>
+                                </div>
+                                <div class="bg-slate-50/50 rounded-[2rem] p-6 lg:p-8 border border-slate-200/60 shadow-inner">
+                                    <h4 class="font-heading font-black text-slate-900 mb-6 text-2xl tracking-tight">
+                                        <span class="bg-gradient-to-r from-secondary to-blue-400 text-transparent bg-clip-text">Step-by-Step Guide</span>
+                                    </h4>
+                                    <div class="space-y-6 timeline-container">
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-secondary flex items-center justify-center font-black text-lg border-2 border-secondary shadow-[0_0_15px_rgba(37,99,235,0.2)] mt-1">1</div>
+                                            <div class="leading-relaxed text-slate-700 text-base pt-2">
+                                                In the source selection area, opt to <strong class="text-slate-900">search the web</strong> instead of uploading a file.
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-secondary flex items-center justify-center font-black text-lg border-2 border-secondary shadow-[0_0_15px_rgba(37,99,235,0.2)] mt-1">2</div>
+                                            <div class="leading-relaxed text-slate-700 text-base pt-2 w-full">
+                                                <strong class="text-slate-900 block mb-3">Type your learning objective as a query.</strong>
+                                                <div class="bg-white p-5 rounded-2xl border-2 border-dashed border-blue-200 shadow-sm relative overflow-hidden">
+                                                    <div class="absolute top-0 left-0 w-1.5 h-full bg-secondary"></div>
+                                                    <em class="not-italic font-black text-slate-900 text-xs uppercase tracking-widest block mb-2 opacity-60">Example Query</em>
+                                                    <span class="italic text-slate-600 font-medium">"I need to teach a lesson about equal groups to grade 3 students."</span>
+                                                </div>
+                                                <button onclick="nbFillSandbox('Elementary School Teacher', 'Elementary Students (Grades 1-5)', 'Equal Groups and Basic Multiplication', 'US Common Core', '')" class="mt-4 text-sm font-bold text-white bg-secondary hover:bg-blue-700 px-5 py-2.5 rounded-xl transition-all shadow-md flex items-center w-fit">
+                                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                                    Try this in Sandbox
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-secondary flex items-center justify-center font-black text-lg border-2 border-secondary shadow-[0_0_15px_rgba(37,99,235,0.2)] mt-1">3</div>
+                                            <div class="leading-relaxed text-slate-700 text-base pt-2">
+                                                Let NotebookLM compile a list of <strong class="text-slate-900 border-b-2 border-blue-200 pb-0.5">authoritative educational sources</strong> (e.g., NWEA Map Growth resources, activity sites).
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-secondary flex items-center justify-center font-black text-lg border-2 border-secondary shadow-[0_0_15px_rgba(37,99,235,0.2)] mt-1">4</div>
+                                            <div class="leading-relaxed text-slate-700 text-base pt-2">
+                                                <strong class="text-slate-900">Import all relevant sources.</strong>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-secondary flex items-center justify-center font-black text-lg border-2 border-secondary shadow-[0_0_15px_rgba(37,99,235,0.2)] mt-1">5</div>
+                                            <div class="leading-relaxed text-slate-900 text-base font-bold pt-2">
+                                                Use these imported web sources as the factual background to generate your new slide deck!
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Module 3 -->
+                        <div class="bg-white/90 backdrop-blur-xl rounded-[2rem] p-6 lg:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white relative">
+                            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-accent to-transparent rounded-t-[2rem] opacity-50"></div>
+                            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                                <div>
+                                    <div class="flex items-center gap-3 mb-3 flex-wrap">
+                                        <div class="w-10 h-10 bg-cyan-50 text-accent rounded-xl flex items-center justify-center font-black text-lg border border-cyan-100 shadow-sm">3</div>
+                                        <span class="text-accent font-bold tracking-widest uppercase text-sm">Refinement</span>
+                                        <span class="bg-slate-100 text-slate-600 text-xs font-bold px-3 py-1.5 rounded-lg border border-slate-200">⏱️ 4 Min Watch</span>
+                                    </div>
+                                    <h2 class="text-3xl lg:text-4xl font-heading font-black text-slate-900 tracking-tight">Revising & Exporting</h2>
+                                </div>
+                                <label class="cursor-pointer flex items-center gap-4 bg-slate-50 hover:bg-emerald-50 border border-slate-200 hover:border-emerald-200 px-5 py-3 rounded-2xl transition-all duration-300 shadow-sm hover:shadow">
+                                    <span class="text-sm font-bold text-slate-600">Mark Complete</span>
+                                    <div class="relative">
+                                        <input type="checkbox" class="sr-only checkbox-custom nb-module-checkbox" onchange="nbUpdateProgress()">
+                                        <div class="w-7 h-7 rounded-xl border-2 border-slate-300 bg-white flex items-center justify-center transition-all duration-300 shadow-inner">
+                                            <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path></svg>
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                            <p class="text-slate-600 mb-10 text-lg leading-relaxed max-w-3xl font-medium tracking-tight border-l-4 border-cyan-200 pl-6">The AI's first draft is rarely the final draft. Master the revision tool to tweak specific slides, replace text, and finally download your work as a ready-to-teach PowerPoint file.</p>
+                            <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
+                                <div class="lg:sticky lg:top-4 z-10">
+                                    <div class="video-container mb-4 ring-4 ring-slate-50">
+                                        <iframe src="https://www.youtube.com/embed/RhAOqY9taJE" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    </div>
+                                    <a href="https://www.youtube.com/watch?v=RhAOqY9taJE" target="_blank" class="text-sm font-semibold text-slate-500 hover:text-accent flex items-center transition-colors bg-slate-50 px-4 py-2 rounded-lg border border-slate-200 w-fit">
+                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+                                        Watch on YouTube
+                                    </a>
+                                </div>
+                                <div class="bg-slate-50/50 rounded-[2rem] p-6 lg:p-8 border border-slate-200/60 shadow-inner">
+                                    <h4 class="font-heading font-black text-slate-900 mb-6 text-2xl tracking-tight">
+                                        <span class="bg-gradient-to-r from-accent to-teal-400 text-transparent bg-clip-text">Step-by-Step Guide</span>
+                                    </h4>
+                                    <div class="space-y-6 timeline-container">
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-accent flex items-center justify-center font-black text-lg border-2 border-accent shadow-[0_0_15px_rgba(6,182,212,0.2)] mt-1">1</div>
+                                            <div class="leading-relaxed text-slate-700 text-base pt-2">
+                                                Click on any generated slide to <strong class="text-slate-900">enlarge the preview</strong>.
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-accent flex items-center justify-center font-black text-lg border-2 border-accent shadow-[0_0_15px_rgba(6,182,212,0.2)] mt-1">2</div>
+                                            <div class="leading-relaxed text-slate-700 text-base pt-2">
+                                                Spot an error or something you dislike? Click the <strong class="text-slate-900 bg-slate-200 px-2 py-1 rounded-md text-sm border border-slate-300">Revise</strong> button.
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-accent flex items-center justify-center font-black text-lg border-2 border-accent shadow-[0_0_15px_rgba(6,182,212,0.2)] mt-1">3</div>
+                                            <div class="leading-relaxed text-slate-700 text-base pt-2 w-full">
+                                                <strong class="text-slate-900 block mb-3">Type specific instructions.</strong>
+                                                <div class="bg-white p-5 rounded-2xl border-2 border-dashed border-cyan-200 shadow-sm relative overflow-hidden">
+                                                    <div class="absolute top-0 left-0 w-1.5 h-full bg-accent"></div>
+                                                    <em class="not-italic font-black text-slate-900 text-xs uppercase tracking-widest block mb-3 opacity-60">Revision Ideas</em>
+                                                    <ul class="space-y-3">
+                                                        <li class="italic text-slate-600 font-medium flex items-start"><span class="text-accent font-black mr-3 text-lg leading-none">→</span> "Simplify the vocabulary on slide 4 for a 5th-grade reading level."</li>
+                                                        <li class="italic text-slate-600 font-medium flex items-start"><span class="text-accent font-black mr-3 text-lg leading-none">→</span> "Add a 'Turn and Talk' discussion prompt to the end of the presentation."</li>
+                                                        <li class="italic text-slate-600 font-medium flex items-start"><span class="text-accent font-black mr-3 text-lg leading-none">→</span> "Replace the text-heavy bullet points on slide 6 with a short summary."</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-accent flex items-center justify-center font-black text-lg border-2 border-accent shadow-[0_0_15px_rgba(6,182,212,0.2)] mt-1">4</div>
+                                            <div class="leading-relaxed text-slate-700 text-base pt-2">
+                                                Queue up multiple changes across slides, then click <strong class="text-slate-900 bg-slate-200 px-2 py-1 rounded-md text-sm border border-slate-300">Generate revised deck</strong> (takes ~5 mins).
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-5 relative z-10">
+                                            <div class="flex-shrink-0 w-10 h-10 rounded-full bg-white text-accent flex items-center justify-center font-black text-lg border-2 border-accent shadow-[0_0_15px_rgba(6,182,212,0.2)] mt-1">5</div>
+                                            <div class="leading-relaxed text-slate-700 text-base pt-2">
+                                                Click the three dots menu (...) to <strong class="text-slate-900 border-b-2 border-cyan-200 pb-0.5">Download as PowerPoint (.pptx)</strong> or PDF. You can also click "Show prompt" to copy the AI logic for next time!
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
+
+                    <!-- Interactive Sandbox Section -->
+                    <section id="nb-sandbox" class="mt-20 mb-16 scroll-mt-32 relative">
+                        <div class="absolute inset-0 bg-gradient-to-r from-primary/30 via-purple-500/30 to-accent/30 blur-[100px] rounded-full pointer-events-none z-0"></div>
+                        <div class="bg-slate-900/95 backdrop-blur-2xl rounded-[3rem] p-6 md:p-12 shadow-[0_0_50px_rgba(0,0,0,0.3)] border border-slate-700/60 relative z-10 overflow-hidden">
+                            <div class="absolute -top-40 -right-40 w-96 h-96 rounded-full border border-white/5 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"></div>
+                            <div class="relative z-10 text-white">
+                                <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-4">
+                                    <h2 class="text-3xl lg:text-4xl font-heading font-black tracking-tight flex items-center">Interactive Prompt Builder</h2>
+                                    <span class="inline-block text-xs bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 px-3 py-1.5 rounded-lg uppercase tracking-widest font-bold shadow-inner w-fit">Practice Tool</span>
+                                </div>
+                                <p class="text-slate-400 mb-8 text-base max-w-2xl font-medium">As mentioned in Video 1, a great system prompt is key. Select your criteria below to generate a perfectly structured, hallucination-resistant prompt.</p>
+                                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-bold text-slate-300 uppercase tracking-wider">Your Role</label>
+                                        <input type="text" id="nb-role" list="nb-role-options" placeholder="Select or type your role..." class="w-full bg-slate-950/50 border border-slate-700/80 rounded-2xl px-5 py-4 text-white font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner placeholder:text-slate-600">
+                                        <datalist id="nb-role-options">
+                                            <option value="Elementary School Teacher"></option>
+                                            <option value="Middle School Teacher"></option>
+                                            <option value="High School Teacher"></option>
+                                            <option value="Special Education Teacher"></option>
+                                            <option value="Instructional Coach"></option>
+                                            <option value="School Administrator"></option>
+                                            <option value="University Professor"></option>
+                                        </datalist>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-bold text-slate-300 uppercase tracking-wider">Target Audience</label>
+                                        <input type="text" id="nb-audience" list="nb-audience-options" placeholder="Select or type target audience..." class="w-full bg-slate-950/50 border border-slate-700/80 rounded-2xl px-5 py-4 text-white font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner placeholder:text-slate-600">
+                                        <datalist id="nb-audience-options">
+                                            <option value="Kindergarten"></option>
+                                            <option value="Grade 1"></option>
+                                            <option value="Grade 2"></option>
+                                            <option value="Grade 3"></option>
+                                            <option value="Grade 4"></option>
+                                            <option value="Grade 5"></option>
+                                            <option value="Grade 6"></option>
+                                            <option value="Grade 7"></option>
+                                            <option value="Grade 8"></option>
+                                            <option value="Grade 9"></option>
+                                            <option value="Grade 10"></option>
+                                            <option value="Grade 11"></option>
+                                            <option value="Grade 12"></option>
+                                            <option value="College / Adult Learners"></option>
+                                            <option value="Other Educators / Staff"></option>
+                                        </datalist>
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-bold text-slate-300 uppercase tracking-wider">Lesson Topic</label>
+                                        <input type="text" id="nb-topic" placeholder="e.g., Introduction to the Water Cycle" class="w-full bg-slate-950/50 border border-slate-700/80 rounded-2xl px-5 py-4 text-white font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner placeholder:text-slate-600">
+                                    </div>
+                                    <div class="space-y-2">
+                                        <label class="block text-sm font-bold text-slate-300 uppercase tracking-wider">Curriculum Framework</label>
+                                        <input type="text" id="nb-curriculum" list="nb-curriculum-options" placeholder="e.g., US Common Core, IB, MOE..." class="w-full bg-slate-950/50 border border-slate-700/80 rounded-2xl px-5 py-4 text-white font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner placeholder:text-slate-600">
+                                        <datalist id="nb-curriculum-options">
+                                            <option value="US Common Core"></option>
+                                            <option value="UK National Curriculum"></option>
+                                            <option value="IB (International Baccalaureate)"></option>
+                                            <option value="UAE MOE (Ministry of Education)"></option>
+                                            <option value="Australian Curriculum"></option>
+                                            <option value="CBSE (India)"></option>
+                                        </datalist>
+                                    </div>
+                                    <div class="md:col-span-2 space-y-2">
+                                        <label class="block text-sm font-bold text-slate-300 uppercase tracking-wider">Special Context or Rules <span class="text-slate-500 font-normal lowercase">(Optional)</span></label>
+                                        <input type="text" id="nb-context" placeholder="e.g., Include local UAE geography examples, make it interactive" class="w-full bg-slate-950/50 border border-slate-700/80 rounded-2xl px-5 py-4 text-white font-medium focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all shadow-inner placeholder:text-slate-600">
+                                    </div>
+                                </div>
+                                <button onclick="nbGeneratePrompt()" class="w-full bg-white text-slate-900 font-black py-4 px-8 rounded-2xl transition-all duration-300 mb-8 shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:-translate-y-1 text-lg">
+                                    Generate Expert Prompt
+                                </button>
+                                <div class="bg-[#0f172a] border border-slate-700/80 rounded-2xl p-6 relative mb-6 shadow-inner">
+                                    <div class="flex items-center justify-between mb-4 border-b border-slate-700/50 pb-3">
+                                        <div class="flex space-x-2">
+                                            <div class="w-3 h-3 rounded-full bg-slate-700"></div>
+                                            <div class="w-3 h-3 rounded-full bg-slate-700"></div>
+                                            <div class="w-3 h-3 rounded-full bg-slate-700"></div>
+                                        </div>
+                                        <p class="text-xs text-slate-500 font-mono uppercase tracking-widest font-bold">Output_Prompt.txt</p>
+                                    </div>
+                                    <p id="nb-generated-prompt" class="text-slate-300 font-mono text-sm leading-loose min-h-[6rem]">
+                                        <span class="text-slate-600 italic">// Fill out the details above and click generate...</span>
+                                    </p>
+                                </div>
+                                <div id="nb-why-it-works" class="hidden bg-indigo-950/40 border border-indigo-500/20 rounded-2xl p-6 shadow-inner relative overflow-hidden">
+                                    <div class="absolute left-0 top-0 w-1.5 h-full bg-indigo-500"></div>
+                                    <h5 class="text-indigo-300 font-black text-sm mb-3 flex items-center uppercase tracking-widest">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                        Pedagogy Behind the Prompt
+                                    </h5>
+                                    <p class="text-slate-400 text-sm leading-relaxed font-medium">
+                                        Notice the structure: <strong class="text-white">Persona</strong> + <strong class="text-white">Task</strong> + <strong class="text-white">Target Audience</strong> + <strong class="text-white">Constraints</strong>. This framework prevents AI hallucinations and ensures the output matches your classroom's exact needs!
+                                    </p>
+                                </div>
+                                <div id="nb-action-steps" class="hidden mt-8 flex flex-col md:flex-row items-center justify-center gap-6">
+                                    <button id="nb-copy-btn" onclick="nbCopyPrompt()" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-200 bg-slate-800 border border-slate-600 rounded-full shadow-lg hover:bg-slate-700 w-full md:w-auto">
+                                        <span id="nb-copy-step-num" class="bg-slate-900 text-slate-300 w-7 h-7 rounded-full flex items-center justify-center mr-3 text-xs shadow-inner">1</span>
+                                        <span id="nb-copy-text">Copy Prompt</span>
+                                    </button>
+                                    <a href="https://notebooklm.google.com/" target="_blank" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-slate-900 transition-all duration-300 bg-gradient-to-r from-primary via-purple-400 to-accent rounded-full shadow-[0_0_30px_rgba(168,85,247,0.3)] hover:-translate-y-1 w-full md:w-auto">
+                                        <span class="bg-white/30 text-slate-900 w-7 h-7 rounded-full flex items-center justify-center mr-3 text-xs shadow-inner">2</span>
+                                        Try Your Prompt on NotebookLM
+                                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <div class="text-center pb-12">
+                        <button onclick="window.location.hash=''" class="bg-blue-800 text-white py-3 px-8 rounded-full hover:bg-blue-900 transition-colors shadow-lg font-semibold">
+                            Return to Dashboard
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Help Section -->
+            <section id="help-section" class="hidden min-h-screen bg-gray-50 flex items-center justify-center p-4">
+                <div class="text-center bg-white p-8 sm:p-12 rounded-lg shadow-xl max-w-md w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-blue-800 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.79 4 4 0 1.98-1.79 4-4 4-1.742 0-3.223-.835-3.772-2M12 18.5v.01M12 4.5v.01M4.5 12v.01M19.5 12v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h1 class="text-3xl font-bold text-blue-900 mb-2">Need Assistance?</h1>
+                    <p class="text-gray-600 mb-8">Contact the Head of Teaching and Learning for any questions or support with the T&L Guide.</p>
+                    
+                    <div class="space-y-4 text-left bg-gray-50 p-6 rounded-lg">
+                        <div>
+                            <strong class="text-gray-900">Email:</strong>
+                            <div class="flex items-center space-x-2">
+                                <p id="copy-email" class="block text-blue-600 cursor-pointer hover:underline">bbaki@aisa.sch.ae</p>
+                                <span id="email-copied-msg" class="text-sm text-green-600 hidden">Copied!</span>
+                            </div>
+                        </div>
+                        <div>
+                            <strong class="text-gray-900">Phone / WhatsApp:</strong>
+                            <div class="flex items-center space-x-2">
+                                <p id="copy-phone" class="block text-blue-600 cursor-pointer hover:underline">+971 50 789 6519</p>
+                                <span id="phone-copied-msg" class="text-sm text-green-600 hidden">Copied!</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button onclick="window.location.hash=''" class="mt-8 bg-blue-800 text-white py-3 px-6 rounded-lg hover:bg-blue-900 transition-colors w-full sm:w-auto">
+                        Return to Homepage
+                    </button>
+                </div>
+            </section>
         </main>
+
+        <!-- Floating Help Button -->
+        <button onclick="window.location.hash='help'" class="fixed bottom-6 right-6 bg-blue-800 text-white p-4 rounded-full shadow-lg hover:bg-blue-900 transition-colors z-40 flex items-center justify-center" aria-label="Ask for help">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.79 4 4 0 1.98-1.79 4-4 4-1.742 0-3.223-.835-3.772-2M12 18.5v.01M12 4.5v.01M4.5 12v.01M19.5 12v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        </button>
 
         <!-- Footer -->
         <footer class="bg-blue-900 text-white mt-auto">
@@ -940,7 +1502,6 @@
         </footer>
     </div>
 
-    <!-- Scripts -->
     <script>
         // --- 1. CONFIGURATION & STATE ---
         const routes = {
@@ -949,14 +1510,17 @@
             '#module-map': 'map-details-section',
             '#module-twinkl': 'twinkl-details-section',
             '#module-notebooklm': 'notebooklm-details-section',
+            '#help': 'help-section',
             '#maintenance': 'maintenance-section',
             '': 'main-content' // Default
         };
 
         // --- 2. DEEP LINKING / ROUTING LOGIC ---
+        
         function handleHashChange() {
             const hash = window.location.hash;
             
+            // Special handling for anchor links within the main page
             if (hash.includes('-section') && !Object.values(routes).includes(hash.substring(1))) {
                 showSection('main-content');
                 return;
@@ -965,40 +1529,41 @@
             const targetSectionId = routes[hash] || routes[''];
             showSection(targetSectionId);
 
-            // Special Video Handling: Stop all iframes & videos when navigating away
-            const allSections = Object.values(routes);
-            allSections.forEach(id => {
-                if (id !== targetSectionId) {
-                    const sectionEl = document.getElementById(id);
-                    if (sectionEl) {
-                        // Pause normal HTML5 videos
-                        sectionEl.querySelectorAll('video').forEach(vid => vid.pause());
-                        // Stop iframe videos by resetting source
-                        sectionEl.querySelectorAll('iframe').forEach(iframe => {
-                            const src = iframe.src;
-                            iframe.src = src; 
-                        });
-                    }
+            // Special Video Handling (Auto-pause if leaving)
+            if (targetSectionId !== 'objectives-details-section') {
+                const video = document.querySelector('#objectives-details-section video');
+                if (video) video.pause();
+            }
+            if (targetSectionId !== 'map-details-section') {
+                const iframe = document.querySelector('#map-details-section iframe');
+                if (iframe) {
+                     // Reloading iframe stops the video
+                    const src = iframe.src;
+                    iframe.src = src; 
                 }
-            });
+            }
         }
 
         function showSection(sectionId) {
+            // Hide all potential sections first
             const allSections = Object.values(routes);
             allSections.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.add('hidden');
             });
 
+            // Show target
             const target = document.getElementById(sectionId);
             if (target) {
                 target.classList.remove('hidden');
+                // Scroll to top when switching full "pages"
                 if(sectionId !== 'main-content') {
                      window.scrollTo(0, 0);
                 }
             }
         }
 
+        // Initialize Router
         window.addEventListener('hashchange', handleHashChange);
         window.addEventListener('load', handleHashChange);
 
@@ -1024,14 +1589,16 @@
                     const match = text.includes(term) || keywords.includes(term);
                     
                     if (match) {
-                        item.style.display = ''; 
+                        item.style.display = ''; // Reset to default (block/flex)
                         item.classList.remove('opacity-25', 'grayscale');
                     } else {
+                        // We hide it completely to remove clutter
                         item.style.display = 'none';
                     }
                 });
             });
             
+            // Optional: Keyboard shortcut (Cmd/Ctrl + K)
             document.addEventListener('keydown', (e) => {
                 if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                     e.preventDefault();
@@ -1041,6 +1608,17 @@
         }
 
         // --- 5. CLIPBOARD LOGIC ---
+        const copyEmailEl = document.getElementById('copy-email');
+        const copyPhoneEl = document.getElementById('copy-phone');
+        const emailCopiedMsg = document.getElementById('email-copied-msg');
+        const phoneCopiedMsg = document.getElementById('phone-copied-msg');
+
+        // Twinkl Elements
+        const copyTwinklUserEl = document.getElementById('copy-twinkl-user');
+        const copyTwinklPassEl = document.getElementById('copy-twinkl-pass');
+        const twinklUserMsg = document.getElementById('twinkl-user-msg');
+        const twinklPassMsg = document.getElementById('twinkl-pass-msg');
+
         function copyToClipboard(text, msgElement) {
             const textarea = document.createElement('textarea');
             textarea.value = text;
@@ -1052,6 +1630,7 @@
                 document.execCommand('copy');
                 if (msgElement) {
                     msgElement.classList.remove('hidden');
+                    // Hide other messages relative to context if needed, but simple timeout works best
                     setTimeout(() => {
                         msgElement.classList.add('hidden');
                     }, 2000);
@@ -1062,24 +1641,46 @@
             document.body.removeChild(textarea);
         }
 
-        // --- 6. NOTEBOOKLM MODULE SPECIFIC SCRIPTS ---
-        function updateProgress() {
-            const checkboxes = document.querySelectorAll('.module-checkbox');
+        if (copyEmailEl) {
+            copyEmailEl.addEventListener('click', () => {
+                copyToClipboard('bbaki@aisa.sch.ae', emailCopiedMsg);
+            });
+        }
+
+        if (copyPhoneEl) {
+            copyPhoneEl.addEventListener('click', () => {
+                copyToClipboard('+971507896519', phoneCopiedMsg);
+            });
+        }
+
+        // Twinkl Listeners
+        if (copyTwinklUserEl) {
+            copyTwinklUserEl.addEventListener('click', () => {
+                copyToClipboard('hanan.elhalabi@gmail.com', twinklUserMsg);
+            });
+        }
+
+        if (copyTwinklPassEl) {
+            copyTwinklPassEl.addEventListener('click', () => {
+                copyToClipboard('ENS@123456789', twinklPassMsg);
+            });
+        }
+
+        // --- 6. NOTEBOOKLM MODULE LOGIC ---
+        function nbUpdateProgress() {
+            const checkboxes = document.querySelectorAll('.nb-module-checkbox');
             const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
-            const progress = (checked / checkboxes.length) * 100;
-            
-            const progressBar = document.getElementById('progress-bar');
-            const progressText = document.getElementById('progress-text');
-            
-            progressBar.style.width = `${progress}%`;
-            
+            const progress = checkboxes.length ? (checked / checkboxes.length) * 100 : 0;
+            const bar = document.getElementById('nb-progress-bar');
+            const txt = document.getElementById('nb-progress-text');
+            if (!bar || !txt) return;
+            bar.style.width = `${progress}%`;
             if (progress === 100) {
-                progressBar.classList.remove('bg-gradient-to-r', 'from-primary', 'via-secondary', 'to-accent');
-                progressBar.classList.add('bg-emerald-500');
-                progressText.innerHTML = '🎉 Masterclass Completed!';
-                progressText.classList.add('text-emerald-600');
-                progressText.classList.remove('text-slate-500');
-                
+                bar.classList.remove('bg-gradient-to-r', 'from-primary', 'via-secondary', 'to-accent');
+                bar.classList.add('bg-emerald-500');
+                txt.innerHTML = '🎉 Masterclass Completed!';
+                txt.classList.add('text-emerald-600');
+                txt.classList.remove('text-slate-500');
                 if (typeof confetti === 'function') {
                     confetti({
                         particleCount: 200,
@@ -1090,26 +1691,24 @@
                     });
                 }
             } else {
-                progressBar.classList.add('bg-gradient-to-r', 'from-primary', 'via-secondary', 'to-accent');
-                progressBar.classList.remove('bg-emerald-500');
-                progressText.innerText = `${Math.round(progress)}% Done`;
-                progressText.classList.remove('text-emerald-600');
-                progressText.classList.add('text-slate-500');
+                bar.classList.add('bg-gradient-to-r', 'from-primary', 'via-secondary', 'to-accent');
+                bar.classList.remove('bg-emerald-500');
+                txt.innerText = `${Math.round(progress)}% Done`;
+                txt.classList.remove('text-emerald-600');
+                txt.classList.add('text-slate-500');
             }
         }
 
-        function fillSandbox(role, audience, topic, curriculum, context) {
-            document.getElementById('role').value = role;
-            document.getElementById('audience').value = audience;
-            document.getElementById('topic').value = topic;
-            document.getElementById('curriculum').value = curriculum;
-            document.getElementById('context').value = context;
-            
-            document.getElementById('sandbox').scrollIntoView({ behavior: 'smooth', block: 'start' });
-            
+        function nbFillSandbox(role, audience, topic, curriculum, context) {
+            document.getElementById('nb-role').value = role;
+            document.getElementById('nb-audience').value = audience;
+            document.getElementById('nb-topic').value = topic;
+            document.getElementById('nb-curriculum').value = curriculum;
+            document.getElementById('nb-context').value = context;
+            document.getElementById('nb-sandbox').scrollIntoView({ behavior: 'smooth', block: 'start' });
             setTimeout(() => {
-                generatePrompt();
-                const outputBox = document.getElementById('generated-prompt').parentElement;
+                nbGeneratePrompt();
+                const outputBox = document.getElementById('nb-generated-prompt').parentElement;
                 outputBox.classList.add('ring-4', 'ring-primary', 'ring-offset-4', 'ring-offset-slate-900');
                 setTimeout(() => {
                     outputBox.classList.remove('ring-4', 'ring-primary', 'ring-offset-4', 'ring-offset-slate-900');
@@ -1117,33 +1716,30 @@
             }, 600);
         }
 
-        function generatePrompt() {
-            const role = document.getElementById('role').value || '[Your Role]';
-            const topic = document.getElementById('topic').value || '[Topic]';
-            const audience = document.getElementById('audience').value || '[Audience]';
-            const curriculum = document.getElementById('curriculum').value;
-            const context = document.getElementById('context').value;
+        function nbGeneratePrompt() {
+            const role = document.getElementById('nb-role').value || '[Your Role]';
+            const topic = document.getElementById('nb-topic').value || '[Topic]';
+            const audience = document.getElementById('nb-audience').value || '[Audience]';
+            const curriculum = document.getElementById('nb-curriculum').value;
+            const context = document.getElementById('nb-context').value;
 
             let promptHTML = `<span class="text-white">Act as an expert instructional designer and create a slide deck presentation for</span> <span class="text-accent font-bold px-1 rounded bg-accent/20">${topic}</span><span class="text-white">. I am presenting as a</span> <span class="text-purple-400 font-bold px-1 rounded bg-purple-400/20">${role}</span> <span class="text-white">to an audience of</span> <span class="text-emerald-400 font-bold px-1 rounded bg-emerald-400/20">${audience}</span><span class="text-white">.</span>`;
-            
             if (curriculum) {
                 promptHTML += ` <br><br><span class="text-white">Please align the content, standards, and terminology with the</span> <span class="text-amber-400 font-bold px-1 rounded bg-amber-400/20">${curriculum}</span> <span class="text-white">framework.</span>`;
             }
-
             if (context) {
                 promptHTML += ` <br><br><span class="text-white font-bold">CRITICAL CONTEXT & RULES:</span> <span class="text-pink-400 font-bold px-1 rounded bg-pink-400/20">${context}</span><span class="text-white">.</span>`;
             }
-            
             promptHTML += ` <br><br><span class="text-slate-300">Ensure the language is accessible for the target audience. Focus on clear pedagogical structures (hook, instruction, activity, check for understanding). Format for a clean, highly visual presentation.</span>`;
 
-            document.getElementById('generated-prompt').innerHTML = promptHTML;
-            document.getElementById('action-steps').classList.remove('hidden');
+            document.getElementById('nb-generated-prompt').innerHTML = promptHTML;
+            document.getElementById('nb-why-it-works').classList.remove('hidden');
+            document.getElementById('nb-action-steps').classList.remove('hidden');
         }
 
-        function copyPromptText() {
-            const text = document.getElementById('generated-prompt').innerText;
-            if (text.includes("Fill out the details")) return; 
-            
+        function nbCopyPrompt() {
+            const text = document.getElementById('nb-generated-prompt').innerText;
+            if (text.includes("Fill out the details")) return;
             try {
                 const textArea = document.createElement("textarea");
                 textArea.value = text;
@@ -1151,43 +1747,40 @@
                 textArea.style.left = "-999999px";
                 document.body.appendChild(textArea);
                 textArea.select();
-                
                 const successful = document.execCommand('copy');
                 document.body.removeChild(textArea);
-                
                 if (successful) {
-                    setCopySuccess();
+                    const btn = document.getElementById('nb-copy-btn');
+                    const num = document.getElementById('nb-copy-step-num');
+                    const txt = document.getElementById('nb-copy-text');
+                    btn.classList.add('bg-emerald-600', 'border-emerald-500');
+                    btn.classList.remove('bg-slate-800', 'border-slate-600');
+                    num.classList.add('bg-emerald-800', 'text-emerald-100');
+                    num.classList.remove('bg-slate-900', 'text-slate-300');
+                    num.innerText = '✓';
+                    txt.innerText = 'Copied!';
+                    setTimeout(() => {
+                        btn.classList.remove('bg-emerald-600', 'border-emerald-500');
+                        btn.classList.add('bg-slate-800', 'border-slate-600');
+                        num.classList.remove('bg-emerald-800', 'text-emerald-100');
+                        num.classList.add('bg-slate-900', 'text-slate-300');
+                        num.innerText = '1';
+                        txt.innerText = 'Copy Prompt';
+                    }, 3000);
                 }
             } catch (err) {
-                console.error('Failed to copy text: ', err);
+                console.error('Failed to copy: ', err);
             }
         }
 
-        function setCopySuccess() {
-            const btn = document.getElementById('copy-btn');
-            const num = document.getElementById('copy-step-num');
-            const text = document.getElementById('copy-text');
-
-            btn.classList.add('bg-emerald-600', 'border-emerald-500');
-            btn.classList.remove('bg-slate-800', 'border-slate-600');
-
-            num.classList.add('bg-emerald-800', 'text-emerald-100');
-            num.classList.remove('bg-slate-900', 'text-slate-300');
-            num.innerText = '✓';
-
-            text.innerText = 'Copied!';
-
-            setTimeout(() => {
-                btn.classList.remove('bg-emerald-600', 'border-emerald-500');
-                btn.classList.add('bg-slate-800', 'border-slate-600');
-
-                num.classList.remove('bg-emerald-800', 'text-emerald-100');
-                num.classList.add('bg-slate-900', 'text-slate-300');
-                num.innerText = '1';
-
-                text.innerText = 'Copy Prompt';
-            }, 3000);
-        }
+        // Pause NotebookLM videos when leaving its section
+        window.addEventListener('hashchange', () => {
+            const section = document.getElementById('notebooklm-details-section');
+            if (section && section.classList.contains('hidden')) {
+                section.querySelectorAll('iframe').forEach(f => { const s = f.src; f.src = s; });
+            }
+        });
     </script>
+
 </body>
 </html>
