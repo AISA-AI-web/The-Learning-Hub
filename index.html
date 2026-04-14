@@ -89,6 +89,41 @@
             transform: scale(1.05);
         }
         .checkbox-custom:checked + div svg { display: block; }
+
+        /* Request Resource floating button - bounce + rotating label */
+        .request-fab {
+            animation: request-bounce 2.4s ease-in-out infinite;
+        }
+        .request-fab:hover {
+            animation-play-state: paused;
+        }
+        @keyframes request-bounce {
+            0%, 100% { transform: translateY(0); }
+            15%      { transform: translateY(-6px); }
+            30%      { transform: translateY(0); }
+            45%      { transform: translateY(-3px); }
+            60%      { transform: translateY(0); }
+        }
+        .request-label { position: relative; display: inline-block; min-width: 9rem; }
+        .request-label .request-phrase {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transform: translateY(8px);
+            animation: request-rotate 7s infinite ease-in-out;
+        }
+        .request-label .request-phrase-1 { animation-delay: 0s; }
+        .request-label .request-phrase-2 { animation-delay: 3.5s; }
+        @keyframes request-rotate {
+            0%   { opacity: 0; transform: translateY(8px); }
+            5%, 45%  { opacity: 1; transform: translateY(0); }
+            50%  { opacity: 0; transform: translateY(-8px); }
+            100% { opacity: 0; transform: translateY(-8px); }
+        }
+        .request-fab:hover .request-phrase {
+            animation-play-state: paused;
+        }
         .hero-section {
             /* Updated to a modern, high-quality generic school campus image */
             background-image: linear-gradient(rgba(0, 51, 102, 0.8), rgba(0, 31, 62, 0.8)), url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
@@ -169,6 +204,22 @@
                         Media Hub
                     </a>
                 </div>
+
+                <!-- Request Resource Button (between nav and ESOL tag) -->
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfWASiH6b47pTNgsAPoUjfFER0s1guOdV4VvStU-Tt_5RW4Ew/viewform?usp=header" target="_blank" rel="noopener noreferrer"
+                   class="request-fab hidden md:flex items-center bg-gradient-to-r from-pink-500 via-fuchsia-500 to-indigo-500 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300 pl-2 pr-3.5 py-1.5 ml-2"
+                   aria-label="Request a resource, PD, or tool">
+                    <span class="relative flex h-6 w-6 items-center justify-center bg-white/25 rounded-full mr-2 flex-shrink-0">
+                        <span class="absolute inline-flex h-full w-full rounded-full bg-white/40 animate-ping opacity-70"></span>
+                        <svg class="w-3.5 h-3.5 relative" fill="none" stroke="currentColor" stroke-width="2.6" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                    </span>
+                    <span class="request-label relative overflow-hidden h-4 text-xs font-bold tracking-tight whitespace-nowrap" aria-live="polite">
+                        <span class="request-phrase request-phrase-1">Need a new tool?</span>
+                        <span class="request-phrase request-phrase-2">Request a resource!</span>
+                    </span>
+                </a>
 
                 <!-- Right Side (ESOL School) -->
                 <div class="hidden lg:flex items-center pl-6 border-l border-gray-200 h-8">
@@ -1452,7 +1503,7 @@
                       <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.79 4 4 0 1.98-1.79 4-4 4-1.742 0-3.223-.835-3.772-2M12 18.5v.01M12 4.5v.01M4.5 12v.01M19.5 12v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <h1 class="text-3xl font-bold text-blue-900 mb-2">Need Assistance?</h1>
-                    <p class="text-gray-600 mb-8">Contact the Head of AI Integration and Educational Innovation for any questions or support with this T&L Guide.</p>
+                    <p class="text-gray-600 mb-8">Contact the Head of Teaching and Learning for any questions or support with the T&L Guide.</p>
                     
                     <div class="space-y-4 text-left bg-gray-50 p-6 rounded-lg">
                         <div>
@@ -1495,7 +1546,7 @@
                     </div>
                     <div class="text-sm text-blue-200 mb-4 md:mb-0">
                         <p>&copy; 2026 American International School in Abu Dhabi. All Rights Reserved.</p>
-                        <p>This page was developed by the Head of AI Integration and Educational Innovation (2026).</p>
+                        <p>This page was developed by the Head of Teaching and Learning (2026).</p>
                     </div>
                 </div>
             </div>
