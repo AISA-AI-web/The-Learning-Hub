@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Return to School — Emergency Protocol Training</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: { primary: '#4f46e5', secondary: '#2563eb', accent: '#06b6d4' },
+                        animation: { 'blob': 'blob 7s infinite', 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .bg-dot-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .checkbox-custom:checked + div {
+            background-color: #10b981;
+            border-color: #10b981;
+            transform: scale(1.05);
+        }
+        .checkbox-custom:checked + div svg { display: block; }
+        .card-hover { transition: transform 0.2s, box-shadow 0.2s; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        .risk-card { transition: all 0.3s; }
+        .risk-card:hover { transform: scale(1.03); }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        /* Progress bar animation */
+        .progress-fill { transition: width 0.6s ease-in-out; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen">
+
+    <!-- Fixed Header -->
+    <header class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-gray-100">
+        <div class="h-1 bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 w-full"></div>
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-4 cursor-pointer group" onclick="window.location.href='index.html'">
+                <img src="AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/003366/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-blue-900 tracking-tight leading-none uppercase font-heading">AISA</h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-gray-500 uppercase tracking-widest mt-0.5">Teaching & Learning Guide</span>
+                </div>
+            </div>
+            <button onclick="window.location.href='index.html'" class="flex items-center text-gray-500 hover:text-blue-900 transition-colors font-medium text-sm">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                <span class="hidden sm:inline">Back to Dashboard</span>
+                <span class="sm:hidden">Back</span>
+            </button>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 md:px-8 py-8 max-w-6xl">
+
+        <!-- Hero Section -->
+        <section class="relative rounded-3xl overflow-hidden mb-12 bg-gradient-to-br from-red-700 via-red-800 to-orange-900 text-white shadow-2xl">
+            <div class="absolute inset-0 overflow-hidden">
+                <div class="absolute -top-40 -right-40 w-80 h-80 bg-orange-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+                <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-red-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob" style="animation-delay: 2s;"></div>
+            </div>
+            <div class="relative z-10 px-8 md:px-14 py-12 md:py-16">
+                <div class="flex flex-wrap items-center gap-3 mb-6">
+                    <span class="bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full border border-white/30">ADEK Mandatory</span>
+                    <span class="bg-red-500/30 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full border border-white/30">Required Training</span>
+                    <span class="bg-orange-500/30 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full border border-white/30">Emergency Protocol</span>
+                </div>
+                <h2 class="text-3xl md:text-5xl font-black font-heading mb-4 leading-tight">Return to School<br>Emergency Protocol Training</h2>
+                <p class="text-red-100 max-w-2xl text-lg mb-6">ADEK Safe Education Protocol — mandatory training for all staff as a condition of school reopening. Complete all modules and the physical drill acknowledgment.</p>
+                <div class="flex flex-wrap gap-6 text-sm text-red-200">
+                    <span class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        ~90 min (60 min session + 30 min drill)
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        9 Modules + Knowledge Checks
+                    </span>
+                    <span class="flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        All Teaching Staff
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Progress Tracker -->
+        <section class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-10">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-heading font-bold text-gray-800 text-lg">Your Progress</h3>
+                <span id="progress-label" class="text-sm font-semibold text-red-700 bg-red-50 px-3 py-1 rounded-full">0 / 9 completed</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                <div id="progress-bar" class="progress-fill bg-gradient-to-r from-red-600 to-orange-500 h-3 rounded-full" style="width: 0%"></div>
+            </div>
+        </section>
+
+        <!-- Module 1: Context -->
+        <section id="mod-context" class="mb-8 fade-in">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-slate-700 to-slate-900 px-8 py-6 flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">1</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white font-heading">Context: Why We Are Here</h3>
+                        <p class="text-slate-300 text-sm mt-1">5 min — Understanding the directive and what it means for AISA</p>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <p class="text-gray-700 leading-relaxed mb-6">ADEK has directed all schools to resume face-to-face learning on Monday, April 20. As a condition of reopening, all teaching staff currently in the country must complete this emergency protocol training. ADEK will conduct a validation visit to verify readiness and issue approval.</p>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-red-50 border border-red-200 rounded-xl p-4 flex items-start gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
+                            <div><p class="font-semibold text-red-800 text-sm">Mandatory Training</p><p class="text-red-600 text-xs mt-1">Attendance is documented and submitted to ADEK</p></div>
+                        </div>
+                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-start gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></div>
+                            <div><p class="font-semibold text-orange-800 text-sm">Validation Visit</p><p class="text-orange-600 text-xs mt-1">ADEK visit window: Friday 8AM — Sunday 5PM</p></div>
+                        </div>
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+                            <div class="flex-shrink-0 w-8 h-8 bg-amber-600 rounded-lg flex items-center justify-center"><svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>
+                            <div><p class="font-semibold text-amber-800 text-sm">Physical Drill</p><p class="text-amber-600 text-xs mt-1">A shelter-in-place drill follows this session</p></div>
+                        </div>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-4">Key points: Bus services remain suspended (MOE directive). Parents are arranging private transport. Remote learning will be provided for students unable to attend — no hybrid classes. Parents must sign an undertaking to return students to in-person education.</p>
+                    <label class="flex items-center gap-3 cursor-pointer select-none">
+                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="1">
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
+                            <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">I understand the context and requirements</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 2: 12 Core Principles -->
+        <section id="mod-principles" class="mb-8 fade-in">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-700 to-blue-900 px-8 py-6 flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">2</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white font-heading">ADEK Safety Protocol: 12 Core Principles</h3>
+                        <p class="text-blue-200 text-sm mt-1">10 min — The foundational rules that guide every decision</p>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <div class="grid sm:grid-cols-2 gap-4 mb-6">
+                        <div class="flex items-start gap-3 bg-blue-50 rounded-xl p-4"><span class="flex-shrink-0 w-7 h-7 bg-blue-700 text-white rounded-full flex items-center justify-center text-xs font-bold">1</span><p class="text-sm text-gray-700">Safety of students and staff is the <strong>highest priority</strong></p></div>
+                        <div class="flex items-start gap-3 bg-blue-50 rounded-xl p-4"><span class="flex-shrink-0 w-7 h-7 bg-blue-700 text-white rounded-full flex items-center justify-center text-xs font-bold">2</span><p class="text-sm text-gray-700">Stay inside <strong>protected buildings</strong> and facilities</p></div>
+                        <div class="flex items-start gap-3 bg-blue-50 rounded-xl p-4"><span class="flex-shrink-0 w-7 h-7 bg-blue-700 text-white rounded-full flex items-center justify-center text-xs font-bold">3</span><p class="text-sm text-gray-700"><strong>Avoid windows, glass,</strong> and exposed areas</p></div>
+                        <div class="flex items-start gap-3 bg-blue-50 rounded-xl p-4"><span class="flex-shrink-0 w-7 h-7 bg-blue-700 text-white rounded-full flex items-center justify-center text-xs font-bold">4</span><p class="text-sm text-gray-700">Move to <strong>internal and safe areas</strong> if needed</p></div>
+                        <div class="flex items-start gap-3 bg-blue-50 rounded-xl p-4"><span class="flex-shrink-0 w-7 h-7 bg-blue-700 text-white rounded-full flex items-center justify-center text-xs font-bold">5</span><p class="text-sm text-gray-700"><strong>Immediate adherence</strong> to official instructions</p></div>
+                        <div class="flex items-start gap-3 bg-blue-50 rounded-xl p-4"><span class="flex-shrink-0 w-7 h-7 bg-blue-700 text-white rounded-full flex items-center justify-center text-xs font-bold">6</span><p class="text-sm text-gray-700">Prevent <strong>crowding</strong> or uncontrolled movement</p></div>
+                        <div class="flex items-start gap-3 bg-blue-50 rounded-xl p-4"><span class="flex-shrink-0 w-7 h-7 bg-blue-700 text-white rounded-full flex items-center justify-center text-xs font-bold">7</span><p class="text-sm text-gray-700"><strong>Reassure students;</strong> avoid panic or fear during alerts</p></div>
+                        <div class="flex items-start gap-3 bg-blue-50 rounded-xl p-4"><span class="flex-shrink-0 w-7 h-7 bg-blue-700 text-white rounded-full flex items-center justify-center text-xs font-bold">8</span><p class="text-sm text-gray-700"><strong>No photos, publishing,</strong> or sharing unofficial info</p></div>
+                        <div class="flex items-start gap-3 bg-blue-50 rounded-xl p-4"><span class="flex-shrink-0 w-7 h-7 bg-blue-700 text-white rounded-full flex items-center justify-center text-xs font-bold">9</span><p class="text-sm text-gray-700"><strong>Suspend movement,</strong> learning, dismissal during alerts</p></div>
+                        <div class="flex items-start gap-3 bg-blue-50 rounded-xl p-4"><span class="flex-shrink-0 w-7 h-7 bg-blue-700 text-white rounded-full flex items-center justify-center text-xs font-bold">10</span><p class="text-sm text-gray-700">All <strong>external activities</strong> must be stopped</p></div>
+                        <div class="flex items-start gap-3 bg-blue-50 rounded-xl p-4"><span class="flex-shrink-0 w-7 h-7 bg-blue-700 text-white rounded-full flex items-center justify-center text-xs font-bold">11</span><p class="text-sm text-gray-700">All staff must be <strong>trained</strong> on these procedures</p></div>
+                        <div class="flex items-start gap-3 bg-blue-50 rounded-xl p-4"><span class="flex-shrink-0 w-7 h-7 bg-blue-700 text-white rounded-full flex items-center justify-center text-xs font-bold">12</span><p class="text-sm text-gray-700">Maintain readiness to <strong>suspend in-person learning</strong></p></div>
+                    </div>
+                    <label class="flex items-center gap-3 cursor-pointer select-none">
+                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="2">
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
+                            <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">I understand the 12 core principles</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 3: Operational Risk Levels -->
+        <section id="mod-risk" class="mb-8 fade-in">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-emerald-700 to-teal-800 px-8 py-6 flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">3</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white font-heading">Operational Risk Levels</h3>
+                        <p class="text-emerald-200 text-sm mt-1">5 min — Green, Yellow, Red explained</p>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <div class="grid md:grid-cols-3 gap-6 mb-6">
+                        <div class="risk-card bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-6 text-center">
+                            <div class="w-16 h-16 bg-emerald-500 rounded-full mx-auto mb-4 flex items-center justify-center"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                            <h4 class="font-bold text-emerald-800 text-lg mb-2 font-heading">GREEN</h4>
+                            <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wide mb-3">Low Risk / Stable</p>
+                            <p class="text-sm text-gray-700">No alert messages. Normal operations. Classes held indoors. Readiness is enhanced. Morning assembly and outdoor activities are suspended.</p>
+                        </div>
+                        <div class="risk-card bg-yellow-50 border-2 border-yellow-400 rounded-2xl p-6 text-center">
+                            <div class="w-16 h-16 bg-yellow-500 rounded-full mx-auto mb-4 flex items-center justify-center"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>
+                            <h4 class="font-bold text-yellow-800 text-lg mb-2 font-heading">YELLOW</h4>
+                            <p class="text-xs font-semibold text-yellow-600 uppercase tracking-wide mb-3">Medium Risk</p>
+                            <p class="text-sm text-gray-700">Classes continue during alerts with preventive measures. Stop movement and shelter immediately. Apply preventive actions.</p>
+                        </div>
+                        <div class="risk-card bg-red-50 border-2 border-red-400 rounded-2xl p-6 text-center">
+                            <div class="w-16 h-16 bg-red-600 rounded-full mx-auto mb-4 flex items-center justify-center"><svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg></div>
+                            <h4 class="font-bold text-red-800 text-lg mb-2 font-heading">RED</h4>
+                            <p class="text-xs font-semibold text-red-600 uppercase tracking-wide mb-3">Direct Danger</p>
+                            <p class="text-sm text-gray-700">Immediate shift to remote learning. Do not resume in-person education until official approval. Authorities determine levels based on location.</p>
+                        </div>
+                    </div>
+                    <div class="bg-slate-100 rounded-xl p-4 text-sm text-gray-700 mb-6">
+                        <strong>Key point:</strong> Even GREEN is not business as usual. No outdoor activities, no assemblies, indoor only. Authorities determine risk levels based on location and proximity to critical infrastructure.
+                    </div>
+                    <label class="flex items-center gap-3 cursor-pointer select-none">
+                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="3">
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
+                            <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">I understand the three risk levels</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 4: Stage Protocols -->
+        <section id="mod-stages" class="mb-8 fade-in">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-purple-700 to-indigo-800 px-8 py-6 flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">4</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white font-heading">Stage Protocols: Arrival Through Dismissal</h3>
+                        <p class="text-purple-200 text-sm mt-1">10 min — Four stages of the school day covered</p>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <div class="space-y-6 mb-6">
+                        <!-- Stage 1 -->
+                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-6">
+                            <h4 class="font-bold text-purple-900 mb-3 flex items-center gap-2"><span class="bg-purple-700 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center">1</span> Before Arrival</h4>
+                            <div class="grid sm:grid-cols-2 gap-4 text-sm text-gray-700">
+                                <div><strong class="text-purple-800">No alert:</strong> Student leaves normally. No morning assembly.</div>
+                                <div><strong class="text-purple-800">Alert before leaving:</strong> Stay home in a safe internal place, away from windows.</div>
+                                <div><strong class="text-purple-800">Alert en route:</strong> Follow official message. Do not drop off in exposed areas.</div>
+                            </div>
+                        </div>
+                        <!-- Stage 2 -->
+                        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-6">
+                            <h4 class="font-bold text-indigo-900 mb-3 flex items-center gap-2"><span class="bg-indigo-700 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center">2</span> Arrival & Handover</h4>
+                            <div class="grid sm:grid-cols-2 gap-4 text-sm text-gray-700">
+                                <div><strong class="text-indigo-800">No alert:</strong> Enter building directly. No assembly. No gathering at gates.</div>
+                                <div><strong class="text-indigo-800">Alert in place:</strong> Parent and student enter building immediately. Do not wait outside.</div>
+                            </div>
+                        </div>
+                        <!-- Stage 3 -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                            <h4 class="font-bold text-blue-900 mb-3 flex items-center gap-2"><span class="bg-blue-700 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center">3</span> Inside School</h4>
+                            <div class="grid sm:grid-cols-2 gap-4 text-sm text-gray-700">
+                                <div><strong class="text-blue-800">No alert:</strong> Classes indoors. No assembly. Break time inside classrooms.</div>
+                                <div><strong class="text-blue-800">Alert:</strong> Stop all activities. Stay in safe area. Students sit low, calm, away from windows. Staff outside go to nearest internal facility.</div>
+                            </div>
+                        </div>
+                        <!-- Stage 4 -->
+                        <div class="bg-violet-50 border border-violet-200 rounded-xl p-6">
+                            <h4 class="font-bold text-violet-900 mb-3 flex items-center gap-2"><span class="bg-violet-700 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center">4</span> Dismissal & Return</h4>
+                            <div class="grid sm:grid-cols-2 gap-4 text-sm text-gray-700">
+                                <div><strong class="text-violet-800">No alert:</strong> Orderly, staggered dismissal.</div>
+                                <div><strong class="text-violet-800">Alert before leaving:</strong> Suspend dismissal. Do not evacuate.</div>
+                                <div><strong class="text-violet-800">Alert during handover:</strong> Move to safe place.</div>
+                                <div><strong class="text-violet-800">Alert cleared:</strong> Resume staggered dismissal. No crowds at gates.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <label class="flex items-center gap-3 cursor-pointer select-none">
+                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="4">
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
+                            <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">I understand the four stage protocols</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 5: Your Role -->
+        <section id="mod-role" class="mb-8 fade-in">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-red-700 to-rose-800 px-8 py-6 flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">5</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white font-heading">Your Role and Responsibilities</h3>
+                        <p class="text-rose-200 text-sm mt-1">10 min — What every teacher must be able to do</p>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <!-- DO / DO NOT table -->
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-6">
+                            <h4 class="font-bold text-emerald-800 mb-4 text-center uppercase tracking-wide text-sm">DO This</h4>
+                            <ul class="space-y-3 text-sm text-gray-700">
+                                <li class="flex items-start gap-2"><span class="text-emerald-600 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg></span>Know your safe zone and route to reach it</li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-600 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg></span>Guide students calmly and quickly to the safe zone</li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-600 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg></span>Take headcount immediately — report missing students</li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-600 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg></span>Keep students calm: steady voice, honest reassurance</li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-600 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg></span>Watch for distress signs — refer to counselor</li>
+                                <li class="flex items-start gap-2"><span class="text-emerald-600 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg></span>Stay in safe zone until official all-clear</li>
+                            </ul>
+                        </div>
+                        <div class="bg-red-50 border border-red-200 rounded-xl p-6">
+                            <h4 class="font-bold text-red-800 mb-4 text-center uppercase tracking-wide text-sm">Do NOT</h4>
+                            <ul class="space-y-3 text-sm text-gray-700">
+                                <li class="flex items-start gap-2"><span class="text-red-600 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></span>Do NOT evacuate the building</li>
+                                <li class="flex items-start gap-2"><span class="text-red-600 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></span>Do NOT allow students near windows or glass</li>
+                                <li class="flex items-start gap-2"><span class="text-red-600 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></span>Do NOT take photographs or video</li>
+                                <li class="flex items-start gap-2"><span class="text-red-600 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></span>Do NOT share anything on social media</li>
+                                <li class="flex items-start gap-2"><span class="text-red-600 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></span>Do NOT contact parents individually</li>
+                                <li class="flex items-start gap-2"><span class="text-red-600 mt-0.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></span>Do NOT release students during an alert</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="bg-amber-100 border-l-4 border-amber-500 rounded-r-xl p-4 text-sm text-amber-900 mb-6">
+                        <strong>Critical distinction:</strong> This is SHELTER IN PLACE, not evacuate. Fire = move OUT. This protocol = move INWARD to interior spaces away from windows. Make sure you understand the difference.
+                    </div>
+                    <label class="flex items-center gap-3 cursor-pointer select-none">
+                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="5">
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
+                            <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">I understand my role and responsibilities</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 6: Safe Zones -->
+        <section id="mod-safezones" class="mb-8 fade-in">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-teal-700 to-cyan-800 px-8 py-6 flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">6</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white font-heading">Safe Zones: Know Your Location</h3>
+                        <p class="text-teal-200 text-sm mt-1">5 min — What makes a safe zone and what to expect</p>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <p class="text-gray-700 mb-6">A designated interior space providing temporary protection during emergencies, away from external facades and windows.</p>
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                        <div class="bg-teal-50 rounded-xl p-4 text-center border border-teal-200">
+                            <div class="w-10 h-10 bg-teal-600 rounded-full mx-auto mb-2 flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg></div>
+                            <p class="font-semibold text-teal-800 text-sm">Indoor Location</p>
+                            <p class="text-xs text-gray-600 mt-1">Away from external facades and windows</p>
+                        </div>
+                        <div class="bg-teal-50 rounded-xl p-4 text-center border border-teal-200">
+                            <div class="w-10 h-10 bg-teal-600 rounded-full mx-auto mb-2 flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>
+                            <p class="font-semibold text-teal-800 text-sm">Structural Strength</p>
+                            <p class="text-xs text-gray-600 mt-1">Reduces impact and blast waves</p>
+                        </div>
+                        <div class="bg-teal-50 rounded-xl p-4 text-center border border-teal-200">
+                            <div class="w-10 h-10 bg-teal-600 rounded-full mx-auto mb-2 flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
+                            <p class="font-semibold text-teal-800 text-sm">Hazard-Free & Spacious</p>
+                            <p class="text-xs text-gray-600 mt-1">Fits all occupants safely</p>
+                        </div>
+                        <div class="bg-teal-50 rounded-xl p-4 text-center border border-teal-200">
+                            <div class="w-10 h-10 bg-teal-600 rounded-full mx-auto mb-2 flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></div>
+                            <p class="font-semibold text-teal-800 text-sm">1-Min Access</p>
+                            <p class="text-xs text-gray-600 mt-1">Reachable within 60 seconds max</p>
+                        </div>
+                        <div class="bg-teal-50 rounded-xl p-4 text-center border border-teal-200">
+                            <div class="w-10 h-10 bg-teal-600 rounded-full mx-auto mb-2 flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg></div>
+                            <p class="font-semibold text-teal-800 text-sm">Clearly Marked</p>
+                            <p class="text-xs text-gray-600 mt-1">Identification signs visible and posted</p>
+                        </div>
+                        <div class="bg-teal-50 rounded-xl p-4 text-center border border-teal-200">
+                            <div class="w-10 h-10 bg-teal-600 rounded-full mx-auto mb-2 flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg></div>
+                            <p class="font-semibold text-teal-800 text-sm">Linked to Plan</p>
+                            <p class="text-xs text-gray-600 mt-1">Part of AISA's emergency protocol</p>
+                        </div>
+                    </div>
+                    <div class="bg-cyan-100 border-l-4 border-cyan-500 rounded-r-xl p-4 text-sm text-cyan-900 mb-6">
+                        <strong>Action required:</strong> Your division leader will confirm your specific safe zone after this session. During the drill, you will physically walk the route and confirm the 1-minute access time. In the first week, walk your students through the safe zone route.
+                    </div>
+                    <label class="flex items-center gap-3 cursor-pointer select-none">
+                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="6">
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
+                            <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">I understand the safe zone requirements</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 7: Student Wellbeing -->
+        <section id="mod-wellbeing" class="mb-8 fade-in">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-pink-700 to-rose-800 px-8 py-6 flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">7</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white font-heading">Student Wellbeing During Emergencies</h3>
+                        <p class="text-pink-200 text-sm mt-1">10 min — Emotional support strategies from ADEK</p>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <div class="grid md:grid-cols-3 gap-6 mb-6">
+                        <div class="bg-pink-50 border border-pink-200 rounded-xl p-6 text-center">
+                            <div class="text-3xl mb-3">1</div>
+                            <h4 class="font-bold text-pink-800 mb-2">Regulate Yourself First</h4>
+                            <p class="text-sm text-gray-700">Take slow, deep breaths. Keep your voice steady and calm. Avoid panic. Students read adult body language instantly.</p>
+                        </div>
+                        <div class="bg-rose-50 border border-rose-200 rounded-xl p-6 text-center">
+                            <div class="text-3xl mb-3">2</div>
+                            <h4 class="font-bold text-rose-800 mb-2">Gather and Reassure</h4>
+                            <p class="text-sm text-gray-700">Move students away from windows. Keep the group close to you and to each other. Use a smile.</p>
+                        </div>
+                        <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-6 text-center">
+                            <div class="text-3xl mb-3">3</div>
+                            <h4 class="font-bold text-fuchsia-800 mb-2">Use Honest Words</h4>
+                            <p class="text-sm text-gray-700">"We are safe here together." "That was loud, but we are safe." Normalize: "It's okay to feel scared or surprised." Keep them engaged with drawing, storytelling.</p>
+                        </div>
+                    </div>
+                    <div class="bg-red-50 border border-red-200 rounded-xl p-4 text-sm text-red-800 mb-6">
+                        <strong>Signs needing counselor referral:</strong> excessive fear/crying, withdrawal, difficulty concentrating, physical complaints (headache, nausea). Counselors should be prepared for increased referrals in the first week.
+                    </div>
+                    <label class="flex items-center gap-3 cursor-pointer select-none">
+                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="7">
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
+                            <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">I understand the student wellbeing strategies</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 8: Remote Learning & Monday Logistics -->
+        <section id="mod-remote" class="mb-8 fade-in">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-amber-600 to-orange-700 px-8 py-6 flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">8</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white font-heading">Remote Learning Model & Monday Logistics</h3>
+                        <p class="text-amber-200 text-sm mt-1">5 min — Hybrid rules and DL student support</p>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <div class="bg-amber-100 border-l-4 border-amber-500 rounded-r-xl p-4 text-sm text-amber-900 mb-6">
+                        <strong>ADEK Rule:</strong> Face-to-face and distance learning students must NOT be combined with the same teacher at the same time.
+                    </div>
+                    <div class="grid sm:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-6">
+                            <h4 class="font-bold text-orange-800 mb-3">DL Student Options</h4>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Option 1:</strong> Dedicated synchronous sessions scheduled separately.</p>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Option 2:</strong> Exclusive asynchronous work — no live sessions required.</p>
+                            <p class="text-sm text-gray-700"><strong>Option 3:</strong> Alternative model proposed to ADEK for approval.</p>
+                        </div>
+                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-6">
+                            <h4 class="font-bold text-orange-800 mb-3">Mandatory Check-ins</h4>
+                            <p class="text-sm text-gray-700 mb-2">Minimum 15-minute group check-in with ALL distance learning students daily.</p>
+                            <p class="text-sm text-gray-700 mb-2"><strong>Elementary:</strong> Learning Support Team conducts check-ins (consider time zones).</p>
+                            <p class="text-sm text-gray-700"><strong>Secondary:</strong> Counselors conduct check-ins (consider time zones).</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-6">The school will confirm the model and share details before Monday. ADEK PASS substitute pool available at pass@adek.gov.ae for staffing challenges.</p>
+                    <label class="flex items-center gap-3 cursor-pointer select-none">
+                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="8">
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
+                            <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">I understand the remote learning model</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Module 9: Physical Drill & Acknowledgment -->
+        <section id="mod-drill" class="mb-8 fade-in">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-gray-800 to-gray-900 px-8 py-6 flex items-start gap-4">
+                    <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">9</div>
+                    <div>
+                        <h3 class="text-xl font-bold text-white font-heading">Physical Drill & Acknowledgment</h3>
+                        <p class="text-gray-300 text-sm mt-1">30 min — The hands-on drill that follows this session</p>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <div class="space-y-4 mb-6">
+                        <div class="flex items-start gap-4 bg-gray-50 rounded-xl p-4">
+                            <span class="flex-shrink-0 w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center text-sm font-bold">1</span>
+                            <div><p class="font-semibold text-gray-800">Division leaders assign safe zones</p><p class="text-sm text-gray-600">You will be told your specific safe zone and shown it on the building map.</p></div>
+                        </div>
+                        <div class="flex items-start gap-4 bg-gray-50 rounded-xl p-4">
+                            <span class="flex-shrink-0 w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center text-sm font-bold">2</span>
+                            <div><p class="font-semibold text-gray-800">Walk the route</p><p class="text-sm text-gray-600">Physically walk from your classroom to your safe zone. Time it. Must be under 60 seconds.</p></div>
+                        </div>
+                        <div class="flex items-start gap-4 bg-gray-50 rounded-xl p-4">
+                            <span class="flex-shrink-0 w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center text-sm font-bold">3</span>
+                            <div><p class="font-semibold text-gray-800">PA system test</p><p class="text-sm text-gray-600">PA will be activated. Confirm you can hear it from your location.</p></div>
+                        </div>
+                        <div class="flex items-start gap-4 bg-gray-50 rounded-xl p-4">
+                            <span class="flex-shrink-0 w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center text-sm font-bold">4</span>
+                            <div><p class="font-semibold text-gray-800">Simulated shelter-in-place</p><p class="text-sm text-gray-600">Announcement made. Move to safe zone as if real. Sit low, away from windows.</p></div>
+                        </div>
+                        <div class="flex items-start gap-4 bg-gray-50 rounded-xl p-4">
+                            <span class="flex-shrink-0 w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center text-sm font-bold">5</span>
+                            <div><p class="font-semibold text-gray-800">Headcount and report</p><p class="text-sm text-gray-600">Use the red/green card system. Send "all clear", "missing ______", or "I have ____ in my class" in the Alert Attendance group.</p></div>
+                        </div>
+                        <div class="flex items-start gap-4 bg-gray-50 rounded-xl p-4">
+                            <span class="flex-shrink-0 w-8 h-8 bg-gray-800 text-white rounded-full flex items-center justify-center text-sm font-bold">6</span>
+                            <div><p class="font-semibold text-gray-800">All-clear and debrief</p><p class="text-sm text-gray-600">All-clear announced. Regroup. Discuss what worked and what needs adjustment.</p></div>
+                        </div>
+                    </div>
+                    <div class="bg-red-100 border-l-4 border-red-600 rounded-r-xl p-4 text-sm text-red-900 mb-6">
+                        <strong>Treat this drill as real.</strong> ADEK validation visit may happen today. Attendance records and signed acknowledgments will be submitted to ADEK as part of the reopening validation.
+                    </div>
+                    <label class="flex items-center gap-3 cursor-pointer select-none">
+                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="9">
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
+                            <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="text-sm font-medium text-gray-700">I am ready for the physical drill and acknowledgment</span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Knowledge Check -->
+        <section id="knowledge-check" class="mb-8">
+            <div class="bg-white rounded-2xl shadow-lg border-2 border-red-200 overflow-hidden">
+                <div class="bg-gradient-to-r from-red-800 to-red-900 px-8 py-6">
+                    <h3 class="text-xl font-bold text-white font-heading">Knowledge Check</h3>
+                    <p class="text-red-200 text-sm mt-1">Verify your understanding of the critical protocol elements</p>
+                </div>
+                <div class="p-8 space-y-8">
+                    <!-- Q1 -->
+                    <div id="quiz-1" class="quiz-block">
+                        <p class="font-semibold text-gray-800 mb-3">1. During an alert, should you evacuate students from the building?</p>
+                        <div class="space-y-2">
+                            <button onclick="checkAnswer(1, this, false)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">A. Yes, evacuate to the soccer field assembly points like a fire drill</button>
+                            <button onclick="checkAnswer(1, this, true)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">B. No. Shelter in place — move students inward, away from windows</button>
+                            <button onclick="checkAnswer(1, this, false)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">C. It depends on the type of alert</button>
+                        </div>
+                        <div class="quiz-feedback mt-3 hidden"></div>
+                    </div>
+                    <!-- Q2 -->
+                    <div id="quiz-2" class="quiz-block">
+                        <p class="font-semibold text-gray-800 mb-3">2. During an alert, can you contact parents to let them know their child is safe?</p>
+                        <div class="space-y-2">
+                            <button onclick="checkAnswer(2, this, false)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">A. Yes, a quick WhatsApp message is fine</button>
+                            <button onclick="checkAnswer(2, this, true)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">B. No. All communication goes through the school officially</button>
+                            <button onclick="checkAnswer(2, this, false)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">C. Only if parents message you first</button>
+                        </div>
+                        <div class="quiz-feedback mt-3 hidden"></div>
+                    </div>
+                    <!-- Q3 -->
+                    <div id="quiz-3" class="quiz-block">
+                        <p class="font-semibold text-gray-800 mb-3">3. In GREEN operational level, which of the following is TRUE?</p>
+                        <div class="space-y-2">
+                            <button onclick="checkAnswer(3, this, false)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">A. School operates exactly as it did before — normal schedule</button>
+                            <button onclick="checkAnswer(3, this, true)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">B. Classes are indoors, no morning assembly, no outdoor activities</button>
+                            <button onclick="checkAnswer(3, this, false)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">C. Students learn remotely from home</button>
+                        </div>
+                        <div class="quiz-feedback mt-3 hidden"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADEK Reference Documents -->
+        <section id="adek-docs" class="mb-8">
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-slate-600 to-slate-800 px-8 py-6">
+                    <h3 class="text-xl font-bold text-white font-heading">ADEK Reference Documents</h3>
+                    <p class="text-slate-300 text-sm mt-1">Official documents provided by ADEK for this protocol</p>
+                </div>
+                <div class="p-8">
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center"><svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>
+                            <div><p class="font-semibold text-gray-800 text-sm">ADEK Circular — Gradual Resumption</p><p class="text-xs text-gray-500 mt-1">PE/K12E2026/022 — Official directive for school reopening</p></div>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center"><svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></div>
+                            <div><p class="font-semibold text-gray-800 text-sm">Safe Education Protocol — Full Training</p><p class="text-xs text-gray-500 mt-1">Operational protocol for protecting students and continuity of in-person education</p></div>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center"><svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg></div>
+                            <div><p class="font-semibold text-gray-800 text-sm">Inspection Checklist</p><p class="text-xs text-gray-500 mt-1">11-point compliance checklist for ADEK validation visit</p></div>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center"><svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></div>
+                            <div><p class="font-semibold text-gray-800 text-sm">Parent/Guardian Undertaking</p><p class="text-xs text-gray-500 mt-1">Declaration form for parents to consent to return to in-person learning</p></div>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center"><svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg></div>
+                            <div><p class="font-semibold text-gray-800 text-sm">Education Entity Undertaking</p><p class="text-xs text-gray-500 mt-1">School declaration of compliance signed by principal</p></div>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5 flex items-start gap-4">
+                            <div class="flex-shrink-0 w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center"><svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"></path></svg></div>
+                            <div><p class="font-semibold text-gray-800 text-sm">AISA Emergency Training Presentation</p><p class="text-xs text-gray-500 mt-1">Full training slide deck with speaker notes</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Completion Banner -->
+        <section id="completion-banner" class="mb-12 hidden">
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl shadow-2xl p-8 text-center text-white">
+                <div class="text-5xl mb-4">&#127942;</div>
+                <h3 class="text-2xl font-black font-heading mb-3">Training Complete!</h3>
+                <p class="text-emerald-100 max-w-xl mx-auto mb-6">You have completed all modules of the Return to School Emergency Protocol Training. Remember: your safety, their safety, our responsibility. AISA Lions are Responsible, Safe, Respectful, and Kind.</p>
+                <button onclick="window.location.href='index.html'" class="bg-white text-emerald-700 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition-colors shadow-lg">
+                    Return to Dashboard
+                </button>
+            </div>
+        </section>
+
+        <!-- Core Roles Quick Reference (collapsible) -->
+        <section id="core-roles" class="mb-12">
+            <details class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                <summary class="px-8 py-5 cursor-pointer hover:bg-gray-50 transition-colors font-bold text-gray-800 font-heading text-lg flex items-center gap-3">
+                    <svg class="w-5 h-5 text-gray-500 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    Core Roles — Quick Reference
+                </summary>
+                <div class="px-8 pb-8 pt-2">
+                    <div class="grid sm:grid-cols-2 gap-4">
+                        <div class="bg-gray-50 rounded-xl p-4"><p class="text-xs text-gray-500 uppercase font-bold tracking-wide mb-1">Incident Lead</p><p class="font-semibold text-gray-800">Andrew Torris</p><p class="text-xs text-gray-500">Backup: Kevin Fosburgh</p></div>
+                        <div class="bg-gray-50 rounded-xl p-4"><p class="text-xs text-gray-500 uppercase font-bold tracking-wide mb-1">Communication Lead</p><p class="font-semibold text-gray-800">Engy</p></div>
+                        <div class="bg-gray-50 rounded-xl p-4"><p class="text-xs text-gray-500 uppercase font-bold tracking-wide mb-1">Student Wellbeing Lead</p><p class="font-semibold text-gray-800">Lisa Jones</p></div>
+                        <div class="bg-gray-50 rounded-xl p-4"><p class="text-xs text-gray-500 uppercase font-bold tracking-wide mb-1">Health & Safety / Operations</p><p class="font-semibold text-gray-800">Adarsh</p></div>
+                        <div class="bg-gray-50 rounded-xl p-4"><p class="text-xs text-gray-500 uppercase font-bold tracking-wide mb-1">ES Division Leads</p><p class="text-sm text-gray-700">KG: Stephanie Brown | Lower ES: Kevin Fosburgh | Upper ES: Alia Nejdawi</p></div>
+                        <div class="bg-gray-50 rounded-xl p-4"><p class="text-xs text-gray-500 uppercase font-bold tracking-wide mb-1">Secondary Division Leads</p><p class="text-sm text-gray-700">MS: Savvas Largatzis | HS: Cristina Martin</p></div>
+                    </div>
+                </div>
+            </details>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-8 text-center text-sm">
+        <p class="font-heading font-semibold text-white mb-1">American International School of Abu Dhabi</p>
+        <p>ADEK Safe Education Protocol — Emergency Protocol Staff Training</p>
+        <p class="mt-2 text-gray-500">Your safety. Their safety. Our responsibility.</p>
+    </footer>
+
+    <script>
+        // Progress tracking
+        const totalModules = 9;
+        function updateProgress() {
+            const checked = document.querySelectorAll('.checkbox-custom:checked').length;
+            const pct = Math.round((checked / totalModules) * 100);
+            document.getElementById('progress-bar').style.width = pct + '%';
+            document.getElementById('progress-label').textContent = checked + ' / ' + totalModules + ' completed';
+            if (checked === totalModules) {
+                document.getElementById('completion-banner').classList.remove('hidden');
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 120, spread: 80, origin: { y: 0.7 } });
+                }
+            } else {
+                document.getElementById('completion-banner').classList.add('hidden');
+            }
+        }
+        document.querySelectorAll('.checkbox-custom').forEach(cb => {
+            cb.addEventListener('change', updateProgress);
+        });
+
+        // Quiz system
+        function checkAnswer(qNum, btn, isCorrect) {
+            const block = document.getElementById('quiz-' + qNum);
+            const buttons = block.querySelectorAll('.quiz-option');
+            const feedback = block.querySelector('.quiz-feedback');
+            buttons.forEach(b => { b.disabled = true; b.classList.add('opacity-60', 'cursor-not-allowed'); });
+            if (isCorrect) {
+                btn.classList.remove('border-gray-200');
+                btn.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-800', 'font-semibold', 'opacity-100');
+                feedback.innerHTML = '<p class="text-emerald-700 font-semibold text-sm">Correct!</p>';
+            } else {
+                btn.classList.remove('border-gray-200');
+                btn.classList.add('border-red-500', 'bg-red-50', 'text-red-800', 'font-semibold', 'opacity-100');
+                // Highlight correct answer
+                buttons.forEach(b => {
+                    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes('true')) {
+                        b.classList.remove('border-gray-200');
+                        b.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-800', 'font-semibold', 'opacity-100');
+                    }
+                });
+                feedback.innerHTML = '<p class="text-red-700 font-semibold text-sm">Not quite. Review the correct answer highlighted in green.</p>';
+            }
+            feedback.classList.remove('hidden');
+        }
+
+        // Checkbox SVG toggle
+        document.querySelectorAll('.checkbox-custom').forEach(cb => {
+            cb.addEventListener('change', function() {
+                const svgEl = this.nextElementSibling.querySelector('svg');
+                if (this.checked) { svgEl.style.display = 'block'; } else { svgEl.style.display = 'none'; }
+            });
+        });
+    </script>
+</body>
+</html>
