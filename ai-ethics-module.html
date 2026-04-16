@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | AI Vision & Ethical Framework</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            heading: ['Poppins', 'sans-serif'],
+                        },
+                        colors: {
+                            primary: '#4f46e5',
+                            secondary: '#2563eb',
+                            accent: '#06b6d4',
+                        },
+                        animation: {
+                            'blob': 'blob 7s infinite',
+                        },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .bg-dot-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .checkbox-custom:checked + div {
+            background-color: #10b981;
+            border-color: #10b981;
+            transform: scale(1.05);
+        }
+        .checkbox-custom:checked + div svg { display: block; }
+        .principle-card { transition: all 0.3s ease; }
+        .principle-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -6px rgba(0,0,0,0.12); }
+        .quiz-option { transition: all 0.2s ease; cursor: pointer; }
+        .quiz-option:hover { transform: scale(1.02); }
+        .quiz-option.correct { background-color: #ecfdf5; border-color: #10b981; }
+        .quiz-option.incorrect { background-color: #fef2f2; border-color: #ef4444; }
+        .quiz-option.selected { border-width: 2px; }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-dot-pattern text-gray-800 min-h-screen">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-gray-100">
+        <div class="h-1 bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 w-full"></div>
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-4 cursor-pointer group" onclick="window.location.href='index_updated.html'">
+                <img src="AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/003366/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-blue-900 tracking-tight leading-none uppercase font-heading">AISA</h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-gray-500 uppercase tracking-widest mt-0.5">Teaching & Learning Guide</span>
+                </div>
+            </div>
+            <button onclick="window.location.href='index_updated.html'" class="flex items-center text-gray-500 hover:text-blue-900 transition-colors font-medium text-sm">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                <span class="hidden sm:inline">Back to Dashboard</span>
+                <span class="sm:hidden">Back</span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-5xl mx-auto px-4 lg:px-6 pt-8 pb-20">
+
+        <!-- Module Header -->
+        <div class="mb-8">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">Required PD</span>
+                <span class="inline-block bg-teal-100 text-teal-800 text-xs font-bold px-3 py-1 rounded-full">Policy Training</span>
+            </div>
+            <h1 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">AISA AI Vision & Ethical Framework</h1>
+            <p class="text-emerald-700 font-medium mt-1">Understanding Our Approach to Artificial Intelligence</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="bg-white/85 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-sm mb-10 p-4 flex items-center justify-between gap-4">
+            <span class="font-heading font-extrabold text-slate-900 text-base md:text-lg tracking-tight">Module Progress</span>
+            <div class="flex items-center space-x-4 bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl">
+                <span id="progress-text" class="text-xs font-bold text-slate-500 uppercase tracking-widest">0% Done</span>
+                <div class="w-32 md:w-48 h-3 bg-slate-200 rounded-full overflow-hidden shadow-inner">
+                    <div id="progress-bar" class="h-full bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 w-0 transition-all duration-700 ease-out"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <header class="relative py-12 lg:py-16 overflow-hidden rounded-[2rem] bg-white/70 mb-16 border border-white shadow-sm">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-full pointer-events-none opacity-60">
+                <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-emerald-400/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob"></div>
+                <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-cyan-400/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" style="animation-delay:2s"></div>
+                <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-teal-500/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" style="animation-delay:4s"></div>
+            </div>
+            <div class="relative z-10 text-center px-6">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg mb-6">
+                    <span class="text-4xl">🤖</span>
+                </div>
+                <h2 class="font-heading text-3xl lg:text-4xl font-black text-slate-900 mb-4">Why Does AISA Have an AI Policy?</h2>
+                <p class="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">AI is transforming education. This module will help you understand AISA's vision for responsible AI use, the six guiding principles that govern our approach, and what is expected of you as a professional.</p>
+                <div class="flex flex-wrap justify-center gap-4 mt-8 text-sm font-semibold">
+                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        ~15 min read
+                    </div>
+                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
+                        <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        3 Knowledge Checks
+                    </div>
+                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
+                        <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        Interactive Scenarios
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===================== SECTION 1: THE CASE FOR GOVERNANCE ===================== -->
+        <div class="timeline-container">
+
+            <!-- Step 1 -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-700 to-teal-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-emerald-200">Section 1</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">The Case for AI Governance</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Schools that adopt AI without governance structures tend to get stuck: tools proliferate without oversight, assessment integrity erodes, and data protection becomes a problem solved after the fact rather than designed in from the start.</p>
+
+                        <p class="text-gray-700 leading-relaxed">At the same time, schools that over-restrict AI risk producing graduates who are less prepared than their peers. AISA's goal is not to slow AI adoption but to make it <strong class="text-emerald-800">deliberate, safe, and educationally valuable</strong>.</p>
+
+                        <div class="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-xl p-6">
+                            <div class="flex items-start gap-3">
+                                <div class="bg-emerald-100 p-2 rounded-lg flex-shrink-0"><span class="text-xl">🎯</span></div>
+                                <div>
+                                    <h4 class="font-bold text-emerald-900 mb-2">AISA Strategic Pillar 3: Future-Ready Learning</h4>
+                                    <p class="text-emerald-800 text-sm leading-relaxed">AISA is committed to preparing students for a world where AI is embedded in professional, academic, and civic life. This policy is how that commitment becomes operational. The governance it establishes is a shared framework for making good decisions, not surveillance.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-6">
+                            <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2">
+                                <span class="text-lg">📖</span> Policy Scope
+                            </h4>
+                            <p class="text-gray-600 text-sm mb-3">This policy applies to:</p>
+                            <div class="grid sm:grid-cols-2 gap-2 text-sm">
+                                <div class="flex items-center gap-2 text-gray-700"><span class="text-emerald-500">&#10003;</span> All AISA employees</div>
+                                <div class="flex items-center gap-2 text-gray-700"><span class="text-emerald-500">&#10003;</span> All enrolled students (KG1-Grade 12)</div>
+                                <div class="flex items-center gap-2 text-gray-700"><span class="text-emerald-500">&#10003;</span> Third-party service providers</div>
+                                <div class="flex items-center gap-2 text-gray-700"><span class="text-emerald-500">&#10003;</span> Parents & families (for school AI tools)</div>
+                            </div>
+                            <p class="text-gray-500 text-xs mt-3 italic">Covers all AI tools used for instruction, assessment, communication, data analysis, or admin tasks - including personal devices and personal AI accounts used for school work.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: The Six Guiding Principles -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-teal-700 to-cyan-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-teal-200">Section 2</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">The Six Guiding Principles</h3>
+                        <p class="text-teal-100 text-sm mt-1">These are not aspirational statements. They are the criteria against which all AI decisions at AISA will be evaluated.</p>
+                    </div>
+                    <div class="p-6 lg:p-8">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <!-- Principle 1 -->
+                            <div class="principle-card bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-xl p-5">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-xl">🧑‍🏫</div>
+                                    <div>
+                                        <span class="text-xs font-bold text-blue-500 uppercase tracking-wider">Principle 1</span>
+                                        <h4 class="font-bold text-blue-900">Human-Centered Learning</h4>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">AI augments teaching and supports learning. It does not replace teacher judgement, student thinking, or the relational core of education.</p>
+                            </div>
+                            <!-- Principle 2 -->
+                            <div class="principle-card bg-gradient-to-br from-purple-50 to-white border border-purple-100 rounded-xl p-5">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center text-xl">⚖️</div>
+                                    <div>
+                                        <span class="text-xs font-bold text-purple-500 uppercase tracking-wider">Principle 2</span>
+                                        <h4 class="font-bold text-purple-900">Ethics & Fairness</h4>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">AI use must be fair, transparent, and accountable. This means identifying bias, ensuring equitable access, and never using AI to make consequential decisions without human oversight.</p>
+                            </div>
+                            <!-- Principle 3 -->
+                            <div class="principle-card bg-gradient-to-br from-amber-50 to-white border border-amber-100 rounded-xl p-5">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-xl">📝</div>
+                                    <div>
+                                        <span class="text-xs font-bold text-amber-600 uppercase tracking-wider">Principle 3</span>
+                                        <h4 class="font-bold text-amber-900">Academic Integrity</h4>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">AI must not undermine assessment validity. Students must learn to use AI as a learning tool, not a substitute for intellectual effort. AI-generated content must be acknowledged.</p>
+                            </div>
+                            <!-- Principle 4 -->
+                            <div class="principle-card bg-gradient-to-br from-red-50 to-white border border-red-100 rounded-xl p-5">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center text-xl">🔒</div>
+                                    <div>
+                                        <span class="text-xs font-bold text-red-500 uppercase tracking-wider">Principle 4</span>
+                                        <h4 class="font-bold text-red-900">Data Protection & Privacy</h4>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">Student and staff data are protected under UAE law. No AI tool may process personal data without lawful basis, appropriate consent, and compliance with AISA's obligations.</p>
+                            </div>
+                            <!-- Principle 5 -->
+                            <div class="principle-card bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 rounded-xl p-5">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center text-xl">🛡️</div>
+                                    <div>
+                                        <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">Principle 5</span>
+                                        <h4 class="font-bold text-emerald-900">Safeguarding</h4>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">AI tools used with students must have age-appropriate access controls, content filtering, and protection from harmful content. Student wellbeing takes precedence over any benefit.</p>
+                            </div>
+                            <!-- Principle 6 -->
+                            <div class="principle-card bg-gradient-to-br from-cyan-50 to-white border border-cyan-100 rounded-xl p-5">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-cyan-100 flex items-center justify-center text-xl">👤</div>
+                                    <div>
+                                        <span class="text-xs font-bold text-cyan-600 uppercase tracking-wider">Principle 6</span>
+                                        <h4 class="font-bold text-cyan-900">Professional Accountability</h4>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">Staff are accountable for how they use AI. If we expect students to think deeply rather than outsource to AI, we must model the same standard. AI should amplify professional thinking, not replace it.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Check 1 -->
+            <div class="relative pl-12 mb-16">
+                <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
+                    <span class="text-white font-bold text-sm">?</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden" id="quiz-1">
+                    <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 1</span>
+                        <h3 class="text-lg font-heading font-bold mt-1">Test Your Understanding</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="font-semibold text-gray-800 mb-4">Which of the following best describes AISA's position on AI in education?</p>
+                        <div class="space-y-3" id="quiz-1-options">
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
+                                <span class="text-sm text-gray-700">AI should be banned from schools to protect academic integrity.</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
+                                <span class="text-sm text-gray-700">AI use should be unrestricted so students learn naturally.</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, true)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
+                                <span class="text-sm text-gray-700">AI adoption should be deliberate, safe, and educationally valuable, with governance that balances protection and preparation.</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
+                                <span class="text-sm text-gray-700">Only the IT department should interact with AI tools.</span>
+                            </div>
+                        </div>
+                        <div id="quiz-1-feedback" class="hidden mt-4 p-4 rounded-xl text-sm fade-in"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Staff Expectations & Data Protection -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-rose-700 to-pink-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-rose-200">Section 3</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Staff Expectations & Data Protection</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <h4 class="font-bold text-gray-900 text-lg">What Every Staff Member Must Do</h4>
+                        <div class="space-y-3">
+                            <div class="flex items-start gap-3 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                <span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5">1</span>
+                                <p class="text-sm text-gray-700"><strong>Use only approved AI tools</strong> listed on the AISA Approved Tools Register for school-related purposes, including on personal devices.</p>
+                            </div>
+                            <div class="flex items-start gap-3 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                <span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5">2</span>
+                                <p class="text-sm text-gray-700"><strong>Exercise professional judgement</strong> on AI outputs. You remain fully responsible for accuracy and quality of your work.</p>
+                            </div>
+                            <div class="flex items-start gap-3 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                <span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5">3</span>
+                                <p class="text-sm text-gray-700"><strong>Disclose AI use</strong> in professional communications where the nature of the content makes it relevant.</p>
+                            </div>
+                            <div class="flex items-start gap-3 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                <span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5">4</span>
+                                <p class="text-sm text-gray-700"><strong>Never input student personal data</strong> into any unapproved AI tool. This includes names, ID numbers, assessment results, photos, or any identifiable information.</p>
+                            </div>
+                            <div class="flex items-start gap-3 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                <span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5">5</span>
+                                <p class="text-sm text-gray-700"><strong>Engage in mandatory AI PD</strong> as directed by the school.</p>
+                            </div>
+                            <div class="flex items-start gap-3 bg-gray-50 rounded-xl p-4 border border-gray-100">
+                                <span class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm flex-shrink-0 mt-0.5">6</span>
+                                <p class="text-sm text-gray-700"><strong>Model responsible AI use</strong> for students, consistent with the Lion's Way values.</p>
+                            </div>
+                        </div>
+
+                        <!-- Data Quick Decision Aid -->
+                        <div class="mt-8">
+                            <h4 class="font-bold text-gray-900 text-lg mb-4 flex items-center gap-2"><span class="text-xl">🔐</span> Data Protection Quick Guide</h4>
+                            <p class="text-sm text-gray-600 mb-4">Use this reference when deciding what data is safe to use with AI tools:</p>
+                            <div class="overflow-x-auto rounded-xl border border-gray-200">
+                                <table class="w-full text-sm">
+                                    <thead>
+                                        <tr class="bg-slate-100">
+                                            <th class="text-left p-3 font-semibold text-slate-700">What You Want to Do</th>
+                                            <th class="text-left p-3 font-semibold text-slate-700">Data Involved</th>
+                                            <th class="text-left p-3 font-semibold text-slate-700">Rule</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100">
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-3 text-gray-700">Analyze assessment patterns</td>
+                                            <td class="p-3 text-gray-600">Student names + scores</td>
+                                            <td class="p-3"><span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded-full">Approved tool only, approved for assessment data</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-3 text-gray-700">Analyze assessment patterns</td>
+                                            <td class="p-3 text-gray-600">De-identified scores</td>
+                                            <td class="p-3"><span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full">Any approved tool</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-3 text-gray-700">Draft a lesson plan</td>
+                                            <td class="p-3 text-gray-600">No student data</td>
+                                            <td class="p-3"><span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full">Any approved tool</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-3 text-gray-700">Draft parent email about a student</td>
+                                            <td class="p-3 text-gray-600">Student name + details</td>
+                                            <td class="p-3"><span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded-full">Remove name from AI input, add back manually</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-3 text-gray-700">Generate differentiated resources</td>
+                                            <td class="p-3 text-gray-600">Generic learning profile</td>
+                                            <td class="p-3"><span class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full">Any approved tool</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-3 text-gray-700">Upload class photo for AI task</td>
+                                            <td class="p-3 text-gray-600">Student images</td>
+                                            <td class="p-3"><span class="bg-red-100 text-red-800 text-xs font-bold px-2 py-1 rounded-full">Not permitted unless specifically approved</span></td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="p-3 text-gray-700">Personal professional learning</td>
+                                            <td class="p-3 text-gray-600">No school data</td>
+                                            <td class="p-3"><span class="bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 rounded-full">Personal AI account acceptable</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Check 2: Scenario -->
+            <div class="relative pl-12 mb-16">
+                <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
+                    <span class="text-white font-bold text-sm">?</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden" id="quiz-2">
+                    <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 2</span>
+                        <h3 class="text-lg font-heading font-bold mt-1">Real-World Scenario</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 mb-4">
+                            <p class="text-sm text-gray-700 italic">A teacher wants to paste their class's MAP scores into ChatGPT to look for patterns and group students for intervention. The scores include student names. ChatGPT is on the Approved Tools Register but is NOT approved for processing student assessment data. What should the teacher do?</p>
+                        </div>
+                        <div class="space-y-3" id="quiz-2-options">
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
+                                <span class="text-sm text-gray-700">Go ahead since ChatGPT is an approved tool.</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, true)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
+                                <span class="text-sm text-gray-700">Remove all student names and identifiers, then use an approved tool that IS approved for assessment data. If in doubt, consult the IT / Data Protection Lead.</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
+                                <span class="text-sm text-gray-700">Just remove student names but keep all other data and use ChatGPT.</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
+                                <span class="text-sm text-gray-700">Avoid using AI for data analysis entirely.</span>
+                            </div>
+                        </div>
+                        <div id="quiz-2-feedback" class="hidden mt-4 p-4 rounded-xl text-sm fade-in"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Academic Integrity & the 5-Step Scaffolding Scale -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-indigo-700 to-violet-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-indigo-200">Section 4</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Academic Integrity & the AI Scaffolding Scale</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">AI does not make academic integrity less important - it makes it more complex. Students must develop and demonstrate their own thinking. Any AI-generated content must be explicitly acknowledged.</p>
+
+                        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-5">
+                            <h4 class="font-bold text-indigo-900 mb-2">Assessment Design Expectations</h4>
+                            <div class="space-y-2 text-sm text-indigo-800">
+                                <p class="flex items-start gap-2"><span class="text-indigo-500 mt-0.5">&#9654;</span> Increase process-based and in-class assessments where thinking is observable</p>
+                                <p class="flex items-start gap-2"><span class="text-indigo-500 mt-0.5">&#9654;</span> Use oral defenses, portfolios, and performance tasks</p>
+                                <p class="flex items-start gap-2"><span class="text-indigo-500 mt-0.5">&#9654;</span> Design tasks that integrate AI as a tool within the assignment</p>
+                                <p class="flex items-start gap-2"><span class="text-indigo-500 mt-0.5">&#9654;</span> Avoid over-reliance on AI detection software as the sole basis for decisions</p>
+                            </div>
+                        </div>
+
+                        <h4 class="font-bold text-gray-900 text-lg mt-6 mb-2">The 5-Step AI Scaffolding Scale</h4>
+                        <p class="text-sm text-gray-600 mb-4">Use this scale to communicate the permitted level of AI use per assignment. Reference the level in your task instructions (e.g., "This is a Level 2 assignment").</p>
+
+                        <div class="space-y-3">
+                            <div class="flex items-stretch bg-gradient-to-r from-red-50 to-white border border-red-200 rounded-xl overflow-hidden">
+                                <div class="w-20 flex-shrink-0 bg-red-500 text-white flex flex-col items-center justify-center p-3">
+                                    <span class="text-2xl font-black font-heading">1</span>
+                                    <span class="text-[9px] font-bold uppercase tracking-wider">No AI</span>
+                                </div>
+                                <div class="p-4 flex-1">
+                                    <h5 class="font-bold text-gray-900 text-sm">No AI Assistance</h5>
+                                    <p class="text-xs text-gray-600 mt-1">Students rely solely on their own knowledge. No AI tools at any point.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-stretch bg-gradient-to-r from-orange-50 to-white border border-orange-200 rounded-xl overflow-hidden">
+                                <div class="w-20 flex-shrink-0 bg-orange-500 text-white flex flex-col items-center justify-center p-3">
+                                    <span class="text-2xl font-black font-heading">2</span>
+                                    <span class="text-[9px] font-bold uppercase tracking-wider">Ideas</span>
+                                </div>
+                                <div class="p-4 flex-1">
+                                    <h5 class="font-bold text-gray-900 text-sm">AI-Assisted Brainstorming</h5>
+                                    <p class="text-xs text-gray-600 mt-1">AI generates ideas. Final content created by student without direct AI input. Must cite AI.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-stretch bg-gradient-to-r from-amber-50 to-white border border-amber-200 rounded-xl overflow-hidden">
+                                <div class="w-20 flex-shrink-0 bg-amber-500 text-white flex flex-col items-center justify-center p-3">
+                                    <span class="text-2xl font-black font-heading">3</span>
+                                    <span class="text-[9px] font-bold uppercase tracking-wider">Draft</span>
+                                </div>
+                                <div class="p-4 flex-1">
+                                    <h5 class="font-bold text-gray-900 text-sm">AI-Supported Drafting</h5>
+                                    <p class="text-xs text-gray-600 mt-1">AI helps draft initial versions. Final must be significantly revised by student. Clear distinction required.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-stretch bg-gradient-to-r from-emerald-50 to-white border border-emerald-200 rounded-xl overflow-hidden">
+                                <div class="w-20 flex-shrink-0 bg-emerald-500 text-white flex flex-col items-center justify-center p-3">
+                                    <span class="text-2xl font-black font-heading">4</span>
+                                    <span class="text-[9px] font-bold uppercase tracking-wider">Collab</span>
+                                </div>
+                                <div class="p-4 flex-1">
+                                    <h5 class="font-bold text-gray-900 text-sm">AI-Collaborative Creation</h5>
+                                    <p class="text-xs text-gray-600 mt-1">AI content can be included. Student critically evaluates and edits. AI usage transparent and cited.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-stretch bg-gradient-to-r from-blue-50 to-white border border-blue-200 rounded-xl overflow-hidden">
+                                <div class="w-20 flex-shrink-0 bg-blue-600 text-white flex flex-col items-center justify-center p-3">
+                                    <span class="text-2xl font-black font-heading">5</span>
+                                    <span class="text-[9px] font-bold uppercase tracking-wider">Co-Create</span>
+                                </div>
+                                <div class="p-4 flex-1">
+                                    <h5 class="font-bold text-gray-900 text-sm">AI as Co-Creator</h5>
+                                    <p class="text-xs text-gray-600 mt-1">Extensive AI use. Student provides rationale, ensures original thought, maintains integrity with full citations.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-5 mt-4 flex items-start gap-3">
+                            <div class="bg-yellow-100 p-2 rounded-lg flex-shrink-0"><span class="text-xl">💡</span></div>
+                            <div>
+                                <h4 class="font-bold text-yellow-900">Pro Tip</h4>
+                                <p class="text-sm text-yellow-800 mt-1">Levels 1-2 are appropriate starting points for Middle School. High School and IB DP teachers may use Levels 1-5 depending on the task. Elementary use is teacher-directed and typically Level 1, with occasional guided Level 2.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 5: Approved Tools & the Approval Process -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-sky-700 to-blue-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-sky-200">Section 5</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Approved Tools & How to Request New Ones</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">No AI tool may be used for school-related purposes involving school data unless it appears on the <strong>AISA Approved Tools Register</strong>. The approval process is designed to be responsive, with a target of 15 school days from submission to decision.</p>
+
+                        <h4 class="font-bold text-gray-900 text-lg mb-3">Currently Approved Tools</h4>
+                        <div class="grid sm:grid-cols-3 gap-3">
+                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
+                                <span class="inline-block bg-emerald-200 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full mb-2">Active</span>
+                                <h5 class="font-bold text-emerald-900 text-sm">MagicSchool AI</h5>
+                                <p class="text-xs text-gray-500 mt-1">Lesson planning, differentiation, IEP support</p>
+                            </div>
+                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
+                                <span class="inline-block bg-emerald-200 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full mb-2">Active</span>
+                                <h5 class="font-bold text-emerald-900 text-sm">Google Gemini</h5>
+                                <p class="text-xs text-gray-500 mt-1">Drafting, content generation, lesson planning</p>
+                            </div>
+                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
+                                <span class="inline-block bg-emerald-200 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded-full mb-2">Active</span>
+                                <h5 class="font-bold text-emerald-900 text-sm">Canva for Education</h5>
+                                <p class="text-xs text-gray-500 mt-1">AI-powered design and visual materials</p>
+                            </div>
+                            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+                                <span class="inline-block bg-amber-200 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full mb-2">Pilot</span>
+                                <h5 class="font-bold text-amber-900 text-sm">Brisk Teaching</h5>
+                                <p class="text-xs text-gray-500 mt-1">Browser-based AI assistant for teachers</p>
+                            </div>
+                            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 text-center">
+                                <span class="inline-block bg-amber-200 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full mb-2">Pilot</span>
+                                <h5 class="font-bold text-amber-900 text-sm">Diffit</h5>
+                                <p class="text-xs text-gray-500 mt-1">Differentiated reading resources</p>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+                                <span class="inline-block bg-slate-200 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded-full mb-2">Evaluate</span>
+                                <h5 class="font-bold text-slate-800 text-sm">Khanmigo</h5>
+                                <p class="text-xs text-gray-500 mt-1">Socratic AI tutoring (under review)</p>
+                            </div>
+                        </div>
+
+                        <h4 class="font-bold text-gray-900 text-lg mt-6 mb-3">How to Request a New Tool</h4>
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-5">
+                            <div class="flex items-center gap-4 flex-wrap">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">1</div>
+                                    <span class="text-sm text-blue-900 font-medium">Submit Tool Request Form</span>
+                                </div>
+                                <svg class="w-4 h-4 text-blue-300 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">2</div>
+                                    <span class="text-sm text-blue-900 font-medium">Technical Review (Days 1-7)</span>
+                                </div>
+                                <svg class="w-4 h-4 text-blue-300 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">3</div>
+                                    <span class="text-sm text-blue-900 font-medium">Pedagogical Review (Days 5-10)</span>
+                                </div>
+                                <svg class="w-4 h-4 text-blue-300 hidden sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">4</div>
+                                    <span class="text-sm text-blue-900 font-medium">Decision (Days 10-15)</span>
+                                </div>
+                            </div>
+                            <p class="text-xs text-blue-700 mt-3 italic">Found a tool you think has value? Submit it through the approval process. The expectation is compliance by default and escalation by design.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Check 3 -->
+            <div class="relative pl-12 mb-16">
+                <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
+                    <span class="text-white font-bold text-sm">?</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden" id="quiz-3">
+                    <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 3</span>
+                        <h3 class="text-lg font-heading font-bold mt-1">Assignment Scaffolding</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="font-semibold text-gray-800 mb-4">A Grade 7 teacher assigns a research essay and tells students: "You may use AI to help generate initial ideas and topic explorations, but all final content must be created by you. Cite any AI assistance." What level on the Scaffolding Scale is this?</p>
+                        <div class="space-y-3" id="quiz-3-options">
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(3, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
+                                <span class="text-sm text-gray-700">Level 1 - No AI Assistance</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(3, this, true)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
+                                <span class="text-sm text-gray-700">Level 2 - AI-Assisted Brainstorming</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(3, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
+                                <span class="text-sm text-gray-700">Level 3 - AI-Supported Drafting</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(3, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
+                                <span class="text-sm text-gray-700">Level 5 - AI as Co-Creator</span>
+                            </div>
+                        </div>
+                        <div id="quiz-3-feedback" class="hidden mt-4 p-4 rounded-xl text-sm fade-in"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 6: Key Takeaways & Reflection -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-slate-800 to-slate-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-300">Section 6</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Key Takeaways & Professional Reflection</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-6">
+                            <h4 class="font-bold text-emerald-900 mb-4 text-lg">The Big Ideas</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-start gap-3">
+                                    <span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">1</span>
+                                    <p class="text-sm text-gray-700"><strong>Governance enables, not restricts.</strong> The policy creates structure so AI adoption can be fast, safe, and educationally meaningful.</p>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">2</span>
+                                    <p class="text-sm text-gray-700"><strong>Data protection is non-negotiable.</strong> Never enter student-identifiable information into unapproved tools. When in doubt, anonymize or consult IT.</p>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">3</span>
+                                    <p class="text-sm text-gray-700"><strong>Model what you expect.</strong> If we ask students to think deeply rather than outsource to AI, we must demonstrate the same standard.</p>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">4</span>
+                                    <p class="text-sm text-gray-700"><strong>Use the Scaffolding Scale.</strong> Communicate clear AI expectations per assignment so students know the boundaries before they begin.</p>
+                                </div>
+                                <div class="flex items-start gap-3">
+                                    <span class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">5</span>
+                                    <p class="text-sm text-gray-700"><strong>You have a voice.</strong> If you find a useful tool, submit a request. If workload feels unsustainable, raise it. This policy is a living document.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200 rounded-xl p-6">
+                            <h4 class="font-bold text-violet-900 mb-2 flex items-center gap-2"><span class="text-xl">🪞</span> Reflection Prompt</h4>
+                            <p class="text-sm text-violet-800 mb-3 italic">Take a moment to consider:</p>
+                            <p class="text-violet-900 font-semibold">Where does AI amplify your professional thinking, and where might it be replacing it?</p>
+                            <p class="text-xs text-violet-600 mt-3">This is the central question of AISA's professional standards conversation. There are no wrong answers - but the question deserves honest reflection.</p>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h4 class="font-bold text-slate-800 mb-3">Need Help or Have Questions?</h4>
+                            <div class="grid sm:grid-cols-2 gap-3 text-sm">
+                                <div class="flex items-center gap-2 text-gray-700">
+                                    <span class="text-teal-500">&#9654;</span>
+                                    <span><strong>Tool questions:</strong> IT / Data Protection Lead</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-700">
+                                    <span class="text-teal-500">&#9654;</span>
+                                    <span><strong>Curriculum integration:</strong> Head of Innovation, AI & Digital Learning</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-700">
+                                    <span class="text-teal-500">&#9654;</span>
+                                    <span><strong>Academic integrity:</strong> Division Principal or IB Coordinator</span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-700">
+                                    <span class="text-teal-500">&#9654;</span>
+                                    <span><strong>Safeguarding concerns:</strong> Designated Safeguarding Lead</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end timeline -->
+
+        <!-- Completion Banner -->
+        <div id="completion-banner" class="hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
+            <span class="text-5xl mb-4 block">🎉</span>
+            <h3 class="text-2xl font-heading font-black mb-2">Module Complete!</h3>
+            <p class="text-emerald-100 max-w-lg mx-auto">You've completed the AISA AI Vision & Ethical Framework training module. Thank you for investing in responsible AI use at AISA.</p>
+        </div>
+
+        <!-- Return Button -->
+        <div class="text-center pb-10">
+            <button onclick="window.location.href='index_updated.html'" class="bg-blue-800 text-white py-3 px-8 rounded-full hover:bg-blue-900 transition-colors shadow-lg font-semibold">
+                Return to Dashboard
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-blue-200 py-10">
+        <div class="container mx-auto px-6 text-center">
+            <p class="font-bold text-white mb-1 font-heading">AISA - American International School in Abu Dhabi</p>
+            <p class="text-sm text-blue-300">Teaching & Learning Guide | AI Vision & Ethical Framework Module</p>
+            <p class="text-xs text-blue-400 mt-4">Based on AISA AI Policy (AISA-POL-AI-2026, v2.0)</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Progress Tracking ---
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.module-checkbox');
+            const total = checkboxes.length;
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const pct = Math.round((checked / total) * 100);
+
+            document.getElementById('progress-bar').style.width = pct + '%';
+            document.getElementById('progress-text').textContent = pct + '% Done';
+
+            if (pct === 100) {
+                document.getElementById('completion-banner').classList.remove('hidden');
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                }
+            } else {
+                document.getElementById('completion-banner').classList.add('hidden');
+            }
+        }
+
+        // --- Quiz Logic ---
+        const quizAnswered = {};
+
+        function checkAnswer(quizNum, el, isCorrect) {
+            if (quizAnswered[quizNum]) return;
+            quizAnswered[quizNum] = true;
+
+            const options = document.querySelectorAll(`#quiz-${quizNum}-options .quiz-option`);
+            const feedback = document.getElementById(`quiz-${quizNum}-feedback`);
+
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                opt.style.opacity = '0.6';
+            });
+
+            el.style.opacity = '1';
+            el.classList.add('selected');
+
+            if (isCorrect) {
+                el.classList.add('correct');
+                el.querySelector('span:first-child').classList.add('!bg-emerald-500', '!text-white');
+
+                const explanations = {
+                    1: "Correct! AISA's approach balances enabling AI use with protecting students and institutional integrity. The goal is deliberate, safe, and educationally valuable adoption.",
+                    2: "Correct! The tool must be approved specifically for that data category. Names and identifiers must be removed. When in doubt, always consult the IT / Data Protection Lead before proceeding.",
+                    3: "Correct! This is Level 2 - AI-Assisted Brainstorming. Students can use AI for idea generation, but all final content must be their own. This is an appropriate starting point for Middle School."
+                };
+
+                feedback.innerHTML = '<div class="flex items-start gap-2"><span class="text-emerald-500 text-lg mt-0.5">&#10003;</span><span class="text-emerald-800">' + explanations[quizNum] + '</span></div>';
+                feedback.classList.remove('hidden');
+                feedback.classList.add('bg-emerald-50', 'border', 'border-emerald-200');
+            } else {
+                el.classList.add('incorrect');
+                el.querySelector('span:first-child').classList.add('!bg-red-500', '!text-white');
+
+                // Highlight the correct answer
+                options.forEach(opt => {
+                    if (opt.getAttribute('onclick') && opt.getAttribute('onclick').includes('true')) {
+                        opt.style.opacity = '1';
+                        opt.classList.add('correct');
+                        opt.querySelector('span:first-child').classList.add('!bg-emerald-500', '!text-white');
+                    }
+                });
+
+                const wrongExplanations = {
+                    1: "Not quite. AISA's approach is neither to ban AI nor allow unrestricted use. The policy creates structured governance that balances protecting students and preparing them for an AI-enabled world.",
+                    2: "Not quite. Even if a tool is on the Approved list, it must be specifically approved for the type of data being used. Names must always be removed, and the tool needs explicit approval for assessment data.",
+                    3: "Not quite. Since AI is only used for generating initial ideas and all final content must be student-created, this matches Level 2 - AI-Assisted Brainstorming."
+                };
+
+                feedback.innerHTML = '<div class="flex items-start gap-2"><span class="text-red-500 text-lg mt-0.5">&#10007;</span><span class="text-red-800">' + wrongExplanations[quizNum] + '</span></div>';
+                feedback.classList.remove('hidden');
+                feedback.classList.add('bg-red-50', 'border', 'border-red-200');
+            }
+        }
+
+        // Smooth scroll for timeline
+        document.querySelectorAll('.module-checkbox').forEach(cb => {
+            cb.addEventListener('change', function() {
+                if (this.checked) {
+                    const nextSection = this.closest('.relative').nextElementSibling;
+                    if (nextSection) {
+                        setTimeout(() => {
+                            nextSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 400);
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
