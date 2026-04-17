@@ -612,13 +612,7 @@
             font-size: 1.15rem;
         }
 
-        /* Hide the native Google Translate widget UI; we drive it ourselves */
-        #google_translate_element { display: none !important; }
-        .goog-te-banner-frame, .skiptranslate { display: none !important; }
-        body { top: 0 !important; }
-        .goog-logo-link, .goog-te-gadget span { display: none !important; }
-        .goog-te-gadget { color: transparent !important; font-size: 0 !important; }
-        font[style*="background-color"] { background-color: transparent !important; box-shadow: none !important; }
+        /* (Google Translate integration removed — we use a local AR dictionary) */
 
         /* RTL adjustments when Arabic is active */
         body.lang-ar { direction: rtl; text-align: right; }
@@ -707,9 +701,6 @@
             </div>
         </nav>
     </header>
-
-    <!-- Hidden Google Translate widget used for full-page translation -->
-    <div id="google_translate_element" aria-hidden="true"></div>
 
     <!-- Small toast shown while translation is being applied -->
     <div id="arToast" class="ar-toast" role="status" aria-live="polite"></div>
@@ -2076,10 +2067,13 @@
         });
 
         // =========================================================
-        // ARABIC LANGUAGE TOGGLE
-        // Uses the Google Translate element (loaded below) to switch
-        // the entire document between English and Arabic in-place.
+        // ARABIC LANGUAGE TOGGLE  (local dictionary, no network calls)
+        //
+        // Arabic translations are hand-written and stored in window.AR_DICT
+        // (return-to-school-arabic.js). The engine walks every text node
+        // and swaps EN ↔ AR instantly when the button is clicked.
         // =========================================================
+
         function showArToast(message) {
             const t = document.getElementById('arToast');
             if (!t) return;
@@ -2089,41 +2083,33 @@
             showArToast._tm = setTimeout(() => t.classList.remove('show'), 1800);
         }
 
-        function setGoogleTranslateLang(lang) {
-            // Find the hidden Google Translate <select> and trigger a change.
-            const tryFire = (attempt = 0) => {
-                const combo = document.querySelector('.goog-te-combo');
-                if (combo) {
-                    combo.value = lang; // 'ar' or ''  ('' restores original English)
-                    combo.dispatchEvent(new Event('change'));
-                    return true;
-                }
-                if (attempt < 30) {
-                    setTimeout(() => tryFire(attempt + 1), 200);
-                }
-                return false;
-            };
-            tryFire();
+        function isCurrentlyArabic() {
+            return document.body.classList.contains('lang-ar');
         }
 
         function updateArButtonLabel() {
-            const isArabic = document.body.classList.contains('lang-ar');
-            document.querySelectorAll('[data-ar-label]').forEach(el => {
-                el.textContent = isArabic ? 'Click here for English' : 'اضغط هنا للعربية';
-            });
+            const isArabic = isCurrentlyArabic();
             document.querySelectorAll('.ar-lang-btn').forEach(btn => {
                 btn.setAttribute('aria-label',
                     isArabic ? 'Switch language back to English' : 'Switch language to Arabic');
                 btn.setAttribute('title',
                     isArabic ? 'Click here for English' : 'اضغط هنا للعربية — Click here for Arabic');
+                // Make sure the button text is re-applied after the translator runs,
+                // since it's one of the text nodes the walker touches.
+                const span = btn.querySelector('[data-ar-label]');
+                if (span) {
+                    span.textContent = isArabic ? 'Click here for English' : 'اضغط هنا للعربية';
+                }
+                // Invert button direction so the text reads correctly in each mode
+                btn.style.direction = isArabic ? 'ltr' : 'rtl';
             });
         }
 
         function toggleArabic() {
             const body = document.body;
-            const goingToArabic = !body.classList.contains('lang-ar');
+            const goingToArabic = !isCurrentlyArabic();
 
-            // Smooth cross-fade during swap
+            // Cross-fade during the swap
             body.classList.add('lang-switching');
 
             setTimeout(() => {
@@ -2131,37 +2117,31 @@
                     body.classList.add('lang-ar');
                     document.documentElement.setAttribute('lang', 'ar');
                     document.documentElement.setAttribute('dir', 'rtl');
-                    setGoogleTranslateLang('ar');
-                    showArToast('جارٍ الترجمة إلى العربية…');
+                    if (typeof window.AR_APPLY === 'function') window.AR_APPLY('ar');
+                    showArToast('تمّ التحويل إلى العربية');
                 } else {
                     body.classList.remove('lang-ar');
                     document.documentElement.setAttribute('lang', 'en');
                     document.documentElement.setAttribute('dir', 'ltr');
-                    setGoogleTranslateLang('');   // restore original
+                    if (typeof window.AR_APPLY === 'function') window.AR_APPLY('en');
                     showArToast('Switched to English');
                 }
                 updateArButtonLabel();
-            }, 150);
+            }, 180);
 
             setTimeout(() => body.classList.remove('lang-switching'), 700);
         }
 
-        // Initialize Google Translate (loaded via external script tag below).
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'en',
-                includedLanguages: 'en,ar',
-                autoDisplay: false,
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-            }, 'google_translate_element');
-        }
-        window.googleTranslateElementInit = googleTranslateElementInit;
-
-        // Ensure button label is correct on load.
-        document.addEventListener('DOMContentLoaded', updateArButtonLabel);
+        // Build the cache after the DOM is ready so every node is captured.
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof window.AR_REBUILD_CACHE === 'function') {
+                window.AR_REBUILD_CACHE();
+            }
+            updateArButtonLabel();
+        });
     </script>
 
-    <!-- Google Translate loader (runs once the page is interactive) -->
-    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
+    <!-- Local Arabic dictionary + translation engine -->
+    <script src="return-to-school-arabic.js"></script>
 </body>
 </html>
