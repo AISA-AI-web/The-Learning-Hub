@@ -83,6 +83,410 @@
         }
         .gem-bubble-close { cursor: pointer; }
         .gem-bubble-close:hover { opacity: 0.7; }
+
+        /* =========================================================
+           PRESENTER MODE
+           ========================================================= */
+        #presenter-mode {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: radial-gradient(circle at 20% 20%, #1e1b4b 0%, #0a0a1a 60%, #000 100%);
+            color: #fff;
+            display: none;
+            overflow: hidden;
+        }
+        #presenter-mode.active { display: block; }
+        #presenter-mode::before {
+            content: '';
+            position: absolute;
+            top: -200px; left: -200px;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(239,68,68,0.15) 0%, transparent 70%);
+            animation: blob 12s infinite ease-in-out;
+            pointer-events: none;
+        }
+        #presenter-mode::after {
+            content: '';
+            position: absolute;
+            bottom: -200px; right: -200px;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%);
+            animation: blob 14s infinite ease-in-out reverse;
+            pointer-events: none;
+        }
+
+        .pm-slide {
+            position: absolute;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 6vh 6vw;
+            text-align: center;
+            overflow: hidden;
+        }
+        .pm-slide.current { display: flex; }
+
+        /* Slide entrance variations */
+        .pm-slide.current.enter-right      { animation: pmSlideInR .65s cubic-bezier(.2,.7,.2,1) both; }
+        .pm-slide.current.enter-left       { animation: pmSlideInL .65s cubic-bezier(.2,.7,.2,1) both; }
+        .pm-slide.current.enter-fade       { animation: pmFade .6s ease both; }
+        .pm-slide.current.enter-zoom       { animation: pmZoom .65s cubic-bezier(.2,.7,.2,1) both; }
+
+        @keyframes pmSlideInR { 0% { opacity:0; transform: translateX(80px);} 100% { opacity:1; transform: translateX(0);} }
+        @keyframes pmSlideInL { 0% { opacity:0; transform: translateX(-80px);} 100% { opacity:1; transform: translateX(0);} }
+        @keyframes pmFade     { 0% { opacity:0; transform: scale(.97);} 100% { opacity:1; transform: scale(1);} }
+        @keyframes pmZoom     { 0% { opacity:0; transform: scale(.85);} 100% { opacity:1; transform: scale(1);} }
+
+        /* Child stagger animation */
+        .pm-stagger > * {
+            opacity: 0;
+            animation: pmRise .55s cubic-bezier(.2,.7,.2,1) forwards;
+        }
+        .pm-stagger > *:nth-child(1)  { animation-delay: .15s; }
+        .pm-stagger > *:nth-child(2)  { animation-delay: .28s; }
+        .pm-stagger > *:nth-child(3)  { animation-delay: .41s; }
+        .pm-stagger > *:nth-child(4)  { animation-delay: .54s; }
+        .pm-stagger > *:nth-child(5)  { animation-delay: .67s; }
+        .pm-stagger > *:nth-child(6)  { animation-delay: .80s; }
+        .pm-stagger > *:nth-child(7)  { animation-delay: .93s; }
+        .pm-stagger > *:nth-child(8)  { animation-delay: 1.06s; }
+        .pm-stagger > *:nth-child(9)  { animation-delay: 1.19s; }
+        .pm-stagger > *:nth-child(10) { animation-delay: 1.32s; }
+        .pm-stagger > *:nth-child(11) { animation-delay: 1.45s; }
+        .pm-stagger > *:nth-child(12) { animation-delay: 1.58s; }
+
+        @keyframes pmRise { 0% { opacity:0; transform: translateY(24px);} 100% { opacity:1; transform: translateY(0);} }
+        @keyframes pmPop  { 0% { opacity:0; transform: scale(0);} 70% { transform: scale(1.08);} 100% { opacity:1; transform: scale(1);} }
+
+        .pm-pop { animation: pmPop .7s cubic-bezier(.2,.7,.2,1) both; }
+
+        /* Typographic scales tuned for a projector */
+        .pm-kicker {
+            font-family: 'Poppins', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            font-weight: 700;
+            font-size: clamp(0.8rem, 1vw, 1rem);
+            color: rgba(255,255,255,0.65);
+            margin-bottom: 1.25rem;
+        }
+        .pm-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 900;
+            font-size: clamp(2.75rem, 6.5vw, 6.5rem);
+            line-height: 1.02;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #fff 0%, #fecaca 55%, #fdba74 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+        .pm-subtitle {
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            font-size: clamp(1.1rem, 2.1vw, 2rem);
+            color: rgba(255,255,255,0.85);
+            max-width: 72ch;
+            line-height: 1.4;
+        }
+        .pm-body {
+            font-size: clamp(1rem, 1.5vw, 1.6rem);
+            color: rgba(255,255,255,0.9);
+            line-height: 1.55;
+            max-width: 80ch;
+        }
+        .pm-mega-num {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 900;
+            font-size: clamp(7rem, 18vw, 18rem);
+            line-height: 1;
+            background: linear-gradient(180deg, #fff 20%, rgba(255,255,255,0.15));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* Card styles inside slides */
+        .pm-card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 1.25rem;
+            padding: 1.5rem 1.25rem;
+            text-align: left;
+            transition: transform .3s ease, background .3s ease;
+        }
+        .pm-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.08); }
+        .pm-card-title { font-family:'Poppins', sans-serif; font-weight:700; font-size: clamp(1rem, 1.4vw, 1.3rem); margin-bottom:.4rem; }
+        .pm-card-body  { font-size: clamp(.85rem, 1.1vw, 1.05rem); color: rgba(255,255,255,0.8); line-height:1.45; }
+
+        .pm-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            padding: .5rem 1rem;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            font-weight: 600;
+            font-size: clamp(.75rem, 1vw, .95rem);
+            letter-spacing: .05em;
+        }
+
+        /* Controls */
+        .pm-topbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.1rem 1.5rem;
+            z-index: 210;
+            pointer-events: none;
+        }
+        .pm-topbar > * { pointer-events: auto; }
+        .pm-pill {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            padding: .5rem 1rem;
+            border-radius: 999px;
+            font-size: .85rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+        }
+        .pm-btn {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            padding: .55rem 1rem;
+            border-radius: 999px;
+            font-size: .85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+        }
+        .pm-btn:hover { background: rgba(255,255,255,0.18); transform: translateY(-1px); }
+        .pm-btn.primary { background: linear-gradient(135deg,#dc2626,#ea580c); border-color: transparent; }
+        .pm-btn.primary:hover { filter: brightness(1.08); }
+
+        .pm-bottombar {
+            position: fixed;
+            bottom: 1.5rem; left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.15);
+            padding: .45rem .6rem;
+            border-radius: 999px;
+            z-index: 210;
+        }
+        .pm-nav {
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .2s;
+        }
+        .pm-nav:hover { background: rgba(255,255,255,0.2); transform: scale(1.06); }
+        .pm-nav:disabled { opacity:.35; cursor: not-allowed; transform: none; }
+        .pm-counter {
+            color:#fff;
+            font-weight:600;
+            font-size:.85rem;
+            padding: 0 .6rem;
+            min-width: 64px;
+            text-align:center;
+        }
+
+        .pm-progress {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: rgba(255,255,255,0.08);
+            z-index: 205;
+        }
+        .pm-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ef4444, #f97316, #eab308);
+            transition: width .5s cubic-bezier(.2,.7,.2,1);
+            box-shadow: 0 0 20px rgba(249,115,22,0.5);
+        }
+
+        .pm-hint {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            color: rgba(255,255,255,0.5);
+            font-size: .75rem;
+            z-index: 210;
+            font-family: 'Inter', sans-serif;
+            letter-spacing: .05em;
+        }
+        .pm-hint kbd {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: .7rem;
+            margin: 0 2px;
+        }
+
+        /* Presenter-mode-specific colour accents */
+        .pm-accent-red    { color: #fca5a5; }
+        .pm-accent-orange { color: #fdba74; }
+        .pm-accent-amber  { color: #fcd34d; }
+        .pm-accent-green  { color: #86efac; }
+        .pm-accent-blue   { color: #93c5fd; }
+        .pm-accent-purple { color: #c4b5fd; }
+        .pm-accent-pink   { color: #f9a8d4; }
+        .pm-accent-teal   { color: #5eead4; }
+
+        .pm-ring {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: clamp(64px, 7vw, 96px);
+            height: clamp(64px, 7vw, 96px);
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 900;
+            font-size: clamp(1.5rem, 2.2vw, 2.2rem);
+        }
+        .pm-ring.green  { background: rgba(16,185,129,0.15); color:#86efac; border: 2px solid rgba(16,185,129,0.4); }
+        .pm-ring.yellow { background: rgba(234,179,8,0.15);  color:#fde047; border: 2px solid rgba(234,179,8,0.4); }
+        .pm-ring.red    { background: rgba(239,68,68,0.15);  color:#fca5a5; border: 2px solid rgba(239,68,68,0.4); }
+
+        .pm-check { color:#86efac; }
+        .pm-cross { color:#fca5a5; }
+
+        /* Launch button — attention-grabbing with pulsing ring */
+        .pm-launch-wrap {
+            position: relative;
+            display: inline-block;
+            padding: 6px; /* Space for the ping ring */
+        }
+        .pm-launch-wrap::before,
+        .pm-launch-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 999px;
+            pointer-events: none;
+        }
+        .pm-launch-wrap::before {
+            background: linear-gradient(135deg, #facc15, #f97316, #dc2626);
+            filter: blur(14px);
+            opacity: .55;
+            animation: pmLaunchGlow 2.4s ease-in-out infinite;
+            z-index: 0;
+        }
+        .pm-launch-wrap::after {
+            border: 2px solid rgba(253, 224, 71, 0.8);
+            animation: pmLaunchPing 2.2s cubic-bezier(0,0,0.2,1) infinite;
+            z-index: 0;
+        }
+        @keyframes pmLaunchGlow {
+            0%, 100% { opacity: .35; transform: scale(1); }
+            50%      { opacity: .7;  transform: scale(1.06); }
+        }
+        @keyframes pmLaunchPing {
+            0%   { transform: scale(1);    opacity: .9; }
+            80%  { transform: scale(1.25); opacity: 0; }
+            100% { transform: scale(1.25); opacity: 0; }
+        }
+        @keyframes pmLaunchBob {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-3px); }
+        }
+        @keyframes pmLaunchShine {
+            0%   { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .pm-launch-btn {
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(135deg, #facc15 0%, #f97316 50%, #dc2626 100%);
+            background-size: 200% auto;
+            border: 2px solid rgba(255,255,255,0.45);
+            color: #fff;
+            padding: 1rem 2rem;
+            border-radius: 999px;
+            font-weight: 800;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            letter-spacing: .08em;
+            cursor: pointer;
+            transition: transform .25s, box-shadow .25s, filter .25s;
+            display: inline-flex;
+            align-items: center;
+            gap: .65rem;
+            text-transform: uppercase;
+            box-shadow: 0 10px 30px rgba(220,38,38,0.45), inset 0 1px 0 rgba(255,255,255,0.3);
+            animation: pmLaunchBob 2.6s ease-in-out infinite, pmLaunchShine 4s linear infinite;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.25);
+        }
+        .pm-launch-btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            filter: brightness(1.08);
+            box-shadow: 0 16px 40px rgba(220,38,38,0.6), inset 0 1px 0 rgba(255,255,255,0.4);
+        }
+        .pm-launch-btn:active { transform: translateY(-1px) scale(1.0); }
+        .pm-launch-btn .pm-launch-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            transition: transform .25s;
+        }
+        .pm-launch-btn:hover .pm-launch-icon { transform: scale(1.1) rotate(8deg); }
+        .pm-launch-sparkle {
+            position: absolute;
+            top: -8px; right: -8px;
+            width: 24px; height: 24px;
+            background: #fde047;
+            border-radius: 50%;
+            box-shadow: 0 0 12px rgba(253,224,71,0.9);
+            animation: pmLaunchPing 1.8s ease-out infinite;
+            z-index: 2;
+        }
+        .pm-launch-sparkle::after {
+            content: '\2605'; /* star */
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7c2d12;
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        @media (max-width: 640px) {
+            .pm-slide { padding: 4vh 5vw; }
+            .pm-hint { display: none; }
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen">
@@ -122,6 +526,21 @@
                 </div>
                 <h2 class="text-3xl md:text-5xl font-black font-heading mb-4 leading-tight">Return to School<br>Emergency Protocol Training</h2>
                 <p class="text-red-100 max-w-2xl text-lg mb-6">ADEK Safe Education Protocol — mandatory training for all staff as a condition of school reopening. Complete all modules and the physical drill acknowledgment.</p>
+                <div class="mb-6">
+                    <div class="pm-launch-wrap">
+                        <span class="pm-launch-sparkle" aria-hidden="true"></span>
+                        <button onclick="enterPresenterMode()" class="pm-launch-btn" aria-label="Launch Presenter Mode">
+                            <span class="pm-launch-icon">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                            </span>
+                            Launch Presenter Mode
+                        </button>
+                    </div>
+                    <p class="text-red-100 text-sm mt-3 font-semibold flex items-center gap-2">
+                        <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        Presenters: click here to start the full-screen slide deck
+                    </p>
+                </div>
                 <div class="flex flex-wrap gap-6 text-sm text-red-200">
                     <span class="flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -740,6 +1159,430 @@
         </a>
     </div>
 
+    <!-- ============================================================
+         PRESENTER MODE OVERLAY
+         ============================================================ -->
+    <div id="presenter-mode" aria-hidden="true">
+        <!-- Top progress bar -->
+        <div class="pm-progress"><div id="pm-progress-fill" class="pm-progress-fill" style="width:0%"></div></div>
+
+        <!-- Top bar -->
+        <div class="pm-topbar">
+            <button class="pm-btn" onclick="exitPresenterMode()">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                Exit
+            </button>
+            <div class="flex items-center gap-2">
+                <span class="pm-pill">AISA · Return to School</span>
+                <button class="pm-btn" onclick="togglePmFullscreen()" title="Toggle fullscreen (F)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-5h-4m4 0v4m0-4l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5h-4m4 0v-4m0 4l-5-5"></path></svg>
+                    Fullscreen
+                </button>
+            </div>
+        </div>
+
+        <!-- ============ SLIDES ============ -->
+
+        <!-- Slide 1: Title -->
+        <section class="pm-slide" data-enter="fade">
+            <div class="pm-stagger">
+                <div class="flex flex-wrap gap-2 justify-center mb-6">
+                    <span class="pm-chip pm-accent-red">ADEK Mandatory</span>
+                    <span class="pm-chip pm-accent-orange">Required Training</span>
+                    <span class="pm-chip pm-accent-amber">Emergency Protocol</span>
+                </div>
+                <h1 class="pm-title">Return to School</h1>
+                <p class="pm-subtitle">Emergency Protocol Training</p>
+                <p class="pm-body mt-6" style="color:rgba(255,255,255,0.6); font-size:clamp(.9rem,1.1vw,1.1rem);">American International School of Abu Dhabi &nbsp;·&nbsp; ADEK Safe Education Protocol</p>
+                <div class="mt-10 flex flex-wrap gap-6 justify-center text-sm" style="color:rgba(255,255,255,0.7);">
+                    <span>~90 min total</span>
+                    <span>·</span>
+                    <span>9 Modules + Knowledge Checks</span>
+                    <span>·</span>
+                    <span>All Teaching Staff</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 2: Why We Are Here -->
+        <section class="pm-slide" data-enter="right">
+            <div class="pm-stagger" style="max-width: 1100px;">
+                <p class="pm-kicker pm-accent-red">Module 1 · Context</p>
+                <h2 class="pm-title" style="font-size: clamp(2.25rem, 5vw, 5rem);">Why We Are Here</h2>
+                <p class="pm-body mt-4">ADEK has directed all schools to resume face-to-face learning on <strong>Monday, April 20</strong>. As a condition of reopening, all teaching staff currently in the country must complete this emergency protocol training.</p>
+                <p class="pm-body mt-3" style="color:rgba(255,255,255,0.7);">ADEK will conduct a <strong>validation visit</strong> to verify readiness and issue approval.</p>
+            </div>
+        </section>
+
+        <!-- Slide 3: Three Pillars -->
+        <section class="pm-slide" data-enter="fade">
+            <p class="pm-kicker pm-accent-red">The Three Pillars of Today</p>
+            <div class="pm-stagger grid md:grid-cols-3 gap-6 max-w-6xl w-full">
+                <div class="pm-card">
+                    <div class="pm-ring red">!</div>
+                    <h3 class="pm-card-title pm-accent-red">Mandatory Training</h3>
+                    <p class="pm-card-body">Attendance is documented and submitted to ADEK.</p>
+                </div>
+                <div class="pm-card">
+                    <div class="pm-ring yellow">V</div>
+                    <h3 class="pm-card-title pm-accent-amber">Validation Visit</h3>
+                    <p class="pm-card-body">ADEK visit window: Friday 8AM — Sunday 5PM.</p>
+                </div>
+                <div class="pm-card">
+                    <div class="pm-ring green">D</div>
+                    <h3 class="pm-card-title pm-accent-green">Physical Drill</h3>
+                    <p class="pm-card-body">A shelter-in-place drill follows this session.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 4: Key Logistics -->
+        <section class="pm-slide" data-enter="left">
+            <p class="pm-kicker pm-accent-orange">Key Points Before Monday</p>
+            <h2 class="pm-title" style="font-size: clamp(2rem, 4vw, 4rem);">What's Changing</h2>
+            <div class="pm-stagger grid md:grid-cols-2 gap-6 max-w-5xl mt-8">
+                <div class="pm-card"><h3 class="pm-card-title pm-accent-orange">Buses Suspended</h3><p class="pm-card-body">Bus services remain suspended per MOE directive. Parents arrange private transport.</p></div>
+                <div class="pm-card"><h3 class="pm-card-title pm-accent-blue">Remote Learning Available</h3><p class="pm-card-body">Provided for students unable to attend. No hybrid classes with the same teacher.</p></div>
+                <div class="pm-card"><h3 class="pm-card-title pm-accent-amber">Parent Undertaking</h3><p class="pm-card-body">Parents sign an undertaking to return students to in-person education.</p></div>
+                <div class="pm-card"><h3 class="pm-card-title pm-accent-green">Staff Readiness</h3><p class="pm-card-body">All teaching staff complete this session + the physical drill.</p></div>
+            </div>
+        </section>
+
+        <!-- Slide 5: 12 Core Principles Intro -->
+        <section class="pm-slide" data-enter="zoom">
+            <div class="pm-stagger text-center">
+                <p class="pm-kicker pm-accent-blue">Module 2</p>
+                <div class="pm-mega-num">12</div>
+                <h2 class="pm-title" style="font-size: clamp(2rem, 4vw, 4rem);">Core Principles</h2>
+                <p class="pm-subtitle mt-4">The foundational rules that guide every decision.</p>
+            </div>
+        </section>
+
+        <!-- Slide 6: Principles 1-6 -->
+        <section class="pm-slide" data-enter="right">
+            <p class="pm-kicker pm-accent-blue">12 Core Principles · Part 1 of 2</p>
+            <div class="pm-stagger grid sm:grid-cols-2 gap-4 max-w-5xl w-full mt-4">
+                <div class="pm-card flex gap-3 items-start"><span class="pm-ring" style="width:44px;height:44px;font-size:1rem;background:rgba(59,130,246,0.2);color:#93c5fd;border:2px solid rgba(59,130,246,0.4);margin:0;">1</span><p class="pm-card-body">Safety of students and staff is the <strong>highest priority</strong></p></div>
+                <div class="pm-card flex gap-3 items-start"><span class="pm-ring" style="width:44px;height:44px;font-size:1rem;background:rgba(59,130,246,0.2);color:#93c5fd;border:2px solid rgba(59,130,246,0.4);margin:0;">2</span><p class="pm-card-body">Stay inside <strong>protected buildings</strong> and facilities</p></div>
+                <div class="pm-card flex gap-3 items-start"><span class="pm-ring" style="width:44px;height:44px;font-size:1rem;background:rgba(59,130,246,0.2);color:#93c5fd;border:2px solid rgba(59,130,246,0.4);margin:0;">3</span><p class="pm-card-body"><strong>Avoid windows, glass,</strong> and exposed areas</p></div>
+                <div class="pm-card flex gap-3 items-start"><span class="pm-ring" style="width:44px;height:44px;font-size:1rem;background:rgba(59,130,246,0.2);color:#93c5fd;border:2px solid rgba(59,130,246,0.4);margin:0;">4</span><p class="pm-card-body">Move to <strong>internal and safe areas</strong> if needed</p></div>
+                <div class="pm-card flex gap-3 items-start"><span class="pm-ring" style="width:44px;height:44px;font-size:1rem;background:rgba(59,130,246,0.2);color:#93c5fd;border:2px solid rgba(59,130,246,0.4);margin:0;">5</span><p class="pm-card-body"><strong>Immediate adherence</strong> to official instructions</p></div>
+                <div class="pm-card flex gap-3 items-start"><span class="pm-ring" style="width:44px;height:44px;font-size:1rem;background:rgba(59,130,246,0.2);color:#93c5fd;border:2px solid rgba(59,130,246,0.4);margin:0;">6</span><p class="pm-card-body">Prevent <strong>crowding</strong> or uncontrolled movement</p></div>
+            </div>
+        </section>
+
+        <!-- Slide 7: Principles 7-12 -->
+        <section class="pm-slide" data-enter="right">
+            <p class="pm-kicker pm-accent-blue">12 Core Principles · Part 2 of 2</p>
+            <div class="pm-stagger grid sm:grid-cols-2 gap-4 max-w-5xl w-full mt-4">
+                <div class="pm-card flex gap-3 items-start"><span class="pm-ring" style="width:44px;height:44px;font-size:1rem;background:rgba(59,130,246,0.2);color:#93c5fd;border:2px solid rgba(59,130,246,0.4);margin:0;">7</span><p class="pm-card-body"><strong>Reassure students;</strong> avoid panic or fear during alerts</p></div>
+                <div class="pm-card flex gap-3 items-start"><span class="pm-ring" style="width:44px;height:44px;font-size:1rem;background:rgba(59,130,246,0.2);color:#93c5fd;border:2px solid rgba(59,130,246,0.4);margin:0;">8</span><p class="pm-card-body"><strong>No photos, publishing,</strong> or sharing unofficial info</p></div>
+                <div class="pm-card flex gap-3 items-start"><span class="pm-ring" style="width:44px;height:44px;font-size:1rem;background:rgba(59,130,246,0.2);color:#93c5fd;border:2px solid rgba(59,130,246,0.4);margin:0;">9</span><p class="pm-card-body"><strong>Suspend movement,</strong> learning, dismissal during alerts</p></div>
+                <div class="pm-card flex gap-3 items-start"><span class="pm-ring" style="width:44px;height:44px;font-size:1rem;background:rgba(59,130,246,0.2);color:#93c5fd;border:2px solid rgba(59,130,246,0.4);margin:0;">10</span><p class="pm-card-body">All <strong>external activities</strong> must be stopped</p></div>
+                <div class="pm-card flex gap-3 items-start"><span class="pm-ring" style="width:44px;height:44px;font-size:1rem;background:rgba(59,130,246,0.2);color:#93c5fd;border:2px solid rgba(59,130,246,0.4);margin:0;">11</span><p class="pm-card-body">All staff must be <strong>trained</strong> on these procedures</p></div>
+                <div class="pm-card flex gap-3 items-start"><span class="pm-ring" style="width:44px;height:44px;font-size:1rem;background:rgba(59,130,246,0.2);color:#93c5fd;border:2px solid rgba(59,130,246,0.4);margin:0;">12</span><p class="pm-card-body">Maintain readiness to <strong>suspend in-person learning</strong></p></div>
+            </div>
+        </section>
+
+        <!-- Slide 8: Risk Levels -->
+        <section class="pm-slide" data-enter="fade">
+            <p class="pm-kicker pm-accent-green">Module 3 · Operational Risk Levels</p>
+            <h2 class="pm-title" style="font-size: clamp(2rem, 4vw, 4rem);">Green · Yellow · Red</h2>
+            <div class="pm-stagger grid md:grid-cols-3 gap-6 max-w-6xl w-full mt-8">
+                <div class="pm-card text-center" style="border-color:rgba(16,185,129,0.35);">
+                    <div class="pm-ring green" style="margin:0 auto 1rem;">G</div>
+                    <h3 class="pm-card-title pm-accent-green text-center">GREEN</h3>
+                    <p class="pm-card-body text-center"><em>Low risk / stable</em><br>No alerts. Classes indoors. Readiness enhanced. No morning assembly or outdoor activities.</p>
+                </div>
+                <div class="pm-card text-center" style="border-color:rgba(234,179,8,0.35);">
+                    <div class="pm-ring yellow" style="margin:0 auto 1rem;">Y</div>
+                    <h3 class="pm-card-title pm-accent-amber text-center">YELLOW</h3>
+                    <p class="pm-card-body text-center"><em>Medium risk</em><br>Classes continue during alerts with preventive measures. Stop movement and shelter immediately.</p>
+                </div>
+                <div class="pm-card text-center" style="border-color:rgba(239,68,68,0.35);">
+                    <div class="pm-ring red" style="margin:0 auto 1rem;">R</div>
+                    <h3 class="pm-card-title pm-accent-red text-center">RED</h3>
+                    <p class="pm-card-body text-center"><em>Direct danger</em><br>Immediate shift to remote learning. Do not resume in-person education until official approval.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 9: Green is not business as usual -->
+        <section class="pm-slide" data-enter="zoom">
+            <div class="pm-stagger text-center max-w-4xl">
+                <p class="pm-kicker pm-accent-amber">Important to Remember</p>
+                <h2 class="pm-title" style="font-size: clamp(2rem, 4.5vw, 4.5rem);">Even GREEN is <em>not</em> business as usual</h2>
+                <p class="pm-subtitle mt-6">No outdoor activities. No assemblies. Indoor only. Authorities determine risk levels based on location and proximity to critical infrastructure.</p>
+            </div>
+        </section>
+
+        <!-- Slide 10: Stage 1 -->
+        <section class="pm-slide" data-enter="right">
+            <div class="pm-stagger max-w-5xl w-full">
+                <p class="pm-kicker pm-accent-purple">Module 4 · Stage 1</p>
+                <h2 class="pm-title" style="font-size: clamp(2rem, 4.5vw, 4.5rem);">Before Arrival</h2>
+                <div class="grid md:grid-cols-3 gap-4 mt-8">
+                    <div class="pm-card"><h3 class="pm-card-title pm-accent-green">No alert</h3><p class="pm-card-body">Student leaves normally. No morning assembly.</p></div>
+                    <div class="pm-card"><h3 class="pm-card-title pm-accent-amber">Alert before leaving</h3><p class="pm-card-body">Stay home in a safe internal place, away from windows.</p></div>
+                    <div class="pm-card"><h3 class="pm-card-title pm-accent-red">Alert en route</h3><p class="pm-card-body">Follow official message. Do not drop off in exposed areas.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 11: Stage 2 -->
+        <section class="pm-slide" data-enter="right">
+            <div class="pm-stagger max-w-5xl w-full">
+                <p class="pm-kicker pm-accent-purple">Module 4 · Stage 2</p>
+                <h2 class="pm-title" style="font-size: clamp(2rem, 4.5vw, 4.5rem);">Arrival &amp; Handover</h2>
+                <div class="grid md:grid-cols-2 gap-4 mt-8">
+                    <div class="pm-card"><h3 class="pm-card-title pm-accent-green">No alert</h3><p class="pm-card-body">Enter building directly. No assembly. No gathering at gates.</p></div>
+                    <div class="pm-card"><h3 class="pm-card-title pm-accent-red">Alert in place</h3><p class="pm-card-body">Parent and student enter building immediately. Do not wait outside.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 12: Stage 3 -->
+        <section class="pm-slide" data-enter="right">
+            <div class="pm-stagger max-w-5xl w-full">
+                <p class="pm-kicker pm-accent-purple">Module 4 · Stage 3</p>
+                <h2 class="pm-title" style="font-size: clamp(2rem, 4.5vw, 4.5rem);">Inside School</h2>
+                <div class="grid md:grid-cols-2 gap-4 mt-8">
+                    <div class="pm-card"><h3 class="pm-card-title pm-accent-green">No alert</h3><p class="pm-card-body">Classes indoors. No assembly. Break time inside classrooms.</p></div>
+                    <div class="pm-card"><h3 class="pm-card-title pm-accent-red">Alert</h3><p class="pm-card-body">Stop all activities. Stay in safe area. Students sit low, calm, away from windows. Staff outside go to nearest internal facility.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 13: Stage 4 -->
+        <section class="pm-slide" data-enter="right">
+            <div class="pm-stagger max-w-5xl w-full">
+                <p class="pm-kicker pm-accent-purple">Module 4 · Stage 4</p>
+                <h2 class="pm-title" style="font-size: clamp(2rem, 4.5vw, 4.5rem);">Dismissal &amp; Return</h2>
+                <div class="grid md:grid-cols-2 gap-4 mt-8">
+                    <div class="pm-card"><h3 class="pm-card-title pm-accent-green">No alert</h3><p class="pm-card-body">Orderly, staggered dismissal.</p></div>
+                    <div class="pm-card"><h3 class="pm-card-title pm-accent-amber">Alert before leaving</h3><p class="pm-card-body">Suspend dismissal. Do not evacuate.</p></div>
+                    <div class="pm-card"><h3 class="pm-card-title pm-accent-red">Alert during handover</h3><p class="pm-card-body">Move to safe place.</p></div>
+                    <div class="pm-card"><h3 class="pm-card-title pm-accent-blue">Alert cleared</h3><p class="pm-card-body">Resume staggered dismissal. No crowds at gates.</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 14: DO -->
+        <section class="pm-slide" data-enter="left">
+            <div class="pm-stagger max-w-4xl w-full">
+                <p class="pm-kicker pm-accent-green">Module 5 · Your Role</p>
+                <h2 class="pm-title" style="font-size: clamp(2.25rem, 5vw, 5rem);">DO This</h2>
+                <ul class="pm-stagger grid md:grid-cols-2 gap-3 mt-8 text-left">
+                    <li class="pm-card flex gap-3 items-start"><span class="pm-check mt-1">&#10003;</span><span class="pm-card-body">Know your safe zone and route to reach it</span></li>
+                    <li class="pm-card flex gap-3 items-start"><span class="pm-check mt-1">&#10003;</span><span class="pm-card-body">Guide students calmly and quickly to the safe zone</span></li>
+                    <li class="pm-card flex gap-3 items-start"><span class="pm-check mt-1">&#10003;</span><span class="pm-card-body">Take headcount immediately — report missing students</span></li>
+                    <li class="pm-card flex gap-3 items-start"><span class="pm-check mt-1">&#10003;</span><span class="pm-card-body">Keep students calm: steady voice, honest reassurance</span></li>
+                    <li class="pm-card flex gap-3 items-start"><span class="pm-check mt-1">&#10003;</span><span class="pm-card-body">Watch for distress signs — refer to counselor</span></li>
+                    <li class="pm-card flex gap-3 items-start"><span class="pm-check mt-1">&#10003;</span><span class="pm-card-body">Stay in safe zone until official all-clear</span></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Slide 15: DO NOT -->
+        <section class="pm-slide" data-enter="right">
+            <div class="pm-stagger max-w-4xl w-full">
+                <p class="pm-kicker pm-accent-red">Module 5 · Your Role</p>
+                <h2 class="pm-title" style="font-size: clamp(2.25rem, 5vw, 5rem);">Do NOT</h2>
+                <ul class="pm-stagger grid md:grid-cols-2 gap-3 mt-8 text-left">
+                    <li class="pm-card flex gap-3 items-start"><span class="pm-cross mt-1">&#10007;</span><span class="pm-card-body">Do NOT evacuate the building</span></li>
+                    <li class="pm-card flex gap-3 items-start"><span class="pm-cross mt-1">&#10007;</span><span class="pm-card-body">Do NOT allow students near windows or glass</span></li>
+                    <li class="pm-card flex gap-3 items-start"><span class="pm-cross mt-1">&#10007;</span><span class="pm-card-body">Do NOT take photographs or video</span></li>
+                    <li class="pm-card flex gap-3 items-start"><span class="pm-cross mt-1">&#10007;</span><span class="pm-card-body">Do NOT share anything on social media</span></li>
+                    <li class="pm-card flex gap-3 items-start"><span class="pm-cross mt-1">&#10007;</span><span class="pm-card-body">Do NOT contact parents individually</span></li>
+                    <li class="pm-card flex gap-3 items-start"><span class="pm-cross mt-1">&#10007;</span><span class="pm-card-body">Do NOT release students during an alert</span></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Slide 16: Critical Distinction -->
+        <section class="pm-slide" data-enter="zoom">
+            <div class="pm-stagger text-center max-w-5xl">
+                <p class="pm-kicker pm-accent-amber">Critical Distinction</p>
+                <h2 class="pm-title" style="font-size: clamp(2.25rem, 5vw, 5rem);">Shelter in Place, <span style="color:#fca5a5;">not</span> Evacuate</h2>
+                <div class="grid md:grid-cols-2 gap-6 mt-10">
+                    <div class="pm-card text-center">
+                        <div class="pm-ring red" style="margin:0 auto 1rem;">F</div>
+                        <h3 class="pm-card-title pm-accent-red">Fire = move OUT</h3>
+                        <p class="pm-card-body">Evacuate to assembly points outside.</p>
+                    </div>
+                    <div class="pm-card text-center">
+                        <div class="pm-ring" style="background:rgba(59,130,246,0.15);color:#93c5fd;border:2px solid rgba(59,130,246,0.4);margin:0 auto 1rem;">S</div>
+                        <h3 class="pm-card-title pm-accent-blue">This protocol = move INWARD</h3>
+                        <p class="pm-card-body">To interior spaces away from windows.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 17: Safe Zones -->
+        <section class="pm-slide" data-enter="fade">
+            <p class="pm-kicker pm-accent-teal">Module 6 · Know Your Location</p>
+            <h2 class="pm-title" style="font-size: clamp(2rem, 4.5vw, 4.5rem);">Safe Zones</h2>
+            <p class="pm-subtitle mt-4 max-w-4xl">A designated interior space providing temporary protection during emergencies, away from external facades and windows.</p>
+            <div class="pm-stagger grid sm:grid-cols-2 md:grid-cols-3 gap-4 max-w-6xl mt-10 w-full">
+                <div class="pm-card text-center"><h3 class="pm-card-title pm-accent-teal">Indoor Location</h3><p class="pm-card-body">Away from external facades and windows</p></div>
+                <div class="pm-card text-center"><h3 class="pm-card-title pm-accent-teal">Structural Strength</h3><p class="pm-card-body">Reduces impact and blast waves</p></div>
+                <div class="pm-card text-center"><h3 class="pm-card-title pm-accent-teal">Hazard-Free &amp; Spacious</h3><p class="pm-card-body">Fits all occupants safely</p></div>
+                <div class="pm-card text-center"><h3 class="pm-card-title pm-accent-teal">1-Minute Access</h3><p class="pm-card-body">Reachable within 60 seconds max</p></div>
+                <div class="pm-card text-center"><h3 class="pm-card-title pm-accent-teal">Clearly Marked</h3><p class="pm-card-body">Identification signs visible and posted</p></div>
+                <div class="pm-card text-center"><h3 class="pm-card-title pm-accent-teal">Linked to Plan</h3><p class="pm-card-body">Part of AISA's emergency protocol</p></div>
+            </div>
+        </section>
+
+        <!-- Slide 18: Wellbeing Step 1 -->
+        <section class="pm-slide" data-enter="right">
+            <div class="pm-stagger max-w-4xl text-center">
+                <p class="pm-kicker pm-accent-pink">Module 7 · Student Wellbeing · Step 1</p>
+                <div class="pm-mega-num" style="font-size:clamp(6rem,12vw,12rem);">1</div>
+                <h2 class="pm-title" style="font-size: clamp(2rem, 4.5vw, 4.5rem);">Regulate Yourself First</h2>
+                <p class="pm-subtitle mt-4">Take slow, deep breaths. Keep your voice steady and calm. Avoid panic. Students read adult body language instantly.</p>
+            </div>
+        </section>
+
+        <!-- Slide 19: Wellbeing Step 2 -->
+        <section class="pm-slide" data-enter="right">
+            <div class="pm-stagger max-w-4xl text-center">
+                <p class="pm-kicker pm-accent-pink">Module 7 · Student Wellbeing · Step 2</p>
+                <div class="pm-mega-num" style="font-size:clamp(6rem,12vw,12rem);">2</div>
+                <h2 class="pm-title" style="font-size: clamp(2rem, 4.5vw, 4.5rem);">Gather and Reassure</h2>
+                <p class="pm-subtitle mt-4">Move students away from windows. Keep the group close to you and to each other. Use a smile.</p>
+            </div>
+        </section>
+
+        <!-- Slide 20: Wellbeing Step 3 -->
+        <section class="pm-slide" data-enter="right">
+            <div class="pm-stagger max-w-4xl text-center">
+                <p class="pm-kicker pm-accent-pink">Module 7 · Student Wellbeing · Step 3</p>
+                <div class="pm-mega-num" style="font-size:clamp(6rem,12vw,12rem);">3</div>
+                <h2 class="pm-title" style="font-size: clamp(2rem, 4.5vw, 4.5rem);">Use Honest Words</h2>
+                <p class="pm-subtitle mt-4">"We are safe here together." "That was loud, but we are safe." Normalize: "It's okay to feel scared or surprised."</p>
+                <p class="pm-body mt-3" style="color:rgba(255,255,255,0.6);">Keep them engaged with drawing or storytelling.</p>
+            </div>
+        </section>
+
+        <!-- Slide 21: Signs for referral -->
+        <section class="pm-slide" data-enter="fade">
+            <div class="pm-stagger max-w-4xl text-center">
+                <p class="pm-kicker pm-accent-red">Watch For</p>
+                <h2 class="pm-title" style="font-size: clamp(2rem, 4.5vw, 4.5rem);">Signs Needing Counselor Referral</h2>
+                <div class="grid sm:grid-cols-2 gap-4 mt-8 text-left">
+                    <div class="pm-card"><p class="pm-card-body">Excessive fear or crying</p></div>
+                    <div class="pm-card"><p class="pm-card-body">Withdrawal from peers</p></div>
+                    <div class="pm-card"><p class="pm-card-body">Difficulty concentrating</p></div>
+                    <div class="pm-card"><p class="pm-card-body">Physical complaints (headache, nausea)</p></div>
+                </div>
+                <p class="pm-body mt-6" style="color:rgba(255,255,255,0.7);">Counselors should be prepared for increased referrals in the first week.</p>
+            </div>
+        </section>
+
+        <!-- Slide 22: Remote Learning -->
+        <section class="pm-slide" data-enter="left">
+            <div class="pm-stagger max-w-5xl w-full">
+                <p class="pm-kicker pm-accent-orange">Module 8 · Remote Learning &amp; Monday Logistics</p>
+                <h2 class="pm-title" style="font-size: clamp(2rem, 4.5vw, 4.5rem);">Hybrid Rules &amp; DL Support</h2>
+                <div class="pm-card mt-6" style="border-color:rgba(234,179,8,0.4); background:rgba(234,179,8,0.08);">
+                    <p class="pm-card-body"><strong class="pm-accent-amber">ADEK Rule:</strong> Face-to-face and distance learning students must NOT be combined with the same teacher at the same time.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4 mt-6">
+                    <div class="pm-card">
+                        <h3 class="pm-card-title pm-accent-orange">DL Student Options</h3>
+                        <p class="pm-card-body"><strong>1.</strong> Dedicated synchronous sessions scheduled separately.</p>
+                        <p class="pm-card-body mt-1"><strong>2.</strong> Exclusive asynchronous work — no live sessions required.</p>
+                        <p class="pm-card-body mt-1"><strong>3.</strong> Alternative model proposed to ADEK for approval.</p>
+                    </div>
+                    <div class="pm-card">
+                        <h3 class="pm-card-title pm-accent-orange">Mandatory Check-ins</h3>
+                        <p class="pm-card-body">Minimum <strong>15-min group check-in</strong> with ALL DL students daily.</p>
+                        <p class="pm-card-body mt-1"><strong>Elementary:</strong> Learning Support Team (consider time zones).</p>
+                        <p class="pm-card-body mt-1"><strong>Secondary:</strong> Counselors (consider time zones).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 23: Physical Drill -->
+        <section class="pm-slide" data-enter="fade">
+            <p class="pm-kicker pm-accent-red">Module 9 · Physical Drill</p>
+            <h2 class="pm-title" style="font-size: clamp(2rem, 4.5vw, 4.5rem);">The 6-Step Drill</h2>
+            <div class="pm-stagger grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-6xl mt-10 w-full">
+                <div class="pm-card"><h3 class="pm-card-title">1. Division leaders assign safe zones</h3><p class="pm-card-body">Your specific safe zone shown on the building map.</p></div>
+                <div class="pm-card"><h3 class="pm-card-title">2. Walk the route</h3><p class="pm-card-body">Time it. Must be under 60 seconds.</p></div>
+                <div class="pm-card"><h3 class="pm-card-title">3. PA system test</h3><p class="pm-card-body">Confirm you can hear it from your location.</p></div>
+                <div class="pm-card"><h3 class="pm-card-title">4. Simulated shelter-in-place</h3><p class="pm-card-body">Move to safe zone as if real. Sit low, away from windows.</p></div>
+                <div class="pm-card"><h3 class="pm-card-title">5. Headcount and report</h3><p class="pm-card-body">Red/green cards + Alert Attendance group message.</p></div>
+                <div class="pm-card"><h3 class="pm-card-title">6. All-clear and debrief</h3><p class="pm-card-body">Regroup. Discuss what worked and adjustments.</p></div>
+            </div>
+        </section>
+
+        <!-- Slide 24: Treat as real -->
+        <section class="pm-slide" data-enter="zoom">
+            <div class="pm-stagger text-center max-w-4xl">
+                <p class="pm-kicker pm-accent-red">Today</p>
+                <h2 class="pm-title" style="font-size: clamp(2.5rem, 6vw, 6rem);">Treat this drill as real.</h2>
+                <p class="pm-subtitle mt-6">ADEK validation visit may happen today. Attendance records and signed acknowledgments will be submitted to ADEK as part of the reopening validation.</p>
+            </div>
+        </section>
+
+        <!-- Slide 25: Acknowledgment QR -->
+        <section class="pm-slide" data-enter="zoom">
+            <div class="pm-stagger max-w-5xl w-full text-center">
+                <p class="pm-kicker pm-accent-amber">Final Step</p>
+                <h2 class="pm-title" style="font-size: clamp(2.25rem, 5vw, 5rem);">Complete Your Acknowledgment</h2>
+                <p class="pm-subtitle mt-4">Scan the QR code to open the training acknowledgment form on your phone.</p>
+                <div class="mt-10 flex flex-col md:flex-row items-center justify-center gap-10">
+                    <div class="pm-card" style="padding: 1.25rem; background: #ffffff; border-color: rgba(255,255,255,0.3);">
+                        <img src="qrcode_docs.google.com.png" alt="Scan QR code to open the acknowledgment form" style="width: clamp(220px, 26vw, 340px); height: clamp(220px, 26vw, 340px); display:block; border-radius: 0.5rem;">
+                    </div>
+                    <div class="text-left max-w-md">
+                        <ol class="pm-body space-y-3" style="list-style: decimal; padding-left: 1.25rem;">
+                            <li>Open your phone camera</li>
+                            <li>Point it at the QR code</li>
+                            <li>Tap the link that appears</li>
+                            <li>Fill in your name, division, and acknowledgment</li>
+                        </ol>
+                        <p class="pm-body mt-6" style="color:rgba(255,255,255,0.7); font-size: clamp(.85rem, 1vw, 1rem);">Or visit <span class="pm-accent-amber">docs.google.com/forms/…</span> directly from the dashboard.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Slide 26: Closing -->
+        <section class="pm-slide" data-enter="fade">
+            <div class="pm-stagger text-center">
+                <p class="pm-kicker pm-accent-amber">AISA Lions</p>
+                <h2 class="pm-title" style="font-size: clamp(2.5rem, 6vw, 6rem);">Your safety.<br>Their safety.<br>Our responsibility.</h2>
+                <p class="pm-subtitle mt-8" style="color:rgba(255,255,255,0.7);">Responsible · Safe · Respectful · Kind</p>
+                <div class="mt-10 flex flex-wrap gap-3 justify-center">
+                    <button class="pm-btn primary" onclick="goToSlide(0)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                        Start over
+                    </button>
+                    <button class="pm-btn" onclick="exitPresenterMode()">Exit presenter mode</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom nav -->
+        <div class="pm-bottombar">
+            <button id="pm-prev" class="pm-nav" onclick="prevSlide()" title="Previous (←)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <div class="pm-counter"><span id="pm-current">1</span> / <span id="pm-total">1</span></div>
+            <button id="pm-next" class="pm-nav" onclick="nextSlide()" title="Next (→ / Space)">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+        </div>
+
+        <div class="pm-hint">
+            <kbd>←</kbd><kbd>→</kbd> navigate &nbsp; · &nbsp; <kbd>F</kbd> fullscreen &nbsp; · &nbsp; <kbd>Esc</kbd> exit
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-gray-900 text-gray-400 py-8 text-center text-sm">
         <p class="font-heading font-semibold text-white mb-1">American International School of Abu Dhabi</p>
@@ -799,6 +1642,134 @@
                 const svgEl = this.nextElementSibling.querySelector('svg');
                 if (this.checked) { svgEl.style.display = 'block'; } else { svgEl.style.display = 'none'; }
             });
+        });
+
+        /* ==========================================================
+           PRESENTER MODE CONTROLLER
+           ========================================================== */
+        const pmOverlay = document.getElementById('presenter-mode');
+        const pmSlides = pmOverlay.querySelectorAll('.pm-slide');
+        const pmTotal = pmSlides.length;
+        let pmCurrent = 0;
+        let pmActive = false;
+        let pmDirection = 1; // 1 forward, -1 back
+
+        document.getElementById('pm-total').textContent = pmTotal;
+
+        function enterPresenterMode() {
+            pmActive = true;
+            pmOverlay.classList.add('active');
+            pmOverlay.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+            goToSlide(0);
+            // Try full-screen automatically; user can toggle with F
+            try {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                }
+            } catch (e) { /* ignore */ }
+        }
+
+        function exitPresenterMode() {
+            pmActive = false;
+            pmOverlay.classList.remove('active');
+            pmOverlay.setAttribute('aria-hidden', 'true');
+            document.body.style.overflow = '';
+            if (document.fullscreenElement && document.exitFullscreen) {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        function togglePmFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen?.().catch(() => {});
+            } else {
+                document.exitFullscreen?.().catch(() => {});
+            }
+        }
+
+        function goToSlide(index) {
+            if (index < 0) index = 0;
+            if (index >= pmTotal) index = pmTotal - 1;
+            pmDirection = index >= pmCurrent ? 1 : -1;
+            pmCurrent = index;
+            renderCurrentSlide();
+        }
+
+        function nextSlide() {
+            if (pmCurrent < pmTotal - 1) { pmDirection = 1; pmCurrent++; renderCurrentSlide(); }
+        }
+        function prevSlide() {
+            if (pmCurrent > 0) { pmDirection = -1; pmCurrent--; renderCurrentSlide(); }
+        }
+
+        function renderCurrentSlide() {
+            pmSlides.forEach((s, i) => {
+                s.classList.remove('current', 'enter-right', 'enter-left', 'enter-fade', 'enter-zoom');
+                if (i === pmCurrent) {
+                    // Force reflow so animation restarts
+                    void s.offsetWidth;
+                    s.classList.add('current');
+                    const declared = s.getAttribute('data-enter') || 'fade';
+                    let anim = declared;
+                    // When going backwards, flip horizontal motion for natural feel
+                    if (pmDirection === -1) {
+                        if (declared === 'right') anim = 'left';
+                        else if (declared === 'left') anim = 'right';
+                    }
+                    s.classList.add('enter-' + anim);
+                }
+            });
+            document.getElementById('pm-current').textContent = pmCurrent + 1;
+            document.getElementById('pm-progress-fill').style.width = (((pmCurrent + 1) / pmTotal) * 100) + '%';
+            document.getElementById('pm-prev').disabled = pmCurrent === 0;
+            document.getElementById('pm-next').disabled = pmCurrent === pmTotal - 1;
+        }
+
+        // Keyboard controls
+        document.addEventListener('keydown', (e) => {
+            if (!pmActive) return;
+            switch (e.key) {
+                case 'ArrowRight':
+                case 'PageDown':
+                case ' ':
+                    e.preventDefault(); nextSlide(); break;
+                case 'ArrowLeft':
+                case 'PageUp':
+                    e.preventDefault(); prevSlide(); break;
+                case 'Home':
+                    e.preventDefault(); goToSlide(0); break;
+                case 'End':
+                    e.preventDefault(); goToSlide(pmTotal - 1); break;
+                case 'Escape':
+                    e.preventDefault(); exitPresenterMode(); break;
+                case 'f':
+                case 'F':
+                    e.preventDefault(); togglePmFullscreen(); break;
+            }
+        });
+
+        // Click anywhere on the slide area (not controls) advances
+        pmOverlay.addEventListener('click', (e) => {
+            if (!pmActive) return;
+            // Only advance if user clicked on the slide background itself
+            if (e.target.closest('.pm-topbar, .pm-bottombar, .pm-btn, .pm-nav, button, a, .pm-hint')) return;
+            nextSlide();
+        });
+
+        // Basic swipe support for touch devices
+        let touchStartX = null;
+        pmOverlay.addEventListener('touchstart', (e) => {
+            if (!pmActive) return;
+            touchStartX = e.touches[0].clientX;
+        }, { passive: true });
+        pmOverlay.addEventListener('touchend', (e) => {
+            if (!pmActive || touchStartX === null) return;
+            const dx = e.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(dx) > 50) {
+                if (dx < 0) nextSlide(); else prevSlide();
+            }
+            touchStartX = null;
         });
     </script>
 </body>
