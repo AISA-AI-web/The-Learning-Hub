@@ -487,7 +487,190 @@
             .pm-slide { padding: 4vh 5vw; }
             .pm-hint { display: none; }
         }
+
+        /* =========================================================
+           ARABIC LANGUAGE BUTTON — animated, attention-grabbing
+           ========================================================= */
+        @keyframes arGlow {
+            0%, 100% {
+                box-shadow:
+                    0 0 0 0 rgba(16, 185, 129, 0.55),
+                    0 0 18px 2px rgba(16, 185, 129, 0.35),
+                    0 6px 20px rgba(5, 150, 105, 0.25);
+            }
+            50% {
+                box-shadow:
+                    0 0 0 8px rgba(16, 185, 129, 0.0),
+                    0 0 28px 6px rgba(16, 185, 129, 0.55),
+                    0 8px 28px rgba(5, 150, 105, 0.35);
+            }
+        }
+        @keyframes arShimmer {
+            0%   { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        @keyframes arBob {
+            0%, 100% { transform: translateY(0); }
+            50%      { transform: translateY(-2px); }
+        }
+        @keyframes arPing {
+            0%   { transform: scale(1);   opacity: 0.6; }
+            80%  { transform: scale(1.6); opacity: 0; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+
+        .ar-lang-btn {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+            padding: 0.55rem 1rem;
+            border-radius: 999px;
+            border: 1px solid rgba(16, 185, 129, 0.5);
+            background: linear-gradient(
+                110deg,
+                #059669 0%,
+                #10b981 25%,
+                #34d399 50%,
+                #10b981 75%,
+                #059669 100%
+            );
+            background-size: 200% 100%;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            letter-spacing: 0.02em;
+            animation:
+                arGlow 2.2s ease-in-out infinite,
+                arShimmer 4s linear infinite,
+                arBob 3s ease-in-out infinite;
+            transition: transform 0.2s ease, filter 0.2s ease;
+            white-space: nowrap;
+            direction: rtl;
+            font-family: 'Tajawal', 'Cairo', 'Noto Naskh Arabic', 'Inter', sans-serif;
+        }
+        .ar-lang-btn:hover {
+            transform: translateY(-2px) scale(1.03);
+            filter: brightness(1.08);
+        }
+        .ar-lang-btn:active { transform: translateY(0) scale(0.98); }
+
+        .ar-lang-btn::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 999px;
+            border: 2px solid rgba(16, 185, 129, 0.55);
+            animation: arPing 2s cubic-bezier(0.2, 0.7, 0.2, 1) infinite;
+            pointer-events: none;
+        }
+
+        .ar-lang-btn .ar-globe {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.22);
+            border: 1px solid rgba(255,255,255,0.45);
+        }
+        .ar-lang-btn .ar-text {
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        /* When Arabic is active, change button to offer English */
+        body.lang-ar .ar-lang-btn {
+            background: linear-gradient(
+                110deg,
+                #1e3a8a 0%,
+                #2563eb 25%,
+                #60a5fa 50%,
+                #2563eb 75%,
+                #1e3a8a 100%
+            );
+            background-size: 200% 100%;
+            border-color: rgba(59, 130, 246, 0.55);
+            direction: ltr;
+            font-family: 'Inter', sans-serif;
+        }
+        body.lang-ar .ar-lang-btn::before {
+            border-color: rgba(59, 130, 246, 0.55);
+        }
+
+        /* Hero-area prominent version of the button */
+        .ar-lang-btn.ar-lang-btn-hero {
+            padding: 0.85rem 1.5rem;
+            font-size: 1.1rem;
+        }
+        .ar-lang-btn.ar-lang-btn-hero .ar-globe {
+            width: 26px; height: 26px;
+        }
+        .ar-lang-btn.ar-lang-btn-hero .ar-text {
+            font-size: 1.15rem;
+        }
+
+        /* Hide the native Google Translate widget UI; we drive it ourselves */
+        #google_translate_element { display: none !important; }
+        .goog-te-banner-frame, .skiptranslate { display: none !important; }
+        body { top: 0 !important; }
+        .goog-logo-link, .goog-te-gadget span { display: none !important; }
+        .goog-te-gadget { color: transparent !important; font-size: 0 !important; }
+        font[style*="background-color"] { background-color: transparent !important; box-shadow: none !important; }
+
+        /* RTL adjustments when Arabic is active */
+        body.lang-ar { direction: rtl; text-align: right; }
+        body.lang-ar .container { direction: rtl; }
+        body.lang-ar header nav { flex-direction: row-reverse; }
+        body.lang-ar .ml-1, body.lang-ar .ml-2, body.lang-ar .ml-3, body.lang-ar .ml-4 { margin-left: 0; }
+        body.lang-ar .mr-1 { margin-left: 0.25rem; margin-right: 0; }
+        body.lang-ar .mr-2 { margin-left: 0.5rem;  margin-right: 0; }
+        body.lang-ar .mr-3 { margin-left: 0.75rem; margin-right: 0; }
+        body.lang-ar .mr-4 { margin-left: 1rem;    margin-right: 0; }
+        body.lang-ar .text-left  { text-align: right; }
+        body.lang-ar .text-right { text-align: left; }
+        body.lang-ar input, body.lang-ar textarea { text-align: right; }
+        body.lang-ar .flex:not(.flex-col):not(.flex-wrap) { /* keep row flex but mirror where natural */ }
+        body.lang-ar button svg.w-5.h-5.mr-2 { transform: scaleX(-1); }
+
+        /* Translating state — short cross-fade so the swap feels smooth */
+        body.lang-switching main,
+        body.lang-switching header,
+        body.lang-switching footer,
+        body.lang-switching section {
+            transition: opacity 0.35s ease, filter 0.35s ease;
+            opacity: 0.35;
+            filter: blur(2px);
+        }
+
+        /* Small toast shown while translation is applied */
+        .ar-toast {
+            position: fixed;
+            top: 90px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: rgba(5, 150, 105, 0.95);
+            color: #fff;
+            padding: 0.65rem 1.25rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 10px 30px rgba(5,150,105,0.35);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 300;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            font-family: 'Tajawal', 'Cairo', 'Inter', sans-serif;
+        }
+        .ar-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
     </style>
+    <!-- Arabic web font for the language button -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen">
 
@@ -502,13 +685,34 @@
                     <span class="text-[9px] md:text-[10px] font-semibold text-gray-500 uppercase tracking-widest mt-0.5">Teaching & Learning Guide</span>
                 </div>
             </div>
-            <button onclick="window.location.href='index.html'" class="flex items-center text-gray-500 hover:text-blue-900 transition-colors font-medium text-sm">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                <span class="hidden sm:inline">Back to Dashboard</span>
-                <span class="sm:hidden">Back</span>
-            </button>
+            <div class="flex items-center gap-3">
+                <!-- Arabic language toggle button -->
+                <button
+                    id="arLangBtnHeader"
+                    type="button"
+                    onclick="toggleArabic()"
+                    class="ar-lang-btn"
+                    aria-label="Switch language to Arabic"
+                    title="اضغط هنا للعربية — Click here for Arabic">
+                    <span class="ar-globe" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    </span>
+                    <span class="ar-text" data-ar-label>اضغط هنا للعربية</span>
+                </button>
+                <button onclick="window.location.href='index.html'" class="flex items-center text-gray-500 hover:text-blue-900 transition-colors font-medium text-sm">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    <span class="hidden sm:inline">Back to Dashboard</span>
+                    <span class="sm:hidden">Back</span>
+                </button>
+            </div>
         </nav>
     </header>
+
+    <!-- Hidden Google Translate widget used for full-page translation -->
+    <div id="google_translate_element" aria-hidden="true"></div>
+
+    <!-- Small toast shown while translation is being applied -->
+    <div id="arToast" class="ar-toast" role="status" aria-live="polite"></div>
 
     <main class="container mx-auto px-4 md:px-8 py-8 max-w-6xl">
 
@@ -527,18 +731,33 @@
                 <h2 class="text-3xl md:text-5xl font-black font-heading mb-4 leading-tight">Return to School<br>Emergency Protocol Training</h2>
                 <p class="text-red-100 max-w-2xl text-lg mb-6">ADEK Safe Education Protocol — mandatory training for all staff as a condition of school reopening. Complete all modules and the physical drill acknowledgment.</p>
                 <div class="mb-6">
-                    <div class="pm-launch-wrap">
-                        <span class="pm-launch-sparkle" aria-hidden="true"></span>
-                        <button onclick="enterPresenterMode()" class="pm-launch-btn" aria-label="Launch Presenter Mode">
-                            <span class="pm-launch-icon">
-                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    <div class="flex flex-wrap items-center gap-4">
+                        <div class="pm-launch-wrap">
+                            <span class="pm-launch-sparkle" aria-hidden="true"></span>
+                            <button onclick="enterPresenterMode()" class="pm-launch-btn" aria-label="Launch Presenter Mode">
+                                <span class="pm-launch-icon">
+                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </span>
+                                Launch Presenter Mode
+                            </button>
+                        </div>
+                        <!-- Prominent hero-area Arabic language button -->
+                        <button
+                            id="arLangBtnHero"
+                            type="button"
+                            onclick="toggleArabic()"
+                            class="ar-lang-btn ar-lang-btn-hero"
+                            aria-label="Switch language to Arabic"
+                            title="اضغط هنا للعربية — Click here for Arabic">
+                            <span class="ar-globe" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                             </span>
-                            Launch Presenter Mode
+                            <span class="ar-text" data-ar-label>اضغط هنا للعربية</span>
                         </button>
                     </div>
                     <p class="text-red-100 text-sm mt-3 font-semibold flex items-center gap-2">
                         <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        Presenters: click here to start the full-screen slide deck
+                        Presenters: click here to start the full-screen slide deck &nbsp;·&nbsp; <span style="opacity:.9">Arabic speakers: click the green button to translate this page</span>
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-6 text-sm text-red-200">
@@ -1016,7 +1235,7 @@
                             </div>
                         </div>
                         <div class="flex justify-center">
-                            <img src="parent_acknowledgment.png" alt="Parent Acknowledgment — ADEK requirement for return to in-person education" class="rounded-xl shadow-md border border-gray-200 max-w-md w-full h-auto">
+                            <img src="parent_acknowledgement.png" alt="Parent Acknowledgment — ADEK requirement for return to in-person education" class="rounded-xl shadow-md border border-gray-200 max-w-md w-full h-auto">
                         </div>
                     </div>
                     <div class="bg-amber-50 border-l-4 border-amber-500 rounded-r-xl p-4 text-sm text-amber-900 mb-6">
@@ -1606,7 +1825,7 @@
                         </div>
                     </div>
                     <div class="flex justify-center">
-                        <img src="parent_acknowledgment.png" alt="Parent Acknowledgment — ADEK-required form for return to in-person education" style="max-width: min(520px, 65vw); width: 100%; height: auto; border-radius: 1rem; box-shadow: 0 20px 50px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15);">
+                        <img src="parent_acknowledgement.png" alt="Parent Acknowledgment — ADEK-required form for return to in-person education" style="max-width: min(520px, 65vw); width: 100%; height: auto; border-radius: 1rem; box-shadow: 0 20px 50px rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15);">
                     </div>
                 </div>
             </div>
@@ -1855,6 +2074,94 @@
             }
             touchStartX = null;
         });
+
+        // =========================================================
+        // ARABIC LANGUAGE TOGGLE
+        // Uses the Google Translate element (loaded below) to switch
+        // the entire document between English and Arabic in-place.
+        // =========================================================
+        function showArToast(message) {
+            const t = document.getElementById('arToast');
+            if (!t) return;
+            t.textContent = message;
+            t.classList.add('show');
+            clearTimeout(showArToast._tm);
+            showArToast._tm = setTimeout(() => t.classList.remove('show'), 1800);
+        }
+
+        function setGoogleTranslateLang(lang) {
+            // Find the hidden Google Translate <select> and trigger a change.
+            const tryFire = (attempt = 0) => {
+                const combo = document.querySelector('.goog-te-combo');
+                if (combo) {
+                    combo.value = lang; // 'ar' or ''  ('' restores original English)
+                    combo.dispatchEvent(new Event('change'));
+                    return true;
+                }
+                if (attempt < 30) {
+                    setTimeout(() => tryFire(attempt + 1), 200);
+                }
+                return false;
+            };
+            tryFire();
+        }
+
+        function updateArButtonLabel() {
+            const isArabic = document.body.classList.contains('lang-ar');
+            document.querySelectorAll('[data-ar-label]').forEach(el => {
+                el.textContent = isArabic ? 'Click here for English' : 'اضغط هنا للعربية';
+            });
+            document.querySelectorAll('.ar-lang-btn').forEach(btn => {
+                btn.setAttribute('aria-label',
+                    isArabic ? 'Switch language back to English' : 'Switch language to Arabic');
+                btn.setAttribute('title',
+                    isArabic ? 'Click here for English' : 'اضغط هنا للعربية — Click here for Arabic');
+            });
+        }
+
+        function toggleArabic() {
+            const body = document.body;
+            const goingToArabic = !body.classList.contains('lang-ar');
+
+            // Smooth cross-fade during swap
+            body.classList.add('lang-switching');
+
+            setTimeout(() => {
+                if (goingToArabic) {
+                    body.classList.add('lang-ar');
+                    document.documentElement.setAttribute('lang', 'ar');
+                    document.documentElement.setAttribute('dir', 'rtl');
+                    setGoogleTranslateLang('ar');
+                    showArToast('جارٍ الترجمة إلى العربية…');
+                } else {
+                    body.classList.remove('lang-ar');
+                    document.documentElement.setAttribute('lang', 'en');
+                    document.documentElement.setAttribute('dir', 'ltr');
+                    setGoogleTranslateLang('');   // restore original
+                    showArToast('Switched to English');
+                }
+                updateArButtonLabel();
+            }, 150);
+
+            setTimeout(() => body.classList.remove('lang-switching'), 700);
+        }
+
+        // Initialize Google Translate (loaded via external script tag below).
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,ar',
+                autoDisplay: false,
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+        window.googleTranslateElementInit = googleTranslateElementInit;
+
+        // Ensure button label is correct on load.
+        document.addEventListener('DOMContentLoaded', updateArButtonLabel);
     </script>
+
+    <!-- Google Translate loader (runs once the page is interactive) -->
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit" async defer></script>
 </body>
 </html>
