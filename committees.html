@@ -37,12 +37,85 @@
                 radial-gradient(circle at 80% 70%, rgba(255,255,255,0.08) 0, transparent 40%);
         }
         .committee-card {
+            position: relative;
             border-top: 6px solid var(--theme-border, #4f46e5);
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
         .committee-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12);
+        }
+        .committee-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: var(--theme-border, #4f46e5);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px dashed #e5e7eb;
+        }
+        .card-meta .meta-pill {
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 9999px;
+            font-size: 10px; font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            background: #f3f4f6; color: #374151;
+        }
+        .card-meta .meta-pill svg { width: 11px; height: 11px; }
+        .card-meta .meta-pill.strong {
+            background: var(--theme-bg, #eef2ff);
+            color: var(--theme-text, #3730a3);
+        }
+        .read-mission {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--theme-text, #3730a3);
+            cursor: pointer;
+            margin-top: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .read-mission svg { width: 12px; height: 12px; transition: transform 0.2s ease; }
+        .read-mission[aria-expanded="true"] svg { transform: rotate(180deg); }
+        .mission-body {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease, margin 0.3s ease;
+        }
+        .mission-body.open {
+            max-height: 20rem;
+            margin-top: 0.5rem;
+        }
+        .chair-pill {
+            display: inline-flex !important;
+            align-items: center;
+            background: var(--theme-bg, #eef2ff);
+            color: var(--theme-text, #3730a3);
+            border: 1px solid var(--theme-border, #4f46e5);
+        }
+        .chair-pill .chair-role {
+            margin-left: 0.25rem;
+            padding: 0.05rem 0.45rem;
+            background: var(--theme-border, #4f46e5);
+            color: #fff;
+            border-radius: 9999px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
         .chair-pill {
             background: var(--theme-bg, #eef2ff);
@@ -884,10 +957,10 @@
             const nameAttr = `data-member-name="${escapeHtml(m.name)}"`;
             const hiddenCls = isHidden ? ' is-hidden' : '';
             if (chair) {
-                return `<button type="button" class="chair-pill flex items-center gap-2 rounded-full pl-1 pr-3 py-1 shadow-sm${hiddenCls}" ${nameAttr} title="View all committees for ${escapeHtml(m.name)}">
+                return `<button type="button" class="chair-pill flex items-center gap-2 rounded-full pl-1 pr-2 py-1 shadow-sm${hiddenCls}" ${nameAttr} title="View all committees for ${escapeHtml(m.name)}">
                     <span class="chair-avatar w-7 h-7 rounded-full text-[10px] font-black flex items-center justify-center">${escapeHtml(initials(m.name))}</span>
                     <span class="text-sm font-semibold">${escapeHtml(m.name)}</span>
-                    <span class="text-[9px] font-black uppercase tracking-wider opacity-80">${escapeHtml(m.role)}</span>
+                    <span class="chair-role">${escapeHtml(m.role)}</span>
                 </button>`;
             }
             return `<button type="button" class="member-pill${hiddenCls}" ${nameAttr} title="View all committees for ${escapeHtml(m.name)}">
@@ -930,10 +1003,13 @@
             const badge = requirementBadge(c.requirement);
             const rosters = Array.isArray(c.rosters) ? c.rosters : [{ members: c.members || [] }];
             const totalMembers = rosters.reduce((n, r) => n + r.members.length, 0);
+            const chairCount = rosters.reduce((n, r) => n + r.members.filter(m => m.role).length, 0);
+            const hasSubgroups = rosters.length > 1;
+            const missionId = `mission-${c.id}`;
             return `
                 <article id="c-${escapeHtml(c.id)}" class="committee-card scroll-anchor bg-white rounded-2xl shadow-md overflow-hidden" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" data-search="${escapeHtml(c.searchBlob || '')}" data-req="${requirementSlug(c.requirement)}" data-committee-id="${escapeHtml(c.id)}">
                     <div class="p-6">
-                        <div class="flex items-start justify-between gap-4 mb-4">
+                        <div class="flex items-start justify-between gap-4 mb-3">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="text-4xl flex-shrink-0">${c.icon}</div>
                                 <div class="min-w-0">
@@ -944,15 +1020,40 @@
                             <span class="inline-flex items-center ${badge.cls} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider whitespace-nowrap flex-shrink-0">${badge.label}</span>
                         </div>
 
-                        ${c.purpose ? `<div class="mb-4">
+                        <div class="card-meta">
+                            <span class="meta-pill strong">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                ${totalMembers} ${totalMembers === 1 ? 'Member' : 'Members'}
+                            </span>
+                            ${chairCount ? `<span class="meta-pill">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143z"/></svg>
+                                ${chairCount} Chair${chairCount > 1 ? 's' : ''}
+                            </span>` : ''}
+                            ${hasSubgroups ? `<span class="meta-pill">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                ${rosters.length} Subgroups
+                            </span>` : ''}
+                            ${c.initialTasks && c.initialTasks.length ? `<span class="meta-pill">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                                ${c.initialTasks.length} Tasks
+                            </span>` : ''}
+                        </div>
+
+                        ${c.purpose ? `<div class="mb-3">
                             <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Purpose</h4>
                             <p class="text-sm text-gray-700 leading-relaxed">${escapeHtml(c.purpose)}</p>
-                        </div>` : ''}
-
-                        ${c.mission ? `<div class="mb-4">
+                            ${c.mission ? `
+                                <button type="button" class="read-mission" aria-expanded="false" aria-controls="${missionId}" data-toggle-mission>
+                                    <span>Read mission &amp; charge</span>
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div id="${missionId}" class="mission-body">
+                                    <p class="text-sm text-gray-700 leading-relaxed italic border-l-2 pl-3" style="border-color: var(--theme-border)">${escapeHtml(c.mission)}</p>
+                                </div>` : ''}
+                        </div>` : (c.mission ? `<div class="mb-4">
                             <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Mission &amp; Charge</h4>
                             <p class="text-sm text-gray-700 leading-relaxed">${escapeHtml(c.mission)}</p>
-                        </div>` : ''}
+                        </div>` : '')}
 
                         ${c.initialTasks && c.initialTasks.length ? `<details class="mb-2 border-l-4 border-gray-100 pl-4">
                             <summary class="cursor-pointer text-sm font-semibold text-gray-700 hover:text-indigo-700 flex items-center justify-between py-1">
@@ -1752,6 +1853,17 @@
                     if (label) label.textContent = expanded ? `+${hiddenCount} more` : 'Show less';
                     return;
                 }
+                const missionToggle = e.target.closest('[data-toggle-mission]');
+                if (missionToggle) {
+                    const expanded = missionToggle.getAttribute('aria-expanded') === 'true';
+                    missionToggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+                    const id = missionToggle.getAttribute('aria-controls');
+                    const body = id && document.getElementById(id);
+                    if (body) body.classList.toggle('open', !expanded);
+                    const label = missionToggle.querySelector('span');
+                    if (label) label.textContent = expanded ? 'Read mission & charge' : 'Hide mission & charge';
+                    return;
+                }
                 const personPill = e.target.closest('[data-member-name]');
                 if (personPill) {
                     e.preventDefault();
@@ -2093,6 +2205,7 @@
                     highlightInCard(card, query);
                     openMatchingDetails(card, query);
                     expandMatchingRosters(card, query);
+                    openMatchingMission(card, query);
                 });
             } else {
                 document.querySelectorAll('.committee-card details[data-auto-opened="true"]').forEach(d => {
@@ -2106,6 +2219,16 @@
                     if (btn) {
                         const hiddenCount = w.querySelectorAll('.member-pill.is-hidden').length;
                         btn.textContent = `+${hiddenCount} more`;
+                    }
+                });
+                document.querySelectorAll('.mission-body.open[data-auto-opened="true"]').forEach(b => {
+                    b.classList.remove('open');
+                    b.removeAttribute('data-auto-opened');
+                    const toggle = document.querySelector(`[aria-controls="${b.id}"]`);
+                    if (toggle) {
+                        toggle.setAttribute('aria-expanded', 'false');
+                        const label = toggle.querySelector('span');
+                        if (label) label.textContent = 'Read mission & charge';
                     }
                 });
             }
@@ -2208,6 +2331,23 @@
                 if ((d.textContent || '').toLowerCase().includes(q)) {
                     d.setAttribute('open', '');
                     d.setAttribute('data-auto-opened', 'true');
+                }
+            });
+        }
+
+        function openMatchingMission(card, query) {
+            const q = query.toLowerCase();
+            card.querySelectorAll('.mission-body').forEach(body => {
+                if (body.classList.contains('open')) return;
+                if ((body.textContent || '').toLowerCase().includes(q)) {
+                    body.classList.add('open');
+                    body.setAttribute('data-auto-opened', 'true');
+                    const toggle = card.querySelector(`[aria-controls="${body.id}"]`);
+                    if (toggle) {
+                        toggle.setAttribute('aria-expanded', 'true');
+                        const label = toggle.querySelector('span');
+                        if (label) label.textContent = 'Hide mission & charge';
+                    }
                 }
             });
         }
