@@ -2370,6 +2370,7 @@
         function renderDirectoryList(filter = '') {
             const header = document.getElementById('directory-header-content');
             const body = document.getElementById('directory-body');
+            const wasSearchFocused = document.activeElement && document.activeElement.id === 'dir-search';
             const total = PEOPLE_INDEX.size;
             const sorted = Array.from(PEOPLE_INDEX.entries())
                 .sort((a, b) => b[1].memberships.length - a[1].memberships.length || a[1].displayName.localeCompare(b[1].displayName));
@@ -2425,7 +2426,7 @@
             const searchInput = document.getElementById('dir-search');
             if (searchInput) {
                 searchInput.addEventListener('input', (e) => renderDirectoryList(e.target.value));
-                if (filter) {
+                if (wasSearchFocused || filter) {
                     searchInput.focus();
                     const end = searchInput.value.length;
                     searchInput.setSelectionRange(end, end);
