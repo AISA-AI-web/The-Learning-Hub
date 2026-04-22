@@ -690,6 +690,33 @@
             transform: translateY(-2px);
             box-shadow: 0 14px 30px -10px rgba(79, 70, 229, 0.35);
         }
+
+        .back-top-btn {
+            position: fixed;
+            bottom: 1.25rem;
+            right: 4.5rem;
+            width: 2.5rem; height: 2.5rem;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px -8px rgba(79, 70, 229, 0.4);
+            cursor: pointer;
+            z-index: 40;
+            border: none;
+            opacity: 0;
+            transform: translateY(10px) scale(0.9);
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .back-top-btn.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        .back-top-btn:hover {
+            box-shadow: 0 14px 30px -8px rgba(79, 70, 229, 0.55);
+        }
     </style>
 </head>
 <body class="bg-governance-pattern text-gray-800 min-h-screen flex flex-col">
@@ -874,6 +901,9 @@
         </section>
     </main>
 
+    <button id="back-top-btn" class="back-top-btn" type="button" aria-label="Back to top" title="Back to top">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+    </button>
     <button id="shortcuts-btn" class="shortcuts-btn" type="button" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">?</button>
 
     <div id="help-overlay" class="help-overlay" role="dialog" aria-modal="true" aria-labelledby="help-title" hidden>
@@ -1881,6 +1911,22 @@
                 if (e.key === 'Escape' && !document.getElementById('directory-panel').hidden) closeDirectory();
             });
 
+            const backTopBtn = document.getElementById('back-top-btn');
+            if (backTopBtn) {
+                backTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: PREFERS_REDUCED_MOTION ? 'auto' : 'smooth' });
+                });
+            }
+            let scrollRaf = 0;
+            window.addEventListener('scroll', () => {
+                if (scrollRaf) return;
+                scrollRaf = requestAnimationFrame(() => {
+                    scrollRaf = 0;
+                    if (backTopBtn) backTopBtn.classList.toggle('visible', window.scrollY > 500);
+                    updateScrollSpy();
+                });
+            }, { passive: true });
+
             const shortcutsBtn = document.getElementById('shortcuts-btn');
             if (shortcutsBtn) shortcutsBtn.addEventListener('click', () => toggleHelp(true));
             document.querySelectorAll('[data-close-help]').forEach(b => b.addEventListener('click', () => toggleHelp(false)));
@@ -1909,6 +1955,37 @@
             if (!target) return false;
             const tag = target.tagName;
             return tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable;
+        }
+
+        function updateScrollSpy() {
+            const activePanel = document.querySelector('.tab-panel:not(.hidden)');
+            if (!activePanel) return;
+            const cards = Array.from(activePanel.querySelectorAll('.committee-card:not(.hidden-by-filter)'));
+            if (!cards.length) return;
+            const anchorLine = 220;
+            let currentId = null;
+            for (const card of cards) {
+                const rect = card.getBoundingClientRect();
+                if (rect.top <= anchorLine) currentId = card.dataset.committeeId;
+                else break;
+            }
+            if (!currentId) currentId = cards[0].dataset.committeeId;
+            const jumpBar = activePanel.querySelector('.jump-scroll');
+            if (!jumpBar) return;
+            let activeChip = null;
+            jumpBar.querySelectorAll('[data-jump-to]').forEach(chip => {
+                const isActive = chip.dataset.jumpTo === currentId;
+                chip.classList.toggle('active', isActive);
+                if (isActive) activeChip = chip;
+            });
+            if (activeChip) {
+                const chipRect = activeChip.getBoundingClientRect();
+                const barRect = jumpBar.getBoundingClientRect();
+                if (chipRect.left < barRect.left || chipRect.right > barRect.right) {
+                    const target = activeChip.offsetLeft - jumpBar.clientWidth / 2 + activeChip.clientWidth / 2;
+                    jumpBar.scrollTo({ left: Math.max(0, target), behavior: PREFERS_REDUCED_MOTION ? 'auto' : 'smooth' });
+                }
+            }
         }
 
         function handleGlobalShortcuts(e) {
