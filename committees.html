@@ -244,35 +244,56 @@
         .filter-chip[aria-pressed="true"] .chip-label { color: #fff; }
         .filter-chip[aria-pressed="true"] .dot { background: #fff; }
 
-        .legend-pop {
-            position: absolute;
-            top: calc(100% + 0.5rem);
-            right: 0;
-            background: #0f172a;
-            color: #e2e8f0;
-            border-radius: 0.75rem;
-            padding: 0.9rem 1rem;
-            width: 20rem;
-            max-width: calc(100vw - 2rem);
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.4);
-            z-index: 60;
-            font-size: 12px;
-            line-height: 1.5;
+        .legend-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(3px);
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
-        .legend-pop::before {
+        .legend-overlay.open { opacity: 1; }
+        .legend-overlay[hidden] { display: none; }
+        .legend-dialog {
+            background: #fff;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            max-width: 28rem;
+            width: 100%;
+            box-shadow: 0 30px 60px -20px rgba(0,0,0,0.4);
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.25s ease, opacity 0.2s ease;
+        }
+        .legend-overlay.open .legend-dialog { transform: scale(1); opacity: 1; }
+        .legend-dialog dt {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 11px;
+            margin-top: 0.85rem;
+        }
+        .legend-dialog dt:first-of-type { margin-top: 0; }
+        .legend-dialog dt::before {
             content: '';
-            position: absolute;
-            top: -6px;
-            right: 1rem;
-            width: 12px;
-            height: 12px;
-            background: #0f172a;
-            transform: rotate(45deg);
+            width: 8px; height: 8px;
+            border-radius: 9999px;
+            background: currentColor;
         }
-        .legend-pop[hidden] { display: none; }
-        .legend-pop dt { font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; margin-top: 0.5rem; }
-        .legend-pop dt:first-child { margin-top: 0; }
-        .legend-pop dd { color: #cbd5e1; margin-bottom: 0.35rem; }
+        .legend-dialog dd {
+            color: #475569;
+            font-size: 13px;
+            line-height: 1.55;
+            margin-top: 0.2rem;
+            margin-left: 0;
+        }
 
         .jump-chip {
             display: inline-flex;
@@ -347,16 +368,6 @@
             .member-pill .member-name { max-width: 7.5rem; }
             .help-dialog { padding: 1.2rem; }
             .back-top-btn { right: 4.25rem; }
-            .legend-pop {
-                position: fixed;
-                top: auto;
-                bottom: 0.75rem;
-                right: 0.5rem;
-                left: 0.5rem;
-                width: auto;
-                max-width: none;
-            }
-            .legend-pop::before { display: none; }
         }
 
         mark.search-hit {
@@ -814,10 +825,11 @@
             .sticky, .tab-panel.hidden,
             .jump-scroll-wrap, .cross-tab-banner,
             #shortcuts-btn, #back-top-btn, #help-overlay, #directory-overlay, #directory-panel,
+            #legend-overlay,
             .show-more-btn, .read-mission, #reset-all,
             #committee-search, #open-directory,
             .tab-btn, [role="tablist"],
-            .filter-chip, #clear-filters, #legend-btn, #legend-pop {
+            .filter-chip, #clear-filters, #legend-btn {
                 display: none !important;
             }
             .hero-governance {
@@ -984,23 +996,11 @@
                     <span class="dot"></span><span class="chip-label">School-Initiated</span>
                 </button>
                 <button id="clear-filters" type="button" class="hidden text-[11px] font-semibold text-gray-500 hover:text-indigo-700 underline underline-offset-2 whitespace-nowrap ml-1">Clear</button>
-                <button id="legend-btn" type="button" aria-expanded="false" aria-controls="legend-pop" class="ml-auto flex items-center gap-1 text-[11px] font-semibold text-gray-500 hover:text-indigo-700 whitespace-nowrap">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <button id="legend-btn" type="button" aria-haspopup="dialog" aria-expanded="false" class="ml-auto flex items-center gap-1 text-[11px] font-semibold text-gray-500 hover:text-indigo-700 whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     <span class="hidden sm:inline">What do these mean?</span>
                     <span class="sm:hidden">Legend</span>
                 </button>
-                <div id="legend-pop" class="legend-pop" role="dialog" aria-label="Requirement types" hidden>
-                    <dl>
-                        <dt style="color:#fb7185">ADEK-Mandated</dt>
-                        <dd>Required by ADEK regulation. Must exist, with defined membership, cadence, and records.</dd>
-                        <dt style="color:#fbbf24">ADEK-Aligned</dt>
-                        <dd>Not explicitly mandated, but closely tied to an ADEK policy area (e.g. Digital Policy, RAIL).</dd>
-                        <dt style="color:#c4b5fd">School-Directed</dt>
-                        <dd>Established by AISA leadership to meet internal policy or operational needs.</dd>
-                        <dt style="color:#6ee7b7">School-Initiated</dt>
-                        <dd>Voluntary and community-led — morale, sustainability, parent engagement, etc.</dd>
-                    </dl>
-                </div>
             </div>
             </div>
         </div>
@@ -1084,6 +1084,30 @@
                 <div class="flex items-center justify-between"><dt>Show this help</dt><dd><span class="kbd">?</span></dd></div>
             </dl>
             <p class="text-[11px] text-gray-400 mt-4">Shortcuts are ignored while typing in a search box.</p>
+        </div>
+    </div>
+
+    <div id="legend-overlay" class="legend-overlay" role="dialog" aria-modal="true" aria-labelledby="legend-title" hidden>
+        <div class="legend-dialog">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <h2 id="legend-title" class="text-lg font-heading font-extrabold text-gray-900">What do the filters mean?</h2>
+                    <p class="text-xs text-gray-500 mt-1">Each committee is tagged by the origin of its mandate.</p>
+                </div>
+                <button type="button" data-close-legend class="text-gray-400 hover:text-gray-700" aria-label="Close">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <dl>
+                <dt style="color:#be123c">ADEK-Mandated</dt>
+                <dd>Required by ADEK regulation. Must exist, with defined membership, cadence, and records.</dd>
+                <dt style="color:#b45309">ADEK-Aligned</dt>
+                <dd>Not explicitly mandated, but closely tied to an ADEK policy area (e.g. Digital Policy, RAIL).</dd>
+                <dt style="color:#6b21a8">School-Directed</dt>
+                <dd>Established by AISA leadership to meet internal policy or operational needs.</dd>
+                <dt style="color:#047857">School-Initiated</dt>
+                <dd>Voluntary and community-led — morale, sustainability, parent engagement, and the like.</dd>
+            </dl>
         </div>
     </div>
 
@@ -2045,17 +2069,11 @@
             });
 
             const legendBtn = document.getElementById('legend-btn');
-            const legendPop = document.getElementById('legend-pop');
-            const toggleLegend = (force) => {
-                const shouldShow = force !== undefined ? force : legendPop.hasAttribute('hidden');
-                if (shouldShow) { legendPop.removeAttribute('hidden'); legendBtn.setAttribute('aria-expanded', 'true'); }
-                else { legendPop.setAttribute('hidden', ''); legendBtn.setAttribute('aria-expanded', 'false'); }
-            };
-            legendBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleLegend(); });
-            document.addEventListener('click', (e) => {
-                if (!legendPop.contains(e.target) && e.target !== legendBtn) toggleLegend(false);
+            legendBtn.addEventListener('click', () => toggleLegend(true));
+            document.querySelectorAll('[data-close-legend]').forEach(b => b.addEventListener('click', () => toggleLegend(false)));
+            document.getElementById('legend-overlay').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('legend-overlay')) toggleLegend(false);
             });
-            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleLegend(false); });
 
             document.addEventListener('click', (e) => {
                 const toggle = e.target.closest('[data-toggle-members]');
@@ -2122,8 +2140,10 @@
             document.addEventListener('keydown', (e) => {
                 if (e.key !== 'Tab') return;
                 const help = document.getElementById('help-overlay');
+                const legend = document.getElementById('legend-overlay');
                 const dir = document.getElementById('directory-panel');
                 if (help && !help.hidden) return trapTab(e, help);
+                if (legend && !legend.hidden) return trapTab(e, legend);
                 if (dir && !dir.hidden) return trapTab(e, dir);
             });
 
@@ -2180,6 +2200,31 @@
             }
         }
 
+        let legendReturnFocus = null;
+        function toggleLegend(force) {
+            const overlay = document.getElementById('legend-overlay');
+            const btn = document.getElementById('legend-btn');
+            const shouldOpen = force !== undefined ? force : overlay.hasAttribute('hidden');
+            if (shouldOpen) {
+                legendReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+                overlay.hidden = false;
+                if (btn) btn.setAttribute('aria-expanded', 'true');
+                requestAnimationFrame(() => {
+                    overlay.classList.add('open');
+                    const close = overlay.querySelector('[data-close-legend]');
+                    if (close) close.focus();
+                });
+            } else {
+                overlay.classList.remove('open');
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+                setTimeout(() => { overlay.hidden = true; }, 220);
+                if (legendReturnFocus && document.body.contains(legendReturnFocus)) {
+                    legendReturnFocus.focus();
+                }
+                legendReturnFocus = null;
+            }
+        }
+
         function isTypingContext(target) {
             if (!target) return false;
             const tag = target.tagName;
@@ -2220,9 +2265,11 @@
         function handleGlobalShortcuts(e) {
             if (e.metaKey || e.ctrlKey || e.altKey) return;
             const helpOpen = !document.getElementById('help-overlay').hidden;
+            const legendOpen = !document.getElementById('legend-overlay').hidden;
             const dirOpen = !document.getElementById('directory-panel').hidden;
             if (e.key === 'Escape') {
                 if (helpOpen) toggleHelp(false);
+                else if (legendOpen) toggleLegend(false);
                 return;
             }
             if (isTypingContext(e.target)) return;
@@ -2370,6 +2417,7 @@
         function renderDirectoryList(filter = '') {
             const header = document.getElementById('directory-header-content');
             const body = document.getElementById('directory-body');
+            const wasSearchFocused = document.activeElement && document.activeElement.id === 'dir-search';
             const total = PEOPLE_INDEX.size;
             const sorted = Array.from(PEOPLE_INDEX.entries())
                 .sort((a, b) => b[1].memberships.length - a[1].memberships.length || a[1].displayName.localeCompare(b[1].displayName));
@@ -2425,7 +2473,7 @@
             const searchInput = document.getElementById('dir-search');
             if (searchInput) {
                 searchInput.addEventListener('input', (e) => renderDirectoryList(e.target.value));
-                if (filter) {
+                if (wasSearchFocused || filter) {
                     searchInput.focus();
                     const end = searchInput.value.length;
                     searchInput.setSelectionRange(end, end);
