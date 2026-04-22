@@ -2503,16 +2503,16 @@
         function highlightInCard(card, query) {
             if (!query) return;
             const re = new RegExp(escapeRegExp(query), 'gi');
-            const selectors = ['h3', 'p', 'li', 'span', 'summary > span'];
+            const selectors = ['h3', 'p', 'li', '.member-name', '.chair-pill > span:not(.chair-avatar):not(.chair-role)', 'summary > span'];
             const targets = card.querySelectorAll(selectors.join(','));
             targets.forEach(el => {
-                if (el.closest('.chair-pill, .chair-avatar')) {
-                    // avatar initials, skip
-                }
+                if (el.closest('.chair-avatar, .member-avatar')) return;
                 const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
                     acceptNode: (n) => {
                         if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-                        if (n.parentNode && (n.parentNode.nodeName === 'MARK' || n.parentNode.nodeName === 'SCRIPT' || n.parentNode.nodeName === 'STYLE')) return NodeFilter.FILTER_REJECT;
+                        const p = n.parentNode;
+                        if (p && (p.nodeName === 'MARK' || p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE')) return NodeFilter.FILTER_REJECT;
+                        if (p && p.closest && p.closest('.chair-avatar, .member-avatar')) return NodeFilter.FILTER_REJECT;
                         return NodeFilter.FILTER_ACCEPT;
                     }
                 });
