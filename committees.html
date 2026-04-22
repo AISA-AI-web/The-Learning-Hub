@@ -150,16 +150,16 @@
 
     <div class="bg-white border-b border-gray-200 sticky top-[65px] z-40 shadow-sm">
         <div class="container mx-auto px-6">
-            <div role="tablist" class="flex items-center gap-1 md:gap-2 overflow-x-auto">
-                <button role="tab" aria-selected="true" aria-controls="panel-level-1" data-tab="level-1" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900">
+            <div role="tablist" aria-label="Committee categories" class="flex items-center gap-1 md:gap-2 overflow-x-auto">
+                <button id="tab-level-1" role="tab" aria-selected="true" aria-controls="panel-level-1" tabindex="0" data-tab="level-1" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-black">1</span>
                     Level 1 Committees
                 </button>
-                <button role="tab" aria-selected="false" aria-controls="panel-level-2" data-tab="level-2" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900">
+                <button id="tab-level-2" role="tab" aria-selected="false" aria-controls="panel-level-2" tabindex="-1" data-tab="level-2" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black">2</span>
                     Level 2 Committees
                 </button>
-                <button role="tab" aria-selected="false" aria-controls="panel-ai" data-tab="ai" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900">
+                <button id="tab-ai" role="tab" aria-selected="false" aria-controls="panel-ai" tabindex="-1" data-tab="ai" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
                     <span class="text-base">🤖</span>
                     AI Incubator Team
                 </button>
@@ -174,7 +174,7 @@
             <p class="text-gray-500 mt-1">Try a different keyword, or clear the search to browse all committees.</p>
         </div>
 
-        <section id="panel-level-1" role="tabpanel" aria-labelledby="level-1" class="tab-panel">
+        <section id="panel-level-1" role="tabpanel" aria-labelledby="tab-level-1" class="tab-panel">
             <div class="mb-6">
                 <h3 class="text-2xl font-heading font-bold text-gray-900">Level 1 Committees</h3>
                 <p class="text-sm text-gray-600 mt-1">Strategic, school-wide committees providing governance and oversight.</p>
@@ -182,7 +182,7 @@
             <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="level-1"></div>
         </section>
 
-        <section id="panel-level-2" role="tabpanel" aria-labelledby="level-2" class="tab-panel hidden">
+        <section id="panel-level-2" role="tabpanel" aria-labelledby="tab-level-2" class="tab-panel hidden">
             <div class="mb-6">
                 <h3 class="text-2xl font-heading font-bold text-gray-900">Level 2 Committees</h3>
                 <p class="text-sm text-gray-600 mt-1">Operational committees that implement policy and support day-to-day practice.</p>
@@ -190,7 +190,7 @@
             <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="level-2"></div>
         </section>
 
-        <section id="panel-ai" role="tabpanel" aria-labelledby="ai" class="tab-panel hidden">
+        <section id="panel-ai" role="tabpanel" aria-labelledby="tab-ai" class="tab-panel hidden">
             <div class="mb-6">
                 <h3 class="text-2xl font-heading font-bold text-gray-900">AI Incubator Team</h3>
                 <p class="text-sm text-gray-600 mt-1">AISA's command center for responsible AI adoption — the main team plus four specialist subcommittees.</p>
@@ -969,6 +969,8 @@
             }
         ];
 
+        const VALID_TABS = ['level-1', 'level-2', 'ai'];
+
         function init() {
             committees.forEach(c => c.searchBlob = buildSearchBlob(c));
 
@@ -990,21 +992,49 @@
             document.getElementById('stat-adek').textContent = adekCount;
             document.getElementById('stat-ai').textContent = aiCount;
 
-            document.querySelectorAll('[role="tab"]').forEach(btn => {
-                btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+            const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+            tabs.forEach(btn => {
+                btn.addEventListener('click', () => switchTab(btn.dataset.tab, { focus: true }));
+                btn.addEventListener('keydown', (e) => handleTabKeydown(e, tabs));
             });
 
             const search = document.getElementById('committee-search');
-            search.addEventListener('input', () => applyFilter(search.value.trim().toLowerCase()));
+            search.addEventListener('input', () => {
+                applyFilter(search.value.trim().toLowerCase());
+                updateHash();
+            });
+
+            applyStateFromHash();
+            window.addEventListener('hashchange', applyStateFromHash);
         }
 
-        function switchTab(id) {
-            document.querySelectorAll('[role="tab"]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === id ? 'true' : 'false'));
+        function handleTabKeydown(e, tabs) {
+            const key = e.key;
+            if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(key)) return;
+            e.preventDefault();
+            const currentIndex = tabs.findIndex(t => t.getAttribute('aria-selected') === 'true');
+            let next = currentIndex;
+            if (key === 'ArrowRight') next = (currentIndex + 1) % tabs.length;
+            else if (key === 'ArrowLeft') next = (currentIndex - 1 + tabs.length) % tabs.length;
+            else if (key === 'Home') next = 0;
+            else if (key === 'End') next = tabs.length - 1;
+            switchTab(tabs[next].dataset.tab, { focus: true });
+        }
+
+        function switchTab(id, opts = {}) {
+            if (!VALID_TABS.includes(id)) return;
+            document.querySelectorAll('[role="tab"]').forEach(b => {
+                const selected = b.dataset.tab === id;
+                b.setAttribute('aria-selected', selected ? 'true' : 'false');
+                b.setAttribute('tabindex', selected ? '0' : '-1');
+                if (selected && opts.focus) b.focus();
+            });
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
             const panel = document.getElementById('panel-' + id);
             if (panel) panel.classList.remove('hidden');
             const search = document.getElementById('committee-search');
             if (search && search.value) applyFilter(search.value.trim().toLowerCase());
+            updateHash();
         }
 
         function applyFilter(query) {
@@ -1024,6 +1054,44 @@
             } else {
                 noResults.classList.add('hidden');
             }
+        }
+
+        function parseHash() {
+            const h = (location.hash || '').replace(/^#/, '');
+            const out = {};
+            h.split('&').filter(Boolean).forEach(kv => {
+                const [k, ...rest] = kv.split('=');
+                out[decodeURIComponent(k)] = decodeURIComponent(rest.join('=') || '');
+            });
+            return out;
+        }
+
+        function updateHash() {
+            const activeTab = document.querySelector('[role="tab"][aria-selected="true"]');
+            const tab = activeTab ? activeTab.dataset.tab : 'level-1';
+            const q = (document.getElementById('committee-search') || {}).value || '';
+            const parts = [`tab=${encodeURIComponent(tab)}`];
+            if (q.trim()) parts.push(`q=${encodeURIComponent(q.trim())}`);
+            const newHash = '#' + parts.join('&');
+            if (location.hash !== newHash) {
+                history.replaceState(null, '', newHash);
+            }
+        }
+
+        let applyingHash = false;
+        function applyStateFromHash() {
+            if (applyingHash) return;
+            applyingHash = true;
+            const state = parseHash();
+            if (state.tab && VALID_TABS.includes(state.tab)) {
+                switchTab(state.tab);
+            }
+            const search = document.getElementById('committee-search');
+            if (search && typeof state.q === 'string' && search.value !== state.q) {
+                search.value = state.q;
+                applyFilter(state.q.trim().toLowerCase());
+            }
+            applyingHash = false;
         }
 
         document.addEventListener('DOMContentLoaded', init);
