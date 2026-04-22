@@ -37,12 +37,85 @@
                 radial-gradient(circle at 80% 70%, rgba(255,255,255,0.08) 0, transparent 40%);
         }
         .committee-card {
+            position: relative;
             border-top: 6px solid var(--theme-border, #4f46e5);
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
         .committee-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12);
+        }
+        .committee-card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 6px;
+            background: var(--theme-border, #4f46e5);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .card-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px dashed #e5e7eb;
+        }
+        .card-meta .meta-pill {
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 9999px;
+            font-size: 10px; font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            background: #f3f4f6; color: #374151;
+        }
+        .card-meta .meta-pill svg { width: 11px; height: 11px; }
+        .card-meta .meta-pill.strong {
+            background: var(--theme-bg, #eef2ff);
+            color: var(--theme-text, #3730a3);
+        }
+        .read-mission {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--theme-text, #3730a3);
+            cursor: pointer;
+            margin-top: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .read-mission svg { width: 12px; height: 12px; transition: transform 0.2s ease; }
+        .read-mission[aria-expanded="true"] svg { transform: rotate(180deg); }
+        .mission-body {
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease, margin 0.3s ease;
+        }
+        .mission-body.open {
+            max-height: 20rem;
+            margin-top: 0.5rem;
+        }
+        .chair-pill {
+            display: inline-flex !important;
+            align-items: center;
+            background: var(--theme-bg, #eef2ff);
+            color: var(--theme-text, #3730a3);
+            border: 1px solid var(--theme-border, #4f46e5);
+        }
+        .chair-pill .chair-role {
+            margin-left: 0.25rem;
+            padding: 0.05rem 0.45rem;
+            background: var(--theme-border, #4f46e5);
+            color: #fff;
+            border-radius: 9999px;
+            font-size: 9px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
         .chair-pill {
             background: var(--theme-bg, #eef2ff);
@@ -57,6 +130,10 @@
         .tab-btn {
             position: relative;
             transition: color 0.2s ease;
+        }
+        @media (max-width: 640px) {
+            .tab-btn { padding-left: 0.85rem; padding-right: 0.85rem; padding-top: 0.85rem; padding-bottom: 0.85rem; font-size: 12px; }
+            .tab-btn .tab-count { min-width: 1.1rem; height: 1.1rem; font-size: 9px; }
         }
         .tab-btn[aria-selected="true"] { color: #1e3a8a; }
         .tab-btn[aria-selected="true"]::after {
@@ -77,6 +154,662 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.25s ease, background 0.25s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.18);
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.7s ease;
+        }
+        .stat-card:hover::before { transform: translateX(100%); }
+        .stat-num {
+            display: inline-block;
+            font-variant-numeric: tabular-nums;
+        }
+        .tab-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.25rem;
+            height: 1.25rem;
+            padding: 0 0.35rem;
+            border-radius: 9999px;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 1;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .tab-btn[aria-selected="true"] .tab-count {
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: #fff;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .stat-card::before { display: none; }
+            .committee-card { transition: none; }
+        }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            color: #4b5563;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+            white-space: nowrap;
+        }
+        .filter-chip:hover { transform: translateY(-1px); box-shadow: 0 4px 10px -4px rgba(0,0,0,0.12); }
+        .filter-chip .dot {
+            width: 8px; height: 8px; border-radius: 9999px; background: currentColor;
+        }
+        .filter-chip[data-req="adek-mandated"] { color: #be123c; }
+        .filter-chip[data-req="adek-aligned"] { color: #b45309; }
+        .filter-chip[data-req="school-directed"] { color: #6b21a8; }
+        .filter-chip[data-req="school-initiated"] { color: #047857; }
+        .filter-chip[aria-pressed="true"] {
+            background: currentColor;
+            border-color: transparent;
+            box-shadow: 0 6px 14px -6px rgba(0,0,0,0.2);
+        }
+        .filter-chip[aria-pressed="true"] .chip-label,
+        .filter-chip[aria-pressed="true"] .dot { color: #fff; filter: brightness(0) invert(1); }
+        .filter-chip[aria-pressed="true"] .chip-label { color: #fff; filter: none; }
+        .filter-chip[aria-pressed="true"] .dot { background: #fff; filter: none; }
+
+        .legend-pop {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 0.9rem 1rem;
+            width: 20rem;
+            max-width: calc(100vw - 2rem);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.4);
+            z-index: 60;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .legend-pop::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: 1rem;
+            width: 12px;
+            height: 12px;
+            background: #0f172a;
+            transform: rotate(45deg);
+        }
+        .legend-pop[hidden] { display: none; }
+        .legend-pop dt { font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; margin-top: 0.5rem; }
+        .legend-pop dt:first-child { margin-top: 0; }
+        .legend-pop dd { color: #cbd5e1; margin-bottom: 0.35rem; }
+
+        .jump-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            color: #374151;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+        }
+        .jump-chip:hover {
+            transform: translateY(-1px);
+            border-color: var(--theme-border, #4f46e5);
+            color: var(--theme-text, #3730a3);
+            box-shadow: 0 6px 14px -8px rgba(0,0,0,0.2);
+        }
+        .jump-chip .jump-dot {
+            width: 7px; height: 7px; border-radius: 9999px;
+            background: var(--theme-border, #4f46e5);
+        }
+        .jump-chip.active {
+            background: var(--theme-bg, #eef2ff);
+            border-color: var(--theme-border, #4f46e5);
+            color: var(--theme-text, #3730a3);
+        }
+        .jump-scroll-wrap {
+            position: relative;
+        }
+        .jump-scroll {
+            display: flex; gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.25rem 0.125rem 0.625rem;
+            scroll-behavior: smooth;
+        }
+        .jump-scroll::-webkit-scrollbar { height: 6px; }
+        .jump-fade-r {
+            position: absolute; top: 0; right: 0; bottom: 6px; width: 32px;
+            background: linear-gradient(90deg, transparent, #f8fafc);
+            pointer-events: none;
+        }
+        .jump-fade-l {
+            position: absolute; top: 0; left: 0; bottom: 6px; width: 32px;
+            background: linear-gradient(-90deg, transparent, #f8fafc);
+            pointer-events: none;
+        }
+        @keyframes card-flash {
+            0% { box-shadow: 0 0 0 0 rgba(79,70,229,0); transform: translateY(0); }
+            20% { box-shadow: 0 0 0 6px rgba(79,70,229,0.25); transform: translateY(-3px); }
+            100% { box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12); transform: translateY(0); }
+        }
+        .committee-card.flash {
+            animation: card-flash 1s ease;
+        }
+        .scroll-anchor {
+            scroll-margin-top: 200px;
+        }
+        @media (max-width: 767px) {
+            .scroll-anchor { scroll-margin-top: 160px; }
+            .directory-panel { max-width: 100%; }
+            .directory-header { padding: 1rem 1.1rem 1.1rem; }
+            .directory-body { padding: 1rem 1.1rem; }
+            .person-profile-avatar { width: 3.5rem; height: 3.5rem; font-size: 18px; }
+            .filter-chip { font-size: 10px; padding: 0.3rem 0.6rem; }
+            .member-pill .member-name { max-width: 7.5rem; }
+            .help-dialog { padding: 1.2rem; }
+            .back-top-btn { right: 4.25rem; }
+            .legend-pop {
+                position: fixed;
+                top: auto;
+                right: 0.5rem;
+                left: 0.5rem;
+                width: auto;
+                max-width: none;
+            }
+        }
+
+        mark.search-hit {
+            background: linear-gradient(180deg, rgba(252, 211, 77, 0) 55%, #fde68a 55%);
+            color: inherit;
+            padding: 0 0.1em;
+            border-radius: 2px;
+            font-weight: 600;
+        }
+        .cross-tab-banner {
+            border: 1px solid #c7d2fe;
+            background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+            color: #1e3a8a;
+            border-radius: 1rem;
+            padding: 0.9rem 1.1rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 1.25rem;
+        }
+        .cross-tab-banner button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 9999px;
+            background: #fff;
+            border: 1px solid #c7d2fe;
+            color: #3730a3;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .cross-tab-banner button:hover { background: #eef2ff; }
+
+        .member-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding-left: 0.25rem;
+            padding-right: 0.75rem;
+            padding-top: 0.2rem;
+            padding-bottom: 0.2rem;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 9999px;
+            cursor: pointer;
+            transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+        }
+        .member-pill:hover {
+            background: #eef2ff;
+            border-color: #c7d2fe;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px -4px rgba(79,70,229,0.25);
+        }
+        .member-pill:focus-visible, .chair-pill:focus-visible,
+        .jump-chip:focus-visible, .filter-chip:focus-visible,
+        .show-more-btn:focus-visible {
+            outline: 2px solid #4f46e5;
+            outline-offset: 2px;
+        }
+        .member-pill .member-avatar {
+            width: 1.75rem; height: 1.75rem;
+            border-radius: 9999px;
+            background: #d1d5db;
+            color: #374151;
+            font-size: 10px; font-weight: 700;
+            display: inline-flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .member-pill .member-name {
+            font-size: 13px;
+            color: #1f2937;
+            max-width: 10rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .chair-pill {
+            cursor: pointer;
+        }
+        .chair-pill:hover { filter: brightness(0.95); }
+
+        .show-more-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.8rem;
+            background: var(--theme-bg, #eef2ff);
+            color: var(--theme-text, #3730a3);
+            border: 1px dashed var(--theme-border, #4f46e5);
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.1s ease;
+        }
+        .show-more-btn:hover { transform: translateY(-1px); }
+        .collapsed-members .member-pill.is-hidden { display: none; }
+        .collapsed-members[data-expanded="true"] .member-pill.is-hidden { display: inline-flex; }
+        .collapsed-members[data-expanded="true"] .show-more-btn .show-more-icon { transform: rotate(180deg); }
+        .show-more-icon { transition: transform 0.2s ease; }
+
+        .directory-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(3px);
+            z-index: 70;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        .directory-overlay.open { opacity: 1; }
+        .directory-overlay[hidden] { display: none; }
+        .directory-panel {
+            position: fixed;
+            top: 0; right: 0; bottom: 0;
+            width: 100%;
+            max-width: 30rem;
+            background: #fff;
+            box-shadow: -20px 0 40px -10px rgba(0,0,0,0.2);
+            z-index: 71;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .directory-panel.open { transform: translateX(0); }
+        .directory-panel[hidden] { display: none; }
+        .directory-header {
+            padding: 1.25rem 1.5rem;
+            background: linear-gradient(135deg, #1e3a8a, #4f46e5);
+            color: #fff;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .directory-close {
+            position: absolute;
+            top: 1rem; right: 1rem;
+            width: 2rem; height: 2rem;
+            border-radius: 9999px;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .directory-close:hover { background: rgba(255,255,255,0.3); }
+        .directory-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.25rem 1.5rem;
+        }
+        .directory-search {
+            width: 100%;
+            padding: 0.6rem 0.9rem 0.6rem 2.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+            font-size: 14px;
+            margin-bottom: 1rem;
+        }
+        .directory-search:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+        }
+        .directory-search-wrap {
+            position: relative;
+        }
+        .directory-search-wrap svg {
+            position: absolute; left: 0.75rem; top: 50%;
+            transform: translateY(-50%);
+            width: 1rem; height: 1rem;
+            color: #9ca3af;
+        }
+        .dir-person-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.6rem;
+            cursor: pointer;
+            transition: background 0.12s ease;
+        }
+        .dir-person-row:hover { background: #f3f4f6; }
+        .dir-person-row .dir-avatar {
+            width: 2rem; height: 2rem; border-radius: 9999px;
+            background: linear-gradient(135deg, #6366f1, #06b6d4);
+            color: #fff; font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .dir-person-row .dir-name { font-size: 14px; font-weight: 600; color: #1f2937; flex: 1; }
+        .dir-person-row .dir-count {
+            font-size: 11px; font-weight: 700;
+            background: #eef2ff; color: #3730a3;
+            padding: 0.15rem 0.5rem; border-radius: 9999px;
+        }
+        .dir-person-row .dir-count.hot {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: #fff;
+        }
+        .top-connector-card {
+            background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+            border: 1px solid #c7d2fe;
+            border-radius: 0.9rem;
+            padding: 0.85rem 1rem;
+            margin-bottom: 1rem;
+        }
+        .top-connector-card h4 {
+            font-size: 10px; font-weight: 800;
+            color: #3730a3;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            margin-bottom: 0.5rem;
+            display: flex; align-items: center; gap: 0.35rem;
+        }
+        .top-connector-card .row {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.3rem 0;
+            font-size: 13px;
+            cursor: pointer;
+            transition: transform 0.12s ease;
+        }
+        .top-connector-card .row:hover { transform: translateX(2px); }
+        .top-connector-card .rank {
+            width: 1.25rem; height: 1.25rem;
+            border-radius: 9999px;
+            background: #fff;
+            color: #4f46e5;
+            font-weight: 800; font-size: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .person-profile-avatar {
+            width: 4.5rem; height: 4.5rem;
+            border-radius: 9999px;
+            background: #fff;
+            color: #3730a3;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; font-weight: 800;
+            box-shadow: 0 8px 20px -4px rgba(0,0,0,0.2);
+        }
+        .person-committee-item {
+            padding: 0.85rem 1rem;
+            border-radius: 0.75rem;
+            background: #fff;
+            border-left: 4px solid var(--theme-border, #4f46e5);
+            border-top: 1px solid #f3f4f6;
+            border-right: 1px solid #f3f4f6;
+            border-bottom: 1px solid #f3f4f6;
+            margin-bottom: 0.6rem;
+            cursor: pointer;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+        }
+        .person-committee-item:hover {
+            transform: translateX(2px);
+            box-shadow: 0 6px 14px -6px rgba(0,0,0,0.15);
+        }
+        .person-committee-item .header {
+            display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;
+        }
+        .person-committee-item .title { font-weight: 700; font-size: 14px; color: #111827; }
+        .person-committee-item .area { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.15rem; }
+        .person-committee-item .role-badge {
+            font-size: 10px; font-weight: 800;
+            padding: 0.2rem 0.55rem;
+            border-radius: 9999px;
+            background: var(--theme-bg, #eef2ff);
+            color: var(--theme-text, #3730a3);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+        .person-committee-item .tab-pill {
+            display: inline-block;
+            font-size: 9px; font-weight: 800;
+            padding: 0.15rem 0.45rem;
+            border-radius: 9999px;
+            background: #f1f5f9;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.4rem;
+        }
+        .dir-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+        }
+        .dir-back:hover { color: #fff; }
+        body.directory-open { overflow: hidden; }
+
+        .kbd {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.6rem;
+            height: 1.6rem;
+            padding: 0 0.4rem;
+            border: 1px solid #cbd5e1;
+            border-bottom-width: 2px;
+            border-radius: 0.35rem;
+            background: #f8fafc;
+            color: #334155;
+            font-family: 'Menlo', 'Consolas', ui-monospace, monospace;
+            font-size: 11px;
+            font-weight: 700;
+            box-shadow: 0 1px 0 #cbd5e1;
+        }
+        .help-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(3px);
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .help-overlay.open { opacity: 1; }
+        .help-overlay[hidden] { display: none; }
+        .help-dialog {
+            background: #fff;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            max-width: 28rem;
+            width: 100%;
+            box-shadow: 0 30px 60px -20px rgba(0,0,0,0.4);
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.25s ease, opacity 0.2s ease;
+        }
+        .help-overlay.open .help-dialog { transform: scale(1); opacity: 1; }
+        .help-dialog dt {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 13px;
+        }
+        .help-dialog dd {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .shortcuts-btn {
+            position: fixed;
+            bottom: 1.25rem;
+            right: 1.25rem;
+            width: 2.5rem; height: 2.5rem;
+            border-radius: 9999px;
+            background: #fff;
+            color: #4f46e5;
+            border: 1px solid #e5e7eb;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px -10px rgba(0,0,0,0.25);
+            cursor: pointer;
+            z-index: 40;
+            font-family: 'Menlo', 'Consolas', ui-monospace, monospace;
+            font-size: 16px;
+            font-weight: 700;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .shortcuts-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px -10px rgba(79, 70, 229, 0.35);
+        }
+
+        .back-top-btn {
+            position: fixed;
+            bottom: 1.25rem;
+            right: 4.5rem;
+            width: 2.5rem; height: 2.5rem;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px -8px rgba(79, 70, 229, 0.4);
+            cursor: pointer;
+            z-index: 40;
+            border: none;
+            opacity: 0;
+            transform: translateY(10px) scale(0.9);
+            pointer-events: none;
+            transition: opacity 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .back-top-btn.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+        .back-top-btn:hover {
+            box-shadow: 0 14px 30px -8px rgba(79, 70, 229, 0.55);
+        }
+
+        @media print {
+            @page { margin: 1.5cm; }
+            body { background: #fff !important; color: #000 !important; font-size: 11pt; }
+            header, footer,
+            .sticky, .tab-panel.hidden,
+            .jump-scroll-wrap, .cross-tab-banner,
+            #shortcuts-btn, #back-top-btn, #help-overlay, #directory-overlay, #directory-panel,
+            .show-more-btn, .read-mission, #reset-all,
+            #committee-search, #open-directory,
+            .tab-btn, [role="tablist"],
+            .filter-chip, #clear-filters, #legend-btn, #legend-pop {
+                display: none !important;
+            }
+            .hero-governance {
+                background: #fff !important;
+                color: #000 !important;
+                padding: 0.5cm 0 1cm;
+                border-bottom: 2px solid #000;
+            }
+            .hero-governance * { color: #000 !important; text-shadow: none !important; }
+            .hero-overlay { display: none !important; }
+            .stat-card {
+                background: #f7f7f7 !important;
+                border: 1px solid #ccc !important;
+            }
+            .tab-panel { display: block !important; }
+            .tab-panel.hidden { display: block !important; }
+            .tab-panel + .tab-panel { margin-top: 1cm; page-break-before: always; }
+            .committee-card {
+                box-shadow: none !important;
+                border: 1px solid #bbb !important;
+                border-top: 4px solid var(--theme-border, #000) !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                margin-bottom: 0.5cm;
+            }
+            .committee-card:hover { transform: none !important; }
+            details { page-break-inside: avoid; }
+            details > summary { cursor: default; }
+            details[data-auto-opened], details { }
+            details .chev { display: none !important; }
+            details > div, details > ul { display: block !important; }
+            details:not([open]) > ul,
+            details:not([open]) > div { display: block !important; }
+            details > summary svg { display: none; }
+            /* force all collapsible sections open for print */
+            details { display: block; }
+            .mission-body { max-height: none !important; margin-top: 0.3rem !important; overflow: visible !important; }
+            .collapsed-members .member-pill.is-hidden { display: inline-flex !important; }
+            .member-pill, .chair-pill {
+                box-shadow: none !important;
+                background: #fff !important;
+                border: 1px solid #999 !important;
+                color: #000 !important;
+            }
+            .chair-pill .chair-role {
+                background: #000 !important; color: #fff !important;
+            }
+            .chair-avatar, .member-avatar { background: #eee !important; color: #000 !important; }
+            .meta-pill, .meta-pill.strong { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #ccc !important; }
+            mark.search-hit { background: #ffff99 !important; }
+            a[href]:after { content: ""; }
+        }
     </style>
 </head>
 <body class="bg-governance-pattern text-gray-800 min-h-screen flex flex-col">
@@ -120,25 +853,29 @@
                 </div>
 
                 <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
-                        <div id="stat-total" class="text-3xl font-heading font-extrabold">0</div>
+                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
+                        <div class="text-3xl font-heading font-extrabold"><span id="stat-total" class="stat-num" data-target="0">0</span></div>
                         <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">Committees</div>
                     </div>
-                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
-                        <div id="stat-members" class="text-3xl font-heading font-extrabold">0</div>
+                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
+                        <div class="text-3xl font-heading font-extrabold"><span id="stat-members" class="stat-num" data-target="0">0</span></div>
                         <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">Members</div>
                     </div>
-                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
-                        <div id="stat-adek" class="text-3xl font-heading font-extrabold">0</div>
+                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
+                        <div class="text-3xl font-heading font-extrabold"><span id="stat-adek" class="stat-num" data-target="0">0</span></div>
                         <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">ADEK-Mandated</div>
                     </div>
-                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
-                        <div id="stat-ai" class="text-3xl font-heading font-extrabold">0</div>
+                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
+                        <div class="text-3xl font-heading font-extrabold"><span id="stat-ai" class="stat-num" data-target="0">0</span></div>
                         <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">AI Subcommittees</div>
                     </div>
                 </div>
 
-                <div class="mt-8">
+                <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+                    <button id="open-directory" type="button" class="inline-flex items-center gap-2 bg-white text-indigo-800 hover:bg-indigo-50 font-semibold py-2.5 px-5 rounded-full transition-colors shadow-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        People Directory
+                    </button>
                     <a href="25-26%20committee%20list%20%281%29.pdf" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/25 text-white font-semibold py-2.5 px-5 rounded-full transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         Download the Full PDF
@@ -150,19 +887,58 @@
 
     <div class="bg-white border-b border-gray-200 sticky top-[65px] z-40 shadow-sm">
         <div class="container mx-auto px-6">
-            <div role="tablist" class="flex items-center gap-1 md:gap-2 overflow-x-auto">
-                <button role="tab" aria-selected="true" aria-controls="panel-level-1" data-tab="level-1" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-6">
+            <div role="tablist" aria-label="Committee categories" class="flex items-center gap-1 md:gap-2 overflow-x-auto">
+                <button id="tab-level-1" role="tab" aria-selected="true" aria-controls="panel-level-1" tabindex="0" data-tab="level-1" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-black">1</span>
                     Level 1 Committees
+                    <span class="tab-count" data-tab-count="level-1">0</span>
                 </button>
-                <button role="tab" aria-selected="false" aria-controls="panel-level-2" data-tab="level-2" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900">
+                <button id="tab-level-2" role="tab" aria-selected="false" aria-controls="panel-level-2" tabindex="-1" data-tab="level-2" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black">2</span>
                     Level 2 Committees
+                    <span class="tab-count" data-tab-count="level-2">0</span>
                 </button>
-                <button role="tab" aria-selected="false" aria-controls="panel-ai" data-tab="ai" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900">
+                <button id="tab-ai" role="tab" aria-selected="false" aria-controls="panel-ai" tabindex="-1" data-tab="ai" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
                     <span class="text-base">🤖</span>
                     AI Incubator Team
+                    <span class="tab-count" data-tab-count="ai">0</span>
                 </button>
+            </div>
+
+            <div class="relative flex items-center gap-2 overflow-x-auto pb-3 md:pb-0 md:py-3 filter-row">
+                <span class="hidden md:inline text-[10px] font-bold uppercase tracking-widest text-gray-400 mr-1">Filter</span>
+                <button type="button" class="filter-chip" data-req="adek-mandated" aria-pressed="false">
+                    <span class="dot"></span><span class="chip-label">ADEK-Mandated</span>
+                </button>
+                <button type="button" class="filter-chip" data-req="adek-aligned" aria-pressed="false">
+                    <span class="dot"></span><span class="chip-label">ADEK-Aligned</span>
+                </button>
+                <button type="button" class="filter-chip" data-req="school-directed" aria-pressed="false">
+                    <span class="dot"></span><span class="chip-label">School-Directed</span>
+                </button>
+                <button type="button" class="filter-chip" data-req="school-initiated" aria-pressed="false">
+                    <span class="dot"></span><span class="chip-label">School-Initiated</span>
+                </button>
+                <button id="clear-filters" type="button" class="hidden text-[11px] font-semibold text-gray-500 hover:text-indigo-700 underline underline-offset-2 whitespace-nowrap ml-1">Clear</button>
+                <button id="legend-btn" type="button" aria-expanded="false" aria-controls="legend-pop" class="ml-auto flex items-center gap-1 text-[11px] font-semibold text-gray-500 hover:text-indigo-700 whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span class="hidden sm:inline">What do these mean?</span>
+                    <span class="sm:hidden">Legend</span>
+                </button>
+                <div id="legend-pop" class="legend-pop" role="dialog" aria-label="Requirement types" hidden>
+                    <dl>
+                        <dt style="color:#fb7185">ADEK-Mandated</dt>
+                        <dd>Required by ADEK regulation. Must exist, with defined membership, cadence, and records.</dd>
+                        <dt style="color:#fbbf24">ADEK-Aligned</dt>
+                        <dd>Not explicitly mandated, but closely tied to an ADEK policy area (e.g. Digital Policy, RAIL).</dd>
+                        <dt style="color:#c4b5fd">School-Directed</dt>
+                        <dd>Established by AISA leadership to meet internal policy or operational needs.</dd>
+                        <dt style="color:#6ee7b7">School-Initiated</dt>
+                        <dd>Voluntary and community-led — morale, sustainability, parent engagement, etc.</dd>
+                    </dl>
+                </div>
+            </div>
             </div>
         </div>
     </div>
@@ -171,33 +947,93 @@
         <div id="no-results" class="hidden text-center py-16">
             <div class="text-5xl mb-3">🔍</div>
             <h3 class="text-xl font-bold text-gray-700">No committees match your search</h3>
-            <p class="text-gray-500 mt-1">Try a different keyword, or clear the search to browse all committees.</p>
+            <p class="text-gray-500 mt-1">Try a different keyword, or clear filters to browse all committees.</p>
+            <button id="reset-all" type="button" class="mt-5 inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-full text-sm transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Reset search and filters
+            </button>
         </div>
 
-        <section id="panel-level-1" role="tabpanel" aria-labelledby="level-1" class="tab-panel">
-            <div class="mb-6">
+        <section id="panel-level-1" role="tabpanel" aria-labelledby="tab-level-1" class="tab-panel">
+            <div class="mb-4">
                 <h3 class="text-2xl font-heading font-bold text-gray-900">Level 1 Committees</h3>
                 <p class="text-sm text-gray-600 mt-1">Strategic, school-wide committees providing governance and oversight.</p>
+            </div>
+            <div class="jump-scroll-wrap mb-6">
+                <div class="jump-scroll" data-jump="level-1"></div>
+                <div class="jump-fade-l"></div>
+                <div class="jump-fade-r"></div>
             </div>
             <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="level-1"></div>
         </section>
 
-        <section id="panel-level-2" role="tabpanel" aria-labelledby="level-2" class="tab-panel hidden">
-            <div class="mb-6">
+        <section id="panel-level-2" role="tabpanel" aria-labelledby="tab-level-2" class="tab-panel hidden">
+            <div class="mb-4">
                 <h3 class="text-2xl font-heading font-bold text-gray-900">Level 2 Committees</h3>
                 <p class="text-sm text-gray-600 mt-1">Operational committees that implement policy and support day-to-day practice.</p>
+            </div>
+            <div class="jump-scroll-wrap mb-6">
+                <div class="jump-scroll" data-jump="level-2"></div>
+                <div class="jump-fade-l"></div>
+                <div class="jump-fade-r"></div>
             </div>
             <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="level-2"></div>
         </section>
 
-        <section id="panel-ai" role="tabpanel" aria-labelledby="ai" class="tab-panel hidden">
-            <div class="mb-6">
+        <section id="panel-ai" role="tabpanel" aria-labelledby="tab-ai" class="tab-panel hidden">
+            <div class="mb-4">
                 <h3 class="text-2xl font-heading font-bold text-gray-900">AI Incubator Team</h3>
                 <p class="text-sm text-gray-600 mt-1">AISA's command center for responsible AI adoption — the main team plus four specialist subcommittees.</p>
+            </div>
+            <div class="jump-scroll-wrap mb-6">
+                <div class="jump-scroll" data-jump="ai"></div>
+                <div class="jump-fade-l"></div>
+                <div class="jump-fade-r"></div>
             </div>
             <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="ai"></div>
         </section>
     </main>
+
+    <button id="back-top-btn" class="back-top-btn" type="button" aria-label="Back to top" title="Back to top">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+    </button>
+    <button id="shortcuts-btn" class="shortcuts-btn" type="button" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">?</button>
+
+    <div id="help-overlay" class="help-overlay" role="dialog" aria-modal="true" aria-labelledby="help-title" hidden>
+        <div class="help-dialog">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <h2 id="help-title" class="text-lg font-heading font-extrabold text-gray-900">Keyboard shortcuts</h2>
+                    <p class="text-xs text-gray-500 mt-1">Move around the page faster.</p>
+                </div>
+                <button type="button" data-close-help class="text-gray-400 hover:text-gray-700" aria-label="Close">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <dl class="grid gap-3">
+                <div class="flex items-center justify-between"><dt>Focus search</dt><dd><span class="kbd">/</span></dd></div>
+                <div class="flex items-center justify-between"><dt>Open People Directory</dt><dd><span class="kbd">P</span></dd></div>
+                <div class="flex items-center justify-between"><dt>Level 1 tab</dt><dd><span class="kbd">1</span></dd></div>
+                <div class="flex items-center justify-between"><dt>Level 2 tab</dt><dd><span class="kbd">2</span></dd></div>
+                <div class="flex items-center justify-between"><dt>AI Incubator tab</dt><dd><span class="kbd">3</span></dd></div>
+                <div class="flex items-center justify-between"><dt>Move between tabs</dt><dd><span class="kbd">←</span><span class="kbd">→</span></dd></div>
+                <div class="flex items-center justify-between"><dt>Close this / modals</dt><dd><span class="kbd">Esc</span></dd></div>
+                <div class="flex items-center justify-between"><dt>Show this help</dt><dd><span class="kbd">?</span></dd></div>
+            </dl>
+            <p class="text-[11px] text-gray-400 mt-4">Shortcuts are ignored while typing in a search box.</p>
+        </div>
+    </div>
+
+    <div id="directory-overlay" class="directory-overlay" hidden></div>
+    <aside id="directory-panel" class="directory-panel" role="dialog" aria-modal="true" aria-labelledby="directory-title" hidden>
+        <div class="directory-header">
+            <button type="button" class="directory-close" data-close-directory aria-label="Close">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <div id="directory-header-content"></div>
+        </div>
+        <div class="directory-body" id="directory-body"></div>
+    </aside>
 
     <footer class="bg-blue-900 text-blue-100 mt-auto">
         <div class="container mx-auto px-6 py-8 text-center">
@@ -238,28 +1074,51 @@
 
         const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
-        const renderMember = (m, chair) => {
+        const MEMBER_COLLAPSE_THRESHOLD = 6;
+
+        const renderMember = (m, chair, isHidden) => {
+            const nameAttr = `data-member-name="${escapeHtml(m.name)}"`;
+            const hiddenCls = isHidden ? ' is-hidden' : '';
             if (chair) {
-                return `<div class="chair-pill flex items-center gap-2 rounded-full pl-1 pr-3 py-1 shadow-sm">
-                    <div class="chair-avatar w-7 h-7 rounded-full text-[10px] font-black flex items-center justify-center">${escapeHtml(initials(m.name))}</div>
+                return `<button type="button" class="chair-pill flex items-center gap-2 rounded-full pl-1 pr-2 py-1 shadow-sm${hiddenCls}" ${nameAttr} title="View all committees for ${escapeHtml(m.name)}">
+                    <span class="chair-avatar w-7 h-7 rounded-full text-[10px] font-black flex items-center justify-center">${escapeHtml(initials(m.name))}</span>
                     <span class="text-sm font-semibold">${escapeHtml(m.name)}</span>
-                    <span class="text-[9px] font-black uppercase tracking-wider opacity-80">${escapeHtml(m.role)}</span>
-                </div>`;
+                    <span class="chair-role">${escapeHtml(m.role)}</span>
+                </button>`;
             }
-            return `<div class="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-200 rounded-full pl-1 pr-3 py-1">
-                <div class="w-7 h-7 rounded-full bg-gray-300 text-gray-700 text-[10px] font-bold flex items-center justify-center">${escapeHtml(initials(m.name))}</div>
-                <span class="text-sm text-gray-800 truncate">${escapeHtml(m.name)}</span>
-            </div>`;
+            return `<button type="button" class="member-pill${hiddenCls}" ${nameAttr} title="View all committees for ${escapeHtml(m.name)}">
+                <span class="member-avatar">${escapeHtml(initials(m.name))}</span>
+                <span class="member-name">${escapeHtml(m.name)}</span>
+            </button>`;
         };
 
         const renderRoster = (roster) => {
             const chairs = roster.members.filter(m => m.role);
             const others = roster.members.filter(m => !m.role);
+            const collapsible = others.length > MEMBER_COLLAPSE_THRESHOLD;
+            const hiddenStart = collapsible ? MEMBER_COLLAPSE_THRESHOLD : others.length;
+            const hiddenCount = others.length - hiddenStart;
+            const othersHtml = others.map((m, i) => renderMember(m, false, collapsible && i >= hiddenStart)).join('');
+            const toggle = collapsible
+                ? `<button type="button" class="show-more-btn" data-toggle-members>
+                    <span class="show-more-label">+${hiddenCount} more</span>
+                    <svg class="show-more-icon w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                </button>`
+                : '';
             return `
                 ${roster.label ? `<h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">${escapeHtml(roster.label)}</h5>` : ''}
-                ${chairs.length ? `<div class="flex flex-wrap gap-2 mb-3">${chairs.map(m => renderMember(m, true)).join('')}</div>` : ''}
-                ${others.length ? `<div class="flex flex-wrap gap-2">${others.map(m => renderMember(m, false)).join('')}</div>` : ''}
+                ${chairs.length ? `<div class="flex flex-wrap gap-2 mb-3">${chairs.map(m => renderMember(m, true, false)).join('')}</div>` : ''}
+                ${others.length ? `<div class="collapsed-members flex flex-wrap gap-2 items-center" data-expanded="false">${othersHtml}${toggle}</div>` : ''}
             `;
+        };
+
+        const requirementSlug = (req) => {
+            const r = (req || '').toLowerCase();
+            if (r.includes('adek-mandated')) return 'adek-mandated';
+            if (r.includes('adek-aligned')) return 'adek-aligned';
+            if (r.includes('school-directed')) return 'school-directed';
+            if (r.includes('school-initiated')) return 'school-initiated';
+            return '';
         };
 
         const renderCommittee = (c) => {
@@ -267,10 +1126,13 @@
             const badge = requirementBadge(c.requirement);
             const rosters = Array.isArray(c.rosters) ? c.rosters : [{ members: c.members || [] }];
             const totalMembers = rosters.reduce((n, r) => n + r.members.length, 0);
+            const chairCount = rosters.reduce((n, r) => n + r.members.filter(m => m.role).length, 0);
+            const hasSubgroups = rosters.length > 1;
+            const missionId = `mission-${c.id}`;
             return `
-                <article class="committee-card bg-white rounded-2xl shadow-md overflow-hidden" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" data-search="${escapeHtml(c.searchBlob || '')}">
+                <article id="c-${escapeHtml(c.id)}" class="committee-card scroll-anchor bg-white rounded-2xl shadow-md overflow-hidden" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" data-search="${escapeHtml(c.searchBlob || '')}" data-req="${requirementSlug(c.requirement)}" data-committee-id="${escapeHtml(c.id)}">
                     <div class="p-6">
-                        <div class="flex items-start justify-between gap-4 mb-4">
+                        <div class="flex items-start justify-between gap-4 mb-3">
                             <div class="flex items-center gap-3 min-w-0">
                                 <div class="text-4xl flex-shrink-0">${c.icon}</div>
                                 <div class="min-w-0">
@@ -281,15 +1143,40 @@
                             <span class="inline-flex items-center ${badge.cls} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider whitespace-nowrap flex-shrink-0">${badge.label}</span>
                         </div>
 
-                        ${c.purpose ? `<div class="mb-4">
+                        <div class="card-meta">
+                            <span class="meta-pill strong">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                ${totalMembers} ${totalMembers === 1 ? 'Member' : 'Members'}
+                            </span>
+                            ${chairCount ? `<span class="meta-pill">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143z"/></svg>
+                                ${chairCount} Chair${chairCount > 1 ? 's' : ''}
+                            </span>` : ''}
+                            ${hasSubgroups ? `<span class="meta-pill">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                ${rosters.length} Subgroups
+                            </span>` : ''}
+                            ${c.initialTasks && c.initialTasks.length ? `<span class="meta-pill">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                                ${c.initialTasks.length} Tasks
+                            </span>` : ''}
+                        </div>
+
+                        ${c.purpose ? `<div class="mb-3">
                             <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Purpose</h4>
                             <p class="text-sm text-gray-700 leading-relaxed">${escapeHtml(c.purpose)}</p>
-                        </div>` : ''}
-
-                        ${c.mission ? `<div class="mb-4">
+                            ${c.mission ? `
+                                <button type="button" class="read-mission" aria-expanded="false" aria-controls="${missionId}" data-toggle-mission>
+                                    <span>Read mission &amp; charge</span>
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                                </button>
+                                <div id="${missionId}" class="mission-body">
+                                    <p class="text-sm text-gray-700 leading-relaxed italic border-l-2 pl-3" style="border-color: var(--theme-border)">${escapeHtml(c.mission)}</p>
+                                </div>` : ''}
+                        </div>` : (c.mission ? `<div class="mb-4">
                             <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Mission &amp; Charge</h4>
                             <p class="text-sm text-gray-700 leading-relaxed">${escapeHtml(c.mission)}</p>
-                        </div>` : ''}
+                        </div>` : '')}
 
                         ${c.initialTasks && c.initialTasks.length ? `<details class="mb-2 border-l-4 border-gray-100 pl-4">
                             <summary class="cursor-pointer text-sm font-semibold text-gray-700 hover:text-indigo-700 flex items-center justify-between py-1">
@@ -329,7 +1216,10 @@
         const buildSearchBlob = (c) => {
             const rosters = Array.isArray(c.rosters) ? c.rosters : [{ members: c.members || [] }];
             const names = rosters.flatMap(r => r.members.map(m => m.name)).join(' ');
-            return [c.name, c.policyArea, c.requirement, c.purpose, c.mission, names].filter(Boolean).join(' ').toLowerCase();
+            const rosterLabels = rosters.map(r => r.label || '').join(' ');
+            const tasks = (c.initialTasks || []).join(' ');
+            const indicators = (c.indicators || []).join(' ');
+            return [c.name, c.policyArea, c.requirement, c.purpose, c.mission, tasks, indicators, rosterLabels, names, c.notes || ''].filter(Boolean).join(' ').toLowerCase();
         };
 
         const committees = [
@@ -969,6 +1859,25 @@
             }
         ];
 
+        const VALID_TABS = ['level-1', 'level-2', 'ai'];
+        const PREFERS_REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function animateCount(el, target, duration = 1100) {
+            if (!el) return;
+            el.setAttribute('data-target', target);
+            if (PREFERS_REDUCED_MOTION) { el.textContent = target; return; }
+            const start = performance.now();
+            const from = 0;
+            const easeOut = t => 1 - Math.pow(1 - t, 3);
+            function tick(now) {
+                const t = Math.min(1, (now - start) / duration);
+                el.textContent = Math.round(from + (target - from) * easeOut(t)).toString();
+                if (t < 1) requestAnimationFrame(tick);
+                else el.textContent = target.toString();
+            }
+            requestAnimationFrame(tick);
+        }
+
         function init() {
             committees.forEach(c => c.searchBlob = buildSearchBlob(c));
 
@@ -977,6 +1886,18 @@
             Object.entries(groups).forEach(([g, items]) => {
                 const container = document.querySelector(`[data-container="${g}"]`);
                 if (container) container.innerHTML = items.map(renderCommittee).join('');
+                const jumpBar = document.querySelector(`[data-jump="${g}"]`);
+                if (jumpBar) {
+                    jumpBar.innerHTML = items.map(c => {
+                        const theme = themes[c.color] || themes.indigo;
+                        return `<button type="button" class="jump-chip" data-jump-to="${escapeHtml(c.id)}" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" title="${escapeHtml(c.name)}">
+                            <span class="jump-dot"></span><span>${escapeHtml(c.icon)} ${escapeHtml(c.name)}</span>
+                        </button>`;
+                    }).join('');
+                    jumpBar.querySelectorAll('[data-jump-to]').forEach(btn => {
+                        btn.addEventListener('click', () => scrollToCommittee(btn.dataset.jumpTo));
+                    });
+                }
             });
 
             const totalMembers = committees.reduce((n, c) => {
@@ -985,45 +1906,712 @@
             }, 0);
             const adekCount = committees.filter(c => (c.requirement || '').toLowerCase().includes('adek-mandated')).length;
             const aiCount = committees.filter(c => c.group === 'ai' && c.id !== 'ai-incubator-main').length;
-            document.getElementById('stat-total').textContent = committees.length;
-            document.getElementById('stat-members').textContent = totalMembers;
-            document.getElementById('stat-adek').textContent = adekCount;
-            document.getElementById('stat-ai').textContent = aiCount;
+            animateCount(document.getElementById('stat-total'), committees.length);
+            animateCount(document.getElementById('stat-members'), totalMembers);
+            animateCount(document.getElementById('stat-adek'), adekCount);
+            animateCount(document.getElementById('stat-ai'), aiCount);
 
-            document.querySelectorAll('[role="tab"]').forEach(btn => {
-                btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+            Object.entries(groups).forEach(([g, items]) => {
+                const pill = document.querySelector(`[data-tab-count="${g}"]`);
+                if (pill) pill.textContent = items.length;
+            });
+
+            const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
+            tabs.forEach(btn => {
+                btn.addEventListener('click', () => switchTab(btn.dataset.tab, { focus: true }));
+                btn.addEventListener('keydown', (e) => handleTabKeydown(e, tabs));
             });
 
             const search = document.getElementById('committee-search');
-            search.addEventListener('input', () => applyFilter(search.value.trim().toLowerCase()));
+            search.addEventListener('input', () => {
+                applyFilter(search.value.trim().toLowerCase());
+                updateHash();
+            });
+
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const pressed = chip.getAttribute('aria-pressed') === 'true';
+                    chip.setAttribute('aria-pressed', pressed ? 'false' : 'true');
+                    applyFilter((document.getElementById('committee-search').value || '').trim().toLowerCase());
+                    updateHash();
+                });
+            });
+
+            const clearBtn = document.getElementById('clear-filters');
+            clearBtn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
+                applyFilter((document.getElementById('committee-search').value || '').trim().toLowerCase());
+                updateHash();
+            });
+
+            const resetAll = document.getElementById('reset-all');
+            if (resetAll) resetAll.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
+                const s = document.getElementById('committee-search');
+                if (s) s.value = '';
+                applyFilter('');
+                updateHash();
+                if (s) s.focus();
+            });
+
+            const legendBtn = document.getElementById('legend-btn');
+            const legendPop = document.getElementById('legend-pop');
+            const toggleLegend = (force) => {
+                const shouldShow = force !== undefined ? force : legendPop.hasAttribute('hidden');
+                if (shouldShow) { legendPop.removeAttribute('hidden'); legendBtn.setAttribute('aria-expanded', 'true'); }
+                else { legendPop.setAttribute('hidden', ''); legendBtn.setAttribute('aria-expanded', 'false'); }
+            };
+            legendBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleLegend(); });
+            document.addEventListener('click', (e) => {
+                if (!legendPop.contains(e.target) && e.target !== legendBtn) toggleLegend(false);
+            });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleLegend(false); });
+
+            document.addEventListener('click', (e) => {
+                const toggle = e.target.closest('[data-toggle-members]');
+                if (toggle) {
+                    const wrap = toggle.closest('.collapsed-members');
+                    if (!wrap) return;
+                    const expanded = wrap.getAttribute('data-expanded') === 'true';
+                    wrap.setAttribute('data-expanded', expanded ? 'false' : 'true');
+                    const hiddenCount = wrap.querySelectorAll('.member-pill.is-hidden').length;
+                    const label = toggle.querySelector('.show-more-label');
+                    if (label) label.textContent = expanded ? `+${hiddenCount} more` : 'Show less';
+                    return;
+                }
+                const missionToggle = e.target.closest('[data-toggle-mission]');
+                if (missionToggle) {
+                    const expanded = missionToggle.getAttribute('aria-expanded') === 'true';
+                    missionToggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+                    const id = missionToggle.getAttribute('aria-controls');
+                    const body = id && document.getElementById(id);
+                    if (body) body.classList.toggle('open', !expanded);
+                    const label = missionToggle.querySelector('span');
+                    if (label) label.textContent = expanded ? 'Read mission & charge' : 'Hide mission & charge';
+                    return;
+                }
+                const personPill = e.target.closest('[data-member-name]');
+                if (personPill) {
+                    e.preventDefault();
+                    const key = normalizePersonKey(personPill.getAttribute('data-member-name'));
+                    if (PEOPLE_INDEX.has(key)) openDirectory(key);
+                }
+            });
+
+            buildPeopleIndex();
+            const openDirBtn = document.getElementById('open-directory');
+            if (openDirBtn) openDirBtn.addEventListener('click', () => openDirectory());
+            document.getElementById('directory-overlay').addEventListener('click', closeDirectory);
+            document.querySelectorAll('[data-close-directory]').forEach(b => b.addEventListener('click', closeDirectory));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !document.getElementById('directory-panel').hidden) closeDirectory();
+            });
+
+            const backTopBtn = document.getElementById('back-top-btn');
+            if (backTopBtn) {
+                backTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: PREFERS_REDUCED_MOTION ? 'auto' : 'smooth' });
+                });
+            }
+            let scrollRaf = 0;
+            window.addEventListener('scroll', () => {
+                if (scrollRaf) return;
+                scrollRaf = requestAnimationFrame(() => {
+                    scrollRaf = 0;
+                    if (backTopBtn) backTopBtn.classList.toggle('visible', window.scrollY > 500);
+                    updateScrollSpy();
+                });
+            }, { passive: true });
+
+            const shortcutsBtn = document.getElementById('shortcuts-btn');
+            if (shortcutsBtn) shortcutsBtn.addEventListener('click', () => toggleHelp(true));
+            document.querySelectorAll('[data-close-help]').forEach(b => b.addEventListener('click', () => toggleHelp(false)));
+            document.getElementById('help-overlay').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('help-overlay')) toggleHelp(false);
+            });
+            document.addEventListener('keydown', handleGlobalShortcuts);
+
+            const printState = { prevOpen: new WeakSet(), prevExpanded: new WeakSet(), prevMission: new WeakSet() };
+            window.addEventListener('beforeprint', () => {
+                document.querySelectorAll('.tab-panel').forEach(p => p.removeAttribute('data-print-hidden'));
+                document.querySelectorAll('details').forEach(d => {
+                    if (d.hasAttribute('open')) printState.prevOpen.add(d);
+                    else d.setAttribute('open', '');
+                });
+                document.querySelectorAll('.collapsed-members').forEach(w => {
+                    if (w.getAttribute('data-expanded') === 'true') printState.prevExpanded.add(w);
+                    else w.setAttribute('data-expanded', 'true');
+                });
+                document.querySelectorAll('.mission-body').forEach(b => {
+                    if (b.classList.contains('open')) printState.prevMission.add(b);
+                    else b.classList.add('open');
+                });
+            });
+            window.addEventListener('afterprint', () => {
+                document.querySelectorAll('details').forEach(d => {
+                    if (!printState.prevOpen.has(d) && !d.hasAttribute('data-auto-opened')) d.removeAttribute('open');
+                });
+                document.querySelectorAll('.collapsed-members').forEach(w => {
+                    if (!printState.prevExpanded.has(w) && !w.hasAttribute('data-auto-expanded')) w.setAttribute('data-expanded', 'false');
+                });
+                document.querySelectorAll('.mission-body').forEach(b => {
+                    if (!printState.prevMission.has(b) && !b.hasAttribute('data-auto-opened')) b.classList.remove('open');
+                });
+            });
+
+            applyStateFromHash();
+            window.addEventListener('hashchange', applyStateFromHash);
         }
 
-        function switchTab(id) {
-            document.querySelectorAll('[role="tab"]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === id ? 'true' : 'false'));
+        function toggleHelp(force) {
+            const overlay = document.getElementById('help-overlay');
+            const shouldOpen = force !== undefined ? force : overlay.hasAttribute('hidden');
+            if (shouldOpen) {
+                overlay.hidden = false;
+                requestAnimationFrame(() => overlay.classList.add('open'));
+            } else {
+                overlay.classList.remove('open');
+                setTimeout(() => { overlay.hidden = true; }, 220);
+            }
+        }
+
+        function isTypingContext(target) {
+            if (!target) return false;
+            const tag = target.tagName;
+            return tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable;
+        }
+
+        function updateScrollSpy() {
+            const activePanel = document.querySelector('.tab-panel:not(.hidden)');
+            if (!activePanel) return;
+            const cards = Array.from(activePanel.querySelectorAll('.committee-card:not(.hidden-by-filter)'));
+            if (!cards.length) return;
+            const anchorLine = 220;
+            let currentId = null;
+            for (const card of cards) {
+                const rect = card.getBoundingClientRect();
+                if (rect.top <= anchorLine) currentId = card.dataset.committeeId;
+                else break;
+            }
+            if (!currentId) currentId = cards[0].dataset.committeeId;
+            const jumpBar = activePanel.querySelector('.jump-scroll');
+            if (!jumpBar) return;
+            let activeChip = null;
+            jumpBar.querySelectorAll('[data-jump-to]').forEach(chip => {
+                const isActive = chip.dataset.jumpTo === currentId;
+                chip.classList.toggle('active', isActive);
+                if (isActive) activeChip = chip;
+            });
+            if (activeChip) {
+                const chipRect = activeChip.getBoundingClientRect();
+                const barRect = jumpBar.getBoundingClientRect();
+                if (chipRect.left < barRect.left || chipRect.right > barRect.right) {
+                    const target = activeChip.offsetLeft - jumpBar.clientWidth / 2 + activeChip.clientWidth / 2;
+                    jumpBar.scrollTo({ left: Math.max(0, target), behavior: PREFERS_REDUCED_MOTION ? 'auto' : 'smooth' });
+                }
+            }
+        }
+
+        function handleGlobalShortcuts(e) {
+            if (e.metaKey || e.ctrlKey || e.altKey) return;
+            const helpOpen = !document.getElementById('help-overlay').hidden;
+            const dirOpen = !document.getElementById('directory-panel').hidden;
+            if (e.key === 'Escape') {
+                if (helpOpen) toggleHelp(false);
+                return;
+            }
+            if (isTypingContext(e.target)) return;
+            if (e.key === '/') {
+                e.preventDefault();
+                const s = document.getElementById('committee-search');
+                if (s) { s.focus(); s.select(); }
+                return;
+            }
+            if (e.key === '?') {
+                e.preventDefault();
+                toggleHelp();
+                return;
+            }
+            if (dirOpen) return;
+            if (e.key === '1') { switchTab('level-1', { focus: true }); }
+            else if (e.key === '2') { switchTab('level-2', { focus: true }); }
+            else if (e.key === '3') { switchTab('ai', { focus: true }); }
+            else if (e.key === 'p' || e.key === 'P') { openDirectory(); }
+        }
+
+        function getActiveRequirements() {
+            return Array.from(document.querySelectorAll('.filter-chip[aria-pressed="true"]')).map(c => c.dataset.req);
+        }
+
+        const PEOPLE_INDEX = new Map();
+        const TAB_LABELS = { 'level-1': 'Level 1', 'level-2': 'Level 2', 'ai': 'AI Incubator' };
+
+        function normalizePersonKey(name) {
+            return (name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+        }
+
+        function buildPeopleIndex() {
+            PEOPLE_INDEX.clear();
+            const GROUP_NAMES = new Set(['school nurses', 'principals', 'assistant principals']);
+            committees.forEach(c => {
+                const rosters = Array.isArray(c.rosters) ? c.rosters : [{ members: c.members || [] }];
+                rosters.forEach(r => {
+                    r.members.forEach(m => {
+                        const key = normalizePersonKey(m.name);
+                        if (!key) return;
+                        if (GROUP_NAMES.has(key)) return;
+                        if (!PEOPLE_INDEX.has(key)) {
+                            PEOPLE_INDEX.set(key, { displayName: m.name, memberships: [] });
+                        }
+                        PEOPLE_INDEX.get(key).memberships.push({
+                            committeeId: c.id,
+                            committeeName: c.name,
+                            policyArea: c.policyArea || '',
+                            icon: c.icon,
+                            color: c.color,
+                            group: c.group,
+                            role: m.role || 'Member',
+                            rosterLabel: r.label || ''
+                        });
+                    });
+                });
+            });
+        }
+
+        function openDirectory(personKey) {
+            const overlay = document.getElementById('directory-overlay');
+            const panel = document.getElementById('directory-panel');
+            overlay.hidden = false;
+            panel.hidden = false;
+            requestAnimationFrame(() => {
+                overlay.classList.add('open');
+                panel.classList.add('open');
+            });
+            document.body.classList.add('directory-open');
+            if (personKey && PEOPLE_INDEX.has(personKey)) {
+                renderPersonView(personKey);
+            } else {
+                renderDirectoryList();
+            }
+        }
+
+        function closeDirectory() {
+            const overlay = document.getElementById('directory-overlay');
+            const panel = document.getElementById('directory-panel');
+            overlay.classList.remove('open');
+            panel.classList.remove('open');
+            setTimeout(() => {
+                overlay.hidden = true;
+                panel.hidden = true;
+            }, 280);
+            document.body.classList.remove('directory-open');
+        }
+
+        function renderDirectoryList(filter = '') {
+            const header = document.getElementById('directory-header-content');
+            const body = document.getElementById('directory-body');
+            const total = PEOPLE_INDEX.size;
+            const sorted = Array.from(PEOPLE_INDEX.entries())
+                .sort((a, b) => b[1].memberships.length - a[1].memberships.length || a[1].displayName.localeCompare(b[1].displayName));
+            const topConnectors = sorted.filter(([, v]) => v.memberships.length >= 3).slice(0, 5);
+            const f = filter.toLowerCase();
+            const filtered = f
+                ? sorted.filter(([key, v]) => key.includes(f) || v.displayName.toLowerCase().includes(f))
+                : sorted;
+
+            header.innerHTML = `
+                <h2 id="directory-title" class="text-xl font-heading font-extrabold">People Directory</h2>
+                <p class="text-xs text-indigo-100/90 mt-1">${total} people across ${committees.length} committees. Click anyone to see every committee they serve on.</p>
+            `;
+
+            body.innerHTML = `
+                <div class="directory-search-wrap">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" class="directory-search" id="dir-search" placeholder="Search ${total} people..." value="${escapeHtml(filter)}" />
+                </div>
+
+                ${!filter && topConnectors.length ? `
+                <div class="top-connector-card">
+                    <h4>⭐ Top Connectors</h4>
+                    ${topConnectors.map(([key, v], i) => `
+                        <div class="row" data-person-key="${escapeHtml(key)}">
+                            <span class="rank">${i + 1}</span>
+                            <span style="flex:1">${escapeHtml(v.displayName)}</span>
+                            <span class="dir-count hot">${v.memberships.length} committees</span>
+                        </div>
+                    `).join('')}
+                </div>` : ''}
+
+                <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">${filter ? `${filtered.length} ${filtered.length === 1 ? 'person' : 'people'} found` : 'All people'}</div>
+                <div>
+                ${filtered.length === 0 ? '<p class="text-sm text-gray-500 py-6 text-center">No matches. Try a different name.</p>' : ''}
+                ${filtered.map(([key, v]) => `
+                    <div class="dir-person-row" data-person-key="${escapeHtml(key)}">
+                        <span class="dir-avatar">${escapeHtml(initials(v.displayName))}</span>
+                        <span class="dir-name">${escapeHtml(v.displayName)}</span>
+                        <span class="dir-count${v.memberships.length >= 3 ? ' hot' : ''}">${v.memberships.length}</span>
+                    </div>
+                `).join('')}
+                </div>
+            `;
+
+            body.querySelectorAll('[data-person-key]').forEach(row => {
+                row.addEventListener('click', () => renderPersonView(row.dataset.personKey));
+            });
+            const searchInput = document.getElementById('dir-search');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => renderDirectoryList(e.target.value));
+                if (filter) {
+                    searchInput.focus();
+                    const end = searchInput.value.length;
+                    searchInput.setSelectionRange(end, end);
+                }
+            }
+        }
+
+        function renderPersonView(personKey) {
+            const person = PEOPLE_INDEX.get(personKey);
+            if (!person) return renderDirectoryList();
+            const header = document.getElementById('directory-header-content');
+            const body = document.getElementById('directory-body');
+            const chairRoles = person.memberships.filter(m => /chair|co-chair|lead/i.test(m.role)).length;
+            const groups = new Set(person.memberships.map(m => m.group));
+
+            header.innerHTML = `
+                <span class="dir-back" data-dir-back>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Back to all people
+                </span>
+                <div class="flex items-center gap-4">
+                    <div class="person-profile-avatar">${escapeHtml(initials(person.displayName))}</div>
+                    <div>
+                        <h2 id="directory-title" class="text-xl font-heading font-extrabold leading-tight">${escapeHtml(person.displayName)}</h2>
+                        <p class="text-xs text-indigo-100/90 mt-1">
+                            Serves on <strong>${person.memberships.length}</strong> ${person.memberships.length === 1 ? 'committee' : 'committees'} across <strong>${groups.size}</strong> ${groups.size === 1 ? 'category' : 'categories'}${chairRoles ? ` · Chairs <strong>${chairRoles}</strong>` : ''}.
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            const groupedByCategory = {};
+            person.memberships.forEach(m => {
+                (groupedByCategory[m.group] = groupedByCategory[m.group] || []).push(m);
+            });
+
+            const sections = VALID_TABS.filter(g => groupedByCategory[g]).map(g => {
+                const items = groupedByCategory[g];
+                return `
+                    <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-4 mb-2">${TAB_LABELS[g]} · ${items.length}</h3>
+                    ${items.map(m => {
+                        const theme = themes[m.color] || themes.indigo;
+                        return `
+                            <div class="person-committee-item" data-go-committee="${escapeHtml(m.committeeId)}" data-group="${escapeHtml(m.group)}" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}">
+                                <div class="header">
+                                    <div>
+                                        <div class="title">${escapeHtml(m.icon)} ${escapeHtml(m.committeeName)}</div>
+                                        ${m.policyArea ? `<div class="area">${escapeHtml(m.policyArea)}</div>` : ''}
+                                        ${m.rosterLabel ? `<span class="tab-pill">${escapeHtml(m.rosterLabel)}</span>` : ''}
+                                    </div>
+                                    <span class="role-badge">${escapeHtml(m.role)}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                `;
+            }).join('');
+
+            body.innerHTML = sections;
+
+            body.querySelectorAll('[data-dir-back]').forEach(el => el.addEventListener('click', () => renderDirectoryList()));
+            header.querySelectorAll('[data-dir-back]').forEach(el => el.addEventListener('click', () => renderDirectoryList()));
+            body.querySelectorAll('[data-go-committee]').forEach(el => {
+                el.addEventListener('click', () => {
+                    const id = el.dataset.goCommittee;
+                    closeDirectory();
+                    setTimeout(() => scrollToCommittee(id), 320);
+                });
+            });
+        }
+
+        function scrollToCommittee(id) {
+            const committee = committees.find(c => c.id === id);
+            if (!committee) return;
+            if (committee.group && VALID_TABS.includes(committee.group)) {
+                const activeTab = document.querySelector('[role="tab"][aria-selected="true"]');
+                if (!activeTab || activeTab.dataset.tab !== committee.group) {
+                    switchTab(committee.group);
+                }
+            }
+            requestAnimationFrame(() => {
+                const card = document.getElementById('c-' + id);
+                if (!card) return;
+                card.scrollIntoView({ behavior: PREFERS_REDUCED_MOTION ? 'auto' : 'smooth', block: 'start' });
+                card.classList.remove('flash');
+                void card.offsetWidth;
+                card.classList.add('flash');
+            });
+        }
+
+        function handleTabKeydown(e, tabs) {
+            const key = e.key;
+            if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(key)) return;
+            e.preventDefault();
+            const currentIndex = tabs.findIndex(t => t.getAttribute('aria-selected') === 'true');
+            let next = currentIndex;
+            if (key === 'ArrowRight') next = (currentIndex + 1) % tabs.length;
+            else if (key === 'ArrowLeft') next = (currentIndex - 1 + tabs.length) % tabs.length;
+            else if (key === 'Home') next = 0;
+            else if (key === 'End') next = tabs.length - 1;
+            switchTab(tabs[next].dataset.tab, { focus: true });
+        }
+
+        function switchTab(id, opts = {}) {
+            if (!VALID_TABS.includes(id)) return;
+            document.querySelectorAll('[role="tab"]').forEach(b => {
+                const selected = b.dataset.tab === id;
+                b.setAttribute('aria-selected', selected ? 'true' : 'false');
+                b.setAttribute('tabindex', selected ? '0' : '-1');
+                if (selected && opts.focus) b.focus();
+            });
             document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
             const panel = document.getElementById('panel-' + id);
             if (panel) panel.classList.remove('hidden');
             const search = document.getElementById('committee-search');
             if (search && search.value) applyFilter(search.value.trim().toLowerCase());
+            updateHash();
         }
 
         function applyFilter(query) {
-            let anyVisible = false;
+            const reqs = getActiveRequirements();
+            let anyVisibleActive = false;
+            const perTab = { 'level-1': 0, 'level-2': 0, 'ai': 0 };
+            let activeTabId = 'level-1';
             document.querySelectorAll('.tab-panel').forEach(panel => {
                 const isActive = !panel.classList.contains('hidden');
+                const tabId = (panel.id || '').replace(/^panel-/, '');
+                if (isActive) activeTabId = tabId;
                 panel.querySelectorAll('.committee-card').forEach(card => {
                     const blob = card.dataset.search || '';
-                    const match = !query || blob.includes(query);
+                    const reqMatch = reqs.length === 0 || reqs.includes(card.dataset.req);
+                    const queryMatch = !query || blob.includes(query);
+                    const match = reqMatch && queryMatch;
                     card.classList.toggle('hidden-by-filter', !match);
-                    if (isActive && match) anyVisible = true;
+                    if (isActive && match) anyVisibleActive = true;
+                    if (match) perTab[tabId] = (perTab[tabId] || 0) + 1;
                 });
             });
+            clearHighlights();
+            if (query) {
+                document.querySelectorAll('.committee-card:not(.hidden-by-filter)').forEach(card => {
+                    highlightInCard(card, query);
+                    openMatchingDetails(card, query);
+                    expandMatchingRosters(card, query);
+                    openMatchingMission(card, query);
+                });
+            } else {
+                document.querySelectorAll('.committee-card details[data-auto-opened="true"]').forEach(d => {
+                    d.removeAttribute('open');
+                    d.removeAttribute('data-auto-opened');
+                });
+                document.querySelectorAll('.collapsed-members[data-auto-expanded="true"]').forEach(w => {
+                    w.setAttribute('data-expanded', 'false');
+                    w.removeAttribute('data-auto-expanded');
+                    const btn = w.querySelector('[data-toggle-members] .show-more-label');
+                    if (btn) {
+                        const hiddenCount = w.querySelectorAll('.member-pill.is-hidden').length;
+                        btn.textContent = `+${hiddenCount} more`;
+                    }
+                });
+                document.querySelectorAll('.mission-body.open[data-auto-opened="true"]').forEach(b => {
+                    b.classList.remove('open');
+                    b.removeAttribute('data-auto-opened');
+                    const toggle = document.querySelector(`[aria-controls="${b.id}"]`);
+                    if (toggle) {
+                        toggle.setAttribute('aria-expanded', 'false');
+                        const label = toggle.querySelector('span');
+                        if (label) label.textContent = 'Read mission & charge';
+                    }
+                });
+            }
             const noResults = document.getElementById('no-results');
-            if (query && !anyVisible) {
+            const hasFilter = query || reqs.length > 0;
+            if (hasFilter && !anyVisibleActive) {
                 noResults.classList.remove('hidden');
             } else {
                 noResults.classList.add('hidden');
             }
+            const clearBtn = document.getElementById('clear-filters');
+            if (clearBtn) clearBtn.classList.toggle('hidden', reqs.length === 0);
+
+            renderCrossTabBanner(query, reqs, perTab, activeTabId, anyVisibleActive);
+        }
+
+        function renderCrossTabBanner(query, reqs, perTab, activeTabId, anyVisibleActive) {
+            document.querySelectorAll('.cross-tab-banner').forEach(el => el.remove());
+            const hasFilter = query || reqs.length > 0;
+            if (!hasFilter) return;
+            const activeCount = perTab[activeTabId] || 0;
+            const otherTabs = VALID_TABS.filter(t => t !== activeTabId && (perTab[t] || 0) > 0);
+            if (activeCount > 0 || otherTabs.length === 0) return;
+            const activePanel = document.getElementById('panel-' + activeTabId);
+            if (!activePanel) return;
+            const labels = { 'level-1': 'Level 1', 'level-2': 'Level 2', 'ai': 'AI Incubator' };
+            const banner = document.createElement('div');
+            banner.className = 'cross-tab-banner';
+            banner.innerHTML = `
+                <span>🔎 No matches here, but we found matches in other tabs:</span>
+                ${otherTabs.map(t => `<button type="button" data-switch-tab="${t}">${labels[t]} · ${perTab[t]}</button>`).join('')}
+            `;
+            banner.querySelectorAll('[data-switch-tab]').forEach(b => {
+                b.addEventListener('click', () => switchTab(b.dataset.switchTab, { focus: true }));
+            });
+            const target = activePanel.querySelector('.jump-scroll-wrap') || activePanel.firstElementChild;
+            if (target && target.parentNode === activePanel) {
+                activePanel.insertBefore(banner, target.nextSibling);
+            } else {
+                activePanel.prepend(banner);
+            }
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll('mark.search-hit').forEach(m => {
+                const parent = m.parentNode;
+                if (!parent) return;
+                parent.replaceChild(document.createTextNode(m.textContent), m);
+                parent.normalize();
+            });
+        }
+
+        function escapeRegExp(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+        function highlightInCard(card, query) {
+            if (!query) return;
+            const re = new RegExp(escapeRegExp(query), 'gi');
+            const selectors = ['h3', 'p', 'li', 'span', 'summary > span'];
+            const targets = card.querySelectorAll(selectors.join(','));
+            targets.forEach(el => {
+                if (el.closest('.chair-pill, .chair-avatar')) {
+                    // avatar initials, skip
+                }
+                const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+                    acceptNode: (n) => {
+                        if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+                        if (n.parentNode && (n.parentNode.nodeName === 'MARK' || n.parentNode.nodeName === 'SCRIPT' || n.parentNode.nodeName === 'STYLE')) return NodeFilter.FILTER_REJECT;
+                        return NodeFilter.FILTER_ACCEPT;
+                    }
+                });
+                const textNodes = [];
+                let n;
+                while ((n = walker.nextNode())) textNodes.push(n);
+                textNodes.forEach(tn => {
+                    const v = tn.nodeValue;
+                    if (!re.test(v)) return;
+                    re.lastIndex = 0;
+                    const frag = document.createDocumentFragment();
+                    let last = 0;
+                    let m;
+                    while ((m = re.exec(v)) !== null) {
+                        if (m.index > last) frag.appendChild(document.createTextNode(v.slice(last, m.index)));
+                        const mark = document.createElement('mark');
+                        mark.className = 'search-hit';
+                        mark.textContent = m[0];
+                        frag.appendChild(mark);
+                        last = m.index + m[0].length;
+                        if (m.index === re.lastIndex) re.lastIndex++;
+                    }
+                    if (last < v.length) frag.appendChild(document.createTextNode(v.slice(last)));
+                    tn.parentNode.replaceChild(frag, tn);
+                });
+            });
+        }
+
+        function openMatchingDetails(card, query) {
+            const q = query.toLowerCase();
+            card.querySelectorAll('details').forEach(d => {
+                if (d.hasAttribute('open')) return;
+                if ((d.textContent || '').toLowerCase().includes(q)) {
+                    d.setAttribute('open', '');
+                    d.setAttribute('data-auto-opened', 'true');
+                }
+            });
+        }
+
+        function openMatchingMission(card, query) {
+            const q = query.toLowerCase();
+            card.querySelectorAll('.mission-body').forEach(body => {
+                if (body.classList.contains('open')) return;
+                if ((body.textContent || '').toLowerCase().includes(q)) {
+                    body.classList.add('open');
+                    body.setAttribute('data-auto-opened', 'true');
+                    const toggle = card.querySelector(`[aria-controls="${body.id}"]`);
+                    if (toggle) {
+                        toggle.setAttribute('aria-expanded', 'true');
+                        const label = toggle.querySelector('span');
+                        if (label) label.textContent = 'Hide mission & charge';
+                    }
+                }
+            });
+        }
+
+        function expandMatchingRosters(card, query) {
+            const q = query.toLowerCase();
+            card.querySelectorAll('.collapsed-members').forEach(wrap => {
+                if (wrap.getAttribute('data-expanded') === 'true') return;
+                const hiddenMatch = Array.from(wrap.querySelectorAll('.member-pill.is-hidden')).some(pill =>
+                    (pill.getAttribute('data-member-name') || '').toLowerCase().includes(q));
+                if (hiddenMatch) {
+                    wrap.setAttribute('data-expanded', 'true');
+                    wrap.setAttribute('data-auto-expanded', 'true');
+                    const label = wrap.querySelector('[data-toggle-members] .show-more-label');
+                    if (label) label.textContent = 'Show less';
+                }
+            });
+        }
+
+        function parseHash() {
+            const h = (location.hash || '').replace(/^#/, '');
+            const out = {};
+            h.split('&').filter(Boolean).forEach(kv => {
+                const [k, ...rest] = kv.split('=');
+                out[decodeURIComponent(k)] = decodeURIComponent(rest.join('=') || '');
+            });
+            return out;
+        }
+
+        function updateHash() {
+            const activeTab = document.querySelector('[role="tab"][aria-selected="true"]');
+            const tab = activeTab ? activeTab.dataset.tab : 'level-1';
+            const q = (document.getElementById('committee-search') || {}).value || '';
+            const reqs = getActiveRequirements();
+            const parts = [`tab=${encodeURIComponent(tab)}`];
+            if (q.trim()) parts.push(`q=${encodeURIComponent(q.trim())}`);
+            if (reqs.length) parts.push(`req=${encodeURIComponent(reqs.join(','))}`);
+            const newHash = '#' + parts.join('&');
+            if (location.hash !== newHash) {
+                history.replaceState(null, '', newHash);
+            }
+        }
+
+        let applyingHash = false;
+        function applyStateFromHash() {
+            if (applyingHash) return;
+            applyingHash = true;
+            const state = parseHash();
+            if (state.tab && VALID_TABS.includes(state.tab)) {
+                switchTab(state.tab);
+            }
+            const search = document.getElementById('committee-search');
+            if (search && typeof state.q === 'string' && search.value !== state.q) {
+                search.value = state.q;
+            }
+            if (typeof state.req === 'string') {
+                const wanted = new Set(state.req.split(',').filter(Boolean));
+                document.querySelectorAll('.filter-chip').forEach(chip => {
+                    chip.setAttribute('aria-pressed', wanted.has(chip.dataset.req) ? 'true' : 'false');
+                });
+            }
+            applyFilter(((search && search.value) || '').trim().toLowerCase());
+            applyingHash = false;
         }
 
         document.addEventListener('DOMContentLoaded', init);
