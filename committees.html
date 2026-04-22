@@ -349,6 +349,198 @@
         .collapsed-members[data-expanded="true"] .member-pill.is-hidden { display: inline-flex; }
         .collapsed-members[data-expanded="true"] .show-more-btn .show-more-icon { transform: rotate(180deg); }
         .show-more-icon { transition: transform 0.2s ease; }
+
+        .directory-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(3px);
+            z-index: 70;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+        }
+        .directory-overlay.open { opacity: 1; }
+        .directory-overlay[hidden] { display: none; }
+        .directory-panel {
+            position: fixed;
+            top: 0; right: 0; bottom: 0;
+            width: 100%;
+            max-width: 30rem;
+            background: #fff;
+            box-shadow: -20px 0 40px -10px rgba(0,0,0,0.2);
+            z-index: 71;
+            display: flex;
+            flex-direction: column;
+            transform: translateX(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .directory-panel.open { transform: translateX(0); }
+        .directory-panel[hidden] { display: none; }
+        .directory-header {
+            padding: 1.25rem 1.5rem;
+            background: linear-gradient(135deg, #1e3a8a, #4f46e5);
+            color: #fff;
+            flex-shrink: 0;
+            position: relative;
+        }
+        .directory-close {
+            position: absolute;
+            top: 1rem; right: 1rem;
+            width: 2rem; height: 2rem;
+            border-radius: 9999px;
+            background: rgba(255,255,255,0.15);
+            color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .directory-close:hover { background: rgba(255,255,255,0.3); }
+        .directory-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.25rem 1.5rem;
+        }
+        .directory-search {
+            width: 100%;
+            padding: 0.6rem 0.9rem 0.6rem 2.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid #e5e7eb;
+            font-size: 14px;
+            margin-bottom: 1rem;
+        }
+        .directory-search:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+        }
+        .directory-search-wrap {
+            position: relative;
+        }
+        .directory-search-wrap svg {
+            position: absolute; left: 0.75rem; top: 50%;
+            transform: translateY(-50%);
+            width: 1rem; height: 1rem;
+            color: #9ca3af;
+        }
+        .dir-person-row {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 0.75rem;
+            border-radius: 0.6rem;
+            cursor: pointer;
+            transition: background 0.12s ease;
+        }
+        .dir-person-row:hover { background: #f3f4f6; }
+        .dir-person-row .dir-avatar {
+            width: 2rem; height: 2rem; border-radius: 9999px;
+            background: linear-gradient(135deg, #6366f1, #06b6d4);
+            color: #fff; font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .dir-person-row .dir-name { font-size: 14px; font-weight: 600; color: #1f2937; flex: 1; }
+        .dir-person-row .dir-count {
+            font-size: 11px; font-weight: 700;
+            background: #eef2ff; color: #3730a3;
+            padding: 0.15rem 0.5rem; border-radius: 9999px;
+        }
+        .dir-person-row .dir-count.hot {
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            color: #fff;
+        }
+        .top-connector-card {
+            background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+            border: 1px solid #c7d2fe;
+            border-radius: 0.9rem;
+            padding: 0.85rem 1rem;
+            margin-bottom: 1rem;
+        }
+        .top-connector-card h4 {
+            font-size: 10px; font-weight: 800;
+            color: #3730a3;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            margin-bottom: 0.5rem;
+            display: flex; align-items: center; gap: 0.35rem;
+        }
+        .top-connector-card .row {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.3rem 0;
+            font-size: 13px;
+            cursor: pointer;
+            transition: transform 0.12s ease;
+        }
+        .top-connector-card .row:hover { transform: translateX(2px); }
+        .top-connector-card .rank {
+            width: 1.25rem; height: 1.25rem;
+            border-radius: 9999px;
+            background: #fff;
+            color: #4f46e5;
+            font-weight: 800; font-size: 10px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .person-profile-avatar {
+            width: 4.5rem; height: 4.5rem;
+            border-radius: 9999px;
+            background: #fff;
+            color: #3730a3;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; font-weight: 800;
+            box-shadow: 0 8px 20px -4px rgba(0,0,0,0.2);
+        }
+        .person-committee-item {
+            padding: 0.85rem 1rem;
+            border-radius: 0.75rem;
+            background: #fff;
+            border-left: 4px solid var(--theme-border, #4f46e5);
+            border-top: 1px solid #f3f4f6;
+            border-right: 1px solid #f3f4f6;
+            border-bottom: 1px solid #f3f4f6;
+            margin-bottom: 0.6rem;
+            cursor: pointer;
+            transition: transform 0.12s ease, box-shadow 0.12s ease;
+        }
+        .person-committee-item:hover {
+            transform: translateX(2px);
+            box-shadow: 0 6px 14px -6px rgba(0,0,0,0.15);
+        }
+        .person-committee-item .header {
+            display: flex; align-items: flex-start; justify-content: space-between; gap: 0.5rem;
+        }
+        .person-committee-item .title { font-weight: 700; font-size: 14px; color: #111827; }
+        .person-committee-item .area { font-size: 11px; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 0.15rem; }
+        .person-committee-item .role-badge {
+            font-size: 10px; font-weight: 800;
+            padding: 0.2rem 0.55rem;
+            border-radius: 9999px;
+            background: var(--theme-bg, #eef2ff);
+            color: var(--theme-text, #3730a3);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+        .person-committee-item .tab-pill {
+            display: inline-block;
+            font-size: 9px; font-weight: 800;
+            padding: 0.15rem 0.45rem;
+            border-radius: 9999px;
+            background: #f1f5f9;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: 0.4rem;
+        }
+        .dir-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+        }
+        .dir-back:hover { color: #fff; }
+        body.directory-open { overflow: hidden; }
     </style>
 </head>
 <body class="bg-governance-pattern text-gray-800 min-h-screen flex flex-col">
@@ -410,7 +602,11 @@
                     </div>
                 </div>
 
-                <div class="mt-8">
+                <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+                    <button id="open-directory" type="button" class="inline-flex items-center gap-2 bg-white text-indigo-800 hover:bg-indigo-50 font-semibold py-2.5 px-5 rounded-full transition-colors shadow-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        People Directory
+                    </button>
                     <a href="25-26%20committee%20list%20%281%29.pdf" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/25 text-white font-semibold py-2.5 px-5 rounded-full transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         Download the Full PDF
@@ -528,6 +724,17 @@
             <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="ai"></div>
         </section>
     </main>
+
+    <div id="directory-overlay" class="directory-overlay" hidden></div>
+    <aside id="directory-panel" class="directory-panel" role="dialog" aria-modal="true" aria-labelledby="directory-title" hidden>
+        <div class="directory-header">
+            <button type="button" class="directory-close" data-close-directory aria-label="Close">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <div id="directory-header-content"></div>
+        </div>
+        <div class="directory-body" id="directory-body"></div>
+    </aside>
 
     <footer class="bg-blue-900 text-blue-100 mt-auto">
         <div class="container mx-auto px-6 py-8 text-center">
@@ -1440,7 +1647,23 @@
                     const hiddenCount = wrap.querySelectorAll('.member-pill.is-hidden').length;
                     const label = toggle.querySelector('.show-more-label');
                     if (label) label.textContent = expanded ? `+${hiddenCount} more` : 'Show less';
+                    return;
                 }
+                const personPill = e.target.closest('[data-member-name]');
+                if (personPill) {
+                    e.preventDefault();
+                    const key = normalizePersonKey(personPill.getAttribute('data-member-name'));
+                    if (PEOPLE_INDEX.has(key)) openDirectory(key);
+                }
+            });
+
+            buildPeopleIndex();
+            const openDirBtn = document.getElementById('open-directory');
+            if (openDirBtn) openDirBtn.addEventListener('click', () => openDirectory());
+            document.getElementById('directory-overlay').addEventListener('click', closeDirectory);
+            document.querySelectorAll('[data-close-directory]').forEach(b => b.addEventListener('click', closeDirectory));
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !document.getElementById('directory-panel').hidden) closeDirectory();
             });
 
             applyStateFromHash();
@@ -1449,6 +1672,196 @@
 
         function getActiveRequirements() {
             return Array.from(document.querySelectorAll('.filter-chip[aria-pressed="true"]')).map(c => c.dataset.req);
+        }
+
+        const PEOPLE_INDEX = new Map();
+        const TAB_LABELS = { 'level-1': 'Level 1', 'level-2': 'Level 2', 'ai': 'AI Incubator' };
+
+        function normalizePersonKey(name) {
+            return (name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+        }
+
+        function buildPeopleIndex() {
+            PEOPLE_INDEX.clear();
+            const GROUP_NAMES = new Set(['school nurses', 'principals', 'assistant principals']);
+            committees.forEach(c => {
+                const rosters = Array.isArray(c.rosters) ? c.rosters : [{ members: c.members || [] }];
+                rosters.forEach(r => {
+                    r.members.forEach(m => {
+                        const key = normalizePersonKey(m.name);
+                        if (!key) return;
+                        if (GROUP_NAMES.has(key)) return;
+                        if (!PEOPLE_INDEX.has(key)) {
+                            PEOPLE_INDEX.set(key, { displayName: m.name, memberships: [] });
+                        }
+                        PEOPLE_INDEX.get(key).memberships.push({
+                            committeeId: c.id,
+                            committeeName: c.name,
+                            policyArea: c.policyArea || '',
+                            icon: c.icon,
+                            color: c.color,
+                            group: c.group,
+                            role: m.role || 'Member',
+                            rosterLabel: r.label || ''
+                        });
+                    });
+                });
+            });
+        }
+
+        function openDirectory(personKey) {
+            const overlay = document.getElementById('directory-overlay');
+            const panel = document.getElementById('directory-panel');
+            overlay.hidden = false;
+            panel.hidden = false;
+            requestAnimationFrame(() => {
+                overlay.classList.add('open');
+                panel.classList.add('open');
+            });
+            document.body.classList.add('directory-open');
+            if (personKey && PEOPLE_INDEX.has(personKey)) {
+                renderPersonView(personKey);
+            } else {
+                renderDirectoryList();
+            }
+        }
+
+        function closeDirectory() {
+            const overlay = document.getElementById('directory-overlay');
+            const panel = document.getElementById('directory-panel');
+            overlay.classList.remove('open');
+            panel.classList.remove('open');
+            setTimeout(() => {
+                overlay.hidden = true;
+                panel.hidden = true;
+            }, 280);
+            document.body.classList.remove('directory-open');
+        }
+
+        function renderDirectoryList(filter = '') {
+            const header = document.getElementById('directory-header-content');
+            const body = document.getElementById('directory-body');
+            const total = PEOPLE_INDEX.size;
+            const sorted = Array.from(PEOPLE_INDEX.entries())
+                .sort((a, b) => b[1].memberships.length - a[1].memberships.length || a[1].displayName.localeCompare(b[1].displayName));
+            const topConnectors = sorted.filter(([, v]) => v.memberships.length >= 3).slice(0, 5);
+            const f = filter.toLowerCase();
+            const filtered = f
+                ? sorted.filter(([key, v]) => key.includes(f) || v.displayName.toLowerCase().includes(f))
+                : sorted;
+
+            header.innerHTML = `
+                <h2 id="directory-title" class="text-xl font-heading font-extrabold">People Directory</h2>
+                <p class="text-xs text-indigo-100/90 mt-1">${total} people across ${committees.length} committees. Click anyone to see every committee they serve on.</p>
+            `;
+
+            body.innerHTML = `
+                <div class="directory-search-wrap">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    <input type="text" class="directory-search" id="dir-search" placeholder="Search ${total} people..." value="${escapeHtml(filter)}" />
+                </div>
+
+                ${!filter && topConnectors.length ? `
+                <div class="top-connector-card">
+                    <h4>⭐ Top Connectors</h4>
+                    ${topConnectors.map(([key, v], i) => `
+                        <div class="row" data-person-key="${escapeHtml(key)}">
+                            <span class="rank">${i + 1}</span>
+                            <span style="flex:1">${escapeHtml(v.displayName)}</span>
+                            <span class="dir-count hot">${v.memberships.length} committees</span>
+                        </div>
+                    `).join('')}
+                </div>` : ''}
+
+                <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">${filter ? `${filtered.length} ${filtered.length === 1 ? 'person' : 'people'} found` : 'All people'}</div>
+                <div>
+                ${filtered.length === 0 ? '<p class="text-sm text-gray-500 py-6 text-center">No matches. Try a different name.</p>' : ''}
+                ${filtered.map(([key, v]) => `
+                    <div class="dir-person-row" data-person-key="${escapeHtml(key)}">
+                        <span class="dir-avatar">${escapeHtml(initials(v.displayName))}</span>
+                        <span class="dir-name">${escapeHtml(v.displayName)}</span>
+                        <span class="dir-count${v.memberships.length >= 3 ? ' hot' : ''}">${v.memberships.length}</span>
+                    </div>
+                `).join('')}
+                </div>
+            `;
+
+            body.querySelectorAll('[data-person-key]').forEach(row => {
+                row.addEventListener('click', () => renderPersonView(row.dataset.personKey));
+            });
+            const searchInput = document.getElementById('dir-search');
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => renderDirectoryList(e.target.value));
+                if (filter) {
+                    searchInput.focus();
+                    const end = searchInput.value.length;
+                    searchInput.setSelectionRange(end, end);
+                }
+            }
+        }
+
+        function renderPersonView(personKey) {
+            const person = PEOPLE_INDEX.get(personKey);
+            if (!person) return renderDirectoryList();
+            const header = document.getElementById('directory-header-content');
+            const body = document.getElementById('directory-body');
+            const chairRoles = person.memberships.filter(m => /chair|co-chair|lead/i.test(m.role)).length;
+            const groups = new Set(person.memberships.map(m => m.group));
+
+            header.innerHTML = `
+                <span class="dir-back" data-dir-back>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Back to all people
+                </span>
+                <div class="flex items-center gap-4">
+                    <div class="person-profile-avatar">${escapeHtml(initials(person.displayName))}</div>
+                    <div>
+                        <h2 id="directory-title" class="text-xl font-heading font-extrabold leading-tight">${escapeHtml(person.displayName)}</h2>
+                        <p class="text-xs text-indigo-100/90 mt-1">
+                            Serves on <strong>${person.memberships.length}</strong> ${person.memberships.length === 1 ? 'committee' : 'committees'} across <strong>${groups.size}</strong> ${groups.size === 1 ? 'category' : 'categories'}${chairRoles ? ` · Chairs <strong>${chairRoles}</strong>` : ''}.
+                        </p>
+                    </div>
+                </div>
+            `;
+
+            const groupedByCategory = {};
+            person.memberships.forEach(m => {
+                (groupedByCategory[m.group] = groupedByCategory[m.group] || []).push(m);
+            });
+
+            const sections = VALID_TABS.filter(g => groupedByCategory[g]).map(g => {
+                const items = groupedByCategory[g];
+                return `
+                    <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-4 mb-2">${TAB_LABELS[g]} · ${items.length}</h3>
+                    ${items.map(m => {
+                        const theme = themes[m.color] || themes.indigo;
+                        return `
+                            <div class="person-committee-item" data-go-committee="${escapeHtml(m.committeeId)}" data-group="${escapeHtml(m.group)}" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}">
+                                <div class="header">
+                                    <div>
+                                        <div class="title">${escapeHtml(m.icon)} ${escapeHtml(m.committeeName)}</div>
+                                        ${m.policyArea ? `<div class="area">${escapeHtml(m.policyArea)}</div>` : ''}
+                                        ${m.rosterLabel ? `<span class="tab-pill">${escapeHtml(m.rosterLabel)}</span>` : ''}
+                                    </div>
+                                    <span class="role-badge">${escapeHtml(m.role)}</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                `;
+            }).join('');
+
+            body.innerHTML = sections;
+
+            body.querySelectorAll('[data-dir-back]').forEach(el => el.addEventListener('click', () => renderDirectoryList()));
+            header.querySelectorAll('[data-dir-back]').forEach(el => el.addEventListener('click', () => renderDirectoryList()));
+            body.querySelectorAll('[data-go-committee]').forEach(el => {
+                el.addEventListener('click', () => {
+                    const id = el.dataset.goCommittee;
+                    closeDirectory();
+                    setTimeout(() => scrollToCommittee(id), 320);
+                });
+            });
         }
 
         function scrollToCommittee(id) {
