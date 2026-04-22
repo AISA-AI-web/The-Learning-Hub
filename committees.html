@@ -2146,8 +2146,21 @@
         const PEOPLE_INDEX = new Map();
         const TAB_LABELS = { 'level-1': 'Level 1', 'level-2': 'Level 2', 'ai': 'AI Incubator' };
 
+        // Canonical keys for people who appear under slightly different names across rosters.
+        // Maps a raw normalized variant to the canonical normalized key.
+        const PERSON_ALIASES = {
+            'egbal ibrahim mohamed': 'egbal mohamed',
+            'engy amer': 'engy amr'
+        };
+        // Preferred display name keyed by canonical key.
+        const PERSON_DISPLAY_OVERRIDES = {
+            'egbal mohamed': 'Egbal Mohamed',
+            'engy amr': 'Engy Amr'
+        };
+
         function normalizePersonKey(name) {
-            return (name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+            const base = (name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+            return PERSON_ALIASES[base] || base;
         }
 
         function buildPeopleIndex() {
@@ -2161,7 +2174,10 @@
                         if (!key) return;
                         if (GROUP_NAMES.has(key)) return;
                         if (!PEOPLE_INDEX.has(key)) {
-                            PEOPLE_INDEX.set(key, { displayName: m.name, memberships: [] });
+                            PEOPLE_INDEX.set(key, {
+                                displayName: PERSON_DISPLAY_OVERRIDES[key] || m.name,
+                                memberships: []
+                            });
                         }
                         PEOPLE_INDEX.get(key).memberships.push({
                             committeeId: c.id,
