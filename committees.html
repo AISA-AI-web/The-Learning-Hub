@@ -46,15 +46,6 @@
             transform: translateY(-3px);
             box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12);
         }
-        .committee-card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 6px;
-            background: var(--theme-border, #4f46e5);
-            opacity: 0;
-            transition: opacity 0.2s ease;
-        }
         .card-meta {
             display: flex;
             flex-wrap: wrap;
@@ -106,7 +97,9 @@
             background: var(--theme-bg, #eef2ff);
             color: var(--theme-text, #3730a3);
             border: 1px solid var(--theme-border, #4f46e5);
+            cursor: pointer;
         }
+        .chair-pill:hover { filter: brightness(0.95); }
         .chair-pill .chair-role {
             margin-left: 0.25rem;
             padding: 0.05rem 0.45rem;
@@ -117,11 +110,6 @@
             font-weight: 800;
             letter-spacing: 0.08em;
             text-transform: uppercase;
-        }
-        .chair-pill {
-            background: var(--theme-bg, #eef2ff);
-            color: var(--theme-text, #3730a3);
-            border: 1px solid var(--theme-border, #4f46e5);
         }
         .chair-avatar {
             background: var(--theme-border, #4f46e5);
@@ -232,10 +220,8 @@
             border-color: transparent;
             box-shadow: 0 6px 14px -6px rgba(0,0,0,0.2);
         }
-        .filter-chip[aria-pressed="true"] .chip-label,
-        .filter-chip[aria-pressed="true"] .dot { color: #fff; filter: brightness(0) invert(1); }
-        .filter-chip[aria-pressed="true"] .chip-label { color: #fff; filter: none; }
-        .filter-chip[aria-pressed="true"] .dot { background: #fff; filter: none; }
+        .filter-chip[aria-pressed="true"] .chip-label { color: #fff; }
+        .filter-chip[aria-pressed="true"] .dot { background: #fff; }
 
         .legend-pop {
             position: absolute;
@@ -428,11 +414,6 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        .chair-pill {
-            cursor: pointer;
-        }
-        .chair-pill:hover { filter: brightness(0.95); }
-
         .show-more-btn {
             display: inline-flex;
             align-items: center;
@@ -840,14 +821,9 @@
             .committee-card:hover { transform: none !important; }
             details { page-break-inside: avoid; }
             details > summary { cursor: default; }
-            details[data-auto-opened], details { }
-            details .chev { display: none !important; }
-            details > div, details > ul { display: block !important; }
-            details:not([open]) > ul,
-            details:not([open]) > div { display: block !important; }
             details > summary svg { display: none; }
-            /* force all collapsible sections open for print */
-            details { display: block; }
+            /* beforeprint adds the open attribute; these are belt-and-braces. */
+            details > ul, details > div { display: block !important; }
             .mission-body { max-height: none !important; margin-top: 0.3rem !important; overflow: visible !important; }
             .collapsed-members .member-pill.is-hidden { display: inline-flex !important; }
             .member-pill, .chair-pill {
@@ -2071,7 +2047,6 @@
                 }
                 const personPill = e.target.closest('[data-member-name]');
                 if (personPill) {
-                    e.preventDefault();
                     const key = normalizePersonKey(personPill.getAttribute('data-member-name'));
                     if (PEOPLE_INDEX.has(key)) openDirectory(key);
                 }
