@@ -110,6 +110,21 @@
             font-weight: 800;
             letter-spacing: 0.08em;
             text-transform: uppercase;
+            white-space: nowrap;
+            max-width: 8rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        /* When the role label is very long, drop it below the name inside the pill. */
+        .chair-pill[data-role-long="true"] {
+            flex-wrap: wrap;
+            padding-bottom: 0.3rem;
+            border-radius: 1.1rem;
+        }
+        .chair-pill[data-role-long="true"] .chair-role {
+            margin-left: 2.25rem;
+            margin-top: 0.2rem;
+            max-width: none;
         }
         .chair-avatar {
             background: var(--theme-border, #4f46e5);
@@ -327,11 +342,13 @@
             .legend-pop {
                 position: fixed;
                 top: auto;
+                bottom: 0.75rem;
                 right: 0.5rem;
                 left: 0.5rem;
                 width: auto;
                 max-width: none;
             }
+            .legend-pop::before { display: none; }
         }
 
         mark.search-hit {
@@ -801,12 +818,18 @@
                 padding: 0.5cm 0 1cm;
                 border-bottom: 2px solid #000;
             }
-            .hero-governance * { color: #000 !important; text-shadow: none !important; }
-            .hero-overlay { display: none !important; }
-            .stat-card {
+            .hero-governance * {
+                color: #000 !important;
+                text-shadow: none !important;
+                background: transparent !important;
+                border-color: #000 !important;
+                box-shadow: none !important;
+            }
+            .hero-governance .stat-card {
                 background: #f7f7f7 !important;
                 border: 1px solid #ccc !important;
             }
+            .hero-overlay { display: none !important; }
             .tab-panel { display: block !important; }
             .tab-panel.hidden { display: block !important; }
             .tab-panel + .tab-panel { margin-top: 1cm; page-break-before: always; }
@@ -1127,7 +1150,8 @@
             }
             const nameAttr = `data-member-name="${escapeHtml(m.name)}"`;
             if (chair) {
-                return `<button type="button" class="chair-pill flex items-center gap-2 rounded-full pl-1 pr-2 py-1 shadow-sm${hiddenCls}" ${nameAttr} title="View all committees for ${escapeHtml(m.name)}">
+                const roleLong = (m.role || '').length > 8;
+                return `<button type="button" class="chair-pill flex items-center gap-2 rounded-full pl-1 pr-2 py-1 shadow-sm${hiddenCls}" ${nameAttr}${roleLong ? ' data-role-long="true"' : ''} title="View all committees for ${escapeHtml(m.name)}">
                     <span class="chair-avatar w-7 h-7 rounded-full text-[10px] font-black flex items-center justify-center">${escapeHtml(initials(m.name))}</span>
                     <span class="text-sm font-semibold">${escapeHtml(m.name)}</span>
                     <span class="chair-role">${escapeHtml(m.role)}</span>
