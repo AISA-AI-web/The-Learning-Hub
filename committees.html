@@ -77,6 +77,52 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
         ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.25s ease, background 0.25s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255,255,255,0.18);
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
+            transform: translateX(-100%);
+            transition: transform 0.7s ease;
+        }
+        .stat-card:hover::before { transform: translateX(100%); }
+        .stat-num {
+            display: inline-block;
+            font-variant-numeric: tabular-nums;
+        }
+        .tab-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.25rem;
+            height: 1.25rem;
+            padding: 0 0.35rem;
+            border-radius: 9999px;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 1;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+        .tab-btn[aria-selected="true"] .tab-count {
+            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            color: #fff;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .stat-card::before { display: none; }
+            .committee-card { transition: none; }
+        }
     </style>
 </head>
 <body class="bg-governance-pattern text-gray-800 min-h-screen flex flex-col">
@@ -120,20 +166,20 @@
                 </div>
 
                 <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
-                        <div id="stat-total" class="text-3xl font-heading font-extrabold">0</div>
+                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
+                        <div class="text-3xl font-heading font-extrabold"><span id="stat-total" class="stat-num" data-target="0">0</span></div>
                         <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">Committees</div>
                     </div>
-                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
-                        <div id="stat-members" class="text-3xl font-heading font-extrabold">0</div>
+                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
+                        <div class="text-3xl font-heading font-extrabold"><span id="stat-members" class="stat-num" data-target="0">0</span></div>
                         <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">Members</div>
                     </div>
-                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
-                        <div id="stat-adek" class="text-3xl font-heading font-extrabold">0</div>
+                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
+                        <div class="text-3xl font-heading font-extrabold"><span id="stat-adek" class="stat-num" data-target="0">0</span></div>
                         <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">ADEK-Mandated</div>
                     </div>
-                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
-                        <div id="stat-ai" class="text-3xl font-heading font-extrabold">0</div>
+                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
+                        <div class="text-3xl font-heading font-extrabold"><span id="stat-ai" class="stat-num" data-target="0">0</span></div>
                         <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">AI Subcommittees</div>
                     </div>
                 </div>
@@ -154,14 +200,17 @@
                 <button id="tab-level-1" role="tab" aria-selected="true" aria-controls="panel-level-1" tabindex="0" data-tab="level-1" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-black">1</span>
                     Level 1 Committees
+                    <span class="tab-count" data-tab-count="level-1">0</span>
                 </button>
                 <button id="tab-level-2" role="tab" aria-selected="false" aria-controls="panel-level-2" tabindex="-1" data-tab="level-2" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black">2</span>
                     Level 2 Committees
+                    <span class="tab-count" data-tab-count="level-2">0</span>
                 </button>
                 <button id="tab-ai" role="tab" aria-selected="false" aria-controls="panel-ai" tabindex="-1" data-tab="ai" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
                     <span class="text-base">🤖</span>
                     AI Incubator Team
+                    <span class="tab-count" data-tab-count="ai">0</span>
                 </button>
             </div>
         </div>
@@ -970,6 +1019,23 @@
         ];
 
         const VALID_TABS = ['level-1', 'level-2', 'ai'];
+        const PREFERS_REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        function animateCount(el, target, duration = 1100) {
+            if (!el) return;
+            el.setAttribute('data-target', target);
+            if (PREFERS_REDUCED_MOTION) { el.textContent = target; return; }
+            const start = performance.now();
+            const from = 0;
+            const easeOut = t => 1 - Math.pow(1 - t, 3);
+            function tick(now) {
+                const t = Math.min(1, (now - start) / duration);
+                el.textContent = Math.round(from + (target - from) * easeOut(t)).toString();
+                if (t < 1) requestAnimationFrame(tick);
+                else el.textContent = target.toString();
+            }
+            requestAnimationFrame(tick);
+        }
 
         function init() {
             committees.forEach(c => c.searchBlob = buildSearchBlob(c));
@@ -987,10 +1053,15 @@
             }, 0);
             const adekCount = committees.filter(c => (c.requirement || '').toLowerCase().includes('adek-mandated')).length;
             const aiCount = committees.filter(c => c.group === 'ai' && c.id !== 'ai-incubator-main').length;
-            document.getElementById('stat-total').textContent = committees.length;
-            document.getElementById('stat-members').textContent = totalMembers;
-            document.getElementById('stat-adek').textContent = adekCount;
-            document.getElementById('stat-ai').textContent = aiCount;
+            animateCount(document.getElementById('stat-total'), committees.length);
+            animateCount(document.getElementById('stat-members'), totalMembers);
+            animateCount(document.getElementById('stat-adek'), adekCount);
+            animateCount(document.getElementById('stat-ai'), aiCount);
+
+            Object.entries(groups).forEach(([g, items]) => {
+                const pill = document.querySelector(`[data-tab-count="${g}"]`);
+                if (pill) pill.textContent = items.length;
+            });
 
             const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
             tabs.forEach(btn => {
