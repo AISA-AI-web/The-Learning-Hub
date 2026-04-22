@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Committees & Governance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .bg-governance-pattern {
+            background-color: #f8fafc;
+            background-image:
+                radial-gradient(ellipse at top, rgba(79, 70, 229, 0.08), transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(37, 99, 235, 0.06), transparent 50%);
+        }
+        .hero-governance {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #4f46e5 100%);
+        }
+        .hero-overlay {
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.10) 0, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.08) 0, transparent 40%);
+        }
+        .committee-card {
+            border-top: 6px solid var(--theme-border, #4f46e5);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .committee-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12);
+        }
+        .chair-pill {
+            background: var(--theme-bg, #eef2ff);
+            color: var(--theme-text, #3730a3);
+            border: 1px solid var(--theme-border, #4f46e5);
+        }
+        .chair-avatar {
+            background: var(--theme-border, #4f46e5);
+            color: #fff;
+        }
+        .accent-bullet { color: var(--theme-border, #4f46e5); }
+        .tab-btn {
+            position: relative;
+            transition: color 0.2s ease;
+        }
+        .tab-btn[aria-selected="true"] { color: #1e3a8a; }
+        .tab-btn[aria-selected="true"]::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: linear-gradient(90deg, #4f46e5, #06b6d4);
+            border-radius: 3px 3px 0 0;
+        }
+        details > summary { list-style: none; }
+        details > summary::-webkit-details-marker { display: none; }
+        details[open] .chev { transform: rotate(180deg); }
+        .chev { transition: transform 0.2s ease; }
+        .committee-card.hidden-by-filter { display: none; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-governance-pattern text-gray-800 min-h-screen flex flex-col">
+
+    <header class="bg-white/85 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-indigo-100">
+        <div class="h-1 bg-gradient-to-r from-indigo-700 via-blue-600 to-cyan-500 w-full"></div>
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-4 cursor-pointer group" onclick="window.location.href='index.html'">
+                <img src="AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/003366/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-blue-900 tracking-tight leading-none uppercase font-heading">AISA</h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-gray-500 uppercase tracking-widest mt-0.5">Committees & Governance</span>
+                </div>
+            </div>
+            <button onclick="window.location.href='index.html'" class="flex items-center text-gray-500 hover:text-blue-900 transition-colors font-medium text-sm">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                <span class="hidden sm:inline">Back to Learning Hub</span>
+                <span class="sm:hidden">Back</span>
+            </button>
+        </nav>
+    </header>
+
+    <section class="hero-governance text-white relative overflow-hidden">
+        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
+        <div class="container mx-auto px-6 py-16 md:py-20 relative z-10">
+            <div class="max-w-4xl mx-auto text-center">
+                <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
+                    <span class="text-xl">🏛️</span>
+                    <span class="text-xs font-bold uppercase tracking-widest">2025-26 Committee List</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-4 drop-shadow-lg">AISA Committees &amp; Governance</h2>
+                <p class="text-lg md:text-xl text-indigo-100 max-w-3xl mx-auto mb-8">
+                    Explore the committees that drive academic quality, wellbeing, safeguarding, innovation, and community engagement at AISA. Each committee's mission, initial tasks, success indicators, and full membership are detailed below.
+                </p>
+
+                <div class="max-w-2xl mx-auto relative">
+                    <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input type="text" id="committee-search" placeholder="Search by committee, policy area, or member name..." class="block w-full pl-12 pr-4 py-3.5 rounded-full text-gray-900 bg-white/95 shadow-xl focus:ring-4 focus:ring-indigo-400/30 focus:outline-none placeholder-gray-400 font-medium">
+                </div>
+
+                <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
+                        <div id="stat-total" class="text-3xl font-heading font-extrabold">0</div>
+                        <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">Committees</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
+                        <div id="stat-members" class="text-3xl font-heading font-extrabold">0</div>
+                        <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">Members</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
+                        <div id="stat-adek" class="text-3xl font-heading font-extrabold">0</div>
+                        <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">ADEK-Mandated</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
+                        <div id="stat-ai" class="text-3xl font-heading font-extrabold">0</div>
+                        <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">AI Subcommittees</div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <a href="25-26%20committee%20list%20%281%29.pdf" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/25 text-white font-semibold py-2.5 px-5 rounded-full transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        Download the Full PDF
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="bg-white border-b border-gray-200 sticky top-[65px] z-40 shadow-sm">
+        <div class="container mx-auto px-6">
+            <div role="tablist" class="flex items-center gap-1 md:gap-2 overflow-x-auto">
+                <button role="tab" aria-selected="true" aria-controls="panel-level-1" data-tab="level-1" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900">
+                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-black">1</span>
+                    Level 1 Committees
+                </button>
+                <button role="tab" aria-selected="false" aria-controls="panel-level-2" data-tab="level-2" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900">
+                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black">2</span>
+                    Level 2 Committees
+                </button>
+                <button role="tab" aria-selected="false" aria-controls="panel-ai" data-tab="ai" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900">
+                    <span class="text-base">🤖</span>
+                    AI Incubator Team
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <main class="flex-grow container mx-auto px-6 py-12">
+        <div id="no-results" class="hidden text-center py-16">
+            <div class="text-5xl mb-3">🔍</div>
+            <h3 class="text-xl font-bold text-gray-700">No committees match your search</h3>
+            <p class="text-gray-500 mt-1">Try a different keyword, or clear the search to browse all committees.</p>
+        </div>
+
+        <section id="panel-level-1" role="tabpanel" aria-labelledby="level-1" class="tab-panel">
+            <div class="mb-6">
+                <h3 class="text-2xl font-heading font-bold text-gray-900">Level 1 Committees</h3>
+                <p class="text-sm text-gray-600 mt-1">Strategic, school-wide committees providing governance and oversight.</p>
+            </div>
+            <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="level-1"></div>
+        </section>
+
+        <section id="panel-level-2" role="tabpanel" aria-labelledby="level-2" class="tab-panel hidden">
+            <div class="mb-6">
+                <h3 class="text-2xl font-heading font-bold text-gray-900">Level 2 Committees</h3>
+                <p class="text-sm text-gray-600 mt-1">Operational committees that implement policy and support day-to-day practice.</p>
+            </div>
+            <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="level-2"></div>
+        </section>
+
+        <section id="panel-ai" role="tabpanel" aria-labelledby="ai" class="tab-panel hidden">
+            <div class="mb-6">
+                <h3 class="text-2xl font-heading font-bold text-gray-900">AI Incubator Team</h3>
+                <p class="text-sm text-gray-600 mt-1">AISA's command center for responsible AI adoption — the main team plus four specialist subcommittees.</p>
+            </div>
+            <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="ai"></div>
+        </section>
+    </main>
+
+    <footer class="bg-blue-900 text-blue-100 mt-auto">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <img src="AISA_logo.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
+                <span class="font-heading font-bold text-lg tracking-wide">AISA Committees &amp; Governance</span>
+            </div>
+            <p class="text-xs text-blue-200/80">American International School in Abu Dhabi &middot; 2025-26 Committee List</p>
+        </div>
+    </footer>
+
+    <script>
+        const themes = {
+            indigo:   { border: '#4f46e5', bg: '#eef2ff', text: '#3730a3' },
+            emerald:  { border: '#059669', bg: '#d1fae5', text: '#065f46' },
+            teal:     { border: '#0d9488', bg: '#ccfbf1', text: '#115e59' },
+            sky:      { border: '#0284c7', bg: '#e0f2fe', text: '#075985' },
+            blue:     { border: '#2563eb', bg: '#dbeafe', text: '#1e40af' },
+            violet:   { border: '#7c3aed', bg: '#ede9fe', text: '#5b21b6' },
+            fuchsia:  { border: '#c026d3', bg: '#fae8ff', text: '#86198f' },
+            rose:     { border: '#e11d48', bg: '#ffe4e6', text: '#9f1239' },
+            amber:    { border: '#d97706', bg: '#fef3c7', text: '#92400e' },
+            lime:     { border: '#65a30d', bg: '#ecfccb', text: '#3f6212' },
+            slate:    { border: '#475569', bg: '#f1f5f9', text: '#1e293b' },
+            cyan:     { border: '#0891b2', bg: '#cffafe', text: '#155e75' }
+        };
+
+        const requirementBadge = (req) => {
+            const r = (req || '').toLowerCase();
+            if (r.includes('adek-mandated')) return { cls: 'bg-rose-100 text-rose-800', label: 'ADEK-Mandated' };
+            if (r.includes('adek-aligned')) return { cls: 'bg-amber-100 text-amber-800', label: 'ADEK-Aligned' };
+            if (r.includes('school-directed')) return { cls: 'bg-purple-100 text-purple-800', label: 'School-Directed' };
+            if (r.includes('school-initiated')) return { cls: 'bg-emerald-100 text-emerald-800', label: 'School-Initiated' };
+            return { cls: 'bg-gray-100 text-gray-700', label: req || 'N/A' };
+        };
+
+        const initials = (name) => name.split(/\s+/).filter(Boolean).slice(0, 2).map(p => p[0]).join('').toUpperCase();
+
+        const escapeHtml = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+        const renderMember = (m, chair) => {
+            if (chair) {
+                return `<div class="chair-pill flex items-center gap-2 rounded-full pl-1 pr-3 py-1 shadow-sm">
+                    <div class="chair-avatar w-7 h-7 rounded-full text-[10px] font-black flex items-center justify-center">${escapeHtml(initials(m.name))}</div>
+                    <span class="text-sm font-semibold">${escapeHtml(m.name)}</span>
+                    <span class="text-[9px] font-black uppercase tracking-wider opacity-80">${escapeHtml(m.role)}</span>
+                </div>`;
+            }
+            return `<div class="flex items-center gap-2 bg-gray-50 hover:bg-gray-100 transition-colors border border-gray-200 rounded-full pl-1 pr-3 py-1">
+                <div class="w-7 h-7 rounded-full bg-gray-300 text-gray-700 text-[10px] font-bold flex items-center justify-center">${escapeHtml(initials(m.name))}</div>
+                <span class="text-sm text-gray-800 truncate">${escapeHtml(m.name)}</span>
+            </div>`;
+        };
+
+        const renderRoster = (roster) => {
+            const chairs = roster.members.filter(m => m.role);
+            const others = roster.members.filter(m => !m.role);
+            return `
+                ${roster.label ? `<h5 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">${escapeHtml(roster.label)}</h5>` : ''}
+                ${chairs.length ? `<div class="flex flex-wrap gap-2 mb-3">${chairs.map(m => renderMember(m, true)).join('')}</div>` : ''}
+                ${others.length ? `<div class="flex flex-wrap gap-2">${others.map(m => renderMember(m, false)).join('')}</div>` : ''}
+            `;
+        };
+
+        const renderCommittee = (c) => {
+            const theme = themes[c.color] || themes.indigo;
+            const badge = requirementBadge(c.requirement);
+            const rosters = Array.isArray(c.rosters) ? c.rosters : [{ members: c.members || [] }];
+            const totalMembers = rosters.reduce((n, r) => n + r.members.length, 0);
+            return `
+                <article class="committee-card bg-white rounded-2xl shadow-md overflow-hidden" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" data-search="${escapeHtml(c.searchBlob || '')}">
+                    <div class="p-6">
+                        <div class="flex items-start justify-between gap-4 mb-4">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="text-4xl flex-shrink-0">${c.icon}</div>
+                                <div class="min-w-0">
+                                    <h3 class="text-lg md:text-xl font-heading font-bold text-gray-900 leading-tight">${escapeHtml(c.name)}</h3>
+                                    <p class="text-[11px] text-gray-500 mt-1 uppercase tracking-wider font-semibold">${escapeHtml(c.policyArea || '')}</p>
+                                </div>
+                            </div>
+                            <span class="inline-flex items-center ${badge.cls} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider whitespace-nowrap flex-shrink-0">${badge.label}</span>
+                        </div>
+
+                        ${c.purpose ? `<div class="mb-4">
+                            <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Purpose</h4>
+                            <p class="text-sm text-gray-700 leading-relaxed">${escapeHtml(c.purpose)}</p>
+                        </div>` : ''}
+
+                        ${c.mission ? `<div class="mb-4">
+                            <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Mission &amp; Charge</h4>
+                            <p class="text-sm text-gray-700 leading-relaxed">${escapeHtml(c.mission)}</p>
+                        </div>` : ''}
+
+                        ${c.initialTasks && c.initialTasks.length ? `<details class="mb-2 border-l-4 border-gray-100 pl-4">
+                            <summary class="cursor-pointer text-sm font-semibold text-gray-700 hover:text-indigo-700 flex items-center justify-between py-1">
+                                <span>Suggested Initial Tasks</span>
+                                <svg class="chev w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </summary>
+                            <ul class="mt-3 space-y-2 text-sm text-gray-600">
+                                ${c.initialTasks.map(t => `<li class="flex items-start"><span class="accent-bullet mr-2 font-bold">•</span><span>${escapeHtml(t)}</span></li>`).join('')}
+                            </ul>
+                        </details>` : ''}
+
+                        ${c.indicators && c.indicators.length ? `<details class="mb-5 border-l-4 border-gray-100 pl-4">
+                            <summary class="cursor-pointer text-sm font-semibold text-gray-700 hover:text-indigo-700 flex items-center justify-between py-1">
+                                <span>Indicators of Success</span>
+                                <svg class="chev w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </summary>
+                            <ul class="mt-3 space-y-2 text-sm text-gray-600">
+                                ${c.indicators.map(t => `<li class="flex items-start"><span class="accent-bullet mr-2 font-bold">✓</span><span>${escapeHtml(t)}</span></li>`).join('')}
+                            </ul>
+                        </details>` : ''}
+
+                        <div class="border-t border-gray-100 pt-5">
+                            <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                Members (${totalMembers})
+                            </h4>
+                            <div class="space-y-4">
+                                ${rosters.map(r => renderRoster(r)).join('')}
+                            </div>
+                            ${c.notes ? `<p class="mt-4 text-xs text-gray-500 italic border-t border-gray-100 pt-3">${escapeHtml(c.notes)}</p>` : ''}
+                        </div>
+                    </div>
+                </article>
+            `;
+        };
+
+        const buildSearchBlob = (c) => {
+            const rosters = Array.isArray(c.rosters) ? c.rosters : [{ members: c.members || [] }];
+            const names = rosters.flatMap(r => r.members.map(m => m.name)).join(' ');
+            return [c.name, c.policyArea, c.requirement, c.purpose, c.mission, names].filter(Boolean).join(' ').toLowerCase();
+        };
+
+        const committees = [
+            {
+                id: 'school-dev', group: 'level-1', icon: '🎯', color: 'indigo',
+                name: 'School Development Committee',
+                policyArea: 'Academic Quality / School Improvement',
+                requirement: 'ADEK-Mandated',
+                purpose: 'Oversee the School Development Plan (SDP) and continuous improvement efforts, including teaching quality monitoring, self-evaluation, and addressing ADEK inspection recommendations. Ensures AISA meets targets for student learning outcomes and aligns improvement initiatives with the school’s mission.',
+                mission: 'Act as the Board’s engine-room for academic quality and continuous improvement. Oversees the School Development Plan, curriculum review cycle, and ADEK/CIS/IB inspection follow-up.',
+                initialTasks: [
+                    'Ratify Terms of Reference and meeting calendar (minimum once per term).',
+                    'Analyse/review the most recent ADEK inspection and advise on the 2025-26 SDP with SMART targets.',
+                    'Align Curriculum Action-Team (CAT) work plans to SDP priorities.',
+                    'Set baseline academic KPIs (MAP growth, IB pass rate, ATL proficiency).',
+                    'Establish an evidence dashboard for termly reporting to the Board.'
+                ],
+                indicators: [
+                    '≥ 90% of SDP action items delivered on time.',
+                    'ADEK follow-through visit shows “secure” progress.',
+                    'Positive movement in MAP conditional growth and IB average points.',
+                    'Curriculum review phases completed as scheduled in all subjects.',
+                    'Stakeholder survey shows ≥ 80% agree “teaching and learning are improving.”'
+                ],
+                members: [
+                    { name: 'Amira El Turabi', role: 'Chair' },
+                    { name: 'Ayla Din Zahid', role: 'Co-chair' },
+                    { name: 'Kelly Mejia' }, { name: 'Stephanie Brown' },
+                    { name: 'Ahmed Elsawaf' }, { name: 'Rafif Alhusari' },
+                    { name: 'Luka Zischka' }, { name: 'Michelle Forrester' },
+                    { name: 'Cristina Martin' }, { name: 'Hallie Yamamoto' },
+                    { name: 'Trish Levins' }, { name: 'Ellen May Grobler' },
+                    { name: 'Sembene Hamilton' }, { name: 'Liam Josephs' },
+                    { name: 'Mritunjoy Chakraborty' }
+                ]
+            },
+            {
+                id: 'wellbeing', group: 'level-1', icon: '💚', color: 'emerald',
+                name: 'Student and Staff Wellbeing Committee',
+                policyArea: 'Student and Staff Wellbeing',
+                requirement: 'ADEK-Mandated',
+                purpose: 'Provides strategic oversight of AISA’s whole-school Wellbeing Strategy, ensuring wellbeing policies and practices across psychological, social, physical, digital, intellectual, and environmental domains are implemented with fidelity, monitored through evidence, and continuously improved.',
+                mission: 'Lead, monitor, and continuously strengthen a whole-school approach to student and staff wellbeing, ensuring alignment with ADEK requirements, AISA’s mission, and evidence-based practice.',
+                initialTasks: [
+                    'Appoint a Wellbeing Lead and confirm committee membership.',
+                    'Map existing wellbeing initiatives against ADEK wellbeing domains to identify gaps and overlaps.',
+                    'Review and refine wellbeing indicators aligned to policy expectations.',
+                    'Design or validate annual wellbeing surveys for students, staff, and parents.',
+                    'Establish a clear annual wellbeing reporting cycle and communication plan.'
+                ],
+                indicators: [
+                    'Wellbeing survey participation rate of at least 70% across stakeholder groups.',
+                    'Measurable improvement in at least two wellbeing domains year-on-year.',
+                    'Termly wellbeing updates provided to the SLT and Board.',
+                    'Documented action plans linked directly to survey findings and risk analysis.',
+                    'Staff participation in wellbeing-related PD exceeds 80%.'
+                ],
+                members: [
+                    { name: 'Kirstie McLeod', role: 'Chair' },
+                    { name: 'Sara Al Beainy', role: 'Co-Chair' },
+                    { name: 'Marwa Afifi' }, { name: 'Hugo Gamino' },
+                    { name: 'Kiah Geraghty' }, { name: 'Aisling Brehony' },
+                    { name: 'Sudashna Naidoo' }, { name: 'Paulo Vitor dos Santos Salvador' },
+                    { name: 'Lauren Hill' }, { name: 'Jennifer Matar' },
+                    { name: 'Kelly Steele' }, { name: 'Kate Heyns' },
+                    { name: 'Princess Powe' }, { name: 'Sharon Siwela' },
+                    { name: 'Fairouz Babikir' }, { name: 'Cherry Spencer' },
+                    { name: 'Julie Mullins' }, { name: 'Kimberly Masters' }
+                ]
+            },
+            {
+                id: 'digital-safeguarding', group: 'level-1', icon: '🛡️', color: 'cyan',
+                name: 'Digital Safeguarding & Digital Wellbeing Committee',
+                policyArea: 'Digital Strategy and Safety',
+                requirement: 'ADEK-Aligned',
+                purpose: 'Oversee implementation of the school’s 5-year Digital Strategy (including AI integration and ICT plans). Monitors digital infrastructure, evaluates ed-tech initiatives, and coordinates training on digital literacy and data protection, ensuring compliance with ADEK’s Digital Policy.',
+                mission: 'Create and maintain a learning ecosystem where every digital experience is secure, ethical, and developmentally healthy — translating regulation into practice, championing digital citizenship, guarding infrastructure, and aligning emerging technologies like AI with the RAIL and Digital Strategy sub-committees.',
+                initialTasks: [
+                    'Publish Terms of Reference linking to the AI Incubator’s RAIL team.',
+                    'Complete a 360-degree baseline audit of devices, apps, data flows, and classroom practices.',
+                    'Update AISA’s AUP, privacy notices, and device-use agreements using NCSC template clauses.',
+                    'Map a K-12 digital-citizenship scope and sequence (ISTE + Common Sense).',
+                    'Launch a student-led digital-wellbeing campaign (mindful notifications, tech-free zones).',
+                    'Implement CISA’s “Top 5” cybersecurity quick wins and run a live drill by end of Term 1.',
+                    'Add risk review for every proposed AI tool before classroom use.'
+                ],
+                indicators: [
+                    'Zero high-risk findings on ADEK’s annual digital-policy audit.',
+                    '100% staff complete the digital-safety course; ≥ 80% parents attend/view webinar.',
+                    '≥ 70% of students score proficient on ISTE-based digital-citizenship assessment.',
+                    '10% drop in self-reported “tech-overwhelm” in end-of-year surveys.',
+                    'School meets ≥ 4 of 5 CISA/NCSC high-priority cyber hardening actions.'
+                ],
+                members: [
+                    { name: 'Mouhcine Mekouar', role: 'Chair' },
+                    { name: 'Joel Hunter', role: 'Co-chair' },
+                    { name: 'Chandler Monroe' }, { name: 'Mildred Stevenson' },
+                    { name: 'Hallie Yamamoto' }, { name: 'Belal Tantawi' },
+                    { name: 'Lamis Khedr' }, { name: 'JP Heyns' },
+                    { name: 'Ibtissam Harrache' }
+                ]
+            },
+            {
+                id: 'teacher-sunshine', group: 'level-1', icon: '☀️', color: 'amber',
+                name: 'Teacher Sunshine Committee',
+                policyArea: 'Staff Wellbeing and Morale',
+                requirement: 'School-Initiated',
+                purpose: 'Strengthen staff morale and foster a culture of appreciation, support, and belonging through consistent, low-cost wellness initiatives and personal gestures — recognising milestones, providing timely support, and creating opportunities for connection.',
+                mission: 'Foster a culture where every staff member feels valued, acknowledged, and supported through continuous acts of appreciation, celebration, and wellness. Maintain energy and connection throughout the year by focusing on what makes the workday more human and joyous.',
+                initialTasks: [
+                    'Appoint a committee chair and recruit a diverse volunteer group across teaching, support, and admin.',
+                    'Set up communication channels (email, messaging group, shared planning doc).',
+                    'Develop a Sunshine Calendar of milestones (birthdays, cultural celebrations, retirements, etc.).',
+                    'Launch a short “Sunshine Pulse” survey to gauge baseline staff morale and preferences.',
+                    'Introduce voluntary Sunshine Dues with transparent guidance on how funds are used.',
+                    'Implement two quick-win morale boosters in the first half-term (e.g., snack cart, appreciation notes, coffee bar).'
+                ],
+                indicators: [
+                    'Staff morale survey improves ≥ 0.5 points on a 5-point scale vs. start of year.',
+                    '≥ 90% of staff indicate feeling appreciated at work in end-of-year feedback.',
+                    '≥ 75% of staff participate in at least one Sunshine event or initiative each term.',
+                    'Staff absenteeism decreases ≥ 10% vs. the previous academic year.',
+                    'All Sunshine spending documented and shared with staff quarterly.'
+                ],
+                members: [
+                    { name: 'Christine Canales', role: 'Chair' },
+                    { name: 'Brooke Hoiseth', role: 'Co-chair' },
+                    { name: 'Robynne May' }, { name: 'Miriam Kimsey' },
+                    { name: 'Savannah Bezuidenhout' }, { name: 'Tammie Collins' },
+                    { name: 'Mallory Vaughan' }, { name: 'Amr Yahia' },
+                    { name: 'Shawn Carder' }, { name: 'Jamila Albakour' },
+                    { name: 'Danielle Masters' }, { name: 'Sembene Hamilton' },
+                    { name: 'Sharifa Johnson' }, { name: 'Veronica Player' },
+                    { name: 'Jenel Sanchez' }, { name: 'Emily McKeever' },
+                    { name: 'William Lester' }, { name: 'Allyn Rydalch' },
+                    { name: 'Rachel Hennelly' }
+                ]
+            },
+            {
+                id: 'sustainability', group: 'level-1', icon: '🌱', color: 'lime',
+                name: 'Sustainability Committee',
+                policyArea: 'Environmental Sustainability & ESD',
+                requirement: 'School-Initiated',
+                purpose: 'Lead AISA’s strategic approach to sustainability by embedding environmental stewardship, climate awareness, and responsible practices into school operations, curriculum, and culture. Supports the UAE’s Green Education Partnership and the UN Sustainable Development Goals, with student voice and leadership at its core.',
+                mission: 'Inspire and implement sustainability-driven practices across the school by coordinating environmental initiatives, promoting sustainable mindsets, and embedding Education for Sustainable Development into teaching, learning, and operations — serving as a catalyst for student-led projects and community-wide climate action.',
+                initialTasks: [
+                    'Appoint a Sustainability Coordinator and form a representative team (students, teachers, operations, parents).',
+                    'Conduct a sustainability audit (waste, energy, water, curriculum integration, procurement).',
+                    'Develop an annual Sustainability Action Plan with SMART goals.',
+                    'Create a communications platform for sustainability (bulletin board, newsletter, social media).',
+                    'Plan an all-school campaign tied to a major event (Earth Day, UAE Sustainability Week, Clean-Up Drive).',
+                    'Coordinate with Facilities to identify quick wins (recycling stations, lights-off, water signage).'
+                ],
+                indicators: [
+                    '≥ 80% completion rate of Sustainability Action Plan goals by year-end.',
+                    'At least one major student-led sustainability initiative completed each term.',
+                    '≥ 70% of students report increased understanding of sustainability issues.',
+                    '≥ 10% reduction in waste, water, or energy use in at least one measurable category.'
+                ],
+                members: [
+                    { name: 'Nastassia van Jaarsveldt', role: 'Chair' },
+                    { name: 'Brent Fortune' }, { name: 'Abdelfattah Zalama' },
+                    { name: 'Tammie Collins' }, { name: 'Savannah Bezuidenhout' },
+                    { name: 'Catherine O\'Connor' }, { name: 'Nancy Ibrahim' },
+                    { name: 'Helen Campbell' }, { name: 'Hiam Maoued' },
+                    { name: 'Naglaa Mater' }, { name: 'Arpita Varma' },
+                    { name: 'Zantia De Beer' }, { name: 'Naveen Graham' }
+                ]
+            },
+            {
+                id: 'pbis', group: 'level-2', icon: '🦁', color: 'rose',
+                name: 'PBIS / Behavior Management & House System Committee',
+                policyArea: 'Student Behavior, SEL, School Climate & House Engagement',
+                requirement: 'ADEK-Mandated',
+                purpose: 'Integrate Positive Behavioral Interventions and Supports (PBIS), Social-Emotional Learning (SEL), the AISA House System, and Behavior Management to create a safe, respectful, and consistent learning environment. Ensures schoolwide expectations (The Lion’s Way) are taught, modeled, and reinforced.',
+                mission: 'Promote a positive, inclusive, and consistent school culture by aligning PBIS with SEL, embedding both into House System activities, ensuring consistent enforcement of discipline policy, and reviewing all serious or chronic incidents for fair, ADEK-compliant consequences.',
+                initialTasks: [
+                    'Establish committee membership across senior leadership, counselors, inclusion, teachers, and student voice.',
+                    'Align PBIS framework (Lion’s Way) with SEL competencies.',
+                    'Publish a progressive discipline matrix and referral flowchart integrated with ADEK sanctions.',
+                    'Train staff on restorative practices, SEL integration, and bias-aware decision-making.',
+                    'Build a tiered behavior support map (universal, targeted, intensive).',
+                    'Create a behavior and SEL data dashboard with baseline metrics.',
+                    'Appoint a subcommittee for peer mediation in secondary.'
+                ],
+                indicators: [
+                    '≥ 80% of staff confident using PBIS/SEL/House strategies.',
+                    '≥ 75% of students show growth in SEL competencies.',
+                    '≥ 15% reduction in Level 2–4 behavioral incidents year-on-year.',
+                    '≥ 95% of serious discipline cases closed with a documented improvement plan.',
+                    '≥ 90% student participation in House activities.'
+                ],
+                rosters: [
+                    {
+                        label: 'ES PBIS/Behavior',
+                        members: [
+                            { name: 'Alia Nejdawi', role: 'Chair' },
+                            { name: 'Christine Canales' }, { name: 'Ellen Barton' },
+                            { name: 'Jennifer Van Belle' }, { name: 'Karen Snyman' },
+                            { name: 'Lisa Marie Jones Fisher' }, { name: 'Sonya Davis' },
+                            { name: 'Sharline Laubscher' }, { name: 'Amy Leigh Classen' },
+                            { name: 'Emily McKeever' }, { name: 'Mildred Stevenson' },
+                            { name: 'Arthur Juan Pierre Heyns' }, { name: 'Michelle Forrester' },
+                            { name: 'Sukaina Maklai' }
+                        ]
+                    },
+                    {
+                        label: 'Secondary PBIS/Behavior',
+                        members: [
+                            { name: 'Savvas Largatzis', role: 'Co-chair' },
+                            { name: 'Cristina Martin', role: 'Co-chair' },
+                            { name: 'Joel Hunter' }, { name: 'Brian Kelley' },
+                            { name: 'Will Cowie' }, { name: 'Max Sangster' },
+                            { name: 'Nastassia Van Jaarsveldt' }, { name: 'Naiema Zaki' },
+                            { name: 'Zach Zenk' }, { name: 'Taj Coleman' },
+                            { name: 'Storm Zenk' }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: 'pd', group: 'level-2', icon: '🎓', color: 'blue',
+                name: 'Professional Development Committee',
+                policyArea: 'Teacher Growth, Instructional Quality & Capacity Building',
+                requirement: 'School-Initiated',
+                purpose: 'Drive a coordinated and responsive professional learning strategy that builds teacher capacity, aligns with strategic goals, and directly impacts student learning. Designs, implements, and evaluates all formal and informal PD — data-informed, inclusive, and sustainable.',
+                mission: 'Strengthen instructional practice and leadership capacity by ensuring all PD at AISA is purposeful, aligned, and effective. Lead the PD cycle — assessing needs, planning programs, allocating resources, and evaluating impact.',
+                initialTasks: [
+                    'Appoint a PD Coordinator and form a representative committee.',
+                    'Conduct a needs assessment via surveys, evaluations, accreditation reports, and inspection feedback.',
+                    'Design a PD plan aligned to AISA’s strategic pillars, AI integration, inclusion, and assessment.',
+                    'Design a PD tracking system aligned with ADEK compliance expectations.',
+                    'Publish an annual PD calendar (required, optional, internal, external).',
+                    'Promote systems for reflective practice (portfolios, peer coaching, microcredentials).',
+                    'Identify mentorship structures for aspiring teacher leaders and new hires.'
+                ],
+                indicators: [
+                    '≥ 90% of staff engage in at least two structured PD activities per term.',
+                    '≥ 80% of staff report PD is relevant and impactful.',
+                    'At least three new schoolwide PD initiatives launched based on identified needs.',
+                    'Visible improvement in MAP/IB/teacher evaluation data in PD focus areas.',
+                    'Documented growth plans and mentor feedback for 100% of new teachers.'
+                ],
+                members: [
+                    { name: 'Amira El Turabi', role: 'Co-chair' },
+                    { name: 'Stephanie Brown', role: 'Co-chair' },
+                    { name: 'Kelly Mejia', role: 'Co-chair' },
+                    { name: 'Sabrina Stream' }, { name: 'Ahmed Elsawaf' },
+                    { name: 'Rafif Alhusari' }, { name: 'Ibtissam Harrache' },
+                    { name: 'Lamis Khedr' }, { name: 'Brandon Fula' },
+                    { name: 'Samuel Cole' }, { name: 'Hallie Yamamoto' },
+                    { name: 'Trish Levins' }, { name: 'Chandler Monroe' },
+                    { name: 'Nastassia van Jaarsveldt' }, { name: 'Kirstie McLeod' },
+                    { name: 'Anna Kamm' }, { name: 'Devashree Chakraborty' },
+                    { name: 'Hossam Mahanna' }
+                ]
+            },
+            {
+                id: 'safeguarding', group: 'level-2', icon: '🔒', color: 'violet',
+                name: 'Safeguarding Committee',
+                policyArea: 'Child Protection (Compliance & Wellbeing)',
+                requirement: 'School-Directed',
+                purpose: 'Support the Designated Safeguarding Lead (DSL) in overseeing the child protection system. This internal team reviews safeguarding cases and practices, ensures policies are followed, conducts annual policy reviews, and coordinates training so that “safeguarding is everyone’s responsibility.”',
+                mission: 'Uphold a robust, compliant, and compassionate safeguarding culture — ensuring timely review of cases, confidentiality, ongoing training, and clear communication with the Wellbeing Committee to inform preventative programming.',
+                initialTasks: [
+                    'Define each member’s role (DSL, counselor, nurse, etc.) and decision-making matrix.',
+                    'Ensure secure, confidential case-record storage with need-to-know protocols.',
+                    'Schedule monthly confidential reviews of active cases.',
+                    'Conduct an annual policy review using a safeguarding audit checklist.',
+                    'Conduct a training needs analysis and assign foundational safeguarding training.',
+                    'Integrate case-informed insights into broader wellbeing initiatives.',
+                    'Clarify communication boundaries with the Wellbeing Committee.'
+                ],
+                indicators: [
+                    '100% of concerns logged and reviewed within 24–48 hours.',
+                    '100% of staff with up-to-date safeguarding induction/training; DSL and deputies retrained every two years.',
+                    '100% of threshold-meeting referrals result in external agency engagement where appropriate.',
+                    'Annual safeguarding policy review and updates completed on timeline.',
+                    'Families and students informed, through age-appropriate sessions, about the safeguarding structure.'
+                ],
+                members: [
+                    { name: 'Alia Nejdawi', role: 'Co-chair' },
+                    { name: 'Savvas Largatzis', role: 'Co-chair' },
+                    { name: 'Jennifer Guss' }, { name: 'Taj Coleman' },
+                    { name: 'Mildred Stevenson' }, { name: 'Sara Al Beainy' },
+                    { name: 'Joel Hunter' }, { name: 'School Nurses' }
+                ]
+            },
+            {
+                id: 'health-safety', group: 'level-2', icon: '🚨', color: 'rose',
+                name: 'Health & Safety Committee',
+                policyArea: 'Operational Health, Safety & Environment',
+                requirement: 'ADEK-Mandated',
+                purpose: 'Ensure the school complies with all health, safety, and environmental regulations. Oversees campus safety audits, emergency drills, risk assessments, and health protocols. Monitors accident reports and promotes a safe physical environment for students and staff.',
+                mission: 'Assure a safe physical environment and full compliance with ADEK, ADPHC, and fire-safety regulations.',
+                initialTasks: [
+                    'Conduct a whole-campus risk assessment and log corrective actions.',
+                    'Review and update emergency-drill schedule (fire, lockdown, medical).',
+                    'Audit contractor H&S credentials and chemical storage (science labs).',
+                    'Launch a near-miss / incident reporting app for staff.'
+                ],
+                indicators: [
+                    'All statutory inspections passed; zero critical ADEK findings.',
+                    '≥ 90% of corrective actions closed within agreed deadlines.',
+                    'Accident rate down year-on-year; drills executed within target evacuation times.'
+                ],
+                members: [
+                    { name: 'Adarsh Mundakkottil', role: 'Chair' },
+                    { name: 'Principals' }, { name: 'Assistant Principals' },
+                    { name: 'Luka Zischka' }, { name: 'Ibtissam Harrache' },
+                    { name: 'Amira El Turabi' }, { name: 'Kelly Mejia' },
+                    { name: 'Stephanie Brown' }
+                ]
+            },
+            {
+                id: 'inclusion', group: 'level-2', icon: '🤝', color: 'teal',
+                name: 'Inclusion Support Team (Student Support Team)',
+                policyArea: 'Inclusion / Special Education Needs',
+                requirement: 'ADEK-Mandated',
+                purpose: 'Ensure students with additional learning needs and any learners at educational risk receive the necessary support and accommodations. Led by the Head of Inclusion, the team meets regularly to review progress, update individualized plans, and coordinate interventions across departments.',
+                mission: 'Provide a responsive, evidence-informed MTSS framework so that every student experiences timely, appropriate support — from universal screening through intensive intervention — with fidelity, cultural responsiveness, and family engagement.',
+                initialTasks: [
+                    'Define roles (Head of Inclusion leads, counselors, EAL, specialists, teachers).',
+                    'Develop a written protocol for screening, referral triage, Tier 2/3 interventions, progress monitoring, and escalation.',
+                    'Establish a secure digital tracker (MTSS software, PowerSchool, or spreadsheet).',
+                    'Meet every 6–8 weeks to review identified students’ data and adjust plans.',
+                    'Implement intervention blocks that don’t disrupt core instruction.',
+                    'Provide regular staff training on MTSS tiers, data protocols, fidelity, and cultural responsiveness.',
+                    'Ensure inclusion specialists have ≥ 40 hours of relevant PD.'
+                ],
+                indicators: [
+                    '85% of students receiving interventions within 2 weeks of identification.',
+                    '85% of students showing measurable progress (≥ 1 tier-level improvement).',
+                    '100% of relevant staff trained in MTSS and fidelity monitoring.',
+                    'Pre/post surveys show increased teacher confidence in referral and intervention.',
+                    'Documented evidence of student voice guiding plan goals and parent feedback affirming transparency.'
+                ],
+                members: [
+                    { name: 'Lisa Jones', role: 'Chair' },
+                    { name: 'Lisa Holder' }, { name: 'Trish Levins' },
+                    { name: 'Claudia Sacco' }, { name: 'Sukaina Maklai' },
+                    { name: 'Afaf Abu Skhaila' }, { name: 'Soha El Andary' },
+                    { name: 'Helen Campbell' }, { name: 'Demi Josephs' },
+                    { name: 'Emily Hogan' }, { name: 'Roshni Rampersadth' },
+                    { name: 'Alejandra Echeverri' }
+                ]
+            },
+            {
+                id: 'parent-engagement', group: 'level-2', icon: '👨‍👩‍👧', color: 'fuchsia',
+                name: 'Parent Engagement and Events Committee',
+                policyArea: 'Parent Engagement & Community Partnerships',
+                requirement: 'School-Initiated',
+                purpose: 'Build strong, trusting partnerships between the school and families by organizing inclusive events, promoting transparent communication, and encouraging active parent participation. Creates opportunities for collaboration, dialogue, and celebration that foster belonging and enhance student success.',
+                mission: 'Foster a vibrant, welcoming, and engaged school community by connecting parents with each other and with the school. Report directly to the Director/SLT and coordinate with the ADEK-mandated National Identity Parent Committee to align with UAE cultural values.',
+                initialTasks: [
+                    'Form a diverse committee with parent reps from each division plus staff liaisons.',
+                    'Review the current calendar of events and identify opportunities for better coordination and inclusion.',
+                    'Create a Parent Engagement Action Plan covering communication, participation, partnership, and celebration.',
+                    'Set up a regular feedback system (surveys, forums).',
+                    'Organize a launch event or community welcome (BBQ, International Day, Coffee Morning).',
+                    'Develop a monthly “Parent Link” newsletter with the communications team.',
+                    'Liaise with PTSA, House Systems, Wellbeing, and other committees on events.'
+                ],
+                indicators: [
+                    '≥ 75% of families attend at least one school-organized event each semester.',
+                    '≥ 80% of surveyed parents report feeling informed, welcomed, and connected.',
+                    'Parent feedback collected, reviewed, and used to adjust practices at least twice per year.',
+                    '≥ 25% increase in parent volunteers participating in school events.',
+                    'All major events reflect the diverse voices and contributions of families.'
+                ],
+                members: [
+                    { name: 'Engy Amr', role: 'Co-chair' },
+                    { name: 'Ibtissam Harrache', role: 'Co-chair' },
+                    { name: 'Robin Martin-Lawson', role: 'Co-chair' },
+                    { name: 'Lamis Khedr', role: 'Co-chair' },
+                    { name: 'Dara Lahoud', role: 'Co-chair' },
+                    { name: 'Kelly Mejia' }, { name: 'Ibtesam Albayouk' },
+                    { name: 'Sukaina Maklai' }, { name: 'Mallory Vaughan' },
+                    { name: 'Hallie Yamamoto' }, { name: 'Rafif Alhusari' },
+                    { name: 'Doaa Alawneh' }, { name: 'Mai Mostafa' },
+                    { name: 'Noor Rabah' }, { name: 'Rasha Ahmed' },
+                    { name: 'Haley Hidalgo' }, { name: 'Ishraq Jumeian' },
+                    { name: 'T\'Ericka Perry' }
+                ]
+            },
+            {
+                id: 'scc', group: 'level-2', icon: '📋', color: 'slate',
+                name: 'School Complaints Committee (SCC)',
+                policyArea: 'Compliance / Governance (Stakeholder Complaints)',
+                requirement: 'ADEK-Mandated',
+                purpose: 'Formally handle serious parent or stakeholder complaints that escalate beyond informal resolution. Chaired by the Principal (or a Board member if the complaint is about the Principal), the SCC ensures ADEK’s required process — written acknowledgement within 24 hours and resolution within 10 working days.',
+                mission: 'Guarantee every formal Stage-3 complaint is handled impartially, on time, and in line with ADEK’s 24-hour / 10-working-day rule.',
+                initialTasks: [
+                    'Approve the complaint-handling flowchart and delegate a trained SCC Secretary.',
+                    'Launch a central Complaints Register (retention ≥ 5 years).',
+                    'Publish the web-based Complaint Form and brief parents/staff.',
+                    'Complete induction for members on evidence-based investigation and record-keeping.'
+                ],
+                indicators: [
+                    '100% of Stage-3 cases acknowledged within 24 hours; 100% resolved within 10 working days.',
+                    'Quarterly trend analysis presented to the Board; systemic issues fed to the SDC.',
+                    'Zero ADEK escalations caused by process failure.'
+                ],
+                notes: 'Members recuse themselves from any case where they were involved in the initial decision, investigation, or prior committee review.',
+                members: [
+                    { name: 'Caidon Classen' }, { name: 'Will Hoiseth' },
+                    { name: 'Donia Amir' }, { name: 'Brooke Hoiseth' },
+                    { name: 'Mallory Vaughan' }, { name: 'Jamila Albakour' },
+                    { name: 'Hallie Yamamoto' }, { name: 'Abdelfattah Zalama' },
+                    { name: 'Trish Levins' }, { name: 'Maram Abdulkarim' },
+                    { name: 'Lamis Khedr' }, { name: 'Ahmed Elsawaf' },
+                    { name: 'Luka Zischka' }, { name: 'Dima Alabdullah' },
+                    { name: 'Paulo Vitor dos Santos Salvador' }, { name: 'Cristina Martin' }
+                ]
+            },
+            {
+                id: 'resource-selection', group: 'level-2', icon: '📚', color: 'amber',
+                name: 'Resource Selection Committee',
+                policyArea: 'Curriculum Resources & Cultural Compliance',
+                requirement: 'ADEK-Mandated',
+                purpose: 'Ensure all textbooks, library books, digital tools, and instructional materials support AISA’s curriculum standards and values while meeting ADEK’s content standards. Led by the Curriculum Coordinator and Librarian, with IT, Inclusion, and Curriculum reps.',
+                mission: 'Act as the school’s quality-control gatekeeper for every textbook, library book, digital platform, trade book, film, or learning app — aligning resources with ADEK’s Curriculum and Cultural Consideration Policies, promoting inclusivity, and running a transparent adoption cycle.',
+                initialTasks: [
+                    'Maintain a published rubric blending ADEK cultural filters with ALA/AASL selection criteria.',
+                    'Screen every proposed resource within three school weeks with a logged decision and rationale.',
+                    'Run an annual audit of existing holdings against ADEK flags using established checklists.',
+                    'Collect teacher and student feedback after a semester of use.'
+                ],
+                indicators: [
+                    'Every resource in class or library has an approval record; zero unvetted items found on spot checks.',
+                    '95% of submissions meet the three-week turnaround target.',
+                    'Annual audit reports no ADEK compliance violations and documents corrective actions.',
+                    '≥ 75% of newly adopted titles feature authors or perspectives from underrepresented groups.'
+                ],
+                members: [
+                    { name: 'Hallie Yamamoto', role: 'Co-chair' },
+                    { name: 'Amira El Turabi', role: 'Co-chair' },
+                    { name: 'Hiam Maoued' }, { name: 'Naglaa Mater' },
+                    { name: 'Helen Campbell' }, { name: 'Will Hoiseth' },
+                    { name: 'Jenel Sanchez' }, { name: 'Hosam Abdelsalam' },
+                    { name: 'Geoff Kurton' }, { name: 'Afaf Abu Skhaila' }
+                ]
+            },
+            {
+                id: 'bac', group: 'level-2', icon: '⚖️', color: 'violet',
+                name: 'Behavior Appeals Committee (BAC)',
+                policyArea: 'Discipline Appeals',
+                requirement: 'ADEK-Mandated',
+                purpose: 'An independent panel that reviews appeals of major disciplinary decisions (suspensions, expulsion recommendations) after the BMC’s decision. Hears appeals free from the influence of the original decision-makers.',
+                mission: 'Guarantee due-process rights for students and parents, satisfy ADEK’s timelines and documentation rules, and uphold community trust by showing that discipline decisions can be challenged before an impartial body.',
+                initialTasks: [
+                    'Adopt Terms of Reference setting eligibility, quorum, voting rules, and ADEK timelines (10/5 working days).',
+                    'Establish a Trained Panel Pool of ≥ 6 staff/board members plus one external SEN expert.',
+                    'Create documentation templates (appeal form, evidence checklist, hearing script, decision letter).',
+                    'Launch a communication plan (handbook and website updates).',
+                    'Set up a secure appeals register feeding quarterly trend reports.'
+                ],
+                indicators: [
+                    '100% of appeals acknowledged within 24 hours and heard within policy deadlines.',
+                    'Zero ADEK reversals or directives for rehearing based on process errors.',
+                    '≥ 80% of appellants (win or lose) report the process was fair and respectful.',
+                    '100% of standing-pool members complete annual refresher training.'
+                ],
+                notes: 'Members recuse themselves from any case where they were involved in the initial decision, investigation, or prior committee review.',
+                members: [
+                    { name: 'Dima Alabdullah' }, { name: 'Cherry Spencer' },
+                    { name: 'Hallie Yamamoto' }, { name: 'Lamis Khedr' },
+                    { name: 'Fairouz Babikir' }, { name: 'Belal Tantawi' },
+                    { name: 'Brooke Hoiseth' }, { name: 'Ahmed Elsawaf' },
+                    { name: 'Caidon Classen' }, { name: 'Luka Zischka' },
+                    { name: 'Mallory Vaughan' }, { name: 'Hiam Maoued' },
+                    { name: 'Naglaa Mater' }, { name: 'Jenel Sanchez' },
+                    { name: 'Ashleigh Bothma' }, { name: 'Zachary Zenk' },
+                    { name: 'Max Sangster' }, { name: 'Rachel Hennelly' },
+                    { name: 'Abdul Momen Al Roz' }, { name: 'Alaa Al Moghrabi' }
+                ]
+            },
+            {
+                id: 'calendar', group: 'level-2', icon: '📅', color: 'sky',
+                name: 'Academic Calendar Committee',
+                policyArea: 'Governance & Operations',
+                requirement: 'School-Initiated',
+                purpose: 'Design, review, and recommend the annual school calendar. Develops multiple calendar options to align with regulatory mandates (instructional hours, holidays, PD days) while addressing operational needs (transport, wellbeing, extracurriculars). Draws on broad stakeholder input.',
+                mission: 'Build, monitor, and communicate the school calendar and daily schedule to meet academic goals, stakeholder needs, and wellbeing considerations — gathering input, drafting models grounded in research and compliance, and finalising a calendar approved before publication.',
+                initialTasks: [
+                    'Confirm charge, responsibilities, and reporting lines.',
+                    'Assign roles: Chair, recorder, communications coordinator.',
+                    'Set meeting cadence (spring and fall).',
+                    'Build a milestone calendar for draft, review, finalisation, and publication.',
+                    'Design surveys/focus groups for staff, families, and students.',
+                    'Consult essential services (transport, wellbeing, facilities).',
+                    'Build communications plan: announcements, updates, Q&A.'
+                ],
+                indicators: [
+                    'Final calendar approved by first Friday in June of each academic year.',
+                    '≥ 80% of respondents satisfied with the calendar draft.',
+                    '100% coordination sign-off from academics/athletics, arts, transport, wellbeing, facilities.'
+                ],
+                members: [
+                    { name: 'Ibtissam Harrache', role: 'Chair' },
+                    { name: 'Luka Zischka', role: 'Co-chair' },
+                    { name: 'Kelly Mejia' }, { name: 'Kelly Steele' },
+                    { name: 'Sharline Laubscher' }, { name: 'Mouhcine Mekouar' },
+                    { name: 'Christopher Oyama' }, { name: 'Nataliia Verbenska' },
+                    { name: 'Stephanie Brown' }, { name: 'Naiema Zaki' },
+                    { name: 'Storm Zenk' }, { name: 'Sandrine Lazare' }
+                ]
+            },
+            {
+                id: 'ai-incubator-main', group: 'ai', icon: '🤖', color: 'indigo',
+                name: 'AI Incubator Team',
+                policyArea: 'AI Strategy & Governance (Parent Body)',
+                requirement: 'ADEK-Aligned',
+                purpose: 'AISA’s single command center for everything artificial intelligence. Coordinates the four specialist sub-committees — RAIL, Digital Strategy, AI Professional Development, and Day-of-AI — so that policy, pedagogy, professional learning, and student engagement move forward together rather than in silos.',
+                mission: 'Accelerate the responsible and high-impact adoption of AI across teaching, learning, and operations. Ensure every initiative meets ADEK’s Digital Policy requirements, aligns with Middle States’ RAIL standards, and supports AISA’s four strategic pillars — without compromising equity or wellbeing.',
+                initialTasks: [
+                    'Ratify Terms of Reference and map every existing AI use case, staff skill level, and data flow against ADEK and RAIL.',
+                    'Publish a three-year AI Roadmap and budget, costed and approved by SLT and Board.',
+                    'Launch the Magic School AI Level 1 drive in August PD; build a cadre of peer coaches.',
+                    'Localise MIT RAISE Day-of-AI lessons for UAE context and gather baseline AI-literacy data.',
+                    'Approve 2–3 quick-cycle pilots with clear research questions and privacy impact assessments.',
+                    'Adapt UNESCO and OECD principles into an AISA ethics and risk checklist.',
+                    'Launch an AI microsite and quarterly newsletter with RAIL-based FAQs.'
+                ],
+                indicators: [
+                    'Complete RAIL evidence portfolio accepted by Middle States; ADEK Digital Policy deliverables approved.',
+                    '≥ 90% of teachers earn Magic School AI Level 1; self-efficacy surveys show significant uplift.',
+                    '70% of Day-of-AI participants reach proficiency; three pilots show double-digit gains.',
+                    'Every pilot passes the ethics checklist on first submission; no major bias or privacy incidents.'
+                ],
+                notes: 'The AI Incubator Team is the parent body. See the four specialist subcommittees below for membership and specific charges.',
+                members: []
+            },
+            {
+                id: 'ai-rail', group: 'ai', icon: '🛤️', color: 'indigo',
+                name: 'RAIL Subcommittee',
+                policyArea: 'Middle States — Responsible AI in Learning (Lead Subcommittee)',
+                requirement: 'ADEK-Aligned',
+                purpose: 'Lead AISA’s adoption and implementation of the RAIL framework for responsible AI use, guided by the Middle States Association’s accreditation standards. Acts as the lead subcommittee coordinating cross-functional AI work.',
+                mission: 'Guide the school through the full RAIL implementation framework, ensure ethical and sustainable AI practices are embedded across AISA’s programs, and provide leadership reports and documentation for accreditation and marketing.',
+                initialTasks: [
+                    'Review full RAIL framework and requirements.',
+                    'Establish an implementation plan with defined phases and responsibilities.',
+                    'Align RAIL indicators with AISA’s strategic plan and accreditation cycles.',
+                    'Provide regular leadership updates on progress.'
+                ],
+                indicators: [
+                    'RAIL framework fully adopted and implemented.',
+                    'Alignment established between RAIL, PD, Digital Strategy, and Day of AI committees.',
+                    'Submission of self-study reports to Middle States for RAIL accreditation.',
+                    'Public marketing of AISA as a RAIL-compliant institution.'
+                ],
+                members: [
+                    { name: 'Quitney Price', role: 'Chair' },
+                    { name: 'Jennifer Hecker' }, { name: 'Helene Hardy' },
+                    { name: 'Egbal Ibrahim Mohamed' }, { name: 'Kashan Khan' },
+                    { name: 'Jennifer Van Belle' }, { name: 'Mouhcine Mekouar' }
+                ]
+            },
+            {
+                id: 'ai-digital-strategy', group: 'ai', icon: '🔌', color: 'blue',
+                name: 'Digital Strategy Subcommittee',
+                policyArea: 'Reviewing & Publishing an AISA Digital Strategy',
+                requirement: 'ADEK-Aligned',
+                purpose: 'Ensure AISA’s full alignment with the recently issued ADEK Digital Policy through the review, development, and implementation of required digital policies, with a particular focus on the responsible integration of AI.',
+                mission: 'Review preliminary work on AISA’s digital strategy and policies, align them with ADEK’s digital framework, ensure AI integration is embedded, and recommend updates, revisions, and implementation timelines — coordinating with other committees for consistency.',
+                initialTasks: [
+                    'Review the four policy documents already drafted.',
+                    'Cross-reference with ADEK digital policy requirements.',
+                    'Identify gaps or areas requiring further work.',
+                    'Develop a proposed implementation timeline for leadership approval.'
+                ],
+                indicators: [
+                    'Submission of fully compliant digital policy documents by established deadlines.',
+                    'Clear integration of AI frameworks into the digital strategy.',
+                    'Cross-committee collaboration to ensure consistency with PD and RAIL work.',
+                    'ADEK acceptance and approval of submitted digital policy documents.'
+                ],
+                members: [
+                    { name: 'Antonio Mejia', role: 'Chair' },
+                    { name: 'Kashan Khan' }, { name: 'Gaspar Morales' },
+                    { name: 'Joel Hunter' }, { name: 'Paulette Williams' },
+                    { name: 'Arindam Banerjee' }
+                ]
+            },
+            {
+                id: 'ai-pd', group: 'ai', icon: '🧠', color: 'violet',
+                name: 'AI Professional Development Subcommittee',
+                policyArea: 'Ongoing PD for AI Integration',
+                requirement: 'School-Initiated',
+                purpose: 'Design and implement an ongoing, scalable professional development model for AI integration across all grade levels and subjects at AISA.',
+                mission: 'Empower teachers to effectively utilise AI tools (such as Magic School AI) in instructional practice, encourage faculty to pursue Magic School AI certifications, facilitate peer-to-peer sharing, and support AI literacy among both faculty and students.',
+                initialTasks: [
+                    'Develop a certification and training plan using Magic School AI, coordinating with the RAIL team.',
+                    'Identify existing certified faculty as peer leaders.',
+                    'Map out key training sessions for August PD and quarterly follow-ups.',
+                    'Create an AI resource hub accessible to all faculty.'
+                ],
+                indicators: [
+                    'Majority of faculty complete at least Level 1 Magic School AI certification by mid-year.',
+                    'Peer-led PD sessions offered each quarter.',
+                    'Demonstrated classroom integration of AI tools across subjects.',
+                    'Development of a sustained professional learning community around AI.'
+                ],
+                members: [
+                    { name: 'Egbal Mohamed', role: 'Chair' },
+                    { name: 'Cassandra Henry' }, { name: 'Darrell Traylor' },
+                    { name: 'Gaspar Morales' }, { name: 'Mogamat Armien Samsodien' }
+                ]
+            },
+            {
+                id: 'ai-day', group: 'ai', icon: '🎪', color: 'fuchsia',
+                name: 'Day of AI Subcommittee',
+                policyArea: 'ESOL-Coordinated Day of AI Event',
+                requirement: 'School-Initiated',
+                purpose: 'Plan, organise, and execute AISA’s full participation in the ESOL-wide Day of AI event in coordination with MIT RAISE resources.',
+                mission: 'Prepare teacher-trainers for grades 3–5 and 6–8 via MIT RAISE virtual training, develop and facilitate internal training for AISA teachers, collaborate with ESOL schools for regional alignment, and execute Day of AI with high engagement.',
+                initialTasks: [
+                    'Appoint lead trainers for each grade band.',
+                    'Schedule virtual training attendance for trainers.',
+                    'Create internal training plan and schedule.',
+                    'Coordinate winter break check-in for progress review.'
+                ],
+                indicators: [
+                    'Two lead trainers appointed and trained.',
+                    'Full staff training completed prior to event launch.',
+                    'Strong participation across targeted grade levels.',
+                    'High levels of student engagement and documented learning outcomes.',
+                    'Smooth coordination with ESOL regional partners.'
+                ],
+                members: [
+                    { name: 'Ula Wyss', role: 'Elementary Lead' },
+                    { name: 'Nkralefac Canaldo', role: 'Secondary Lead' },
+                    { name: 'Anna Siju' }, { name: 'Engy Amer' },
+                    { name: 'Kashan Khan' }
+                ]
+            }
+        ];
+
+        function init() {
+            committees.forEach(c => c.searchBlob = buildSearchBlob(c));
+
+            const groups = { 'level-1': [], 'level-2': [], 'ai': [] };
+            committees.forEach(c => { if (groups[c.group]) groups[c.group].push(c); });
+            Object.entries(groups).forEach(([g, items]) => {
+                const container = document.querySelector(`[data-container="${g}"]`);
+                if (container) container.innerHTML = items.map(renderCommittee).join('');
+            });
+
+            const totalMembers = committees.reduce((n, c) => {
+                const rosters = Array.isArray(c.rosters) ? c.rosters : [{ members: c.members || [] }];
+                return n + rosters.reduce((m, r) => m + r.members.length, 0);
+            }, 0);
+            const adekCount = committees.filter(c => (c.requirement || '').toLowerCase().includes('adek-mandated')).length;
+            const aiCount = committees.filter(c => c.group === 'ai' && c.id !== 'ai-incubator-main').length;
+            document.getElementById('stat-total').textContent = committees.length;
+            document.getElementById('stat-members').textContent = totalMembers;
+            document.getElementById('stat-adek').textContent = adekCount;
+            document.getElementById('stat-ai').textContent = aiCount;
+
+            document.querySelectorAll('[role="tab"]').forEach(btn => {
+                btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+            });
+
+            const search = document.getElementById('committee-search');
+            search.addEventListener('input', () => applyFilter(search.value.trim().toLowerCase()));
+        }
+
+        function switchTab(id) {
+            document.querySelectorAll('[role="tab"]').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === id ? 'true' : 'false'));
+            document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+            const panel = document.getElementById('panel-' + id);
+            if (panel) panel.classList.remove('hidden');
+            const search = document.getElementById('committee-search');
+            if (search && search.value) applyFilter(search.value.trim().toLowerCase());
+        }
+
+        function applyFilter(query) {
+            let anyVisible = false;
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                const isActive = !panel.classList.contains('hidden');
+                panel.querySelectorAll('.committee-card').forEach(card => {
+                    const blob = card.dataset.search || '';
+                    const match = !query || blob.includes(query);
+                    card.classList.toggle('hidden-by-filter', !match);
+                    if (isActive && match) anyVisible = true;
+                });
+            });
+            const noResults = document.getElementById('no-results');
+            if (query && !anyVisible) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+
+</body>
+</html>
