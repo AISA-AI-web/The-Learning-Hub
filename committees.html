@@ -2099,6 +2099,13 @@
                 if (e.target === document.getElementById('help-overlay')) toggleHelp(false);
             });
             document.addEventListener('keydown', handleGlobalShortcuts);
+            document.addEventListener('keydown', (e) => {
+                if (e.key !== 'Tab') return;
+                const help = document.getElementById('help-overlay');
+                const dir = document.getElementById('directory-panel');
+                if (help && !help.hidden) return trapTab(e, help);
+                if (dir && !dir.hidden) return trapTab(e, dir);
+            });
 
             const printState = { prevOpen: new WeakSet(), prevExpanded: new WeakSet(), prevMission: new WeakSet() };
             window.addEventListener('beforeprint', () => {
@@ -2136,11 +2143,20 @@
             const overlay = document.getElementById('help-overlay');
             const shouldOpen = force !== undefined ? force : overlay.hasAttribute('hidden');
             if (shouldOpen) {
+                helpReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
                 overlay.hidden = false;
-                requestAnimationFrame(() => overlay.classList.add('open'));
+                requestAnimationFrame(() => {
+                    overlay.classList.add('open');
+                    const btn = overlay.querySelector('[data-close-help]');
+                    if (btn) btn.focus();
+                });
             } else {
                 overlay.classList.remove('open');
                 setTimeout(() => { overlay.hidden = true; }, 220);
+                if (helpReturnFocus && document.body.contains(helpReturnFocus)) {
+                    helpReturnFocus.focus();
+                }
+                helpReturnFocus = null;
             }
         }
 
@@ -2193,7 +2209,11 @@
             if (e.key === '/') {
                 e.preventDefault();
                 const s = document.getElementById('committee-search');
-                if (s) { s.focus(); s.select(); }
+                if (s) {
+                    window.scrollTo({ top: 0, behavior: PREFERS_REDUCED_MOTION ? 'auto' : 'smooth' });
+                    s.focus({ preventScroll: true });
+                    s.select();
+                }
                 return;
             }
             if (e.key === '?') {
@@ -2263,9 +2283,13 @@
             });
         }
 
+        let directoryReturnFocus = null;
+        let helpReturnFocus = null;
+
         function openDirectory(personKey) {
             const overlay = document.getElementById('directory-overlay');
             const panel = document.getElementById('directory-panel');
+            directoryReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
             overlay.hidden = false;
             panel.hidden = false;
             requestAnimationFrame(() => {
@@ -2278,6 +2302,11 @@
             } else {
                 renderDirectoryList();
             }
+            // Move focus into the panel after render so screen readers announce it.
+            requestAnimationFrame(() => {
+                const firstTarget = panel.querySelector('#dir-search') || panel.querySelector('[data-close-directory]');
+                if (firstTarget) firstTarget.focus();
+            });
         }
 
         function closeDirectory() {
@@ -2290,6 +2319,32 @@
                 panel.hidden = true;
             }, 280);
             document.body.classList.remove('directory-open');
+            if (directoryReturnFocus && document.body.contains(directoryReturnFocus)) {
+                directoryReturnFocus.focus();
+            }
+            directoryReturnFocus = null;
+        }
+
+        function focusableWithin(root) {
+            if (!root) return [];
+            return Array.from(root.querySelectorAll(
+                'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            )).filter(el => el.offsetParent !== null || el === document.activeElement);
+        }
+
+        function trapTab(e, root) {
+            if (e.key !== 'Tab') return;
+            const f = focusableWithin(root);
+            if (!f.length) return;
+            const first = f[0];
+            const last = f[f.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
         }
 
         function renderDirectoryList(filter = '') {
