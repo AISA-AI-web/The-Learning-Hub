@@ -44,9 +44,85 @@
             border-top: 6px solid var(--theme-border, #4f46e5);
             transition: transform 0.25s ease, box-shadow 0.25s ease;
         }
-        .committee-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12);
+        .committee-card[data-expanded="false"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px -12px rgba(0,0,0,0.12);
+        }
+        .card-summary {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: transparent;
+            border: 0;
+            text-align: left;
+            font-family: inherit;
+            color: inherit;
+            cursor: pointer;
+        }
+        .card-summary:focus-visible {
+            outline: 2px solid var(--theme-border, #4f46e5);
+            outline-offset: -2px;
+            border-radius: 0.5rem;
+        }
+        .card-summary .summary-icon { font-size: 2rem; line-height: 1; flex-shrink: 0; }
+        .card-summary .summary-text { flex: 1; min-width: 0; }
+        .card-summary .summary-title {
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #111827;
+            line-height: 1.25;
+            margin: 0;
+        }
+        .card-summary .summary-area {
+            font-size: 10px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-top: 0.2rem;
+        }
+        .card-summary .summary-stats {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+        @media (max-width: 640px) {
+            .card-summary { gap: 0.75rem; padding: 0.85rem 1rem; }
+            .card-summary .summary-icon { font-size: 1.5rem; }
+            .card-summary .summary-title { font-size: 0.95rem; }
+            .card-summary .summary-area { display: none; }
+            .card-summary .summary-stats .badge-req { display: none; }
+        }
+        .summary-chevron {
+            width: 1.1rem; height: 1.1rem;
+            color: #94a3b8;
+            transition: transform 0.25s ease, color 0.2s ease;
+            flex-shrink: 0;
+        }
+        .committee-card[data-expanded="true"] .summary-chevron {
+            transform: rotate(180deg);
+            color: var(--theme-text, #3730a3);
+        }
+        .card-body {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.35s ease;
+        }
+        .card-body > .card-body-inner {
+            overflow: hidden;
+            min-height: 0;
+            padding: 0 1.25rem;
+        }
+        .committee-card[data-expanded="true"] .card-body {
+            grid-template-rows: 1fr;
+        }
+        .committee-card[data-expanded="true"] .card-body > .card-body-inner {
+            padding: 0.25rem 1.25rem 1.25rem;
+            border-top: 1px solid #f1f5f9;
         }
         .card-meta {
             display: flex;
@@ -869,6 +945,9 @@
             details > ul, details > div { display: block !important; }
             .mission-body { grid-template-rows: 1fr !important; margin-top: 0.3rem !important; }
             .mission-body > .mission-inner { overflow: visible !important; }
+            .card-body { grid-template-rows: 1fr !important; }
+            .card-body > .card-body-inner { overflow: visible !important; padding: 0 1.25rem 1rem !important; border-top: 1px solid #eee !important; }
+            .summary-chevron { display: none !important; }
             .collapsed-members .member-pill.is-hidden { display: inline-flex !important; }
             .member-pill, .chair-pill {
                 box-shadow: none !important;
@@ -1027,7 +1106,7 @@
                 <div class="jump-fade-l"></div>
                 <div class="jump-fade-r"></div>
             </div>
-            <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="level-1"></div>
+            <div class="flex flex-col gap-3" data-container="level-1"></div>
         </section>
 
         <section id="panel-level-2" role="tabpanel" aria-labelledby="tab-level-2" class="tab-panel hidden">
@@ -1040,7 +1119,7 @@
                 <div class="jump-fade-l"></div>
                 <div class="jump-fade-r"></div>
             </div>
-            <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="level-2"></div>
+            <div class="flex flex-col gap-3" data-container="level-2"></div>
         </section>
 
         <section id="panel-ai" role="tabpanel" aria-labelledby="tab-ai" class="tab-panel hidden">
@@ -1053,7 +1132,7 @@
                 <div class="jump-fade-l"></div>
                 <div class="jump-fade-r"></div>
             </div>
-            <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="ai"></div>
+            <div class="flex flex-col gap-3" data-container="ai"></div>
         </section>
     </main>
 
@@ -1233,86 +1312,89 @@
             const chairCount = rosters.reduce((n, r) => n + r.members.filter(m => m.role).length, 0);
             const hasSubgroups = rosters.length > 1;
             const missionId = `mission-${c.id}`;
+            const bodyId = `body-${c.id}`;
             return `
-                <article id="c-${escapeHtml(c.id)}" class="committee-card scroll-anchor bg-white rounded-2xl shadow-md overflow-hidden" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" data-search="${escapeHtml(c.searchBlob || '')}" data-req="${requirementSlug(c.requirement)}" data-committee-id="${escapeHtml(c.id)}">
-                    <div class="p-6">
-                        <div class="flex items-start justify-between gap-4 mb-3">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="text-4xl flex-shrink-0">${c.icon}</div>
-                                <div class="min-w-0">
-                                    <h3 class="text-lg md:text-xl font-heading font-bold text-gray-900 leading-tight">${escapeHtml(c.name)}</h3>
-                                    <p class="text-[11px] text-gray-500 mt-1 uppercase tracking-wider font-semibold">${escapeHtml(c.policyArea || '')}</p>
-                                </div>
-                            </div>
-                            <span class="inline-flex items-center ${badge.cls} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider whitespace-nowrap flex-shrink-0">${badge.label}</span>
-                        </div>
-
-                        <div class="card-meta">
-                            <span class="meta-pill strong">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                ${totalMembers} ${totalMembers === 1 ? 'Member' : 'Members'}
+                <article id="c-${escapeHtml(c.id)}" class="committee-card scroll-anchor bg-white rounded-2xl shadow-md overflow-hidden" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" data-search="${escapeHtml(c.searchBlob || '')}" data-req="${requirementSlug(c.requirement)}" data-committee-id="${escapeHtml(c.id)}" data-expanded="false">
+                    <button type="button" class="card-summary" aria-expanded="false" aria-controls="${bodyId}" data-toggle-card>
+                        <span class="summary-icon" aria-hidden="true">${c.icon}</span>
+                        <span class="summary-text">
+                            <span class="summary-title">${escapeHtml(c.name)}</span>
+                            ${c.policyArea ? `<span class="summary-area block">${escapeHtml(c.policyArea)}</span>` : ''}
+                        </span>
+                        <span class="summary-stats">
+                            <span class="meta-pill strong" aria-label="${totalMembers} ${totalMembers === 1 ? 'member' : 'members'}">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                ${totalMembers}
                             </span>
-                            ${chairCount ? `<span class="meta-pill">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143z"/></svg>
-                                ${chairCount} Chair${chairCount > 1 ? 's' : ''}
-                            </span>` : ''}
-                            ${hasSubgroups ? `<span class="meta-pill">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                ${rosters.length} Subgroups
-                            </span>` : ''}
-                            ${c.initialTasks && c.initialTasks.length ? `<span class="meta-pill">
-                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
-                                ${c.initialTasks.length} Tasks
-                            </span>` : ''}
-                        </div>
-
-                        ${c.purpose ? `<div class="mb-3">
-                            <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Purpose</h4>
-                            <p class="text-sm text-gray-700 leading-relaxed">${escapeHtml(c.purpose)}</p>
-                            ${c.mission ? `
-                                <button type="button" class="read-mission" aria-expanded="false" aria-controls="${missionId}" data-toggle-mission>
-                                    <span>Read mission &amp; charge</span>
-                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
-                                </button>
-                                <div id="${missionId}" class="mission-body">
-                                    <div class="mission-inner">
-                                        <p class="text-sm text-gray-700 leading-relaxed italic border-l-2 pl-3" style="border-color: var(--theme-border)">${escapeHtml(c.mission)}</p>
-                                    </div>
-                                </div>` : ''}
-                        </div>` : (c.mission ? `<div class="mb-4">
-                            <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Mission &amp; Charge</h4>
-                            <p class="text-sm text-gray-700 leading-relaxed">${escapeHtml(c.mission)}</p>
-                        </div>` : '')}
-
-                        ${c.initialTasks && c.initialTasks.length ? `<details class="mb-2 border-l-4 border-gray-100 pl-4">
-                            <summary class="cursor-pointer text-sm font-semibold text-gray-700 hover:text-indigo-700 flex items-center justify-between py-1">
-                                <span>Suggested Initial Tasks</span>
-                                <svg class="chev w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                            </summary>
-                            <ul class="mt-3 space-y-2 text-sm text-gray-600">
-                                ${c.initialTasks.map(t => `<li class="flex items-start"><span class="accent-bullet mr-2 font-bold">•</span><span>${escapeHtml(t)}</span></li>`).join('')}
-                            </ul>
-                        </details>` : ''}
-
-                        ${c.indicators && c.indicators.length ? `<details class="mb-5 border-l-4 border-gray-100 pl-4">
-                            <summary class="cursor-pointer text-sm font-semibold text-gray-700 hover:text-indigo-700 flex items-center justify-between py-1">
-                                <span>Indicators of Success</span>
-                                <svg class="chev w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                            </summary>
-                            <ul class="mt-3 space-y-2 text-sm text-gray-600">
-                                ${c.indicators.map(t => `<li class="flex items-start"><span class="accent-bullet mr-2 font-bold">✓</span><span>${escapeHtml(t)}</span></li>`).join('')}
-                            </ul>
-                        </details>` : ''}
-
-                        <div class="border-t border-gray-100 pt-5">
-                            <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                Members (${totalMembers})
-                            </h4>
-                            <div class="space-y-4">
-                                ${rosters.map(r => renderRoster(r)).join('')}
+                            <span class="badge-req inline-flex items-center ${badge.cls} text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider whitespace-nowrap">${badge.label}</span>
+                            <svg class="summary-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                        </span>
+                    </button>
+                    <div id="${bodyId}" class="card-body" role="region" aria-label="${escapeHtml(c.name)} details">
+                        <div class="card-body-inner">
+                            <div class="card-meta">
+                                ${chairCount ? `<span class="meta-pill">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143z"/></svg>
+                                    ${chairCount} Chair${chairCount > 1 ? 's' : ''}
+                                </span>` : ''}
+                                ${hasSubgroups ? `<span class="meta-pill">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    ${rosters.length} Subgroups
+                                </span>` : ''}
+                                ${c.initialTasks && c.initialTasks.length ? `<span class="meta-pill">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                                    ${c.initialTasks.length} Tasks
+                                </span>` : ''}
                             </div>
-                            ${c.notes ? `<p class="mt-4 text-xs text-gray-500 italic border-t border-gray-100 pt-3">${escapeHtml(c.notes)}</p>` : ''}
+
+                            ${c.purpose ? `<div class="mb-3">
+                                <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Purpose</h4>
+                                <p class="text-sm text-gray-700 leading-relaxed">${escapeHtml(c.purpose)}</p>
+                                ${c.mission ? `
+                                    <button type="button" class="read-mission" aria-expanded="false" aria-controls="${missionId}" data-toggle-mission>
+                                        <span>Read mission &amp; charge</span>
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                                    </button>
+                                    <div id="${missionId}" class="mission-body">
+                                        <div class="mission-inner">
+                                            <p class="text-sm text-gray-700 leading-relaxed italic border-l-2 pl-3" style="border-color: var(--theme-border)">${escapeHtml(c.mission)}</p>
+                                        </div>
+                                    </div>` : ''}
+                            </div>` : (c.mission ? `<div class="mb-4">
+                                <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Mission &amp; Charge</h4>
+                                <p class="text-sm text-gray-700 leading-relaxed">${escapeHtml(c.mission)}</p>
+                            </div>` : '')}
+
+                            ${c.initialTasks && c.initialTasks.length ? `<details class="mb-2 border-l-4 border-gray-100 pl-4">
+                                <summary class="cursor-pointer text-sm font-semibold text-gray-700 hover:text-indigo-700 flex items-center justify-between py-1">
+                                    <span>Suggested Initial Tasks</span>
+                                    <svg class="chev w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </summary>
+                                <ul class="mt-3 space-y-2 text-sm text-gray-600">
+                                    ${c.initialTasks.map(t => `<li class="flex items-start"><span class="accent-bullet mr-2 font-bold">•</span><span>${escapeHtml(t)}</span></li>`).join('')}
+                                </ul>
+                            </details>` : ''}
+
+                            ${c.indicators && c.indicators.length ? `<details class="mb-5 border-l-4 border-gray-100 pl-4">
+                                <summary class="cursor-pointer text-sm font-semibold text-gray-700 hover:text-indigo-700 flex items-center justify-between py-1">
+                                    <span>Indicators of Success</span>
+                                    <svg class="chev w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                                </summary>
+                                <ul class="mt-3 space-y-2 text-sm text-gray-600">
+                                    ${c.indicators.map(t => `<li class="flex items-start"><span class="accent-bullet mr-2 font-bold">✓</span><span>${escapeHtml(t)}</span></li>`).join('')}
+                                </ul>
+                            </details>` : ''}
+
+                            <div class="border-t border-gray-100 pt-5">
+                                <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                                    Members (${totalMembers})
+                                </h4>
+                                <div class="space-y-4">
+                                    ${rosters.map(r => renderRoster(r)).join('')}
+                                </div>
+                                ${c.notes ? `<p class="mt-4 text-xs text-gray-500 italic border-t border-gray-100 pt-3">${escapeHtml(c.notes)}</p>` : ''}
+                            </div>
                         </div>
                     </div>
                 </article>
@@ -2076,6 +2158,12 @@
             });
 
             document.addEventListener('click', (e) => {
+                const cardToggle = e.target.closest('[data-toggle-card]');
+                if (cardToggle) {
+                    const card = cardToggle.closest('.committee-card');
+                    if (card) setCardExpanded(card, card.getAttribute('data-expanded') !== 'true');
+                    return;
+                }
                 const toggle = e.target.closest('[data-toggle-members]');
                 if (toggle) {
                     const wrap = toggle.closest('.collapsed-members');
@@ -2147,9 +2235,12 @@
                 if (dir && !dir.hidden) return trapTab(e, dir);
             });
 
-            const printState = { prevOpen: new WeakSet(), prevExpanded: new WeakSet(), prevMission: new WeakSet() };
+            const printState = { prevOpen: new WeakSet(), prevExpanded: new WeakSet(), prevMission: new WeakSet(), prevCard: new WeakSet() };
             window.addEventListener('beforeprint', () => {
-                document.querySelectorAll('.tab-panel').forEach(p => p.removeAttribute('data-print-hidden'));
+                document.querySelectorAll('.committee-card').forEach(card => {
+                    if (card.getAttribute('data-expanded') === 'true') printState.prevCard.add(card);
+                    else setCardExpanded(card, true);
+                });
                 document.querySelectorAll('details').forEach(d => {
                     if (d.hasAttribute('open')) printState.prevOpen.add(d);
                     else d.setAttribute('open', '');
@@ -2164,6 +2255,9 @@
                 });
             });
             window.addEventListener('afterprint', () => {
+                document.querySelectorAll('.committee-card').forEach(card => {
+                    if (!printState.prevCard.has(card) && !card.hasAttribute('data-auto-expanded')) setCardExpanded(card, false);
+                });
                 document.querySelectorAll('details').forEach(d => {
                     if (!printState.prevOpen.has(d) && !d.hasAttribute('data-auto-opened')) d.removeAttribute('open');
                 });
@@ -2544,6 +2638,17 @@
             });
         }
 
+        function setCardExpanded(card, expanded, opts = {}) {
+            if (!card) return;
+            const isExpanded = card.getAttribute('data-expanded') === 'true';
+            if (isExpanded === expanded) return;
+            card.setAttribute('data-expanded', expanded ? 'true' : 'false');
+            const btn = card.querySelector('[data-toggle-card]');
+            if (btn) btn.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+            if (expanded && opts.autoOpened) card.setAttribute('data-auto-expanded', 'true');
+            if (!expanded) card.removeAttribute('data-auto-expanded');
+        }
+
         function scrollToCommittee(id) {
             const committee = committees.find(c => c.id === id);
             if (!committee) return;
@@ -2556,6 +2661,7 @@
             requestAnimationFrame(() => {
                 const card = document.getElementById('c-' + id);
                 if (!card) return;
+                setCardExpanded(card, true);
                 card.scrollIntoView({ behavior: PREFERS_REDUCED_MOTION ? 'auto' : 'smooth', block: 'start' });
                 card.classList.remove('flash');
                 void card.offsetWidth;
@@ -2614,12 +2720,19 @@
             clearHighlights();
             if (query) {
                 document.querySelectorAll('.committee-card:not(.hidden-by-filter)').forEach(card => {
+                    // Auto-expand the whole card so matched content inside the body is actually visible.
+                    if (card.getAttribute('data-expanded') !== 'true') {
+                        setCardExpanded(card, true, { autoOpened: true });
+                    }
                     highlightInCard(card, query);
                     openMatchingDetails(card, query);
                     expandMatchingRosters(card, query);
                     openMatchingMission(card, query);
                 });
             } else {
+                document.querySelectorAll('.committee-card[data-auto-expanded="true"]').forEach(card => {
+                    setCardExpanded(card, false);
+                });
                 document.querySelectorAll('.committee-card details[data-auto-opened="true"]').forEach(d => {
                     d.removeAttribute('open');
                     d.removeAttribute('data-auto-opened');
