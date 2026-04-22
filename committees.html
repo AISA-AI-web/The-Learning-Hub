@@ -188,6 +188,68 @@
         .legend-pop dt { font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; margin-top: 0.5rem; }
         .legend-pop dt:first-child { margin-top: 0; }
         .legend-pop dd { color: #cbd5e1; margin-bottom: 0.35rem; }
+
+        .jump-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            color: #374151;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+        }
+        .jump-chip:hover {
+            transform: translateY(-1px);
+            border-color: var(--theme-border, #4f46e5);
+            color: var(--theme-text, #3730a3);
+            box-shadow: 0 6px 14px -8px rgba(0,0,0,0.2);
+        }
+        .jump-chip .jump-dot {
+            width: 7px; height: 7px; border-radius: 9999px;
+            background: var(--theme-border, #4f46e5);
+        }
+        .jump-chip.active {
+            background: var(--theme-bg, #eef2ff);
+            border-color: var(--theme-border, #4f46e5);
+            color: var(--theme-text, #3730a3);
+        }
+        .jump-scroll-wrap {
+            position: relative;
+        }
+        .jump-scroll {
+            display: flex; gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.25rem 0.125rem 0.625rem;
+            scroll-behavior: smooth;
+        }
+        .jump-scroll::-webkit-scrollbar { height: 6px; }
+        .jump-fade-r {
+            position: absolute; top: 0; right: 0; bottom: 6px; width: 32px;
+            background: linear-gradient(90deg, transparent, #f8fafc);
+            pointer-events: none;
+        }
+        .jump-fade-l {
+            position: absolute; top: 0; left: 0; bottom: 6px; width: 32px;
+            background: linear-gradient(-90deg, transparent, #f8fafc);
+            pointer-events: none;
+        }
+        @keyframes card-flash {
+            0% { box-shadow: 0 0 0 0 rgba(79,70,229,0); transform: translateY(0); }
+            20% { box-shadow: 0 0 0 6px rgba(79,70,229,0.25); transform: translateY(-3px); }
+            100% { box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12); transform: translateY(0); }
+        }
+        .committee-card.flash {
+            animation: card-flash 1s ease;
+        }
+        .scroll-anchor {
+            scroll-margin-top: 180px;
+        }
     </style>
 </head>
 <body class="bg-governance-pattern text-gray-800 min-h-screen flex flex-col">
@@ -325,25 +387,40 @@
         </div>
 
         <section id="panel-level-1" role="tabpanel" aria-labelledby="tab-level-1" class="tab-panel">
-            <div class="mb-6">
+            <div class="mb-4">
                 <h3 class="text-2xl font-heading font-bold text-gray-900">Level 1 Committees</h3>
                 <p class="text-sm text-gray-600 mt-1">Strategic, school-wide committees providing governance and oversight.</p>
+            </div>
+            <div class="jump-scroll-wrap mb-6">
+                <div class="jump-scroll" data-jump="level-1"></div>
+                <div class="jump-fade-l"></div>
+                <div class="jump-fade-r"></div>
             </div>
             <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="level-1"></div>
         </section>
 
         <section id="panel-level-2" role="tabpanel" aria-labelledby="tab-level-2" class="tab-panel hidden">
-            <div class="mb-6">
+            <div class="mb-4">
                 <h3 class="text-2xl font-heading font-bold text-gray-900">Level 2 Committees</h3>
                 <p class="text-sm text-gray-600 mt-1">Operational committees that implement policy and support day-to-day practice.</p>
+            </div>
+            <div class="jump-scroll-wrap mb-6">
+                <div class="jump-scroll" data-jump="level-2"></div>
+                <div class="jump-fade-l"></div>
+                <div class="jump-fade-r"></div>
             </div>
             <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="level-2"></div>
         </section>
 
         <section id="panel-ai" role="tabpanel" aria-labelledby="tab-ai" class="tab-panel hidden">
-            <div class="mb-6">
+            <div class="mb-4">
                 <h3 class="text-2xl font-heading font-bold text-gray-900">AI Incubator Team</h3>
                 <p class="text-sm text-gray-600 mt-1">AISA's command center for responsible AI adoption — the main team plus four specialist subcommittees.</p>
+            </div>
+            <div class="jump-scroll-wrap mb-6">
+                <div class="jump-scroll" data-jump="ai"></div>
+                <div class="jump-fade-l"></div>
+                <div class="jump-fade-r"></div>
             </div>
             <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="ai"></div>
         </section>
@@ -427,7 +504,7 @@
             const rosters = Array.isArray(c.rosters) ? c.rosters : [{ members: c.members || [] }];
             const totalMembers = rosters.reduce((n, r) => n + r.members.length, 0);
             return `
-                <article class="committee-card bg-white rounded-2xl shadow-md overflow-hidden" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" data-search="${escapeHtml(c.searchBlob || '')}" data-req="${requirementSlug(c.requirement)}">
+                <article id="c-${escapeHtml(c.id)}" class="committee-card scroll-anchor bg-white rounded-2xl shadow-md overflow-hidden" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" data-search="${escapeHtml(c.searchBlob || '')}" data-req="${requirementSlug(c.requirement)}" data-committee-id="${escapeHtml(c.id)}">
                     <div class="p-6">
                         <div class="flex items-start justify-between gap-4 mb-4">
                             <div class="flex items-center gap-3 min-w-0">
@@ -1155,6 +1232,18 @@
             Object.entries(groups).forEach(([g, items]) => {
                 const container = document.querySelector(`[data-container="${g}"]`);
                 if (container) container.innerHTML = items.map(renderCommittee).join('');
+                const jumpBar = document.querySelector(`[data-jump="${g}"]`);
+                if (jumpBar) {
+                    jumpBar.innerHTML = items.map(c => {
+                        const theme = themes[c.color] || themes.indigo;
+                        return `<button type="button" class="jump-chip" data-jump-to="${escapeHtml(c.id)}" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" title="${escapeHtml(c.name)}">
+                            <span class="jump-dot"></span><span>${escapeHtml(c.icon)} ${escapeHtml(c.name)}</span>
+                        </button>`;
+                    }).join('');
+                    jumpBar.querySelectorAll('[data-jump-to]').forEach(btn => {
+                        btn.addEventListener('click', () => scrollToCommittee(btn.dataset.jumpTo));
+                    });
+                }
             });
 
             const totalMembers = committees.reduce((n, c) => {
@@ -1220,6 +1309,25 @@
 
         function getActiveRequirements() {
             return Array.from(document.querySelectorAll('.filter-chip[aria-pressed="true"]')).map(c => c.dataset.req);
+        }
+
+        function scrollToCommittee(id) {
+            const committee = committees.find(c => c.id === id);
+            if (!committee) return;
+            if (committee.group && VALID_TABS.includes(committee.group)) {
+                const activeTab = document.querySelector('[role="tab"][aria-selected="true"]');
+                if (!activeTab || activeTab.dataset.tab !== committee.group) {
+                    switchTab(committee.group);
+                }
+            }
+            requestAnimationFrame(() => {
+                const card = document.getElementById('c-' + id);
+                if (!card) return;
+                card.scrollIntoView({ behavior: PREFERS_REDUCED_MOTION ? 'auto' : 'smooth', block: 'start' });
+                card.classList.remove('flash');
+                void card.offsetWidth;
+                card.classList.add('flash');
+            });
         }
 
         function handleTabKeydown(e, tabs) {
