@@ -717,6 +717,70 @@
         .back-top-btn:hover {
             box-shadow: 0 14px 30px -8px rgba(79, 70, 229, 0.55);
         }
+
+        @media print {
+            @page { margin: 1.5cm; }
+            body { background: #fff !important; color: #000 !important; font-size: 11pt; }
+            header, footer,
+            .sticky, .tab-panel.hidden,
+            .jump-scroll-wrap, .cross-tab-banner,
+            #shortcuts-btn, #back-top-btn, #help-overlay, #directory-overlay, #directory-panel,
+            .show-more-btn, .read-mission, #reset-all,
+            #committee-search, #open-directory,
+            .tab-btn, [role="tablist"],
+            .filter-chip, #clear-filters, #legend-btn, #legend-pop {
+                display: none !important;
+            }
+            .hero-governance {
+                background: #fff !important;
+                color: #000 !important;
+                padding: 0.5cm 0 1cm;
+                border-bottom: 2px solid #000;
+            }
+            .hero-governance * { color: #000 !important; text-shadow: none !important; }
+            .hero-overlay { display: none !important; }
+            .stat-card {
+                background: #f7f7f7 !important;
+                border: 1px solid #ccc !important;
+            }
+            .tab-panel { display: block !important; }
+            .tab-panel.hidden { display: block !important; }
+            .tab-panel + .tab-panel { margin-top: 1cm; page-break-before: always; }
+            .committee-card {
+                box-shadow: none !important;
+                border: 1px solid #bbb !important;
+                border-top: 4px solid var(--theme-border, #000) !important;
+                page-break-inside: avoid;
+                break-inside: avoid;
+                margin-bottom: 0.5cm;
+            }
+            .committee-card:hover { transform: none !important; }
+            details { page-break-inside: avoid; }
+            details > summary { cursor: default; }
+            details[data-auto-opened], details { }
+            details .chev { display: none !important; }
+            details > div, details > ul { display: block !important; }
+            details:not([open]) > ul,
+            details:not([open]) > div { display: block !important; }
+            details > summary svg { display: none; }
+            /* force all collapsible sections open for print */
+            details { display: block; }
+            .mission-body { max-height: none !important; margin-top: 0.3rem !important; overflow: visible !important; }
+            .collapsed-members .member-pill.is-hidden { display: inline-flex !important; }
+            .member-pill, .chair-pill {
+                box-shadow: none !important;
+                background: #fff !important;
+                border: 1px solid #999 !important;
+                color: #000 !important;
+            }
+            .chair-pill .chair-role {
+                background: #000 !important; color: #fff !important;
+            }
+            .chair-avatar, .member-avatar { background: #eee !important; color: #000 !important; }
+            .meta-pill, .meta-pill.strong { background: #f0f0f0 !important; color: #000 !important; border: 1px solid #ccc !important; }
+            mark.search-hit { background: #ffff99 !important; }
+            a[href]:after { content: ""; }
+        }
     </style>
 </head>
 <body class="bg-governance-pattern text-gray-800 min-h-screen flex flex-col">
@@ -1934,6 +1998,34 @@
                 if (e.target === document.getElementById('help-overlay')) toggleHelp(false);
             });
             document.addEventListener('keydown', handleGlobalShortcuts);
+
+            const printState = { prevOpen: new WeakSet(), prevExpanded: new WeakSet(), prevMission: new WeakSet() };
+            window.addEventListener('beforeprint', () => {
+                document.querySelectorAll('.tab-panel').forEach(p => p.removeAttribute('data-print-hidden'));
+                document.querySelectorAll('details').forEach(d => {
+                    if (d.hasAttribute('open')) printState.prevOpen.add(d);
+                    else d.setAttribute('open', '');
+                });
+                document.querySelectorAll('.collapsed-members').forEach(w => {
+                    if (w.getAttribute('data-expanded') === 'true') printState.prevExpanded.add(w);
+                    else w.setAttribute('data-expanded', 'true');
+                });
+                document.querySelectorAll('.mission-body').forEach(b => {
+                    if (b.classList.contains('open')) printState.prevMission.add(b);
+                    else b.classList.add('open');
+                });
+            });
+            window.addEventListener('afterprint', () => {
+                document.querySelectorAll('details').forEach(d => {
+                    if (!printState.prevOpen.has(d) && !d.hasAttribute('data-auto-opened')) d.removeAttribute('open');
+                });
+                document.querySelectorAll('.collapsed-members').forEach(w => {
+                    if (!printState.prevExpanded.has(w) && !w.hasAttribute('data-auto-expanded')) w.setAttribute('data-expanded', 'false');
+                });
+                document.querySelectorAll('.mission-body').forEach(b => {
+                    if (!printState.prevMission.has(b) && !b.hasAttribute('data-auto-opened')) b.classList.remove('open');
+                });
+            });
 
             applyStateFromHash();
             window.addEventListener('hashchange', applyStateFromHash);
