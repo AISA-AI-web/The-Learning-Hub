@@ -123,6 +123,71 @@
             .stat-card::before { display: none; }
             .committee-card { transition: none; }
         }
+
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+            border: 1px solid #e5e7eb;
+            background: #fff;
+            color: #4b5563;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+            white-space: nowrap;
+        }
+        .filter-chip:hover { transform: translateY(-1px); box-shadow: 0 4px 10px -4px rgba(0,0,0,0.12); }
+        .filter-chip .dot {
+            width: 8px; height: 8px; border-radius: 9999px; background: currentColor;
+        }
+        .filter-chip[data-req="adek-mandated"] { color: #be123c; }
+        .filter-chip[data-req="adek-aligned"] { color: #b45309; }
+        .filter-chip[data-req="school-directed"] { color: #6b21a8; }
+        .filter-chip[data-req="school-initiated"] { color: #047857; }
+        .filter-chip[aria-pressed="true"] {
+            background: currentColor;
+            border-color: transparent;
+            box-shadow: 0 6px 14px -6px rgba(0,0,0,0.2);
+        }
+        .filter-chip[aria-pressed="true"] .chip-label,
+        .filter-chip[aria-pressed="true"] .dot { color: #fff; filter: brightness(0) invert(1); }
+        .filter-chip[aria-pressed="true"] .chip-label { color: #fff; filter: none; }
+        .filter-chip[aria-pressed="true"] .dot { background: #fff; filter: none; }
+
+        .legend-pop {
+            position: absolute;
+            top: calc(100% + 0.5rem);
+            right: 0;
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 0.9rem 1rem;
+            width: 20rem;
+            max-width: calc(100vw - 2rem);
+            box-shadow: 0 20px 40px -10px rgba(0,0,0,0.4);
+            z-index: 60;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        .legend-pop::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            right: 1rem;
+            width: 12px;
+            height: 12px;
+            background: #0f172a;
+            transform: rotate(45deg);
+        }
+        .legend-pop[hidden] { display: none; }
+        .legend-pop dt { font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.05em; font-size: 10px; margin-top: 0.5rem; }
+        .legend-pop dt:first-child { margin-top: 0; }
+        .legend-pop dd { color: #cbd5e1; margin-bottom: 0.35rem; }
     </style>
 </head>
 <body class="bg-governance-pattern text-gray-800 min-h-screen flex flex-col">
@@ -196,6 +261,7 @@
 
     <div class="bg-white border-b border-gray-200 sticky top-[65px] z-40 shadow-sm">
         <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-6">
             <div role="tablist" aria-label="Committee categories" class="flex items-center gap-1 md:gap-2 overflow-x-auto">
                 <button id="tab-level-1" role="tab" aria-selected="true" aria-controls="panel-level-1" tabindex="0" data-tab="level-1" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-black">1</span>
@@ -212,6 +278,41 @@
                     AI Incubator Team
                     <span class="tab-count" data-tab-count="ai">0</span>
                 </button>
+            </div>
+
+            <div class="relative flex items-center gap-2 overflow-x-auto pb-3 md:pb-0 md:py-3">
+                <span class="hidden md:inline text-[10px] font-bold uppercase tracking-widest text-gray-400 mr-1">Filter</span>
+                <button type="button" class="filter-chip" data-req="adek-mandated" aria-pressed="false">
+                    <span class="dot"></span><span class="chip-label">ADEK-Mandated</span>
+                </button>
+                <button type="button" class="filter-chip" data-req="adek-aligned" aria-pressed="false">
+                    <span class="dot"></span><span class="chip-label">ADEK-Aligned</span>
+                </button>
+                <button type="button" class="filter-chip" data-req="school-directed" aria-pressed="false">
+                    <span class="dot"></span><span class="chip-label">School-Directed</span>
+                </button>
+                <button type="button" class="filter-chip" data-req="school-initiated" aria-pressed="false">
+                    <span class="dot"></span><span class="chip-label">School-Initiated</span>
+                </button>
+                <button id="clear-filters" type="button" class="hidden text-[11px] font-semibold text-gray-500 hover:text-indigo-700 underline underline-offset-2 whitespace-nowrap ml-1">Clear</button>
+                <button id="legend-btn" type="button" aria-expanded="false" aria-controls="legend-pop" class="ml-auto flex items-center gap-1 text-[11px] font-semibold text-gray-500 hover:text-indigo-700 whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span class="hidden sm:inline">What do these mean?</span>
+                    <span class="sm:hidden">Legend</span>
+                </button>
+                <div id="legend-pop" class="legend-pop" role="dialog" aria-label="Requirement types" hidden>
+                    <dl>
+                        <dt style="color:#fb7185">ADEK-Mandated</dt>
+                        <dd>Required by ADEK regulation. Must exist, with defined membership, cadence, and records.</dd>
+                        <dt style="color:#fbbf24">ADEK-Aligned</dt>
+                        <dd>Not explicitly mandated, but closely tied to an ADEK policy area (e.g. Digital Policy, RAIL).</dd>
+                        <dt style="color:#c4b5fd">School-Directed</dt>
+                        <dd>Established by AISA leadership to meet internal policy or operational needs.</dd>
+                        <dt style="color:#6ee7b7">School-Initiated</dt>
+                        <dd>Voluntary and community-led — morale, sustainability, parent engagement, etc.</dd>
+                    </dl>
+                </div>
+            </div>
             </div>
         </div>
     </div>
@@ -311,13 +412,22 @@
             `;
         };
 
+        const requirementSlug = (req) => {
+            const r = (req || '').toLowerCase();
+            if (r.includes('adek-mandated')) return 'adek-mandated';
+            if (r.includes('adek-aligned')) return 'adek-aligned';
+            if (r.includes('school-directed')) return 'school-directed';
+            if (r.includes('school-initiated')) return 'school-initiated';
+            return '';
+        };
+
         const renderCommittee = (c) => {
             const theme = themes[c.color] || themes.indigo;
             const badge = requirementBadge(c.requirement);
             const rosters = Array.isArray(c.rosters) ? c.rosters : [{ members: c.members || [] }];
             const totalMembers = rosters.reduce((n, r) => n + r.members.length, 0);
             return `
-                <article class="committee-card bg-white rounded-2xl shadow-md overflow-hidden" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" data-search="${escapeHtml(c.searchBlob || '')}">
+                <article class="committee-card bg-white rounded-2xl shadow-md overflow-hidden" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" data-search="${escapeHtml(c.searchBlob || '')}" data-req="${requirementSlug(c.requirement)}">
                     <div class="p-6">
                         <div class="flex items-start justify-between gap-4 mb-4">
                             <div class="flex items-center gap-3 min-w-0">
@@ -1075,8 +1185,41 @@
                 updateHash();
             });
 
+            document.querySelectorAll('.filter-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    const pressed = chip.getAttribute('aria-pressed') === 'true';
+                    chip.setAttribute('aria-pressed', pressed ? 'false' : 'true');
+                    applyFilter((document.getElementById('committee-search').value || '').trim().toLowerCase());
+                    updateHash();
+                });
+            });
+
+            const clearBtn = document.getElementById('clear-filters');
+            clearBtn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
+                applyFilter((document.getElementById('committee-search').value || '').trim().toLowerCase());
+                updateHash();
+            });
+
+            const legendBtn = document.getElementById('legend-btn');
+            const legendPop = document.getElementById('legend-pop');
+            const toggleLegend = (force) => {
+                const shouldShow = force !== undefined ? force : legendPop.hasAttribute('hidden');
+                if (shouldShow) { legendPop.removeAttribute('hidden'); legendBtn.setAttribute('aria-expanded', 'true'); }
+                else { legendPop.setAttribute('hidden', ''); legendBtn.setAttribute('aria-expanded', 'false'); }
+            };
+            legendBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleLegend(); });
+            document.addEventListener('click', (e) => {
+                if (!legendPop.contains(e.target) && e.target !== legendBtn) toggleLegend(false);
+            });
+            document.addEventListener('keydown', (e) => { if (e.key === 'Escape') toggleLegend(false); });
+
             applyStateFromHash();
             window.addEventListener('hashchange', applyStateFromHash);
+        }
+
+        function getActiveRequirements() {
+            return Array.from(document.querySelectorAll('.filter-chip[aria-pressed="true"]')).map(c => c.dataset.req);
         }
 
         function handleTabKeydown(e, tabs) {
@@ -1109,22 +1252,28 @@
         }
 
         function applyFilter(query) {
-            let anyVisible = false;
+            const reqs = getActiveRequirements();
+            let anyVisibleActive = false;
             document.querySelectorAll('.tab-panel').forEach(panel => {
                 const isActive = !panel.classList.contains('hidden');
                 panel.querySelectorAll('.committee-card').forEach(card => {
                     const blob = card.dataset.search || '';
-                    const match = !query || blob.includes(query);
+                    const reqMatch = reqs.length === 0 || reqs.includes(card.dataset.req);
+                    const queryMatch = !query || blob.includes(query);
+                    const match = reqMatch && queryMatch;
                     card.classList.toggle('hidden-by-filter', !match);
-                    if (isActive && match) anyVisible = true;
+                    if (isActive && match) anyVisibleActive = true;
                 });
             });
             const noResults = document.getElementById('no-results');
-            if (query && !anyVisible) {
+            const hasFilter = query || reqs.length > 0;
+            if (hasFilter && !anyVisibleActive) {
                 noResults.classList.remove('hidden');
             } else {
                 noResults.classList.add('hidden');
             }
+            const clearBtn = document.getElementById('clear-filters');
+            if (clearBtn) clearBtn.classList.toggle('hidden', reqs.length === 0);
         }
 
         function parseHash() {
@@ -1141,8 +1290,10 @@
             const activeTab = document.querySelector('[role="tab"][aria-selected="true"]');
             const tab = activeTab ? activeTab.dataset.tab : 'level-1';
             const q = (document.getElementById('committee-search') || {}).value || '';
+            const reqs = getActiveRequirements();
             const parts = [`tab=${encodeURIComponent(tab)}`];
             if (q.trim()) parts.push(`q=${encodeURIComponent(q.trim())}`);
+            if (reqs.length) parts.push(`req=${encodeURIComponent(reqs.join(','))}`);
             const newHash = '#' + parts.join('&');
             if (location.hash !== newHash) {
                 history.replaceState(null, '', newHash);
@@ -1160,8 +1311,14 @@
             const search = document.getElementById('committee-search');
             if (search && typeof state.q === 'string' && search.value !== state.q) {
                 search.value = state.q;
-                applyFilter(state.q.trim().toLowerCase());
             }
+            if (typeof state.req === 'string') {
+                const wanted = new Set(state.req.split(',').filter(Boolean));
+                document.querySelectorAll('.filter-chip').forEach(chip => {
+                    chip.setAttribute('aria-pressed', wanted.has(chip.dataset.req) ? 'true' : 'false');
+                });
+            }
+            applyFilter(((search && search.value) || '').trim().toLowerCase());
             applyingHash = false;
         }
 
