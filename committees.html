@@ -541,6 +541,82 @@
         }
         .dir-back:hover { color: #fff; }
         body.directory-open { overflow: hidden; }
+
+        .kbd {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.6rem;
+            height: 1.6rem;
+            padding: 0 0.4rem;
+            border: 1px solid #cbd5e1;
+            border-bottom-width: 2px;
+            border-radius: 0.35rem;
+            background: #f8fafc;
+            color: #334155;
+            font-family: 'Menlo', 'Consolas', ui-monospace, monospace;
+            font-size: 11px;
+            font-weight: 700;
+            box-shadow: 0 1px 0 #cbd5e1;
+        }
+        .help-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(3px);
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        .help-overlay.open { opacity: 1; }
+        .help-overlay[hidden] { display: none; }
+        .help-dialog {
+            background: #fff;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            max-width: 28rem;
+            width: 100%;
+            box-shadow: 0 30px 60px -20px rgba(0,0,0,0.4);
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.25s ease, opacity 0.2s ease;
+        }
+        .help-overlay.open .help-dialog { transform: scale(1); opacity: 1; }
+        .help-dialog dt {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 13px;
+        }
+        .help-dialog dd {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .shortcuts-btn {
+            position: fixed;
+            bottom: 1.25rem;
+            right: 1.25rem;
+            width: 2.5rem; height: 2.5rem;
+            border-radius: 9999px;
+            background: #fff;
+            color: #4f46e5;
+            border: 1px solid #e5e7eb;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 25px -10px rgba(0,0,0,0.25);
+            cursor: pointer;
+            z-index: 40;
+            font-family: 'Menlo', 'Consolas', ui-monospace, monospace;
+            font-size: 16px;
+            font-weight: 700;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .shortcuts-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px -10px rgba(79, 70, 229, 0.35);
+        }
     </style>
 </head>
 <body class="bg-governance-pattern text-gray-800 min-h-screen flex flex-col">
@@ -724,6 +800,33 @@
             <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6" data-container="ai"></div>
         </section>
     </main>
+
+    <button id="shortcuts-btn" class="shortcuts-btn" type="button" aria-label="Keyboard shortcuts" title="Keyboard shortcuts (?)">?</button>
+
+    <div id="help-overlay" class="help-overlay" role="dialog" aria-modal="true" aria-labelledby="help-title" hidden>
+        <div class="help-dialog">
+            <div class="flex items-start justify-between mb-4">
+                <div>
+                    <h2 id="help-title" class="text-lg font-heading font-extrabold text-gray-900">Keyboard shortcuts</h2>
+                    <p class="text-xs text-gray-500 mt-1">Move around the page faster.</p>
+                </div>
+                <button type="button" data-close-help class="text-gray-400 hover:text-gray-700" aria-label="Close">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <dl class="grid gap-3">
+                <div class="flex items-center justify-between"><dt>Focus search</dt><dd><span class="kbd">/</span></dd></div>
+                <div class="flex items-center justify-between"><dt>Open People Directory</dt><dd><span class="kbd">P</span></dd></div>
+                <div class="flex items-center justify-between"><dt>Level 1 tab</dt><dd><span class="kbd">1</span></dd></div>
+                <div class="flex items-center justify-between"><dt>Level 2 tab</dt><dd><span class="kbd">2</span></dd></div>
+                <div class="flex items-center justify-between"><dt>AI Incubator tab</dt><dd><span class="kbd">3</span></dd></div>
+                <div class="flex items-center justify-between"><dt>Move between tabs</dt><dd><span class="kbd">←</span><span class="kbd">→</span></dd></div>
+                <div class="flex items-center justify-between"><dt>Close this / modals</dt><dd><span class="kbd">Esc</span></dd></div>
+                <div class="flex items-center justify-between"><dt>Show this help</dt><dd><span class="kbd">?</span></dd></div>
+            </dl>
+            <p class="text-[11px] text-gray-400 mt-4">Shortcuts are ignored while typing in a search box.</p>
+        </div>
+    </div>
 
     <div id="directory-overlay" class="directory-overlay" hidden></div>
     <aside id="directory-panel" class="directory-panel" role="dialog" aria-modal="true" aria-labelledby="directory-title" hidden>
@@ -1666,8 +1769,61 @@
                 if (e.key === 'Escape' && !document.getElementById('directory-panel').hidden) closeDirectory();
             });
 
+            const shortcutsBtn = document.getElementById('shortcuts-btn');
+            if (shortcutsBtn) shortcutsBtn.addEventListener('click', () => toggleHelp(true));
+            document.querySelectorAll('[data-close-help]').forEach(b => b.addEventListener('click', () => toggleHelp(false)));
+            document.getElementById('help-overlay').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('help-overlay')) toggleHelp(false);
+            });
+            document.addEventListener('keydown', handleGlobalShortcuts);
+
             applyStateFromHash();
             window.addEventListener('hashchange', applyStateFromHash);
+        }
+
+        function toggleHelp(force) {
+            const overlay = document.getElementById('help-overlay');
+            const shouldOpen = force !== undefined ? force : overlay.hasAttribute('hidden');
+            if (shouldOpen) {
+                overlay.hidden = false;
+                requestAnimationFrame(() => overlay.classList.add('open'));
+            } else {
+                overlay.classList.remove('open');
+                setTimeout(() => { overlay.hidden = true; }, 220);
+            }
+        }
+
+        function isTypingContext(target) {
+            if (!target) return false;
+            const tag = target.tagName;
+            return tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable;
+        }
+
+        function handleGlobalShortcuts(e) {
+            if (e.metaKey || e.ctrlKey || e.altKey) return;
+            const helpOpen = !document.getElementById('help-overlay').hidden;
+            const dirOpen = !document.getElementById('directory-panel').hidden;
+            if (e.key === 'Escape') {
+                if (helpOpen) toggleHelp(false);
+                return;
+            }
+            if (isTypingContext(e.target)) return;
+            if (e.key === '/') {
+                e.preventDefault();
+                const s = document.getElementById('committee-search');
+                if (s) { s.focus(); s.select(); }
+                return;
+            }
+            if (e.key === '?') {
+                e.preventDefault();
+                toggleHelp();
+                return;
+            }
+            if (dirOpen) return;
+            if (e.key === '1') { switchTab('level-1', { focus: true }); }
+            else if (e.key === '2') { switchTab('level-2', { focus: true }); }
+            else if (e.key === '3') { switchTab('ai', { focus: true }); }
+            else if (e.key === 'p' || e.key === 'P') { openDirectory(); }
         }
 
         function getActiveRequirements() {
