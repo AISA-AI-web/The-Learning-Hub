@@ -447,8 +447,33 @@
             transition: background 0.15s ease, transform 0.1s ease;
         }
         .show-more-btn:hover { transform: translateY(-1px); }
-        .collapsed-members .member-pill.is-hidden { display: none; }
-        .collapsed-members[data-expanded="true"] .member-pill.is-hidden { display: inline-flex; }
+        .collapsed-members .member-pill.is-hidden,
+        .collapsed-members .group-pill.is-hidden { display: none; }
+        .collapsed-members[data-expanded="true"] .member-pill.is-hidden,
+        .collapsed-members[data-expanded="true"] .group-pill.is-hidden { display: inline-flex; }
+
+        .group-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.2rem 0.75rem 0.2rem 0.25rem;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 9999px;
+            color: #475569;
+            font-size: 12px;
+            font-style: italic;
+            cursor: default;
+        }
+        .group-pill .group-pill-icon {
+            width: 1.75rem; height: 1.75rem;
+            border-radius: 9999px;
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 12px;
+            display: inline-flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
         .collapsed-members[data-expanded="true"] .show-more-btn .show-more-icon { transform: rotate(180deg); }
         .show-more-icon { transition: transform 0.2s ease; }
 
@@ -1076,9 +1101,25 @@
 
         const MEMBER_COLLAPSE_THRESHOLD = 6;
 
+        const GROUP_ENTITY_NAMES = new Set(['school nurses', 'principals', 'assistant principals']);
+        const GROUP_ENTITY_ICONS = {
+            'school nurses': '⚕️',
+            'principals': '🎓',
+            'assistant principals': '🎓'
+        };
+        const isGroupEntity = (name) => GROUP_ENTITY_NAMES.has((name || '').trim().toLowerCase());
+
         const renderMember = (m, chair, isHidden) => {
-            const nameAttr = `data-member-name="${escapeHtml(m.name)}"`;
             const hiddenCls = isHidden ? ' is-hidden' : '';
+            if (isGroupEntity(m.name)) {
+                const key = m.name.trim().toLowerCase();
+                const icon = GROUP_ENTITY_ICONS[key] || '👥';
+                return `<span class="group-pill${hiddenCls}" title="Role-based seat, not an individual person">
+                    <span class="group-pill-icon">${icon}</span>
+                    <span>${escapeHtml(m.name)}</span>
+                </span>`;
+            }
+            const nameAttr = `data-member-name="${escapeHtml(m.name)}"`;
             if (chair) {
                 return `<button type="button" class="chair-pill flex items-center gap-2 rounded-full pl-1 pr-2 py-1 shadow-sm${hiddenCls}" ${nameAttr} title="View all committees for ${escapeHtml(m.name)}">
                     <span class="chair-avatar w-7 h-7 rounded-full text-[10px] font-black flex items-center justify-center">${escapeHtml(initials(m.name))}</span>
