@@ -250,6 +250,43 @@
         .scroll-anchor {
             scroll-margin-top: 180px;
         }
+
+        mark.search-hit {
+            background: linear-gradient(180deg, rgba(252, 211, 77, 0) 55%, #fde68a 55%);
+            color: inherit;
+            padding: 0 0.1em;
+            border-radius: 2px;
+            font-weight: 600;
+        }
+        .cross-tab-banner {
+            border: 1px solid #c7d2fe;
+            background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+            color: #1e3a8a;
+            border-radius: 1rem;
+            padding: 0.9rem 1.1rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 1.25rem;
+        }
+        .cross-tab-banner button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+            padding: 0.3rem 0.75rem;
+            border-radius: 9999px;
+            background: #fff;
+            border: 1px solid #c7d2fe;
+            color: #3730a3;
+            font-weight: 700;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+        .cross-tab-banner button:hover { background: #eef2ff; }
     </style>
 </head>
 <body class="bg-governance-pattern text-gray-800 min-h-screen flex flex-col">
@@ -383,7 +420,11 @@
         <div id="no-results" class="hidden text-center py-16">
             <div class="text-5xl mb-3">🔍</div>
             <h3 class="text-xl font-bold text-gray-700">No committees match your search</h3>
-            <p class="text-gray-500 mt-1">Try a different keyword, or clear the search to browse all committees.</p>
+            <p class="text-gray-500 mt-1">Try a different keyword, or clear filters to browse all committees.</p>
+            <button id="reset-all" type="button" class="mt-5 inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-full text-sm transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                Reset search and filters
+            </button>
         </div>
 
         <section id="panel-level-1" role="tabpanel" aria-labelledby="tab-level-1" class="tab-panel">
@@ -1290,6 +1331,16 @@
                 updateHash();
             });
 
+            const resetAll = document.getElementById('reset-all');
+            if (resetAll) resetAll.addEventListener('click', () => {
+                document.querySelectorAll('.filter-chip').forEach(c => c.setAttribute('aria-pressed', 'false'));
+                const s = document.getElementById('committee-search');
+                if (s) s.value = '';
+                applyFilter('');
+                updateHash();
+                if (s) s.focus();
+            });
+
             const legendBtn = document.getElementById('legend-btn');
             const legendPop = document.getElementById('legend-pop');
             const toggleLegend = (force) => {
@@ -1362,8 +1413,12 @@
         function applyFilter(query) {
             const reqs = getActiveRequirements();
             let anyVisibleActive = false;
+            const perTab = { 'level-1': 0, 'level-2': 0, 'ai': 0 };
+            let activeTabId = 'level-1';
             document.querySelectorAll('.tab-panel').forEach(panel => {
                 const isActive = !panel.classList.contains('hidden');
+                const tabId = (panel.id || '').replace(/^panel-/, '');
+                if (isActive) activeTabId = tabId;
                 panel.querySelectorAll('.committee-card').forEach(card => {
                     const blob = card.dataset.search || '';
                     const reqMatch = reqs.length === 0 || reqs.includes(card.dataset.req);
@@ -1371,8 +1426,21 @@
                     const match = reqMatch && queryMatch;
                     card.classList.toggle('hidden-by-filter', !match);
                     if (isActive && match) anyVisibleActive = true;
+                    if (match) perTab[tabId] = (perTab[tabId] || 0) + 1;
                 });
             });
+            clearHighlights();
+            if (query) {
+                document.querySelectorAll('.committee-card:not(.hidden-by-filter)').forEach(card => {
+                    highlightInCard(card, query);
+                    openMatchingDetails(card, query);
+                });
+            } else {
+                document.querySelectorAll('.committee-card details[data-auto-opened="true"]').forEach(d => {
+                    d.removeAttribute('open');
+                    d.removeAttribute('data-auto-opened');
+                });
+            }
             const noResults = document.getElementById('no-results');
             const hasFilter = query || reqs.length > 0;
             if (hasFilter && !anyVisibleActive) {
@@ -1382,6 +1450,98 @@
             }
             const clearBtn = document.getElementById('clear-filters');
             if (clearBtn) clearBtn.classList.toggle('hidden', reqs.length === 0);
+
+            renderCrossTabBanner(query, reqs, perTab, activeTabId, anyVisibleActive);
+        }
+
+        function renderCrossTabBanner(query, reqs, perTab, activeTabId, anyVisibleActive) {
+            document.querySelectorAll('.cross-tab-banner').forEach(el => el.remove());
+            const hasFilter = query || reqs.length > 0;
+            if (!hasFilter) return;
+            const activeCount = perTab[activeTabId] || 0;
+            const otherTabs = VALID_TABS.filter(t => t !== activeTabId && (perTab[t] || 0) > 0);
+            if (activeCount > 0 || otherTabs.length === 0) return;
+            const activePanel = document.getElementById('panel-' + activeTabId);
+            if (!activePanel) return;
+            const labels = { 'level-1': 'Level 1', 'level-2': 'Level 2', 'ai': 'AI Incubator' };
+            const banner = document.createElement('div');
+            banner.className = 'cross-tab-banner';
+            banner.innerHTML = `
+                <span>🔎 No matches here, but we found matches in other tabs:</span>
+                ${otherTabs.map(t => `<button type="button" data-switch-tab="${t}">${labels[t]} · ${perTab[t]}</button>`).join('')}
+            `;
+            banner.querySelectorAll('[data-switch-tab]').forEach(b => {
+                b.addEventListener('click', () => switchTab(b.dataset.switchTab, { focus: true }));
+            });
+            const target = activePanel.querySelector('.jump-scroll-wrap') || activePanel.firstElementChild;
+            if (target && target.parentNode === activePanel) {
+                activePanel.insertBefore(banner, target.nextSibling);
+            } else {
+                activePanel.prepend(banner);
+            }
+        }
+
+        function clearHighlights() {
+            document.querySelectorAll('mark.search-hit').forEach(m => {
+                const parent = m.parentNode;
+                if (!parent) return;
+                parent.replaceChild(document.createTextNode(m.textContent), m);
+                parent.normalize();
+            });
+        }
+
+        function escapeRegExp(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+        function highlightInCard(card, query) {
+            if (!query) return;
+            const re = new RegExp(escapeRegExp(query), 'gi');
+            const selectors = ['h3', 'p', 'li', 'span', 'summary > span'];
+            const targets = card.querySelectorAll(selectors.join(','));
+            targets.forEach(el => {
+                if (el.closest('.chair-pill, .chair-avatar')) {
+                    // avatar initials, skip
+                }
+                const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
+                    acceptNode: (n) => {
+                        if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+                        if (n.parentNode && (n.parentNode.nodeName === 'MARK' || n.parentNode.nodeName === 'SCRIPT' || n.parentNode.nodeName === 'STYLE')) return NodeFilter.FILTER_REJECT;
+                        return NodeFilter.FILTER_ACCEPT;
+                    }
+                });
+                const textNodes = [];
+                let n;
+                while ((n = walker.nextNode())) textNodes.push(n);
+                textNodes.forEach(tn => {
+                    const v = tn.nodeValue;
+                    if (!re.test(v)) return;
+                    re.lastIndex = 0;
+                    const frag = document.createDocumentFragment();
+                    let last = 0;
+                    let m;
+                    while ((m = re.exec(v)) !== null) {
+                        if (m.index > last) frag.appendChild(document.createTextNode(v.slice(last, m.index)));
+                        const mark = document.createElement('mark');
+                        mark.className = 'search-hit';
+                        mark.textContent = m[0];
+                        frag.appendChild(mark);
+                        last = m.index + m[0].length;
+                        if (m.index === re.lastIndex) re.lastIndex++;
+                    }
+                    if (last < v.length) frag.appendChild(document.createTextNode(v.slice(last)));
+                    tn.parentNode.replaceChild(frag, tn);
+                });
+            });
+        }
+
+        function openMatchingDetails(card, query) {
+            const q = query.toLowerCase();
+            card.querySelectorAll('details').forEach(d => {
+                if (d.hasAttribute('open')) return;
+                if ((d.textContent || '').toLowerCase().includes(q)) {
+                    d.setAttribute('open', '');
+                    d.setAttribute('data-auto-opened', 'true');
+                }
+            });
         }
 
         function parseHash() {
