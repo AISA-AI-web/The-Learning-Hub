@@ -549,15 +549,28 @@
             color: #9ca3af;
         }
         .dir-person-row {
+            width: 100%;
             display: flex;
             align-items: center;
             gap: 0.75rem;
             padding: 0.6rem 0.75rem;
             border-radius: 0.6rem;
             cursor: pointer;
+            background: transparent;
+            border: 0;
+            text-align: left;
+            font: inherit;
+            color: inherit;
             transition: background 0.12s ease;
         }
         .dir-person-row:hover { background: #f3f4f6; }
+        .dir-person-row:focus-visible,
+        .top-connector-card .row:focus-visible,
+        .person-committee-item:focus-visible,
+        .dir-back:focus-visible {
+            outline: 2px solid #4f46e5;
+            outline-offset: 2px;
+        }
         .dir-person-row .dir-avatar {
             width: 2rem; height: 2rem; border-radius: 9999px;
             background: linear-gradient(135deg, #6366f1, #06b6d4);
@@ -590,10 +603,16 @@
             display: flex; align-items: center; gap: 0.35rem;
         }
         .top-connector-card .row {
+            width: 100%;
             display: flex; align-items: center; gap: 0.5rem;
             padding: 0.3rem 0;
             font-size: 13px;
             cursor: pointer;
+            background: transparent;
+            border: 0;
+            text-align: left;
+            font-family: inherit;
+            color: inherit;
             transition: transform 0.12s ease;
         }
         .top-connector-card .row:hover { transform: translateX(2px); }
@@ -615,6 +634,8 @@
             box-shadow: 0 8px 20px -4px rgba(0,0,0,0.2);
         }
         .person-committee-item {
+            display: block;
+            width: 100%;
             padding: 0.85rem 1rem;
             border-radius: 0.75rem;
             background: #fff;
@@ -624,6 +645,9 @@
             border-bottom: 1px solid #f3f4f6;
             margin-bottom: 0.6rem;
             cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+            color: inherit;
             transition: transform 0.12s ease, box-shadow 0.12s ease;
         }
         .person-committee-item:hover {
@@ -665,6 +689,10 @@
             color: rgba(255,255,255,0.8);
             cursor: pointer;
             margin-bottom: 0.5rem;
+            background: transparent;
+            border: 0;
+            padding: 0;
+            font-family: inherit;
         }
         .dir-back:hover { color: #fff; }
         body.directory-open { overflow: hidden; }
@@ -2291,23 +2319,23 @@
                 <div class="top-connector-card">
                     <h4>⭐ Top Connectors</h4>
                     ${topConnectors.map(([key, v], i) => `
-                        <div class="row" data-person-key="${escapeHtml(key)}">
-                            <span class="rank">${i + 1}</span>
+                        <button type="button" class="row" data-person-key="${escapeHtml(key)}" aria-label="${escapeHtml(v.displayName)}, ${v.memberships.length} committees">
+                            <span class="rank" aria-hidden="true">${i + 1}</span>
                             <span style="flex:1">${escapeHtml(v.displayName)}</span>
                             <span class="dir-count hot">${v.memberships.length} committees</span>
-                        </div>
+                        </button>
                     `).join('')}
                 </div>` : ''}
 
                 <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">${filter ? `${filtered.length} ${filtered.length === 1 ? 'person' : 'people'} found` : 'All people'}</div>
-                <div>
+                <div role="list">
                 ${filtered.length === 0 ? '<p class="text-sm text-gray-500 py-6 text-center">No matches. Try a different name.</p>' : ''}
                 ${filtered.map(([key, v]) => `
-                    <div class="dir-person-row" data-person-key="${escapeHtml(key)}">
-                        <span class="dir-avatar">${escapeHtml(initials(v.displayName))}</span>
+                    <button type="button" class="dir-person-row" data-person-key="${escapeHtml(key)}" aria-label="${escapeHtml(v.displayName)}, on ${v.memberships.length} ${v.memberships.length === 1 ? 'committee' : 'committees'}">
+                        <span class="dir-avatar" aria-hidden="true">${escapeHtml(initials(v.displayName))}</span>
                         <span class="dir-name">${escapeHtml(v.displayName)}</span>
-                        <span class="dir-count${v.memberships.length >= 3 ? ' hot' : ''}">${v.memberships.length}</span>
-                    </div>
+                        <span class="dir-count${v.memberships.length >= 3 ? ' hot' : ''}" aria-hidden="true">${v.memberships.length}</span>
+                    </button>
                 `).join('')}
                 </div>
             `;
@@ -2335,10 +2363,10 @@
             const groups = new Set(person.memberships.map(m => m.group));
 
             header.innerHTML = `
-                <span class="dir-back" data-dir-back>
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                <button type="button" class="dir-back" data-dir-back>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                     Back to all people
-                </span>
+                </button>
                 <div class="flex items-center gap-4">
                     <div class="person-profile-avatar">${escapeHtml(initials(person.displayName))}</div>
                     <div>
@@ -2362,7 +2390,7 @@
                     ${items.map(m => {
                         const theme = themes[m.color] || themes.indigo;
                         return `
-                            <div class="person-committee-item" data-go-committee="${escapeHtml(m.committeeId)}" data-group="${escapeHtml(m.group)}" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}">
+                            <button type="button" class="person-committee-item" data-go-committee="${escapeHtml(m.committeeId)}" data-group="${escapeHtml(m.group)}" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" aria-label="${escapeHtml(m.committeeName)}, role: ${escapeHtml(m.role)}. Jump to this committee.">
                                 <div class="header">
                                     <div>
                                         <div class="title">${escapeHtml(m.icon)} ${escapeHtml(m.committeeName)}</div>
@@ -2371,7 +2399,7 @@
                                     </div>
                                     <span class="role-badge">${escapeHtml(m.role)}</span>
                                 </div>
-                            </div>
+                            </button>
                         `;
                     }).join('')}
                 `;
@@ -2379,7 +2407,6 @@
 
             body.innerHTML = sections;
 
-            body.querySelectorAll('[data-dir-back]').forEach(el => el.addEventListener('click', () => renderDirectoryList()));
             header.querySelectorAll('[data-dir-back]').forEach(el => el.addEventListener('click', () => renderDirectoryList()));
             body.querySelectorAll('[data-go-committee]').forEach(el => {
                 el.addEventListener('click', () => {
