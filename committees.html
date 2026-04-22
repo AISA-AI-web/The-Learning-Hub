@@ -83,12 +83,16 @@
         .read-mission svg { width: 12px; height: 12px; transition: transform 0.2s ease; }
         .read-mission[aria-expanded="true"] svg { transform: rotate(180deg); }
         .mission-body {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s ease, margin 0.3s ease;
+        }
+        .mission-body > .mission-inner {
             overflow: hidden;
-            max-height: 0;
-            transition: max-height 0.3s ease, margin 0.3s ease;
+            min-height: 0;
         }
         .mission-body.open {
-            max-height: 20rem;
+            grid-template-rows: 1fr;
             margin-top: 0.5rem;
         }
         .chair-pill {
@@ -847,7 +851,8 @@
             details > summary svg { display: none; }
             /* beforeprint adds the open attribute; these are belt-and-braces. */
             details > ul, details > div { display: block !important; }
-            .mission-body { max-height: none !important; margin-top: 0.3rem !important; overflow: visible !important; }
+            .mission-body { grid-template-rows: 1fr !important; margin-top: 0.3rem !important; }
+            .mission-body > .mission-inner { overflow: visible !important; }
             .collapsed-members .member-pill.is-hidden { display: inline-flex !important; }
             .member-pill, .chair-pill {
                 box-shadow: none !important;
@@ -1242,7 +1247,9 @@
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
                                 <div id="${missionId}" class="mission-body">
-                                    <p class="text-sm text-gray-700 leading-relaxed italic border-l-2 pl-3" style="border-color: var(--theme-border)">${escapeHtml(c.mission)}</p>
+                                    <div class="mission-inner">
+                                        <p class="text-sm text-gray-700 leading-relaxed italic border-l-2 pl-3" style="border-color: var(--theme-border)">${escapeHtml(c.mission)}</p>
+                                    </div>
                                 </div>` : ''}
                         </div>` : (c.mission ? `<div class="mb-4">
                             <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Mission &amp; Charge</h4>
