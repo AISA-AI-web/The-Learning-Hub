@@ -22,6 +22,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .font-heading { font-family: 'Poppins', sans-serif; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
         .bg-governance-pattern {
             background-color: #f8fafc;
             background-image:
@@ -44,15 +45,6 @@
         .committee-card:hover {
             transform: translateY(-3px);
             box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12);
-        }
-        .committee-card::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 6px;
-            background: var(--theme-border, #4f46e5);
-            opacity: 0;
-            transition: opacity 0.2s ease;
         }
         .card-meta {
             display: flex;
@@ -91,12 +83,16 @@
         .read-mission svg { width: 12px; height: 12px; transition: transform 0.2s ease; }
         .read-mission[aria-expanded="true"] svg { transform: rotate(180deg); }
         .mission-body {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 0.3s ease, margin 0.3s ease;
+        }
+        .mission-body > .mission-inner {
             overflow: hidden;
-            max-height: 0;
-            transition: max-height 0.3s ease, margin 0.3s ease;
+            min-height: 0;
         }
         .mission-body.open {
-            max-height: 20rem;
+            grid-template-rows: 1fr;
             margin-top: 0.5rem;
         }
         .chair-pill {
@@ -105,7 +101,9 @@
             background: var(--theme-bg, #eef2ff);
             color: var(--theme-text, #3730a3);
             border: 1px solid var(--theme-border, #4f46e5);
+            cursor: pointer;
         }
+        .chair-pill:hover { filter: brightness(0.95); }
         .chair-pill .chair-role {
             margin-left: 0.25rem;
             padding: 0.05rem 0.45rem;
@@ -116,11 +114,21 @@
             font-weight: 800;
             letter-spacing: 0.08em;
             text-transform: uppercase;
+            white-space: nowrap;
+            max-width: 8rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-        .chair-pill {
-            background: var(--theme-bg, #eef2ff);
-            color: var(--theme-text, #3730a3);
-            border: 1px solid var(--theme-border, #4f46e5);
+        /* When the role label is very long, drop it below the name inside the pill. */
+        .chair-pill[data-role-long="true"] {
+            flex-wrap: wrap;
+            padding-bottom: 0.3rem;
+            border-radius: 1.1rem;
+        }
+        .chair-pill[data-role-long="true"] .chair-role {
+            margin-left: 2.25rem;
+            margin-top: 0.2rem;
+            max-width: none;
         }
         .chair-avatar {
             background: var(--theme-border, #4f46e5);
@@ -231,10 +239,8 @@
             border-color: transparent;
             box-shadow: 0 6px 14px -6px rgba(0,0,0,0.2);
         }
-        .filter-chip[aria-pressed="true"] .chip-label,
-        .filter-chip[aria-pressed="true"] .dot { color: #fff; filter: brightness(0) invert(1); }
-        .filter-chip[aria-pressed="true"] .chip-label { color: #fff; filter: none; }
-        .filter-chip[aria-pressed="true"] .dot { background: #fff; filter: none; }
+        .filter-chip[aria-pressed="true"] .chip-label { color: #fff; }
+        .filter-chip[aria-pressed="true"] .dot { background: #fff; }
 
         .legend-pop {
             position: absolute;
@@ -340,11 +346,13 @@
             .legend-pop {
                 position: fixed;
                 top: auto;
+                bottom: 0.75rem;
                 right: 0.5rem;
                 left: 0.5rem;
                 width: auto;
                 max-width: none;
             }
+            .legend-pop::before { display: none; }
         }
 
         mark.search-hit {
@@ -427,11 +435,6 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        .chair-pill {
-            cursor: pointer;
-        }
-        .chair-pill:hover { filter: brightness(0.95); }
-
         .show-more-btn {
             display: inline-flex;
             align-items: center;
@@ -447,8 +450,33 @@
             transition: background 0.15s ease, transform 0.1s ease;
         }
         .show-more-btn:hover { transform: translateY(-1px); }
-        .collapsed-members .member-pill.is-hidden { display: none; }
-        .collapsed-members[data-expanded="true"] .member-pill.is-hidden { display: inline-flex; }
+        .collapsed-members .member-pill.is-hidden,
+        .collapsed-members .group-pill.is-hidden { display: none; }
+        .collapsed-members[data-expanded="true"] .member-pill.is-hidden,
+        .collapsed-members[data-expanded="true"] .group-pill.is-hidden { display: inline-flex; }
+
+        .group-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.2rem 0.75rem 0.2rem 0.25rem;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 9999px;
+            color: #475569;
+            font-size: 12px;
+            font-style: italic;
+            cursor: default;
+        }
+        .group-pill .group-pill-icon {
+            width: 1.75rem; height: 1.75rem;
+            border-radius: 9999px;
+            background: #e2e8f0;
+            color: #475569;
+            font-size: 12px;
+            display: inline-flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
         .collapsed-members[data-expanded="true"] .show-more-btn .show-more-icon { transform: rotate(180deg); }
         .show-more-icon { transition: transform 0.2s ease; }
 
@@ -524,15 +552,28 @@
             color: #9ca3af;
         }
         .dir-person-row {
+            width: 100%;
             display: flex;
             align-items: center;
             gap: 0.75rem;
             padding: 0.6rem 0.75rem;
             border-radius: 0.6rem;
             cursor: pointer;
+            background: transparent;
+            border: 0;
+            text-align: left;
+            font: inherit;
+            color: inherit;
             transition: background 0.12s ease;
         }
         .dir-person-row:hover { background: #f3f4f6; }
+        .dir-person-row:focus-visible,
+        .top-connector-card .row:focus-visible,
+        .person-committee-item:focus-visible,
+        .dir-back:focus-visible {
+            outline: 2px solid #4f46e5;
+            outline-offset: 2px;
+        }
         .dir-person-row .dir-avatar {
             width: 2rem; height: 2rem; border-radius: 9999px;
             background: linear-gradient(135deg, #6366f1, #06b6d4);
@@ -565,10 +606,16 @@
             display: flex; align-items: center; gap: 0.35rem;
         }
         .top-connector-card .row {
+            width: 100%;
             display: flex; align-items: center; gap: 0.5rem;
             padding: 0.3rem 0;
             font-size: 13px;
             cursor: pointer;
+            background: transparent;
+            border: 0;
+            text-align: left;
+            font-family: inherit;
+            color: inherit;
             transition: transform 0.12s ease;
         }
         .top-connector-card .row:hover { transform: translateX(2px); }
@@ -590,6 +637,8 @@
             box-shadow: 0 8px 20px -4px rgba(0,0,0,0.2);
         }
         .person-committee-item {
+            display: block;
+            width: 100%;
             padding: 0.85rem 1rem;
             border-radius: 0.75rem;
             background: #fff;
@@ -599,6 +648,9 @@
             border-bottom: 1px solid #f3f4f6;
             margin-bottom: 0.6rem;
             cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+            color: inherit;
             transition: transform 0.12s ease, box-shadow 0.12s ease;
         }
         .person-committee-item:hover {
@@ -640,6 +692,10 @@
             color: rgba(255,255,255,0.8);
             cursor: pointer;
             margin-bottom: 0.5rem;
+            background: transparent;
+            border: 0;
+            padding: 0;
+            font-family: inherit;
         }
         .dir-back:hover { color: #fff; }
         body.directory-open { overflow: hidden; }
@@ -766,12 +822,18 @@
                 padding: 0.5cm 0 1cm;
                 border-bottom: 2px solid #000;
             }
-            .hero-governance * { color: #000 !important; text-shadow: none !important; }
-            .hero-overlay { display: none !important; }
-            .stat-card {
+            .hero-governance * {
+                color: #000 !important;
+                text-shadow: none !important;
+                background: transparent !important;
+                border-color: #000 !important;
+                box-shadow: none !important;
+            }
+            .hero-governance .stat-card {
                 background: #f7f7f7 !important;
                 border: 1px solid #ccc !important;
             }
+            .hero-overlay { display: none !important; }
             .tab-panel { display: block !important; }
             .tab-panel.hidden { display: block !important; }
             .tab-panel + .tab-panel { margin-top: 1cm; page-break-before: always; }
@@ -786,15 +848,11 @@
             .committee-card:hover { transform: none !important; }
             details { page-break-inside: avoid; }
             details > summary { cursor: default; }
-            details[data-auto-opened], details { }
-            details .chev { display: none !important; }
-            details > div, details > ul { display: block !important; }
-            details:not([open]) > ul,
-            details:not([open]) > div { display: block !important; }
             details > summary svg { display: none; }
-            /* force all collapsible sections open for print */
-            details { display: block; }
-            .mission-body { max-height: none !important; margin-top: 0.3rem !important; overflow: visible !important; }
+            /* beforeprint adds the open attribute; these are belt-and-braces. */
+            details > ul, details > div { display: block !important; }
+            .mission-body { grid-template-rows: 1fr !important; margin-top: 0.3rem !important; }
+            .mission-body > .mission-inner { overflow: visible !important; }
             .collapsed-members .member-pill.is-hidden { display: inline-flex !important; }
             .member-pill, .chair-pill {
                 box-shadow: none !important;
@@ -849,25 +907,26 @@
                     <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                         <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </div>
-                    <input type="text" id="committee-search" placeholder="Search by committee, policy area, or member name..." class="block w-full pl-12 pr-4 py-3.5 rounded-full text-gray-900 bg-white/95 shadow-xl focus:ring-4 focus:ring-indigo-400/30 focus:outline-none placeholder-gray-400 font-medium">
+                    <label for="committee-search" class="sr-only">Search committees</label>
+                    <input type="text" id="committee-search" placeholder="Search by committee, policy area, or member name..." aria-label="Search committees by name, policy area, or member" class="block w-full pl-12 pr-4 py-3.5 rounded-full text-gray-900 bg-white/95 shadow-xl focus:ring-4 focus:ring-indigo-400/30 focus:outline-none placeholder-gray-400 font-medium">
                 </div>
 
                 <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
-                        <div class="text-3xl font-heading font-extrabold"><span id="stat-total" class="stat-num" data-target="0">0</span></div>
-                        <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">Committees</div>
+                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15" role="group" aria-labelledby="stat-total-label">
+                        <div class="text-3xl font-heading font-extrabold"><span id="stat-total" class="stat-num" data-target="0" aria-hidden="true">0</span></div>
+                        <div id="stat-total-label" class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">Committees</div>
                     </div>
-                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
-                        <div class="text-3xl font-heading font-extrabold"><span id="stat-members" class="stat-num" data-target="0">0</span></div>
-                        <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">Members</div>
+                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15" role="group" aria-labelledby="stat-members-label">
+                        <div class="text-3xl font-heading font-extrabold"><span id="stat-members" class="stat-num" data-target="0" aria-hidden="true">0</span></div>
+                        <div id="stat-members-label" class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">Members</div>
                     </div>
-                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
-                        <div class="text-3xl font-heading font-extrabold"><span id="stat-adek" class="stat-num" data-target="0">0</span></div>
-                        <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">ADEK-Mandated</div>
+                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15" role="group" aria-labelledby="stat-adek-label">
+                        <div class="text-3xl font-heading font-extrabold"><span id="stat-adek" class="stat-num" data-target="0" aria-hidden="true">0</span></div>
+                        <div id="stat-adek-label" class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">ADEK-Mandated</div>
                     </div>
-                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15">
-                        <div class="text-3xl font-heading font-extrabold"><span id="stat-ai" class="stat-num" data-target="0">0</span></div>
-                        <div class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">AI Subcommittees</div>
+                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15" role="group" aria-labelledby="stat-ai-label">
+                        <div class="text-3xl font-heading font-extrabold"><span id="stat-ai" class="stat-num" data-target="0" aria-hidden="true">0</span></div>
+                        <div id="stat-ai-label" class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">AI Subcommittees</div>
                     </div>
                 </div>
 
@@ -944,7 +1003,7 @@
     </div>
 
     <main class="flex-grow container mx-auto px-6 py-12">
-        <div id="no-results" class="hidden text-center py-16">
+        <div id="no-results" class="hidden text-center py-16" role="status" aria-live="polite">
             <div class="text-5xl mb-3">🔍</div>
             <h3 class="text-xl font-bold text-gray-700">No committees match your search</h3>
             <p class="text-gray-500 mt-1">Try a different keyword, or clear filters to browse all committees.</p>
@@ -1076,11 +1135,28 @@
 
         const MEMBER_COLLAPSE_THRESHOLD = 6;
 
+        const GROUP_ENTITY_NAMES = new Set(['school nurses', 'principals', 'assistant principals']);
+        const GROUP_ENTITY_ICONS = {
+            'school nurses': '⚕️',
+            'principals': '🎓',
+            'assistant principals': '🎓'
+        };
+        const isGroupEntity = (name) => GROUP_ENTITY_NAMES.has((name || '').trim().toLowerCase());
+
         const renderMember = (m, chair, isHidden) => {
-            const nameAttr = `data-member-name="${escapeHtml(m.name)}"`;
             const hiddenCls = isHidden ? ' is-hidden' : '';
+            if (isGroupEntity(m.name)) {
+                const key = m.name.trim().toLowerCase();
+                const icon = GROUP_ENTITY_ICONS[key] || '👥';
+                return `<span class="group-pill${hiddenCls}" title="Role-based seat, not an individual person">
+                    <span class="group-pill-icon">${icon}</span>
+                    <span>${escapeHtml(m.name)}</span>
+                </span>`;
+            }
+            const nameAttr = `data-member-name="${escapeHtml(m.name)}"`;
             if (chair) {
-                return `<button type="button" class="chair-pill flex items-center gap-2 rounded-full pl-1 pr-2 py-1 shadow-sm${hiddenCls}" ${nameAttr} title="View all committees for ${escapeHtml(m.name)}">
+                const roleLong = (m.role || '').length > 8;
+                return `<button type="button" class="chair-pill flex items-center gap-2 rounded-full pl-1 pr-2 py-1 shadow-sm${hiddenCls}" ${nameAttr}${roleLong ? ' data-role-long="true"' : ''} title="View all committees for ${escapeHtml(m.name)}">
                     <span class="chair-avatar w-7 h-7 rounded-full text-[10px] font-black flex items-center justify-center">${escapeHtml(initials(m.name))}</span>
                     <span class="text-sm font-semibold">${escapeHtml(m.name)}</span>
                     <span class="chair-role">${escapeHtml(m.role)}</span>
@@ -1171,7 +1247,9 @@
                                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
                                 <div id="${missionId}" class="mission-body">
-                                    <p class="text-sm text-gray-700 leading-relaxed italic border-l-2 pl-3" style="border-color: var(--theme-border)">${escapeHtml(c.mission)}</p>
+                                    <div class="mission-inner">
+                                        <p class="text-sm text-gray-700 leading-relaxed italic border-l-2 pl-3" style="border-color: var(--theme-border)">${escapeHtml(c.mission)}</p>
+                                    </div>
                                 </div>` : ''}
                         </div>` : (c.mission ? `<div class="mb-4">
                             <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1">Mission &amp; Charge</h4>
@@ -1865,6 +1943,14 @@
         function animateCount(el, target, duration = 1100) {
             if (!el) return;
             el.setAttribute('data-target', target);
+            // Publish the final value on the parent card so screen readers
+            // announce "17, Committees" instead of every interpolated frame.
+            const card = el.closest('[role="group"]');
+            if (card) {
+                const label = card.querySelector('[id$="-label"]');
+                const labelText = label ? label.textContent.trim() : '';
+                card.setAttribute('aria-label', labelText ? `${target} ${labelText}` : String(target));
+            }
             if (PREFERS_REDUCED_MOTION) { el.textContent = target; return; }
             const start = performance.now();
             const from = 0;
@@ -1992,7 +2078,6 @@
                 }
                 const personPill = e.target.closest('[data-member-name]');
                 if (personPill) {
-                    e.preventDefault();
                     const key = normalizePersonKey(personPill.getAttribute('data-member-name'));
                     if (PEOPLE_INDEX.has(key)) openDirectory(key);
                 }
@@ -2030,6 +2115,13 @@
                 if (e.target === document.getElementById('help-overlay')) toggleHelp(false);
             });
             document.addEventListener('keydown', handleGlobalShortcuts);
+            document.addEventListener('keydown', (e) => {
+                if (e.key !== 'Tab') return;
+                const help = document.getElementById('help-overlay');
+                const dir = document.getElementById('directory-panel');
+                if (help && !help.hidden) return trapTab(e, help);
+                if (dir && !dir.hidden) return trapTab(e, dir);
+            });
 
             const printState = { prevOpen: new WeakSet(), prevExpanded: new WeakSet(), prevMission: new WeakSet() };
             window.addEventListener('beforeprint', () => {
@@ -2067,11 +2159,20 @@
             const overlay = document.getElementById('help-overlay');
             const shouldOpen = force !== undefined ? force : overlay.hasAttribute('hidden');
             if (shouldOpen) {
+                helpReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
                 overlay.hidden = false;
-                requestAnimationFrame(() => overlay.classList.add('open'));
+                requestAnimationFrame(() => {
+                    overlay.classList.add('open');
+                    const btn = overlay.querySelector('[data-close-help]');
+                    if (btn) btn.focus();
+                });
             } else {
                 overlay.classList.remove('open');
                 setTimeout(() => { overlay.hidden = true; }, 220);
+                if (helpReturnFocus && document.body.contains(helpReturnFocus)) {
+                    helpReturnFocus.focus();
+                }
+                helpReturnFocus = null;
             }
         }
 
@@ -2124,7 +2225,11 @@
             if (e.key === '/') {
                 e.preventDefault();
                 const s = document.getElementById('committee-search');
-                if (s) { s.focus(); s.select(); }
+                if (s) {
+                    window.scrollTo({ top: 0, behavior: PREFERS_REDUCED_MOTION ? 'auto' : 'smooth' });
+                    s.focus({ preventScroll: true });
+                    s.select();
+                }
                 return;
             }
             if (e.key === '?') {
@@ -2146,8 +2251,21 @@
         const PEOPLE_INDEX = new Map();
         const TAB_LABELS = { 'level-1': 'Level 1', 'level-2': 'Level 2', 'ai': 'AI Incubator' };
 
+        // Canonical keys for people who appear under slightly different names across rosters.
+        // Maps a raw normalized variant to the canonical normalized key.
+        const PERSON_ALIASES = {
+            'egbal ibrahim mohamed': 'egbal mohamed',
+            'engy amer': 'engy amr'
+        };
+        // Preferred display name keyed by canonical key.
+        const PERSON_DISPLAY_OVERRIDES = {
+            'egbal mohamed': 'Egbal Mohamed',
+            'engy amr': 'Engy Amr'
+        };
+
         function normalizePersonKey(name) {
-            return (name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+            const base = (name || '').trim().toLowerCase().replace(/\s+/g, ' ');
+            return PERSON_ALIASES[base] || base;
         }
 
         function buildPeopleIndex() {
@@ -2161,7 +2279,10 @@
                         if (!key) return;
                         if (GROUP_NAMES.has(key)) return;
                         if (!PEOPLE_INDEX.has(key)) {
-                            PEOPLE_INDEX.set(key, { displayName: m.name, memberships: [] });
+                            PEOPLE_INDEX.set(key, {
+                                displayName: PERSON_DISPLAY_OVERRIDES[key] || m.name,
+                                memberships: []
+                            });
                         }
                         PEOPLE_INDEX.get(key).memberships.push({
                             committeeId: c.id,
@@ -2178,9 +2299,13 @@
             });
         }
 
+        let directoryReturnFocus = null;
+        let helpReturnFocus = null;
+
         function openDirectory(personKey) {
             const overlay = document.getElementById('directory-overlay');
             const panel = document.getElementById('directory-panel');
+            directoryReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
             overlay.hidden = false;
             panel.hidden = false;
             requestAnimationFrame(() => {
@@ -2193,6 +2318,11 @@
             } else {
                 renderDirectoryList();
             }
+            // Move focus into the panel after render so screen readers announce it.
+            requestAnimationFrame(() => {
+                const firstTarget = panel.querySelector('#dir-search') || panel.querySelector('[data-close-directory]');
+                if (firstTarget) firstTarget.focus();
+            });
         }
 
         function closeDirectory() {
@@ -2205,6 +2335,32 @@
                 panel.hidden = true;
             }, 280);
             document.body.classList.remove('directory-open');
+            if (directoryReturnFocus && document.body.contains(directoryReturnFocus)) {
+                directoryReturnFocus.focus();
+            }
+            directoryReturnFocus = null;
+        }
+
+        function focusableWithin(root) {
+            if (!root) return [];
+            return Array.from(root.querySelectorAll(
+                'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            )).filter(el => el.offsetParent !== null || el === document.activeElement);
+        }
+
+        function trapTab(e, root) {
+            if (e.key !== 'Tab') return;
+            const f = focusableWithin(root);
+            if (!f.length) return;
+            const first = f[0];
+            const last = f[f.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
         }
 
         function renderDirectoryList(filter = '') {
@@ -2213,11 +2369,15 @@
             const total = PEOPLE_INDEX.size;
             const sorted = Array.from(PEOPLE_INDEX.entries())
                 .sort((a, b) => b[1].memberships.length - a[1].memberships.length || a[1].displayName.localeCompare(b[1].displayName));
-            const topConnectors = sorted.filter(([, v]) => v.memberships.length >= 3).slice(0, 5);
             const f = filter.toLowerCase();
             const filtered = f
                 ? sorted.filter(([key, v]) => key.includes(f) || v.displayName.toLowerCase().includes(f))
                 : sorted;
+            // Top Connectors always reflects the current visible set (filtered or full),
+            // so users see who in the current results has the most committee seats.
+            const topConnectors = (f ? filtered : sorted)
+                .filter(([, v]) => v.memberships.length >= 3)
+                .slice(0, 5);
 
             header.innerHTML = `
                 <h2 id="directory-title" class="text-xl font-heading font-extrabold">People Directory</h2>
@@ -2230,27 +2390,27 @@
                     <input type="text" class="directory-search" id="dir-search" placeholder="Search ${total} people..." value="${escapeHtml(filter)}" />
                 </div>
 
-                ${!filter && topConnectors.length ? `
+                ${topConnectors.length ? `
                 <div class="top-connector-card">
-                    <h4>⭐ Top Connectors</h4>
+                    <h4>⭐ ${filter ? 'Top Connectors in results' : 'Top Connectors'}</h4>
                     ${topConnectors.map(([key, v], i) => `
-                        <div class="row" data-person-key="${escapeHtml(key)}">
-                            <span class="rank">${i + 1}</span>
+                        <button type="button" class="row" data-person-key="${escapeHtml(key)}" aria-label="${escapeHtml(v.displayName)}, ${v.memberships.length} committees">
+                            <span class="rank" aria-hidden="true">${i + 1}</span>
                             <span style="flex:1">${escapeHtml(v.displayName)}</span>
                             <span class="dir-count hot">${v.memberships.length} committees</span>
-                        </div>
+                        </button>
                     `).join('')}
                 </div>` : ''}
 
                 <div class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">${filter ? `${filtered.length} ${filtered.length === 1 ? 'person' : 'people'} found` : 'All people'}</div>
-                <div>
+                <div role="list">
                 ${filtered.length === 0 ? '<p class="text-sm text-gray-500 py-6 text-center">No matches. Try a different name.</p>' : ''}
                 ${filtered.map(([key, v]) => `
-                    <div class="dir-person-row" data-person-key="${escapeHtml(key)}">
-                        <span class="dir-avatar">${escapeHtml(initials(v.displayName))}</span>
+                    <button type="button" class="dir-person-row" data-person-key="${escapeHtml(key)}" aria-label="${escapeHtml(v.displayName)}, on ${v.memberships.length} ${v.memberships.length === 1 ? 'committee' : 'committees'}">
+                        <span class="dir-avatar" aria-hidden="true">${escapeHtml(initials(v.displayName))}</span>
                         <span class="dir-name">${escapeHtml(v.displayName)}</span>
-                        <span class="dir-count${v.memberships.length >= 3 ? ' hot' : ''}">${v.memberships.length}</span>
-                    </div>
+                        <span class="dir-count${v.memberships.length >= 3 ? ' hot' : ''}" aria-hidden="true">${v.memberships.length}</span>
+                    </button>
                 `).join('')}
                 </div>
             `;
@@ -2278,10 +2438,10 @@
             const groups = new Set(person.memberships.map(m => m.group));
 
             header.innerHTML = `
-                <span class="dir-back" data-dir-back>
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                <button type="button" class="dir-back" data-dir-back>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                     Back to all people
-                </span>
+                </button>
                 <div class="flex items-center gap-4">
                     <div class="person-profile-avatar">${escapeHtml(initials(person.displayName))}</div>
                     <div>
@@ -2305,7 +2465,7 @@
                     ${items.map(m => {
                         const theme = themes[m.color] || themes.indigo;
                         return `
-                            <div class="person-committee-item" data-go-committee="${escapeHtml(m.committeeId)}" data-group="${escapeHtml(m.group)}" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}">
+                            <button type="button" class="person-committee-item" data-go-committee="${escapeHtml(m.committeeId)}" data-group="${escapeHtml(m.group)}" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" aria-label="${escapeHtml(m.committeeName)}, role: ${escapeHtml(m.role)}. Jump to this committee.">
                                 <div class="header">
                                     <div>
                                         <div class="title">${escapeHtml(m.icon)} ${escapeHtml(m.committeeName)}</div>
@@ -2314,7 +2474,7 @@
                                     </div>
                                     <span class="role-badge">${escapeHtml(m.role)}</span>
                                 </div>
-                            </div>
+                            </button>
                         `;
                     }).join('')}
                 `;
@@ -2322,7 +2482,6 @@
 
             body.innerHTML = sections;
 
-            body.querySelectorAll('[data-dir-back]').forEach(el => el.addEventListener('click', () => renderDirectoryList()));
             header.querySelectorAll('[data-dir-back]').forEach(el => el.addEventListener('click', () => renderDirectoryList()));
             body.querySelectorAll('[data-go-committee]').forEach(el => {
                 el.addEventListener('click', () => {
@@ -2458,6 +2617,8 @@
             const labels = { 'level-1': 'Level 1', 'level-2': 'Level 2', 'ai': 'AI Incubator' };
             const banner = document.createElement('div');
             banner.className = 'cross-tab-banner';
+            banner.setAttribute('role', 'status');
+            banner.setAttribute('aria-live', 'polite');
             banner.innerHTML = `
                 <span>🔎 No matches here, but we found matches in other tabs:</span>
                 ${otherTabs.map(t => `<button type="button" data-switch-tab="${t}">${labels[t]} · ${perTab[t]}</button>`).join('')}
@@ -2487,16 +2648,16 @@
         function highlightInCard(card, query) {
             if (!query) return;
             const re = new RegExp(escapeRegExp(query), 'gi');
-            const selectors = ['h3', 'p', 'li', 'span', 'summary > span'];
+            const selectors = ['h3', 'p', 'li', '.member-name', '.chair-pill > span:not(.chair-avatar):not(.chair-role)', 'summary > span'];
             const targets = card.querySelectorAll(selectors.join(','));
             targets.forEach(el => {
-                if (el.closest('.chair-pill, .chair-avatar')) {
-                    // avatar initials, skip
-                }
+                if (el.closest('.chair-avatar, .member-avatar')) return;
                 const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, {
                     acceptNode: (n) => {
                         if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-                        if (n.parentNode && (n.parentNode.nodeName === 'MARK' || n.parentNode.nodeName === 'SCRIPT' || n.parentNode.nodeName === 'STYLE')) return NodeFilter.FILTER_REJECT;
+                        const p = n.parentNode;
+                        if (p && (p.nodeName === 'MARK' || p.nodeName === 'SCRIPT' || p.nodeName === 'STYLE')) return NodeFilter.FILTER_REJECT;
+                        if (p && p.closest && p.closest('.chair-avatar, .member-avatar')) return NodeFilter.FILTER_REJECT;
                         return NodeFilter.FILTER_ACCEPT;
                     }
                 });
