@@ -2369,11 +2369,15 @@
             const total = PEOPLE_INDEX.size;
             const sorted = Array.from(PEOPLE_INDEX.entries())
                 .sort((a, b) => b[1].memberships.length - a[1].memberships.length || a[1].displayName.localeCompare(b[1].displayName));
-            const topConnectors = sorted.filter(([, v]) => v.memberships.length >= 3).slice(0, 5);
             const f = filter.toLowerCase();
             const filtered = f
                 ? sorted.filter(([key, v]) => key.includes(f) || v.displayName.toLowerCase().includes(f))
                 : sorted;
+            // Top Connectors always reflects the current visible set (filtered or full),
+            // so users see who in the current results has the most committee seats.
+            const topConnectors = (f ? filtered : sorted)
+                .filter(([, v]) => v.memberships.length >= 3)
+                .slice(0, 5);
 
             header.innerHTML = `
                 <h2 id="directory-title" class="text-xl font-heading font-extrabold">People Directory</h2>
@@ -2386,9 +2390,9 @@
                     <input type="text" class="directory-search" id="dir-search" placeholder="Search ${total} people..." value="${escapeHtml(filter)}" />
                 </div>
 
-                ${!filter && topConnectors.length ? `
+                ${topConnectors.length ? `
                 <div class="top-connector-card">
-                    <h4>⭐ Top Connectors</h4>
+                    <h4>⭐ ${filter ? 'Top Connectors in results' : 'Top Connectors'}</h4>
                     ${topConnectors.map(([key, v], i) => `
                         <button type="button" class="row" data-person-key="${escapeHtml(key)}" aria-label="${escapeHtml(v.displayName)}, ${v.memberships.length} committees">
                             <span class="rank" aria-hidden="true">${i + 1}</span>
