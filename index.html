@@ -106,21 +106,7 @@
                 <p class="text-blue-200/80 text-sm md:text-base mt-2">Choose a section to get started.</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-
-                <!-- Secondary Hub -->
-                <a href="https://sites.google.com/aisa.sch.ae/aisa-secondary" target="_blank" rel="noopener noreferrer" class="hub-card group block rounded-2xl p-6 md:p-7 border border-sky-400/30 bg-gradient-to-br from-sky-600/40 to-cyan-700/40 hover:border-sky-300/70">
-                    <div class="flex items-start justify-between mb-5">
-                        <div class="h-14 w-14 rounded-2xl bg-sky-500/40 border border-sky-300/40 flex items-center justify-center text-3xl shadow-lg">🏫</div>
-                        <span class="text-[10px] font-bold text-sky-100 bg-sky-900/60 border border-sky-400/40 rounded-full px-3 py-1 uppercase tracking-widest">Daily Portal</span>
-                    </div>
-                    <h3 class="font-heading font-extrabold text-xl md:text-2xl mb-2">Secondary Hub</h3>
-                    <p class="text-sky-100/80 text-sm leading-relaxed mb-5">The central portal for Secondary School faculty — schedules, announcements, and essential daily information.</p>
-                    <div class="flex items-center text-sky-100 text-sm font-semibold">
-                        Open portal
-                        <svg class="w-4 h-4 ml-2 arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                    </div>
-                </a>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6">
 
                 <!-- PD Modules -->
                 <a href="pd.html" class="hub-card group block rounded-2xl p-6 md:p-7 border border-indigo-400/30 bg-gradient-to-br from-indigo-600/40 to-blue-700/40 hover:border-indigo-300/70">
@@ -150,20 +136,6 @@
                     </div>
                 </a>
 
-                <!-- Governance -->
-                <a href="committees.html" class="hub-card group block rounded-2xl p-6 md:p-7 border border-amber-400/30 bg-gradient-to-br from-amber-600/40 to-orange-700/40 hover:border-amber-300/70">
-                    <div class="flex items-start justify-between mb-5">
-                        <div class="h-14 w-14 rounded-2xl bg-amber-500/40 border border-amber-300/40 flex items-center justify-center text-3xl shadow-lg">🏛️</div>
-                        <span class="text-[10px] font-bold text-amber-100 bg-amber-900/60 border border-amber-400/40 rounded-full px-3 py-1 uppercase tracking-widest">2025–26</span>
-                    </div>
-                    <h3 class="font-heading font-extrabold text-xl md:text-2xl mb-2">Governance</h3>
-                    <p class="text-amber-100/80 text-sm leading-relaxed mb-5">AISA's committees — missions, tasks, success indicators, and full member rosters.</p>
-                    <div class="flex items-center text-amber-100 text-sm font-semibold">
-                        View committees
-                        <svg class="w-4 h-4 ml-2 arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                    </div>
-                </a>
-
                 <!-- Media Hub -->
                 <a href="media.html" class="hub-card group block rounded-2xl p-6 md:p-7 border border-pink-400/30 bg-gradient-to-br from-purple-600/40 to-pink-700/40 hover:border-pink-300/70">
                     <div class="flex items-start justify-between mb-5">
@@ -178,19 +150,41 @@
                     </div>
                 </a>
 
-                <!-- Library Hub -->
-                <a href="library-hub.html" class="hub-card group block rounded-2xl p-6 md:p-7 border border-yellow-400/30 bg-gradient-to-br from-yellow-600/40 to-amber-700/40 hover:border-yellow-300/70">
-                    <div class="flex items-start justify-between mb-5">
-                        <div class="h-14 w-14 rounded-2xl bg-yellow-500/40 border border-yellow-300/40 flex items-center justify-center text-3xl shadow-lg">📚</div>
-                        <span class="text-[10px] font-bold text-yellow-100 bg-yellow-900/60 border border-yellow-400/40 rounded-full px-3 py-1 uppercase tracking-widest">For Students</span>
+                <!-- Mini-tile cluster: Governance / Secondary Hub / Library Hub / (empty) -->
+                <div class="grid grid-cols-2 grid-rows-2 gap-3 md:gap-4">
+
+                    <a href="committees.html" class="hub-card group block rounded-xl p-4 md:p-5 border border-amber-400/30 bg-gradient-to-br from-amber-600/50 to-orange-700/50 hover:border-amber-300/70 flex flex-col justify-between min-h-[7rem]">
+                        <div class="text-3xl leading-none" aria-hidden="true">🏛️</div>
+                        <div class="mt-2">
+                            <h3 class="font-heading font-extrabold text-base md:text-lg leading-tight">Governance</h3>
+                            <p class="text-[10px] text-amber-100/70 uppercase tracking-widest font-bold mt-0.5">Committees</p>
+                        </div>
+                    </a>
+
+                    <a href="https://sites.google.com/aisa.sch.ae/aisa-secondary" target="_blank" rel="noopener noreferrer" class="hub-card group block rounded-xl p-4 md:p-5 border border-sky-400/30 bg-gradient-to-br from-sky-600/50 to-cyan-700/50 hover:border-sky-300/70 flex flex-col justify-between min-h-[7rem]">
+                        <div class="flex items-start justify-between">
+                            <div class="text-3xl leading-none" aria-hidden="true">🏫</div>
+                            <svg class="w-3.5 h-3.5 text-sky-200/70 arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </div>
+                        <div class="mt-2">
+                            <h3 class="font-heading font-extrabold text-base md:text-lg leading-tight">Secondary Hub</h3>
+                            <p class="text-[10px] text-sky-100/70 uppercase tracking-widest font-bold mt-0.5">Daily Portal</p>
+                        </div>
+                    </a>
+
+                    <a href="library-hub.html" class="hub-card group block rounded-xl p-4 md:p-5 border border-yellow-400/30 bg-gradient-to-br from-yellow-600/50 to-amber-700/50 hover:border-yellow-300/70 flex flex-col justify-between min-h-[7rem]">
+                        <div class="text-3xl leading-none" aria-hidden="true">📚</div>
+                        <div class="mt-2">
+                            <h3 class="font-heading font-extrabold text-base md:text-lg leading-tight">Library Hub</h3>
+                            <p class="text-[10px] text-yellow-100/70 uppercase tracking-widest font-bold mt-0.5">For Students</p>
+                        </div>
+                    </a>
+
+                    <div class="rounded-xl border border-dashed border-white/15 bg-white/[0.03] flex items-center justify-center min-h-[7rem]" aria-hidden="true">
+                        <span class="text-white/25 text-[10px] uppercase tracking-widest font-bold">Coming Soon</span>
                     </div>
-                    <h3 class="font-heading font-extrabold text-xl md:text-2xl mb-2">Library Hub</h3>
-                    <p class="text-yellow-100/80 text-sm leading-relaxed mb-5">Research tools, AI search assistants, and guidelines safe to share with students.</p>
-                    <div class="flex items-center text-yellow-100 text-sm font-semibold">
-                        Start researching
-                        <svg class="w-4 h-4 ml-2 arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                    </div>
-                </a>
+
+                </div>
 
             </div>
         </div>
