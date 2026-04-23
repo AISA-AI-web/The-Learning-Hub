@@ -371,58 +371,6 @@
             margin-left: 0;
         }
 
-        .jump-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            padding: 0.3rem 0.7rem;
-            border-radius: 9999px;
-            font-size: 12px;
-            font-weight: 600;
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            color: #374151;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease, color 0.12s ease;
-        }
-        .jump-chip:hover {
-            transform: translateY(-1px);
-            border-color: var(--theme-border, #4f46e5);
-            color: var(--theme-text, #3730a3);
-            box-shadow: 0 6px 14px -8px rgba(0,0,0,0.2);
-        }
-        .jump-chip .jump-dot {
-            width: 7px; height: 7px; border-radius: 9999px;
-            background: var(--theme-border, #4f46e5);
-        }
-        .jump-chip.active {
-            background: var(--theme-bg, #eef2ff);
-            border-color: var(--theme-border, #4f46e5);
-            color: var(--theme-text, #3730a3);
-        }
-        .jump-scroll-wrap {
-            position: relative;
-        }
-        .jump-scroll {
-            display: flex; gap: 0.5rem;
-            overflow-x: auto;
-            padding: 0.25rem 0.125rem;
-            scroll-behavior: smooth;
-            scrollbar-width: none;
-            -ms-overflow-style: none;
-        }
-        .jump-scroll::-webkit-scrollbar { display: none; width: 0; height: 0; }
-        .jump-fade-r {
-            position: absolute; top: 0; right: 0; bottom: 0; width: 32px;
-            background: linear-gradient(90deg, transparent, #f8fafc);
-            pointer-events: none;
-        }
-        .jump-fade-l {
-            position: absolute; top: 0; left: 0; bottom: 0; width: 32px;
-            background: linear-gradient(-90deg, transparent, #f8fafc);
-            pointer-events: none;
-        }
         @keyframes card-flash {
             0% { box-shadow: 0 0 0 0 rgba(79,70,229,0); transform: translateY(0); }
             20% { box-shadow: 0 0 0 6px rgba(79,70,229,0.25); transform: translateY(-3px); }
@@ -504,7 +452,7 @@
             box-shadow: 0 4px 10px -4px rgba(79,70,229,0.25);
         }
         .member-pill:focus-visible, .chair-pill:focus-visible,
-        .jump-chip:focus-visible, .filter-chip:focus-visible,
+        .filter-chip:focus-visible,
         .show-more-btn:focus-visible {
             outline: 2px solid #4f46e5;
             outline-offset: 2px;
@@ -899,7 +847,7 @@
             body { background: #fff !important; color: #000 !important; font-size: 11pt; }
             header, footer,
             .sticky, .tab-panel.hidden,
-            .jump-scroll-wrap, .cross-tab-banner,
+            .cross-tab-banner,
             #shortcuts-btn, #back-top-btn, #help-overlay, #directory-overlay, #directory-panel,
             #committees-overlay, #committees-panel,
             #legend-overlay,
@@ -1048,19 +996,24 @@
         <div class="container mx-auto px-6">
             <div class="flex flex-col gap-1 pb-2">
             <div role="tablist" aria-label="Committee categories" class="no-scrollbar flex items-center gap-1 md:gap-2 overflow-x-auto">
-                <button id="tab-level-1" role="tab" aria-selected="true" aria-controls="panel-level-1" tabindex="0" data-tab="level-1" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
+                <button id="tab-all" role="tab" aria-selected="true" aria-controls="panel-level-1 panel-level-2 panel-ai" tabindex="0" data-tab="all" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
+                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 text-white text-[10px] font-black">★</span>
+                    All Committees
+                    <span class="tab-count" data-tab-count="all">0</span>
+                </button>
+                <button id="tab-level-1" role="tab" aria-selected="false" aria-controls="panel-level-1" tabindex="-1" data-tab="level-1" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-black">1</span>
-                    Level 1 Committees
+                    Level 1
                     <span class="tab-count" data-tab-count="level-1">0</span>
                 </button>
                 <button id="tab-level-2" role="tab" aria-selected="false" aria-controls="panel-level-2" tabindex="-1" data-tab="level-2" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
                     <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black">2</span>
-                    Level 2 Committees
+                    Level 2
                     <span class="tab-count" data-tab-count="level-2">0</span>
                 </button>
                 <button id="tab-ai" role="tab" aria-selected="false" aria-controls="panel-ai" tabindex="-1" data-tab="ai" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
                     <span class="text-base">🤖</span>
-                    AI Incubator Team
+                    AI Incubator
                     <span class="tab-count" data-tab-count="ai">0</span>
                 </button>
             </div>
@@ -1106,36 +1059,21 @@
                 <h3 class="text-2xl font-heading font-bold text-gray-900">Level 1 Committees</h3>
                 <p class="text-sm text-gray-600 mt-1">Strategic, school-wide committees providing governance and oversight.</p>
             </div>
-            <div class="jump-scroll-wrap mb-6">
-                <div class="jump-scroll" data-jump="level-1"></div>
-                <div class="jump-fade-l"></div>
-                <div class="jump-fade-r"></div>
-            </div>
             <div class="flex flex-col gap-3" data-container="level-1"></div>
         </section>
 
-        <section id="panel-level-2" role="tabpanel" aria-labelledby="tab-level-2" class="tab-panel hidden">
+        <section id="panel-level-2" role="tabpanel" aria-labelledby="tab-level-2" class="tab-panel mt-10">
             <div class="mb-4">
                 <h3 class="text-2xl font-heading font-bold text-gray-900">Level 2 Committees</h3>
                 <p class="text-sm text-gray-600 mt-1">Operational committees that implement policy and support day-to-day practice.</p>
             </div>
-            <div class="jump-scroll-wrap mb-6">
-                <div class="jump-scroll" data-jump="level-2"></div>
-                <div class="jump-fade-l"></div>
-                <div class="jump-fade-r"></div>
-            </div>
             <div class="flex flex-col gap-3" data-container="level-2"></div>
         </section>
 
-        <section id="panel-ai" role="tabpanel" aria-labelledby="tab-ai" class="tab-panel hidden">
+        <section id="panel-ai" role="tabpanel" aria-labelledby="tab-ai" class="tab-panel mt-10">
             <div class="mb-4">
                 <h3 class="text-2xl font-heading font-bold text-gray-900">AI Incubator Team</h3>
                 <p class="text-sm text-gray-600 mt-1">AISA's command center for responsible AI adoption — the main team plus four specialist subcommittees.</p>
-            </div>
-            <div class="jump-scroll-wrap mb-6">
-                <div class="jump-scroll" data-jump="ai"></div>
-                <div class="jump-fade-l"></div>
-                <div class="jump-fade-r"></div>
             </div>
             <div class="flex flex-col gap-3" data-container="ai"></div>
         </section>
@@ -1161,6 +1099,7 @@
                 <div class="flex items-center justify-between"><dt>Focus search</dt><dd><span class="kbd">/</span></dd></div>
                 <div class="flex items-center justify-between"><dt>Open Committees Directory</dt><dd><span class="kbd">C</span></dd></div>
                 <div class="flex items-center justify-between"><dt>Open People Directory</dt><dd><span class="kbd">P</span></dd></div>
+                <div class="flex items-center justify-between"><dt>All Committees tab</dt><dd><span class="kbd">0</span></dd></div>
                 <div class="flex items-center justify-between"><dt>Level 1 tab</dt><dd><span class="kbd">1</span></dd></div>
                 <div class="flex items-center justify-between"><dt>Level 2 tab</dt><dd><span class="kbd">2</span></dd></div>
                 <div class="flex items-center justify-between"><dt>AI Incubator tab</dt><dd><span class="kbd">3</span></dd></div>
@@ -2064,7 +2003,8 @@
             }
         ];
 
-        const VALID_TABS = ['level-1', 'level-2', 'ai'];
+        const VALID_TABS = ['all', 'level-1', 'level-2', 'ai'];
+        const CATEGORY_TABS = ['level-1', 'level-2', 'ai'];
         const PREFERS_REDUCED_MOTION = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
         function animateCount(el, target, duration = 1100) {
@@ -2099,18 +2039,6 @@
             Object.entries(groups).forEach(([g, items]) => {
                 const container = document.querySelector(`[data-container="${g}"]`);
                 if (container) container.innerHTML = items.map(renderCommittee).join('');
-                const jumpBar = document.querySelector(`[data-jump="${g}"]`);
-                if (jumpBar) {
-                    jumpBar.innerHTML = items.map(c => {
-                        const theme = themes[c.color] || themes.indigo;
-                        return `<button type="button" class="jump-chip" data-jump-to="${escapeHtml(c.id)}" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" title="${escapeHtml(c.name)}">
-                            <span class="jump-dot"></span><span>${escapeHtml(c.icon)} ${escapeHtml(c.name)}</span>
-                        </button>`;
-                    }).join('');
-                    jumpBar.querySelectorAll('[data-jump-to]').forEach(btn => {
-                        btn.addEventListener('click', () => scrollToCommittee(btn.dataset.jumpTo));
-                    });
-                }
             });
 
             const totalMembers = committees.reduce((n, c) => {
@@ -2128,6 +2056,8 @@
                 const pill = document.querySelector(`[data-tab-count="${g}"]`);
                 if (pill) pill.textContent = items.length;
             });
+            const allPill = document.querySelector('[data-tab-count="all"]');
+            if (allPill) allPill.textContent = committees.length;
 
             const tabs = Array.from(document.querySelectorAll('[role="tab"]'));
             tabs.forEach(btn => {
@@ -2239,7 +2169,6 @@
                 scrollRaf = requestAnimationFrame(() => {
                     scrollRaf = 0;
                     if (backTopBtn) backTopBtn.classList.toggle('visible', window.scrollY > 500);
-                    updateScrollSpy();
                 });
             }, { passive: true });
 
@@ -2352,37 +2281,6 @@
             return tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable;
         }
 
-        function updateScrollSpy() {
-            const activePanel = document.querySelector('.tab-panel:not(.hidden)');
-            if (!activePanel) return;
-            const cards = Array.from(activePanel.querySelectorAll('.committee-card:not(.hidden-by-filter)'));
-            if (!cards.length) return;
-            const anchorLine = 220;
-            let currentId = null;
-            for (const card of cards) {
-                const rect = card.getBoundingClientRect();
-                if (rect.top <= anchorLine) currentId = card.dataset.committeeId;
-                else break;
-            }
-            if (!currentId) currentId = cards[0].dataset.committeeId;
-            const jumpBar = activePanel.querySelector('.jump-scroll');
-            if (!jumpBar) return;
-            let activeChip = null;
-            jumpBar.querySelectorAll('[data-jump-to]').forEach(chip => {
-                const isActive = chip.dataset.jumpTo === currentId;
-                chip.classList.toggle('active', isActive);
-                if (isActive) activeChip = chip;
-            });
-            if (activeChip) {
-                const chipRect = activeChip.getBoundingClientRect();
-                const barRect = jumpBar.getBoundingClientRect();
-                if (chipRect.left < barRect.left || chipRect.right > barRect.right) {
-                    const target = activeChip.offsetLeft - jumpBar.clientWidth / 2 + activeChip.clientWidth / 2;
-                    jumpBar.scrollTo({ left: Math.max(0, target), behavior: PREFERS_REDUCED_MOTION ? 'auto' : 'smooth' });
-                }
-            }
-        }
-
         function handleGlobalShortcuts(e) {
             if (e.metaKey || e.ctrlKey || e.altKey) return;
             const helpOpen = !document.getElementById('help-overlay').hidden;
@@ -2411,7 +2309,8 @@
                 return;
             }
             if (dirOpen || committeesOpen) return;
-            if (e.key === '1') { switchTab('level-1', { focus: true }); }
+            if (e.key === '0') { switchTab('all', { focus: true }); }
+            else if (e.key === '1') { switchTab('level-1', { focus: true }); }
             else if (e.key === '2') { switchTab('level-2', { focus: true }); }
             else if (e.key === '3') { switchTab('ai', { focus: true }); }
             else if (e.key === 'p' || e.key === 'P') { openDirectory(); }
@@ -2793,9 +2692,10 @@
         function scrollToCommittee(id) {
             const committee = committees.find(c => c.id === id);
             if (!committee) return;
-            if (committee.group && VALID_TABS.includes(committee.group)) {
+            if (committee.group && CATEGORY_TABS.includes(committee.group)) {
                 const activeTab = document.querySelector('[role="tab"][aria-selected="true"]');
-                if (!activeTab || activeTab.dataset.tab !== committee.group) {
+                const activeId = activeTab ? activeTab.dataset.tab : null;
+                if (activeId !== 'all' && activeId !== committee.group) {
                     switchTab(committee.group);
                 }
             }
@@ -2831,9 +2731,13 @@
                 b.setAttribute('tabindex', selected ? '0' : '-1');
                 if (selected && opts.focus) b.focus();
             });
-            document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
-            const panel = document.getElementById('panel-' + id);
-            if (panel) panel.classList.remove('hidden');
+            if (id === 'all') {
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('hidden'));
+            } else {
+                document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+                const panel = document.getElementById('panel-' + id);
+                if (panel) panel.classList.remove('hidden');
+            }
             const search = document.getElementById('committee-search');
             if (search && search.value) applyFilter(search.value.trim().toLowerCase());
             updateHash();
@@ -2843,11 +2747,11 @@
             const reqs = getActiveRequirements();
             let anyVisibleActive = false;
             const perTab = { 'level-1': 0, 'level-2': 0, 'ai': 0 };
-            let activeTabId = 'level-1';
+            const activeTabBtn = document.querySelector('[role="tab"][aria-selected="true"]');
+            const activeTabId = activeTabBtn ? activeTabBtn.dataset.tab : 'all';
             document.querySelectorAll('.tab-panel').forEach(panel => {
                 const isActive = !panel.classList.contains('hidden');
                 const tabId = (panel.id || '').replace(/^panel-/, '');
-                if (isActive) activeTabId = tabId;
                 panel.querySelectorAll('.committee-card').forEach(card => {
                     const blob = card.dataset.search || '';
                     const reqMatch = reqs.length === 0 || reqs.includes(card.dataset.req);
@@ -2915,8 +2819,10 @@
             document.querySelectorAll('.cross-tab-banner').forEach(el => el.remove());
             const hasFilter = query || reqs.length > 0;
             if (!hasFilter) return;
+            // On the All tab every panel is shown, so a "matches in other tabs" hint is meaningless.
+            if (activeTabId === 'all') return;
             const activeCount = perTab[activeTabId] || 0;
-            const otherTabs = VALID_TABS.filter(t => t !== activeTabId && (perTab[t] || 0) > 0);
+            const otherTabs = CATEGORY_TABS.filter(t => t !== activeTabId && (perTab[t] || 0) > 0);
             if (activeCount > 0 || otherTabs.length === 0) return;
             const activePanel = document.getElementById('panel-' + activeTabId);
             if (!activePanel) return;
@@ -2932,7 +2838,7 @@
             banner.querySelectorAll('[data-switch-tab]').forEach(b => {
                 b.addEventListener('click', () => switchTab(b.dataset.switchTab, { focus: true }));
             });
-            const target = activePanel.querySelector('.jump-scroll-wrap') || activePanel.firstElementChild;
+            const target = activePanel.firstElementChild;
             if (target && target.parentNode === activePanel) {
                 activePanel.insertBefore(banner, target.nextSibling);
             } else {
