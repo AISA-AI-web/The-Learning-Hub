@@ -64,20 +64,13 @@
             0%, 100% { transform: translateY(0) rotate(-2deg); }
             50%      { transform: translateY(-6px) rotate(2deg); }
         }
-        @keyframes leo-wave {
-            0%, 60%, 100% { transform: rotate(0deg); }
-            10%, 30%      { transform: rotate(22deg); }
-            20%, 40%      { transform: rotate(-12deg); }
-        }
         @keyframes leo-bubble-pop {
             0%   { transform: translateY(6px) scale(0.96); opacity: 0; }
             100% { transform: translateY(0) scale(1); opacity: 1; }
         }
         .leo-bob    { animation: leo-bob 3.4s ease-in-out infinite; transform-origin: bottom center; }
-        .leo-wave   { animation: leo-wave 2.6s ease-in-out infinite; transform-origin: 30% 80%; display: inline-block; }
         .leo-bubble { animation: leo-bubble-pop 0.5s ease-out 0.4s both; }
         .leo-mascot:hover .leo-bob  { animation-duration: 1.6s; }
-        .leo-mascot:hover .leo-wave { animation-duration: 1.1s; }
     </style>
 </head>
 <body class="hub-bg text-white min-h-screen flex flex-col">
@@ -212,7 +205,6 @@
         </div>
         <div class="relative flex-shrink-0 leo-bob">
             <div class="text-6xl md:text-7xl drop-shadow-[0_6px_16px_rgba(251,191,36,0.35)] select-none" aria-hidden="true">🦁</div>
-            <span class="leo-wave absolute -top-1 -left-3 text-3xl md:text-4xl select-none" aria-hidden="true">🐾</span>
         </div>
     </a>
 
