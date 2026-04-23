@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Orientation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: { primary: '#1e3a8a', secondary: '#1d4ed8', accent: '#3b82f6' },
+                        animation: { 'blob': 'blob 7s infinite' },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -10px rgba(30, 58, 138, 0.25); }
+        .hero-gradient { background: linear-gradient(135deg, #0c1e4e 0%, #1e3a8a 45%, #3b82f6 100%); }
+        .hero-overlay {
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 0, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.10) 0, transparent 40%);
+        }
+    </style>
+</head>
+<body class="bg-blue-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white/85 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-blue-100">
+        <div class="h-1 bg-gradient-to-r from-blue-700 via-blue-500 to-cyan-400 w-full"></div>
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-4 group" title="Back to Learning Hub">
+                <img src="AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/1e3a8a/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-blue-900 tracking-tight leading-none uppercase font-heading group-hover:text-blue-700 transition-colors">Orientation</h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-blue-700/80 uppercase tracking-widest mt-0.5">Welcome &amp; Teaching Foundations</span>
+                </div>
+            </a>
+            <a href="index.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-blue-800 transition-all duration-300 hover:bg-blue-50">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Back to Learning Hub
+            </a>
+        </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero-gradient text-white relative overflow-hidden">
+        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
+        <div class="absolute -top-20 -left-20 w-72 h-72 bg-blue-300/20 rounded-full blur-3xl animate-blob"></div>
+        <div class="absolute -bottom-24 -right-16 w-80 h-80 bg-cyan-200/20 rounded-full blur-3xl animate-blob" style="animation-delay: 2s;"></div>
+        <div class="container mx-auto px-6 py-16 md:py-20 text-center relative z-10">
+            <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
+                <span class="text-xl">🚀</span>
+                <span class="text-xs font-bold uppercase tracking-widest">Welcome to the Guide</span>
+            </div>
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-5 drop-shadow-lg">Start Here.</h2>
+            <p class="text-lg md:text-xl max-w-3xl mx-auto text-blue-50 drop-shadow">
+                Get oriented with the Teaching &amp; Learning Guide and build your foundation with our Higher Order Thinking essentials.
+            </p>
+        </div>
+    </section>
+
+    <!-- Main -->
+    <main class="flex-grow">
+        <div class="container mx-auto px-6 py-14 max-w-5xl">
+
+            <!-- Intro Video -->
+            <section class="mb-20">
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                    <div class="aspect-video bg-slate-900 relative w-full flex items-center justify-center">
+                        <div class="text-center p-6">
+                            <span class="text-6xl block mb-4">🎥</span>
+                            <h4 class="text-2xl md:text-3xl font-bold text-white">Orientation Welcome Video Coming Soon!</h4>
+                            <p class="text-slate-300 mt-2">Check back shortly for our new introductory guide.</p>
+                        </div>
+                    </div>
+                    <div class="p-6 text-center bg-blue-50">
+                        <h3 class="text-2xl font-bold text-blue-900 mb-2">Welcome to the Guide</h3>
+                        <p class="text-gray-700">Watch this brief introduction to understand the purpose of this website and how to navigate it.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- HOTS Module -->
+            <section id="module-hots" class="scroll-mt-24">
+                <div class="mb-8 text-center">
+                    <span class="inline-block bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-3">Teaching Strategy</span>
+                    <h1 class="text-3xl lg:text-4xl font-extrabold text-blue-900 leading-tight">Higher Order Thinking (HOTS)</h1>
+                    <p class="text-blue-600 font-medium text-lg mt-2">Moving Beyond Recall</p>
+                </div>
+
+                <!-- Video -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+                    <div class="aspect-video bg-black relative w-full">
+                        <iframe class="w-full h-full absolute top-0 left-0"
+                                src="https://www.youtube.com/embed/W9t2sPFZVJQ?rel=0&playsinline=1"
+                                title="Higher Order Thinking Video"
+                                frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                    <div class="p-6 bg-blue-50 border-t border-blue-100">
+                        <h3 class="font-bold text-blue-900 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            PD Session Overview
+                        </h3>
+                        <p class="text-sm text-blue-800 mt-1">Explore the 6 levels of cognitive complexity and learn how to ask questions that challenge students to apply, analyze, and create.</p>
+                    </div>
+                </div>
+
+                <!-- Thinking Ladder -->
+                <div class="mb-12">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">The Thinking Ladder: From Recall to Creation</h3>
+                    <div class="flex flex-col space-y-3 max-w-4xl mx-auto">
+                        <div class="flex flex-col md:flex-row bg-purple-600 text-white rounded-lg shadow-lg overflow-hidden">
+                            <div class="p-6 md:w-1/3 font-bold text-xl flex items-center justify-center bg-purple-700"><span>🚀 Create</span></div>
+                            <div class="p-6 md:w-2/3 bg-purple-600 flex flex-col justify-center"><p class="font-semibold mb-1 opacity-90">Combining parts to make a new whole</p><p class="text-sm italic text-purple-100">"How would you design...?" "What would happen if...?"</p></div>
+                        </div>
+                        <div class="flex flex-col md:flex-row bg-pink-600 text-white rounded-lg shadow-lg overflow-hidden md:ml-4">
+                            <div class="p-6 md:w-1/3 font-bold text-xl flex items-center justify-center bg-pink-700"><span>⚖️ Evaluate</span></div>
+                            <div class="p-6 md:w-2/3 bg-pink-600 flex flex-col justify-center"><p class="font-semibold mb-1 opacity-90">Judging the value of information</p><p class="text-sm italic text-pink-100">"Do you agree with...?" "Prioritize the best solution..."</p></div>
+                        </div>
+                        <div class="flex flex-col md:flex-row bg-orange-500 text-white rounded-lg shadow-lg overflow-hidden md:ml-8">
+                            <div class="p-6 md:w-1/3 font-bold text-xl flex items-center justify-center bg-orange-600"><span>🔍 Analyze</span></div>
+                            <div class="p-6 md:w-2/3 bg-orange-500 flex flex-col justify-center"><p class="font-semibold mb-1 opacity-90">Breaking down information into component parts</p><p class="text-sm italic text-orange-100">"What is the relationship between...?" "Compare and contrast..."</p></div>
+                        </div>
+                        <div class="flex flex-col md:flex-row bg-yellow-500 text-white rounded-lg shadow-lg overflow-hidden md:ml-12">
+                            <div class="p-6 md:w-1/3 font-bold text-xl flex items-center justify-center bg-yellow-600"><span>🛠️ Apply</span></div>
+                            <div class="p-6 md:w-2/3 bg-yellow-500 flex flex-col justify-center"><p class="font-semibold mb-1 opacity-90">Applying the facts to a new situation</p><p class="text-sm italic text-yellow-100">"How would you use...?" "Solve this using..."</p></div>
+                        </div>
+                        <div class="flex flex-col md:flex-row bg-green-500 text-white rounded-lg shadow-lg overflow-hidden md:ml-16">
+                            <div class="p-6 md:w-1/3 font-bold text-xl flex items-center justify-center bg-green-600"><span>💡 Understand</span></div>
+                            <div class="p-6 md:w-2/3 bg-green-500 flex flex-col justify-center"><p class="font-semibold mb-1 opacity-90">Understanding what the facts mean</p><p class="text-sm italic text-green-100">"Summarize the main idea..." "Explain in your own words..."</p></div>
+                        </div>
+                        <div class="flex flex-col md:flex-row bg-blue-500 text-white rounded-lg shadow-lg overflow-hidden md:ml-20">
+                            <div class="p-6 md:w-1/3 font-bold text-xl flex items-center justify-center bg-blue-600"><span>🧠 Remember</span></div>
+                            <div class="p-6 md:w-2/3 bg-blue-500 flex flex-col justify-center"><p class="font-semibold mb-1 opacity-90">Recognizing and recalling facts</p><p class="text-sm italic text-blue-100">"List the..." "Define..." "Who, What, Where...?"</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Question Transformation Lab -->
+                <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden mb-12">
+                    <div class="bg-gradient-to-r from-slate-800 to-blue-900 p-8 text-white">
+                        <div class="flex items-center justify-center mb-2">
+                            <span class="text-4xl mr-3">⚗️</span>
+                            <h3 class="text-3xl font-extrabold tracking-tight">Question Transformation Lab</h3>
+                        </div>
+                        <p class="text-blue-100 text-center font-medium text-lg">The Art of Upgrading Cognitive Demand</p>
+                    </div>
+
+                    <div class="p-8 lg:p-12 bg-gray-50">
+                        <!-- Example 1 -->
+                        <div class="relative bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-8">
+                            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-blue-100 text-blue-800 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest border border-blue-200">Science Example</div>
+                            <div class="flex flex-col md:flex-row items-stretch gap-6">
+                                <div class="flex-1 bg-red-50/50 rounded-xl p-6 border-l-4 border-red-300">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">Level 1: Remember</span>
+                                        <span class="text-2xl opacity-50">🧠</span>
+                                    </div>
+                                    <p class="text-gray-500 font-mono text-sm mb-2">The Ask:</p>
+                                    <p class="text-lg font-bold text-gray-800">"What is photosynthesis?"</p>
+                                    <p class="text-xs text-red-400 mt-3 italic">⚠️ Requires only memory recall.</p>
+                                </div>
+                                <div class="hidden md:flex flex-col justify-center items-center w-16 relative">
+                                    <div class="h-full w-0.5 bg-gray-200 absolute"></div>
+                                    <div class="z-10 bg-white border-2 border-green-500 rounded-full p-2 text-green-600 shadow-sm">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                                    </div>
+                                    <div class="z-10 mt-2 bg-green-100 text-green-800 text-[10px] font-bold px-2 py-1 rounded-full whitespace-nowrap shadow-sm">+ Comparison &amp; Context</div>
+                                </div>
+                                <div class="flex md:hidden justify-center items-center py-2 text-green-500">
+                                    <svg class="w-8 h-8 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                </div>
+                                <div class="flex-1 bg-green-50/50 rounded-xl p-6 border-l-4 border-green-500">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">Level 4: Analyze</span>
+                                        <span class="text-2xl opacity-50">🔬</span>
+                                    </div>
+                                    <p class="text-gray-500 font-mono text-sm mb-2">The Upgrade:</p>
+                                    <p class="text-lg font-bold text-gray-900">"Compare how photosynthesis differs in a cactus versus a fern given their environments."</p>
+                                    <p class="text-xs text-green-600 mt-3 italic">✅ Requires analysis of conditions and biological adaptation.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Example 2 -->
+                        <div class="relative bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                            <div class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-purple-100 text-purple-800 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest border border-purple-200">Literature Example</div>
+                            <div class="flex flex-col md:flex-row items-stretch gap-6">
+                                <div class="flex-1 bg-red-50/50 rounded-xl p-6 border-l-4 border-red-300">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <span class="bg-red-100 text-red-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">Level 2: Understand</span>
+                                        <span class="text-2xl opacity-50">📖</span>
+                                    </div>
+                                    <p class="text-gray-500 font-mono text-sm mb-2">The Ask:</p>
+                                    <p class="text-lg font-bold text-gray-800">"Identify the main character's decision in Chapter 3."</p>
+                                    <p class="text-xs text-red-400 mt-3 italic">⚠️ Requires identifying facts from text.</p>
+                                </div>
+                                <div class="hidden md:flex flex-col justify-center items-center w-16 relative">
+                                    <div class="h-full w-0.5 bg-gray-200 absolute"></div>
+                                    <div class="z-10 bg-white border-2 border-purple-500 rounded-full p-2 text-purple-600 shadow-sm">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                                    </div>
+                                    <div class="z-10 mt-2 bg-purple-100 text-purple-800 text-[10px] font-bold px-2 py-1 rounded-full whitespace-nowrap shadow-sm">+ "What If" Scenario</div>
+                                </div>
+                                <div class="flex md:hidden justify-center items-center py-2 text-purple-500">
+                                    <svg class="w-8 h-8 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg>
+                                </div>
+                                <div class="flex-1 bg-purple-50/50 rounded-xl p-6 border-l-4 border-purple-500">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">Level 6: Create</span>
+                                        <span class="text-2xl opacity-50">🚀</span>
+                                    </div>
+                                    <p class="text-gray-500 font-mono text-sm mb-2">The Upgrade:</p>
+                                    <p class="text-lg font-bold text-gray-900">"Predict how the story would end if the character made the opposite choice in Chapter 3."</p>
+                                    <p class="text-xs text-purple-600 mt-3 italic">✅ Requires synthesis of character traits and plot projection.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pro Tip -->
+                        <div class="mt-8 p-5 bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl flex items-start shadow-sm">
+                            <div class="bg-yellow-100 p-2 rounded-lg mr-4">
+                                <span class="text-2xl">💡</span>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-yellow-900 text-lg">Instant Upgrade Formula</h4>
+                                <p class="text-yellow-800 mt-1">Don't rewrite the whole lesson. Just add one of these stems to your existing question:</p>
+                                <div class="flex flex-wrap gap-2 mt-3">
+                                    <span class="bg-white border border-yellow-200 text-yellow-800 px-3 py-1 rounded-md text-sm font-semibold shadow-sm">"How would you change..."</span>
+                                    <span class="bg-white border border-yellow-200 text-yellow-800 px-3 py-1 rounded-md text-sm font-semibold shadow-sm">"Justify why..."</span>
+                                    <span class="bg-white border border-yellow-200 text-yellow-800 px-3 py-1 rounded-md text-sm font-semibold shadow-sm">"What if..."</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-blue-100 mt-auto">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <img src="AISA_logo.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
+                <span class="font-heading font-bold text-lg tracking-wide">AISA Orientation</span>
+            </div>
+            <p class="text-xs text-blue-200/80">American International School in Abu Dhabi &middot; Teaching &amp; Learning Department</p>
+        </div>
+    </footer>
+
+</body>
+</html>
