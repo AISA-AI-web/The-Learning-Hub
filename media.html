@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Media Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: { primary: '#7e22ce', secondary: '#be185d', accent: '#ec4899' },
+                        animation: { 'blob': 'blob 7s infinite' },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -10px rgba(126, 34, 206, 0.25); }
+        .hero-gradient { background: linear-gradient(135deg, #581c87 0%, #7e22ce 45%, #ec4899 100%); }
+        .hero-overlay {
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 0, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.10) 0, transparent 40%);
+        }
+    </style>
+</head>
+<body class="bg-purple-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white/85 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-purple-100">
+        <div class="h-1 bg-gradient-to-r from-purple-700 via-pink-500 to-rose-400 w-full"></div>
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-4 group" title="Back to Learning Hub">
+                <img src="AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/7e22ce/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-purple-900 tracking-tight leading-none uppercase font-heading group-hover:text-purple-700 transition-colors">Media Hub</h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-purple-700/80 uppercase tracking-widest mt-0.5">Podcasts &amp; Newsletters</span>
+                </div>
+            </a>
+            <a href="index.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-purple-800 transition-all duration-300 hover:bg-purple-50">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Back to Learning Hub
+            </a>
+        </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero-gradient text-white relative overflow-hidden">
+        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
+        <div class="absolute -top-20 -left-20 w-72 h-72 bg-purple-300/20 rounded-full blur-3xl animate-blob"></div>
+        <div class="absolute -bottom-24 -right-16 w-80 h-80 bg-pink-200/20 rounded-full blur-3xl animate-blob" style="animation-delay: 2s;"></div>
+        <div class="container mx-auto px-6 py-16 md:py-20 text-center relative z-10">
+            <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
+                <span class="text-xl">🎙️</span>
+                <span class="text-xs font-bold uppercase tracking-widest">Stay Connected</span>
+            </div>
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-5 drop-shadow-lg">Listen &amp; Read.</h2>
+            <p class="text-lg md:text-xl max-w-3xl mx-auto text-purple-50 drop-shadow">
+                Catch up on our latest podcasts, newsletters, and community updates from the Teaching &amp; Learning Department.
+            </p>
+        </div>
+    </section>
+
+    <!-- Main -->
+    <main class="flex-grow">
+        <div class="container mx-auto px-6 py-14 max-w-5xl">
+            <div class="grid md:grid-cols-2 gap-8">
+
+                <!-- Podcasts -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg card-hover border-t-8 border-purple-600 flex flex-col text-center">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="p-3 bg-purple-100 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                        </div>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-2 text-purple-900">T&amp;L Podcasts</h4>
+                    <p class="text-gray-600 mb-6 flex-grow">Listen to interviews, strategies, and insights from the Teaching &amp; Learning Department. Access our complete library of episodes below.</p>
+                    <a href="#" class="mt-auto block">
+                        <button class="bg-purple-700 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-purple-800 transition-transform hover:scale-105 shadow-md flex items-center justify-center mx-auto w-full">
+                            <span class="mr-2">📂</span> Access Full Podcast Archive
+                        </button>
+                    </a>
+                </div>
+
+                <!-- Newsletters -->
+                <div class="bg-white p-8 rounded-2xl shadow-lg card-hover border-t-8 border-pink-600 flex flex-col text-center">
+                    <div class="flex items-center justify-center mb-4">
+                        <div class="p-3 bg-pink-100 rounded-full">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-pink-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15M9 11l3 3m0 0l3-3m-3 3V8"/></svg>
+                        </div>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-2 text-pink-900">T&amp;L Newsletters</h4>
+                    <p class="text-gray-600 mb-6 flex-grow">Read the latest updates, teaching tips, and community highlights in our weekly newsletters.</p>
+                    <a href="#" class="mt-auto block">
+                        <button class="bg-pink-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-pink-700 transition-transform hover:scale-105 shadow-md flex items-center justify-center mx-auto w-full">
+                            <span class="mr-2">📰</span> Read Newsletters
+                        </button>
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- Coming Soon note -->
+            <div class="max-w-3xl mx-auto mt-16 text-center bg-white rounded-2xl shadow-md border border-purple-100 p-8">
+                <div class="text-4xl mb-3">🚧</div>
+                <h4 class="text-xl font-heading font-bold text-purple-900 mb-2">More Content Coming Soon</h4>
+                <p class="text-gray-600 max-w-xl mx-auto text-sm">Podcast episodes and newsletter archives will be linked here as they're published. Check back soon!</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-purple-900 text-purple-100 mt-auto">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <img src="AISA_logo.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
+                <span class="font-heading font-bold text-lg tracking-wide">AISA Media Hub</span>
+            </div>
+            <p class="text-xs text-purple-200/80">American International School in Abu Dhabi &middot; Teaching &amp; Learning Department</p>
+        </div>
+    </footer>
+
+</body>
+</html>
