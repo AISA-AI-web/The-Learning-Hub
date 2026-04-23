@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Tools &amp; Resources</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: { primary: '#0f766e', secondary: '#15803d', accent: '#14b8a6' },
+                        animation: { 'blob': 'blob 7s infinite' },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -10px rgba(15, 118, 110, 0.25); }
+        .hero-gradient { background: linear-gradient(135deg, #064e3b 0%, #0f766e 45%, #14b8a6 100%); }
+        .hero-overlay {
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 0, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.10) 0, transparent 40%);
+        }
+    </style>
+</head>
+<body class="bg-teal-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white/85 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-teal-100">
+        <div class="h-1 bg-gradient-to-r from-teal-700 via-emerald-500 to-green-400 w-full"></div>
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-4 group" title="Back to Learning Hub">
+                <img src="AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/0f766e/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-teal-900 tracking-tight leading-none uppercase font-heading group-hover:text-teal-700 transition-colors">Tools &amp; Resources</h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-teal-700/80 uppercase tracking-widest mt-0.5">For Daily Instruction</span>
+                </div>
+            </a>
+            <a href="index.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-teal-800 transition-all duration-300 hover:bg-teal-50">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Back to Learning Hub
+            </a>
+        </nav>
+    </header>
+
+    <!-- MAIN VIEW: Tools grid -->
+    <div id="main-view">
+        <!-- Hero -->
+        <section class="hero-gradient text-white relative overflow-hidden">
+            <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
+            <div class="absolute -top-20 -left-20 w-72 h-72 bg-teal-300/20 rounded-full blur-3xl animate-blob"></div>
+            <div class="absolute -bottom-24 -right-16 w-80 h-80 bg-emerald-200/20 rounded-full blur-3xl animate-blob" style="animation-delay: 2s;"></div>
+            <div class="container mx-auto px-6 py-16 md:py-20 text-center relative z-10">
+                <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
+                    <span class="text-xl">🛠️</span>
+                    <span class="text-xs font-bold uppercase tracking-widest">Teaching Toolkit</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-5 drop-shadow-lg">Everything You Need.</h2>
+                <p class="text-lg md:text-xl max-w-3xl mx-auto text-teal-50 drop-shadow">Proven teaching strategies, innovative AI tools, and downloadable resources to support your daily instruction.</p>
+            </div>
+        </section>
+
+        <!-- Main -->
+        <main class="flex-grow">
+            <div class="container mx-auto px-6 py-14">
+
+                <!-- Search -->
+                <div class="max-w-2xl mx-auto mb-10">
+                    <label for="tools-search" class="sr-only">Search tools</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <svg class="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        </div>
+                        <input type="text" id="tools-search"
+                               class="w-full pl-12 pr-12 py-4 rounded-full border border-teal-200 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-gray-800 placeholder-gray-400"
+                               placeholder="Search tools by name or keyword…"
+                               autocomplete="off">
+                        <button type="button" id="tools-search-clear" class="hidden absolute inset-y-0 right-0 pr-4 items-center text-gray-400 hover:text-teal-600" aria-label="Clear search">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                    <p id="tools-search-empty" class="hidden mt-4 text-center text-gray-500 text-sm">No tools match your search. Try a different keyword.</p>
+                </div>
+
+                <!-- Grid -->
+                <div id="tools-grid" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+
+                    <a href="https://sites.google.com/aisa.sch.ae/aisa-secondary" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="aisa secondary hub portal school resources site google schedule">
+                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border-2 border-blue-100">
+                            <div class="text-4xl mb-3">🏫</div>
+                            <h4 class="text-lg font-bold text-blue-900 mb-2">Secondary Hub</h4>
+                            <p class="text-sm text-gray-600">The central portal for Secondary School faculty, schedules, and essential daily information.</p>
+                        </div>
+                    </a>
+
+                    <a href="library-hub.html" class="block tool-item" data-keywords="library hub research topic advisor search assistant gem ai guidelines students reading books sources">
+                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border-2 border-amber-200">
+                            <div class="text-4xl mb-3">📚</div>
+                            <h4 class="text-lg font-bold text-amber-800 mb-2">Library Hub</h4>
+                            <p class="text-sm text-gray-600">Research tools, AI search assistants, and guidelines to support student inquiry — safe to share with students.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://gemini.google/overview/storybook/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="gemini storybooks ai reading english">
+                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-purple-50">
+                            <div class="text-4xl text-blue-600 mb-3">✨</div>
+                            <h4 class="text-lg font-semibold mb-2">Gemini Storybooks</h4>
+                            <p class="text-sm text-gray-600">Create engaging, personalized stories for your students with AI.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://notebooklm.google/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="notebooklm research ai study notes google">
+                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-blue-50">
+                            <div class="text-4xl text-blue-600 mb-3">📓</div>
+                            <h4 class="text-lg font-semibold mb-2">NotebookLM</h4>
+                            <p class="text-sm text-gray-600">Your personalized AI research assistant and study companion.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://www.magicschool.ai/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="magic school ai lesson planning tools generator">
+                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-green-50">
+                            <div class="text-4xl text-blue-600 mb-3">🪄</div>
+                            <h4 class="text-lg font-semibold mb-2">Magic School AI</h4>
+                            <p class="text-sm text-gray-600">The leading AI platform for educators to help with lesson planning, grading, and more.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://gemini.google.com/gem/11QD4AkTJjpXVgEGw8SJ74nq99ntDfv8V?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="edusim simulation ai agent coding generator interactive experiences gemini">
+                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-yellow-100">
+                            <div class="text-4xl text-blue-600 mb-3">🤖</div>
+                            <h4 class="text-lg font-semibold mb-2">EduSim</h4>
+                            <p class="text-sm text-gray-600">An advanced AI agent that instantly codes high-quality, interactive educational simulations tailored to your curriculum.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://brandonabaki-design.github.io/PIRLS-pal/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="pirls test reading literacy pal students parents teachers expectations">
+                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-indigo-100">
+                            <div class="text-4xl mb-3">📚</div>
+                            <h4 class="text-lg font-semibold mb-2">PIRLSpal</h4>
+                            <p class="text-sm text-gray-600">A guide to help students, teachers, and parents prepare for the PIRLS test.</p>
+                        </div>
+                    </a>
+
+                    <a href="#module-map" class="block tool-item" data-keywords="map testing growth rit score assessment adaptive nwea">
+                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-pink-100 flex flex-col items-center justify-center">
+                            <div class="mb-3 h-12 w-full flex items-center justify-center">
+                                <img src="nwea_MAP_logo.jpg" alt="NWEA MAP Logo" class="h-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                <span style="display:none;" class="text-4xl">📈</span>
+                            </div>
+                            <h4 class="text-lg font-bold mb-2">MAP Growth Guide</h4>
+                            <p class="text-sm text-gray-600">Understand the adaptive nature of MAP testing and RIT scores.</p>
+                        </div>
+                    </a>
+
+                    <a href="#module-twinkl" class="block tool-item" data-keywords="twinkl resources worksheets lesson plans assessment materials uae teachers login">
+                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-pink-200">
+                            <div class="text-4xl mb-3">⭐</div>
+                            <h4 class="text-lg font-semibold mb-2">Twinkl Resources</h4>
+                            <p class="text-sm text-gray-600">Access Twinkl UAE plus the school login credentials and a quick-start video guide.</p>
+                        </div>
+                    </a>
+
+                    <a href="https://app.magicschool.ai/magic-student/rooms?room-sharing-id=a86b4fad-e4a2-45d6-a23e-b463082d27a7" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="pbl project based learning chatbot ai magicschool student room inquiry">
+                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-orange-100">
+                            <div class="text-4xl mb-3">💬</div>
+                            <h4 class="text-lg font-semibold mb-2">PBL Chatbot</h4>
+                            <p class="text-sm text-gray-600">An AI-powered chatbot to guide students through Project-Based Learning activities and inquiry.</p>
+                        </div>
+                    </a>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- DETAIL: MAP Growth -->
+    <section id="map-details-section" class="hidden min-h-screen bg-gray-100 p-4 lg:p-12">
+        <div class="container mx-auto max-w-5xl">
+            <div class="mb-8 flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl lg:text-4xl font-extrabold text-teal-900 leading-tight">MAP Growth Testing</h1>
+                    <p class="text-orange-600 font-medium text-lg mt-2">Measures of Academic Progress</p>
+                </div>
+                <button onclick="window.location.hash=''" class="hidden md:flex items-center text-gray-500 hover:text-teal-900 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to Tools
+                </button>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+                <div class="aspect-video bg-black relative w-full">
+                    <iframe class="w-full h-full absolute top-0 left-0"
+                            src="https://www.youtube.com/embed/79h958Qd8sA"
+                            title="What is the MAP Growth test?"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="p-6 bg-orange-50 border-t border-orange-100">
+                    <h3 class="font-bold text-orange-900 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        About this Module
+                    </h3>
+                    <p class="text-sm text-orange-800 mt-1">An essential guide for teachers and parents to understand how MAP Growth works, what RIT scores mean, and how to use the data to support student learning.</p>
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                        <span class="bg-blue-100 p-2 rounded-full mr-3 text-blue-600 text-sm">🧩</span>
+                        What is MAP Growth?
+                    </h3>
+                    <p class="text-gray-600 mb-4">MAP Growth is not a traditional standardized test. It is an <strong>adaptive assessment</strong> designed to measure a student's academic growth over time, regardless of their grade level.</p>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li class="flex items-start"><span class="text-green-500 mr-2">✓</span> If a student answers correctly, the next question gets harder.</li>
+                        <li class="flex items-start"><span class="text-green-500 mr-2">✓</span> If they answer incorrectly, the next question gets easier.</li>
+                    </ul>
+                </div>
+                <div class="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                        <span class="bg-purple-100 p-2 rounded-full mr-3 text-purple-600 text-sm">📊</span>
+                        Understanding RIT Scores
+                    </h3>
+                    <p class="text-gray-600 mb-4">The result of the test is a <strong>RIT Score</strong> (Rasch Unit). Think of this like a ruler for academic growth.</p>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li class="flex items-start"><span class="text-purple-500 mr-2">➜</span> It is an equal-interval scale (like inches on a ruler).</li>
+                        <li class="flex items-start"><span class="text-purple-500 mr-2">➜</span> It tracks progress from year to year, not just within a single grade.</li>
+                        <li class="flex items-start"><span class="text-purple-500 mr-2">➜</span> It connects directly to instructional areas students are ready to learn.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button onclick="window.location.hash=''" class="bg-teal-700 text-white py-3 px-8 rounded-full hover:bg-teal-800 transition-colors shadow-lg font-semibold">
+                    Return to Tools
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- DETAIL: Twinkl -->
+    <section id="twinkl-details-section" class="hidden min-h-screen bg-pink-50 p-4 lg:p-12">
+        <div class="container mx-auto max-w-4xl">
+            <div class="mb-12 flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl lg:text-4xl font-extrabold text-pink-900 leading-tight">Twinkl Educational Resources</h1>
+                    <p class="text-pink-600 font-medium text-lg mt-2">Trusted by teachers worldwide</p>
+                </div>
+                <button onclick="window.location.hash=''" class="hidden md:flex items-center text-gray-500 hover:text-pink-900 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to Tools
+                </button>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-pink-100 mb-10">
+                <div class="p-10 text-center">
+                    <div class="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span class="text-4xl">⭐</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 mb-4">What is Twinkl?</h2>
+                    <p class="text-gray-600 leading-relaxed mb-8 max-w-2xl mx-auto">
+                        Twinkl provides instant access to a complete range of teacher-created, engaging, and inspiring teaching, planning, and assessment materials. From worksheets and lesson plans to interactive games and PowerPoints, Twinkl supports educators in delivering high-quality lessons across all subjects and age groups.
+                    </p>
+                    <a href="https://www.twinkl.ae/" target="_blank" rel="noopener noreferrer">
+                        <button class="bg-pink-600 text-white font-bold py-4 px-10 rounded-full hover:bg-pink-700 transition-all transform hover:scale-105 shadow-lg flex items-center mx-auto">
+                            Access Twinkl UAE <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </button>
+                    </a>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-xl border-l-8 border-pink-600 p-8 lg:p-10 mb-10">
+                <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
+                    <svg class="w-6 h-6 mr-3 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                    School Login Credentials
+                </h3>
+                <p class="text-sm text-gray-500 mb-6">Click on the fields below to copy the login details directly to your clipboard.</p>
+
+                <div class="space-y-4">
+                    <div class="group relative">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Username</label>
+                        <div id="copy-twinkl-user" class="bg-gray-50 border border-gray-200 rounded-xl p-4 flex justify-between items-center cursor-pointer hover:bg-pink-50 hover:border-pink-200 transition-colors">
+                            <span class="font-mono text-gray-800 font-medium break-all">hanan.elhalabi@gmail.com</span>
+                            <svg class="w-5 h-5 text-gray-400 group-hover:text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div id="twinkl-user-msg" class="absolute right-0 top-0 -mt-2 bg-black text-white text-xs py-1 px-2 rounded hidden">Copied!</div>
+                    </div>
+
+                    <div class="group relative">
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Password</label>
+                        <div id="copy-twinkl-pass" class="bg-gray-50 border border-gray-200 rounded-xl p-4 flex justify-between items-center cursor-pointer hover:bg-pink-50 hover:border-pink-200 transition-colors">
+                            <span class="font-mono text-gray-800 font-medium">ENS@123456789</span>
+                            <svg class="w-5 h-5 text-gray-400 group-hover:text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </div>
+                        <div id="twinkl-pass-msg" class="absolute right-0 top-0 -mt-2 bg-black text-white text-xs py-1 px-2 rounded hidden">Copied!</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-pink-100">
+                <div class="aspect-video bg-black relative w-full">
+                    <iframe class="w-full h-full absolute top-0 left-0"
+                            src="https://www.youtube.com/embed/eJ-1zpEnzbs"
+                            title="How to Find Resources on the Twinkl Website"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="p-6 bg-pink-50 border-t border-pink-100">
+                    <h3 class="font-bold text-pink-900 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Quick Start Guide
+                    </h3>
+                    <p class="text-sm text-pink-800 mt-1">Learn how to efficiently find and download the exact resources you need for your lessons.</p>
+                </div>
+            </div>
+
+            <div class="text-center mt-10">
+                <button onclick="window.location.hash=''" class="bg-pink-600 text-white py-3 px-8 rounded-full hover:bg-pink-700 transition-colors shadow-lg font-semibold">
+                    Return to Tools
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        (function() {
+            // --- Router: swap between main grid and detail sections ---
+            const routes = {
+                '#module-map': 'map-details-section',
+                '#module-twinkl': 'twinkl-details-section',
+            };
+            const mainView = document.getElementById('main-view');
+            const detailIds = Object.values(routes);
+
+            function render() {
+                const hash = window.location.hash;
+                const targetId = routes[hash];
+                detailIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.classList.add('hidden');
+                });
+                if (targetId) {
+                    mainView.classList.add('hidden');
+                    const el = document.getElementById(targetId);
+                    if (el) el.classList.remove('hidden');
+                    window.scrollTo(0, 0);
+                    const iframe = document.querySelector('#map-details-section iframe');
+                    if (iframe && targetId !== 'map-details-section') { iframe.src = iframe.src; }
+                } else {
+                    mainView.classList.remove('hidden');
+                    document.querySelectorAll('iframe').forEach(f => {
+                        if (f.closest('.hidden')) return;
+                    });
+                    document.querySelectorAll('section.hidden iframe').forEach(f => { f.src = f.src; });
+                }
+            }
+            window.addEventListener('hashchange', render);
+            window.addEventListener('load', render);
+
+            // --- Search: filter tool cards by keywords/text ---
+            const input = document.getElementById('tools-search');
+            const clearBtn = document.getElementById('tools-search-clear');
+            const emptyMsg = document.getElementById('tools-search-empty');
+            const items = document.querySelectorAll('.tool-item');
+
+            function applyFilter(term) {
+                const q = term.trim().toLowerCase();
+                let visible = 0;
+                items.forEach(card => {
+                    const keywords = (card.getAttribute('data-keywords') || '').toLowerCase();
+                    const text = card.innerText.toLowerCase();
+                    const match = !q || text.includes(q) || keywords.includes(q);
+                    card.style.display = match ? '' : 'none';
+                    if (match) visible++;
+                });
+                emptyMsg.classList.toggle('hidden', visible !== 0);
+                clearBtn.classList.toggle('hidden', q.length === 0);
+                clearBtn.classList.toggle('flex', q.length > 0);
+            }
+            if (input) {
+                input.addEventListener('input', e => applyFilter(e.target.value));
+                clearBtn.addEventListener('click', () => { input.value = ''; applyFilter(''); input.focus(); });
+                document.addEventListener('keydown', e => {
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); input.focus(); }
+                    if (e.key === 'Escape' && document.activeElement === input) { input.value = ''; applyFilter(''); }
+                });
+            }
+
+            // --- Clipboard: click-to-copy Twinkl credentials ---
+            function copyToClipboard(text, msgElement) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                textarea.style.position = 'fixed';
+                textarea.style.opacity = '0';
+                document.body.appendChild(textarea);
+                textarea.select();
+                try {
+                    document.execCommand('copy');
+                    if (msgElement) {
+                        msgElement.classList.remove('hidden');
+                        setTimeout(() => msgElement.classList.add('hidden'), 2000);
+                    }
+                } catch (err) {
+                    console.error('Copy failed:', err);
+                }
+                document.body.removeChild(textarea);
+            }
+            const userEl = document.getElementById('copy-twinkl-user');
+            const passEl = document.getElementById('copy-twinkl-pass');
+            if (userEl) userEl.addEventListener('click', () => copyToClipboard('hanan.elhalabi@gmail.com', document.getElementById('twinkl-user-msg')));
+            if (passEl) passEl.addEventListener('click', () => copyToClipboard('ENS@123456789', document.getElementById('twinkl-pass-msg')));
+        })();
+    </script>
+
+    <!-- Footer -->
+    <footer class="bg-teal-900 text-teal-100 mt-auto">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <img src="AISA_logo.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
+                <span class="font-heading font-bold text-lg tracking-wide">AISA Tools &amp; Resources</span>
+            </div>
+            <p class="text-xs text-teal-200/80">American International School in Abu Dhabi &middot; Teaching &amp; Learning Department</p>
+        </div>
+    </footer>
+
+</body>
+</html>
