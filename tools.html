@@ -101,83 +101,126 @@
                     <p id="tools-search-empty" class="hidden mt-4 text-center text-gray-500 text-sm">No tools match your search. Try a different keyword.</p>
                 </div>
 
-                <!-- Grid -->
-                <div id="tools-grid" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+                <!-- Categorized tools -->
+                <div id="tools-categories" class="mb-16">
 
-                    <a href="library-hub.html" class="block tool-item" data-keywords="library hub research topic advisor search assistant gem ai guidelines students reading books sources">
-                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border-2 border-amber-200">
-                            <div class="text-4xl mb-3">📚</div>
-                            <h4 class="text-lg font-bold text-amber-800 mb-2">Library Hub</h4>
-                            <p class="text-sm text-gray-600">Research tools, AI search assistants, and guidelines to support student inquiry — safe to share with students.</p>
+                    <!-- Category: AI Teaching Assistants -->
+                    <section class="tool-category mb-12">
+                        <div class="category-header flex items-center gap-3 mb-5">
+                            <span class="text-2xl">🪄</span>
+                            <h3 class="text-2xl font-heading font-bold text-teal-900">AI Teaching Assistants</h3>
+                            <div class="flex-grow h-px bg-gradient-to-r from-teal-200 to-transparent"></div>
                         </div>
-                    </a>
+                        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                    <a href="https://gemini.google/overview/storybook/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="gemini storybooks ai reading english">
-                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-purple-50">
-                            <div class="text-4xl text-blue-600 mb-3">✨</div>
-                            <h4 class="text-lg font-semibold mb-2">Gemini Storybooks</h4>
-                            <p class="text-sm text-gray-600">Create engaging, personalized stories for your students with AI.</p>
-                        </div>
-                    </a>
+                            <a href="https://www.magicschool.ai/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="magic school ai lesson planning tools generator teachers">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-green-50">
+                                    <div class="text-4xl text-blue-600 mb-3">🪄</div>
+                                    <h4 class="text-lg font-semibold mb-2">Magic School AI</h4>
+                                    <p class="text-sm text-gray-600">The leading AI platform for educators to help with lesson planning, grading, and more.</p>
+                                </div>
+                            </a>
 
-                    <a href="https://notebooklm.google/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="notebooklm research ai study notes google">
-                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-blue-50">
-                            <div class="text-4xl text-blue-600 mb-3">📓</div>
-                            <h4 class="text-lg font-semibold mb-2">NotebookLM</h4>
-                            <p class="text-sm text-gray-600">Your personalized AI research assistant and study companion.</p>
-                        </div>
-                    </a>
+                            <a href="https://notebooklm.google/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="notebooklm research ai study notes google">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-blue-50">
+                                    <div class="text-4xl text-blue-600 mb-3">📓</div>
+                                    <h4 class="text-lg font-semibold mb-2">NotebookLM</h4>
+                                    <p class="text-sm text-gray-600">Your personalized AI research assistant and study companion.</p>
+                                </div>
+                            </a>
 
-                    <a href="https://www.magicschool.ai/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="magic school ai lesson planning tools generator">
-                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-green-50">
-                            <div class="text-4xl text-blue-600 mb-3">🪄</div>
-                            <h4 class="text-lg font-semibold mb-2">Magic School AI</h4>
-                            <p class="text-sm text-gray-600">The leading AI platform for educators to help with lesson planning, grading, and more.</p>
-                        </div>
-                    </a>
+                            <a href="https://gemini.google/overview/storybook/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="gemini storybooks ai reading english">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-purple-50">
+                                    <div class="text-4xl text-blue-600 mb-3">✨</div>
+                                    <h4 class="text-lg font-semibold mb-2">Gemini Storybooks</h4>
+                                    <p class="text-sm text-gray-600">Create engaging, personalized stories for your students with AI.</p>
+                                </div>
+                            </a>
 
-                    <a href="https://gemini.google.com/gem/11QD4AkTJjpXVgEGw8SJ74nq99ntDfv8V?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="edusim simulation ai agent coding generator interactive experiences gemini">
-                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-yellow-100">
-                            <div class="text-4xl text-blue-600 mb-3">🤖</div>
-                            <h4 class="text-lg font-semibold mb-2">EduSim</h4>
-                            <p class="text-sm text-gray-600">An advanced AI agent that instantly codes high-quality, interactive educational simulations tailored to your curriculum.</p>
                         </div>
-                    </a>
+                    </section>
 
-                    <a href="https://brandonabaki-design.github.io/PIRLS-pal/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="pirls test reading literacy pal students parents teachers expectations">
-                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-indigo-100">
-                            <div class="text-4xl mb-3">📚</div>
-                            <h4 class="text-lg font-semibold mb-2">PIRLSpal</h4>
-                            <p class="text-sm text-gray-600">A guide to help students, teachers, and parents prepare for the PIRLS test.</p>
+                    <!-- Category: Interactive Learning -->
+                    <section class="tool-category mb-12">
+                        <div class="category-header flex items-center gap-3 mb-5">
+                            <span class="text-2xl">🤖</span>
+                            <h3 class="text-2xl font-heading font-bold text-teal-900">Interactive Learning</h3>
+                            <div class="flex-grow h-px bg-gradient-to-r from-teal-200 to-transparent"></div>
                         </div>
-                    </a>
+                        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                    <a href="#module-map" class="block tool-item" data-keywords="map testing growth rit score assessment adaptive nwea">
-                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-pink-100 flex flex-col items-center justify-center">
-                            <div class="mb-3 h-12 w-full flex items-center justify-center">
-                                <img src="nwea_MAP_logo.jpg" alt="NWEA MAP Logo" class="h-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                <span style="display:none;" class="text-4xl">📈</span>
-                            </div>
-                            <h4 class="text-lg font-bold mb-2">MAP Growth Guide</h4>
-                            <p class="text-sm text-gray-600">Understand the adaptive nature of MAP testing and RIT scores.</p>
-                        </div>
-                    </a>
+                            <a href="https://gemini.google.com/gem/11QD4AkTJjpXVgEGw8SJ74nq99ntDfv8V?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="edusim simulation ai agent coding generator interactive experiences gemini">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-yellow-100">
+                                    <div class="text-4xl text-blue-600 mb-3">🤖</div>
+                                    <h4 class="text-lg font-semibold mb-2">EduSim</h4>
+                                    <p class="text-sm text-gray-600">An advanced AI agent that instantly codes high-quality, interactive educational simulations tailored to your curriculum.</p>
+                                </div>
+                            </a>
 
-                    <a href="#module-twinkl" class="block tool-item" data-keywords="twinkl resources worksheets lesson plans assessment materials uae teachers login">
-                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-pink-200">
-                            <div class="text-4xl mb-3">⭐</div>
-                            <h4 class="text-lg font-semibold mb-2">Twinkl Resources</h4>
-                            <p class="text-sm text-gray-600">Access Twinkl UAE plus the school login credentials and a quick-start video guide.</p>
-                        </div>
-                    </a>
+                            <a href="https://app.magicschool.ai/magic-student/rooms?room-sharing-id=a86b4fad-e4a2-45d6-a23e-b463082d27a7" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="pbl project based learning chatbot ai magicschool student room inquiry">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-orange-100">
+                                    <div class="text-4xl mb-3">💬</div>
+                                    <h4 class="text-lg font-semibold mb-2">PBL Chatbot</h4>
+                                    <p class="text-sm text-gray-600">An AI-powered chatbot to guide students through Project-Based Learning activities and inquiry.</p>
+                                </div>
+                            </a>
 
-                    <a href="https://app.magicschool.ai/magic-student/rooms?room-sharing-id=a86b4fad-e4a2-45d6-a23e-b463082d27a7" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="pbl project based learning chatbot ai magicschool student room inquiry">
-                        <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-orange-100">
-                            <div class="text-4xl mb-3">💬</div>
-                            <h4 class="text-lg font-semibold mb-2">PBL Chatbot</h4>
-                            <p class="text-sm text-gray-600">An AI-powered chatbot to guide students through Project-Based Learning activities and inquiry.</p>
                         </div>
-                    </a>
+                    </section>
+
+                    <!-- Category: Assessment & Test Prep -->
+                    <section class="tool-category mb-12">
+                        <div class="category-header flex items-center gap-3 mb-5">
+                            <span class="text-2xl">📊</span>
+                            <h3 class="text-2xl font-heading font-bold text-teal-900">Assessment &amp; Test Prep</h3>
+                            <div class="flex-grow h-px bg-gradient-to-r from-teal-200 to-transparent"></div>
+                        </div>
+                        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                            <a href="#module-map" class="block tool-item" data-keywords="map testing growth rit score assessment adaptive nwea">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-pink-100 flex flex-col items-center justify-center">
+                                    <div class="mb-3 h-12 w-full flex items-center justify-center">
+                                        <img src="nwea_MAP_logo.jpg" alt="NWEA MAP Logo" class="h-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                                        <span style="display:none;" class="text-4xl">📈</span>
+                                    </div>
+                                    <h4 class="text-lg font-bold mb-2">MAP Growth Guide</h4>
+                                    <p class="text-sm text-gray-600">Understand the adaptive nature of MAP testing and RIT scores.</p>
+                                </div>
+                            </a>
+
+                            <a href="https://brandonabaki-design.github.io/PIRLS-pal/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="pirls test reading literacy pal students parents teachers expectations">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-indigo-100">
+                                    <div class="text-4xl mb-3">📚</div>
+                                    <h4 class="text-lg font-semibold mb-2">PIRLSpal</h4>
+                                    <p class="text-sm text-gray-600">A guide to help students, teachers, and parents prepare for the PIRLS test.</p>
+                                </div>
+                            </a>
+
+                        </div>
+                    </section>
+
+                    <!-- Category: Curriculum Resources -->
+                    <section class="tool-category mb-12">
+                        <div class="category-header flex items-center gap-3 mb-5">
+                            <span class="text-2xl">📚</span>
+                            <h3 class="text-2xl font-heading font-bold text-teal-900">Curriculum Resources</h3>
+                            <div class="flex-grow h-px bg-gradient-to-r from-teal-200 to-transparent"></div>
+                        </div>
+                        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                            <a href="#module-twinkl" class="block tool-item" data-keywords="twinkl resources worksheets lesson plans assessment materials uae teachers login">
+                                <div class="bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-pink-200">
+                                    <div class="text-4xl mb-3">⭐</div>
+                                    <h4 class="text-lg font-semibold mb-2">Twinkl Resources</h4>
+                                    <p class="text-sm text-gray-600">Access Twinkl UAE plus the school login credentials and a quick-start video guide.</p>
+                                </div>
+                            </a>
+
+                        </div>
+                    </section>
+
+                    <!-- Search-only flat results grid -->
+                    <div id="tools-search-grid" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6" style="display: none;"></div>
 
                 </div>
             </div>
@@ -376,21 +419,51 @@
             const input = document.getElementById('tools-search');
             const clearBtn = document.getElementById('tools-search-clear');
             const emptyMsg = document.getElementById('tools-search-empty');
+            const categories = document.querySelectorAll('.tool-category');
+            const searchGrid = document.getElementById('tools-search-grid');
             const items = document.querySelectorAll('.tool-item');
+
+            // Remember each card's home so we can put it back when search clears.
+            items.forEach(card => { card._homeParent = card.parentElement; });
 
             function applyFilter(term) {
                 const q = term.trim().toLowerCase();
+
+                if (!q) {
+                    // Restore categorized view
+                    items.forEach(card => {
+                        card.style.display = '';
+                        if (card._homeParent && card.parentElement !== card._homeParent) {
+                            card._homeParent.appendChild(card);
+                        }
+                    });
+                    categories.forEach(sec => sec.classList.remove('hidden'));
+                    searchGrid.style.display = 'none';
+                    emptyMsg.classList.add('hidden');
+                    clearBtn.classList.add('hidden');
+                    clearBtn.classList.remove('flex');
+                    return;
+                }
+
+                // Flatten into the search grid, showing only matching cards
+                categories.forEach(sec => sec.classList.add('hidden'));
+                searchGrid.style.display = '';
                 let visible = 0;
                 items.forEach(card => {
                     const keywords = (card.getAttribute('data-keywords') || '').toLowerCase();
                     const text = card.innerText.toLowerCase();
-                    const match = !q || text.includes(q) || keywords.includes(q);
-                    card.style.display = match ? '' : 'none';
-                    if (match) visible++;
+                    const match = text.includes(q) || keywords.includes(q);
+                    if (match) {
+                        card.style.display = '';
+                        if (card.parentElement !== searchGrid) searchGrid.appendChild(card);
+                        visible++;
+                    } else {
+                        card.style.display = 'none';
+                    }
                 });
                 emptyMsg.classList.toggle('hidden', visible !== 0);
-                clearBtn.classList.toggle('hidden', q.length === 0);
-                clearBtn.classList.toggle('flex', q.length > 0);
+                clearBtn.classList.remove('hidden');
+                clearBtn.classList.add('flex');
             }
             if (input) {
                 input.addEventListener('input', e => applyFilter(e.target.value));
