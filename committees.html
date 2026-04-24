@@ -2468,7 +2468,7 @@
                 <p class="text-xs text-indigo-100/90 mt-1">${total} committees across Level 1, Level 2, and the AI Incubator. Click any committee to open and jump to it.</p>
             `;
 
-            const sections = VALID_TABS.filter(g => grouped[g].length).map(g => {
+            const sections = CATEGORY_TABS.filter(g => grouped[g].length).map(g => {
                 const items = grouped[g];
                 return `
                     <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-4 mb-2">${TAB_LABELS[g]} · ${items.length}</h3>
@@ -2644,7 +2644,7 @@
                 (groupedByCategory[m.group] = groupedByCategory[m.group] || []).push(m);
             });
 
-            const sections = VALID_TABS.filter(g => groupedByCategory[g]).map(g => {
+            const sections = CATEGORY_TABS.filter(g => groupedByCategory[g]).map(g => {
                 const items = groupedByCategory[g];
                 return `
                     <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-wider mt-4 mb-2">${TAB_LABELS[g]} · ${items.length}</h3>
