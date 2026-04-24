@@ -295,7 +295,7 @@
             { title: "Media Hub", desc: "Podcasts, newsletters, and community updates.", url: "media.html", type: "Page", icon: "🎙️", keywords: "media podcast newsletter updates video" },
             { title: "Governance & Committees", desc: "Staff committees, meeting notes, and ownership.", url: "committees.html", type: "Page", icon: "🏛️", keywords: "governance committees committee staff leadership policy" },
             { title: "Orientation", desc: "New-staff onboarding, welcome pack, and school overview.", url: "orientation.html", type: "Page", icon: "🦁", keywords: "orientation onboarding welcome new staff leo induction" },
-            { title: "Library Hub", desc: "Reading resources and tools for students.", url: "library-hub.html", type: "Page", icon: "📚", keywords: "library reading books students" },
+            { title: "Library Hub", desc: "Research Tools, AI Gems, Databases, and guidelines.", url: "library-hub.html", type: "Page", icon: "📚", keywords: "library reading books students research databases" },
             { title: "Secondary Hub", desc: "Daily portal for the secondary school (external).", url: "https://sites.google.com/aisa.sch.ae/aisa-secondary", type: "Page", icon: "🏫", keywords: "secondary hub portal daily google site" },
 
             // === PD modules ===
@@ -311,9 +311,50 @@
             { title: "Gemini Storybooks", desc: "Generate illustrated storybooks with Gemini.", url: "tools.html", type: "AI Tool", icon: "📖", keywords: "gemini storybook story generation google" },
             { title: "EduSim", desc: "Interactive simulations for inquiry learning.", url: "tools.html", type: "AI Tool", icon: "🧪", keywords: "edusim simulation interactive learning inquiry science" },
             { title: "PBL Chatbot", desc: "Project-based learning chatbot scaffold.", url: "tools.html", type: "AI Tool", icon: "💬", keywords: "pbl chatbot project based learning scaffolding" },
-            { title: "MAP Growth Guide", desc: "NWEA MAP preparation and interpretation resources.", url: "tools.html", type: "Tool", icon: "📈", keywords: "map growth nwea assessment test prep rit scores" },
-            { title: "PIRLSpal", desc: "PIRLS reading comprehension practice companion.", url: "tools.html", type: "Tool", icon: "📚", keywords: "pirls reading comprehension companion literacy" },
-            { title: "Twinkl Resources", desc: "Curriculum resources, printables, and worksheets.", url: "tools.html", type: "Tool", icon: "🖨️", keywords: "twinkl resources printables worksheets curriculum" },
+            { title: "MAP Growth Guide", desc: "NWEA MAP preparation and interpretation resources.", url: "tools.html#module-map", type: "Tool", icon: "📈", keywords: "map growth nwea assessment test prep rit scores adaptive" },
+            { title: "PIRLSpal", desc: "PIRLS reading comprehension practice companion.", url: "tools.html", type: "Tool", icon: "📚", keywords: "pirls reading comprehension companion literacy test" },
+            { title: "Twinkl Resources", desc: "Curriculum resources, printables, and worksheets (plus login).", url: "tools.html#module-twinkl", type: "Tool", icon: "🖨️", keywords: "twinkl resources printables worksheets curriculum uae login" },
+
+            // === Library Hub items ===
+            { title: "Research Topic Advisor", desc: "AI advisor that helps brainstorm and shape a focused research question.", url: "library-hub.html#research-tools", type: "Library Tool", icon: "🧭", keywords: "research topic advisor library brainstorm ideas question focus gemini ai gem student" },
+            { title: "Library Search Assistant", desc: "Gemini Gem that builds keywords, suggests databases, and evaluates sources.", url: "library-hub.html#research-tools", type: "Library Tool", icon: "💎", keywords: "library search assistant gemini gem keywords databases sources credibility research" },
+            { title: "AI Research Guidelines", desc: "Student-friendly guidelines for using AI with academic integrity (coming soon).", url: "library-hub.html#guidelines", type: "Library Tool", icon: "📖", keywords: "ai research guidelines academic integrity citation scope sequence students" },
+            { title: "EBSCO Library", desc: "Peer-reviewed journals, magazines, newspapers, and reference materials.", url: "library-hub.html#databases", type: "Database", icon: "📰", keywords: "ebsco library database peer reviewed journal article academic research" },
+
+            // === Orientation sections ===
+            { title: "Orientation Welcome Video", desc: "Intro video and welcome pack for new AISA staff.", url: "orientation.html", type: "Orientation", icon: "🎬", keywords: "orientation welcome video new staff induction" },
+            { title: "The Thinking Ladder", desc: "From recall to creation — HOTS framework for better questioning.", url: "orientation.html", type: "Orientation", icon: "🪜", keywords: "thinking ladder hots higher order thinking bloom recall creation questioning" },
+            { title: "Question Transformation Lab", desc: "Instant upgrade formula for turning basic prompts into rich questions.", url: "orientation.html", type: "Orientation", icon: "🔬", keywords: "question transformation lab upgrade formula questioning lesson design prompts" },
+
+            // === Media Hub items ===
+            { title: "T&L Podcasts", desc: "Teaching & Learning podcast archive (coming soon).", url: "media.html", type: "Media", icon: "🎧", keywords: "podcast podcasts audio teaching learning tl department" },
+            { title: "T&L Newsletters", desc: "Teaching & Learning newsletter archive.", url: "media.html", type: "Media", icon: "📰", keywords: "newsletter newsletters tl teaching learning updates" },
+
+            // === Committees (Level 1) ===
+            { title: "School Development Committee", desc: "Level 1 · oversees the School Development Plan and ADEK inspection follow-up.", url: "committees.html#q=School%20Development%20Committee", type: "Committee", icon: "🏛️", keywords: "school development committee sdp adek inspection academic quality board" },
+            { title: "Student and Staff Wellbeing Committee", desc: "Level 1 · whole-school wellbeing strategy and policy oversight.", url: "committees.html#q=Student%20and%20Staff%20Wellbeing", type: "Committee", icon: "💚", keywords: "student staff wellbeing mental health psychological social physical digital environmental" },
+            { title: "Digital Safeguarding & Digital Wellbeing Committee", desc: "Level 1 · 5-year Digital Strategy, AI integration, ICT compliance.", url: "committees.html#q=Digital%20Safeguarding", type: "Committee", icon: "💻", keywords: "digital safeguarding wellbeing ai ict infrastructure edtech strategy rail" },
+            { title: "Teacher Sunshine Committee", desc: "Level 1 · staff morale, appreciation, and wellness initiatives.", url: "committees.html#q=Teacher%20Sunshine", type: "Committee", icon: "🌞", keywords: "teacher sunshine staff morale appreciation wellness celebration" },
+            { title: "Sustainability Committee", desc: "Level 1 · environmental stewardship, UN SDGs, UAE Green Education Partnership.", url: "committees.html#q=Sustainability", type: "Committee", icon: "🌱", keywords: "sustainability committee environment green sdg esd climate" },
+
+            // === Committees (Level 2) ===
+            { title: "PBIS / Behavior Management & House System Committee", desc: "Level 2 · PBIS, SEL, House System, Lion's Way.", url: "committees.html#q=PBIS", type: "Committee", icon: "🦁", keywords: "pbis behavior management house system sel social emotional lions way discipline" },
+            { title: "Professional Development Committee", desc: "Level 2 · teacher growth, instructional quality, capacity building.", url: "committees.html#q=Professional%20Development%20Committee", type: "Committee", icon: "🎓", keywords: "professional development pd committee teacher training capacity" },
+            { title: "Safeguarding Committee", desc: "Level 2 · child protection and safeguarding policy implementation.", url: "committees.html#q=Safeguarding%20Committee", type: "Committee", icon: "🛡️", keywords: "safeguarding child protection policy" },
+            { title: "Health & Safety Committee", desc: "Level 2 · campus health, safety, and emergency readiness.", url: "committees.html#q=Health%20%26%20Safety", type: "Committee", icon: "⚕️", keywords: "health safety campus emergency first aid fire drill" },
+            { title: "Inclusion Support Team", desc: "Level 2 · Student Support Team — inclusion, SEN, differentiation.", url: "committees.html#q=Inclusion%20Support", type: "Committee", icon: "🤝", keywords: "inclusion support team student sst sen special education needs differentiation" },
+            { title: "Parent Engagement and Events Committee", desc: "Level 2 · parent communication, events, and family partnership.", url: "committees.html#q=Parent%20Engagement", type: "Committee", icon: "👨‍👩‍👧", keywords: "parent engagement events family communication community" },
+            { title: "School Complaints Committee (SCC)", desc: "Level 2 · formal complaint resolution process.", url: "committees.html#q=School%20Complaints", type: "Committee", icon: "📨", keywords: "school complaints scc committee resolution grievance" },
+            { title: "Resource Selection Committee", desc: "Level 2 · curriculum resource and text selection.", url: "committees.html#q=Resource%20Selection", type: "Committee", icon: "📦", keywords: "resource selection textbook curriculum materials" },
+            { title: "Behavior Appeals Committee (BAC)", desc: "Level 2 · appeals process for serious behavior decisions.", url: "committees.html#q=Behavior%20Appeals", type: "Committee", icon: "⚖️", keywords: "behavior appeals bac committee discipline appeal" },
+            { title: "Academic Calendar Committee", desc: "Level 2 · academic calendar planning and approval.", url: "committees.html#q=Academic%20Calendar", type: "Committee", icon: "📅", keywords: "academic calendar committee schedule dates holidays term" },
+
+            // === Committees (AI Incubator) ===
+            { title: "AI Incubator Team", desc: "Lead body for AI strategy, pilots, and subcommittees at AISA.", url: "committees.html#q=AI%20Incubator", type: "Committee", icon: "🤖", keywords: "ai incubator team strategy pilots artificial intelligence" },
+            { title: "RAIL Subcommittee", desc: "Responsible AI for Learning — ethics, policy, and scaffolding.", url: "committees.html#q=RAIL", type: "Committee", icon: "🛤️", keywords: "rail subcommittee responsible ai learning ethics policy scaffolding framework" },
+            { title: "Digital Strategy Subcommittee", desc: "Digital Strategy 5-year roadmap coordination.", url: "committees.html#q=Digital%20Strategy", type: "Committee", icon: "🧭", keywords: "digital strategy subcommittee roadmap technology planning" },
+            { title: "AI Professional Development Subcommittee", desc: "AI-specific teacher training design and delivery.", url: "committees.html#q=AI%20Professional%20Development", type: "Committee", icon: "🎓", keywords: "ai professional development subcommittee teacher training" },
+            { title: "Day of AI Subcommittee", desc: "Plans and runs AISA's Day of AI student event.", url: "committees.html#q=Day%20of%20AI", type: "Committee", icon: "📅", keywords: "day of ai subcommittee student event celebration" },
 
             // === Other ===
             { title: "Request Additional AI Training", desc: "Reserve your spot for an advanced AI deep-dive.", url: "pd.html", type: "Action", icon: "✨", keywords: "ai training request additional reserve form deep dive" }
