@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         if (window.tailwind) {
             tailwind.config = {
@@ -68,6 +69,97 @@
         ::-webkit-scrollbar-track { background: #fef3c7; }
         ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #b45309; }
+
+        /* Leo speech bubble */
+        .leo-note {
+            position: relative;
+            display: inline-flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 1rem;
+            padding: 0.75rem 1rem;
+            color: #78350f;
+            font-size: 0.85rem;
+            line-height: 1.45;
+            box-shadow: 0 4px 14px -6px rgba(180, 83, 9, 0.25);
+        }
+        .leo-note::before {
+            content: '🦁';
+            font-size: 1.15rem;
+            line-height: 1;
+            margin-top: 1px;
+        }
+
+        /* Animated counters */
+        .stat-counter { display: inline-block; }
+
+        /* "Did You Know?" rotator */
+        .dyk-card {
+            background: linear-gradient(135deg, #fde68a 0%, #fcd34d 50%, #fbbf24 100%);
+            border: 1px solid #f59e0b;
+            border-radius: 1.5rem;
+            box-shadow: 0 10px 30px -10px rgba(180, 83, 9, 0.35);
+            position: relative;
+            overflow: hidden;
+        }
+        .dyk-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 10%, rgba(255,255,255,0.35), transparent 45%);
+            pointer-events: none;
+        }
+        .dyk-fade { animation: dyk-fade 0.5s ease; }
+        @keyframes dyk-fade {
+            from { opacity: 0; transform: translateY(6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Glossary flip cards */
+        .flip-card { perspective: 900px; min-height: 7.5rem; }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            min-height: 7.5rem;
+            transform-style: preserve-3d;
+            transition: transform 0.55s ease;
+            cursor: pointer;
+        }
+        .flip-card.is-flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-face {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; justify-content: center;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            padding: 1rem;
+            border-radius: 1rem;
+            border: 1px solid #fcd34d;
+            background: #ffffff;
+        }
+        .flip-face.back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #78350f 0%, #b45309 100%);
+            color: #fef3c7;
+            border-color: #78350f;
+        }
+        .flip-hint {
+            position: absolute;
+            bottom: 0.4rem; right: 0.6rem;
+            font-size: 0.55rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        /* Mini quiz */
+        .quiz-option { transition: all 0.18s ease; cursor: pointer; }
+        .quiz-option:hover { transform: translateY(-1px); border-color: #d97706; }
+        .quiz-option.correct { background: #ecfdf5; border-color: #10b981; color: #065f46; }
+        .quiz-option.incorrect { background: #fef2f2; border-color: #ef4444; color: #991b1b; }
+        .quiz-option.selected { border-width: 2px; }
     </style>
 </head>
 <body class="bg-leo-pattern text-gray-800 min-h-screen flex flex-col">
@@ -107,27 +199,45 @@
         </div>
     </section>
 
-    <!-- At a Glance -->
+    <!-- Welcome, new Lion! -->
     <section class="container mx-auto px-6 -mt-10 relative z-20 max-w-5xl">
+        <div class="bg-gradient-to-r from-amber-700 via-amber-600 to-yellow-500 rounded-2xl shadow-xl p-6 md:p-8 text-white relative overflow-hidden">
+            <div class="absolute -right-6 -top-6 text-[7rem] opacity-20 select-none" aria-hidden="true">&#129409;</div>
+            <div class="relative z-10 max-w-3xl">
+                <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur border border-white/30 rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest mb-3">
+                    <span>&#128075;</span> Hey there, new Lion
+                </div>
+                <h3 class="font-heading font-black text-2xl md:text-3xl leading-tight mb-2">Welcome to the pride.</h3>
+                <p class="text-amber-50 text-sm md:text-base leading-relaxed">You're about to join a school that has been <em>pioneering</em> international education in the UAE capital since 1995. Skim this page once before your first staff meeting &mdash; there's a mini challenge at the end to see how much stuck. &#128170;</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- At a Glance -->
+    <section class="container mx-auto px-6 mt-6 relative z-20 max-w-5xl">
         <div class="bg-white rounded-2xl shadow-lg border border-amber-200 p-6 md:p-8">
             <div class="text-center mb-6">
-                <span class="text-amber-700 text-xs font-bold uppercase tracking-widest">At a Glance</span>
+                <span class="text-amber-700 text-xs font-bold uppercase tracking-widest">Pride Points</span>
                 <h3 class="font-heading font-black text-xl md:text-2xl text-amber-900 mt-1">AISA by the numbers</h3>
             </div>
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 text-center">
-                <div class="p-4 rounded-xl bg-amber-50 border border-amber-100">
-                    <div class="font-heading font-black text-3xl text-amber-900">1995</div>
+                <div class="p-4 rounded-xl bg-amber-50 border border-amber-100 hover:-translate-y-1 transition-transform">
+                    <div class="text-2xl mb-1" aria-hidden="true">&#127881;</div>
+                    <div class="font-heading font-black text-3xl text-amber-900"><span class="stat-counter" data-target="1995" data-suffix="">1995</span></div>
                     <p class="text-xs text-gray-600 mt-1 uppercase tracking-wider font-bold">Founded</p>
                 </div>
-                <div class="p-4 rounded-xl bg-amber-50 border border-amber-100">
-                    <div class="font-heading font-black text-3xl text-amber-900">~1,380</div>
+                <div class="p-4 rounded-xl bg-amber-50 border border-amber-100 hover:-translate-y-1 transition-transform">
+                    <div class="text-2xl mb-1" aria-hidden="true">&#127891;</div>
+                    <div class="font-heading font-black text-3xl text-amber-900">~<span class="stat-counter" data-target="1380" data-suffix="">1,380</span></div>
                     <p class="text-xs text-gray-600 mt-1 uppercase tracking-wider font-bold">Students</p>
                 </div>
-                <div class="p-4 rounded-xl bg-amber-50 border border-amber-100">
-                    <div class="font-heading font-black text-3xl text-amber-900">~75</div>
+                <div class="p-4 rounded-xl bg-amber-50 border border-amber-100 hover:-translate-y-1 transition-transform">
+                    <div class="text-2xl mb-1" aria-hidden="true">&#127758;</div>
+                    <div class="font-heading font-black text-3xl text-amber-900">~<span class="stat-counter" data-target="75" data-suffix="">75</span></div>
                     <p class="text-xs text-gray-600 mt-1 uppercase tracking-wider font-bold">Nationalities</p>
                 </div>
-                <div class="p-4 rounded-xl bg-amber-50 border border-amber-100">
+                <div class="p-4 rounded-xl bg-amber-50 border border-amber-100 hover:-translate-y-1 transition-transform">
+                    <div class="text-2xl mb-1" aria-hidden="true">&#128218;</div>
                     <div class="font-heading font-black text-3xl text-amber-900">KG&ndash;12</div>
                     <p class="text-xs text-gray-600 mt-1 uppercase tracking-wider font-bold">Grades</p>
                 </div>
@@ -138,6 +248,21 @@
     <!-- Main -->
     <main class="flex-grow">
         <div class="container mx-auto px-6 py-14 max-w-4xl">
+
+            <!-- Did You Know? rotator -->
+            <section class="dyk-card mb-14 p-7 md:p-8 text-center relative">
+                <div class="relative z-10">
+                    <div class="inline-flex items-center gap-2 bg-white/40 backdrop-blur border border-white/60 rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-widest text-amber-900 mb-3">
+                        <span>&#129300;</span> Did you know?
+                    </div>
+                    <p id="dyk-text" class="dyk-fade font-heading font-black text-xl md:text-2xl text-amber-900 max-w-2xl mx-auto leading-snug">Loading&hellip;</p>
+                    <div class="flex items-center justify-center gap-2 mt-5">
+                        <button type="button" id="dyk-prev" class="w-9 h-9 rounded-full bg-white/70 hover:bg-white text-amber-900 font-bold shadow transition" aria-label="Previous fact">&larr;</button>
+                        <span id="dyk-counter" class="text-xs font-bold text-amber-900/70 tracking-widest uppercase">1 / 5</span>
+                        <button type="button" id="dyk-next" class="w-9 h-9 rounded-full bg-white/70 hover:bg-white text-amber-900 font-bold shadow transition" aria-label="Next fact">&rarr;</button>
+                    </div>
+                </div>
+            </section>
 
             <!-- Founding -->
             <section class="mb-14">
@@ -171,6 +296,7 @@
                             <div class="text-xs font-black uppercase tracking-widest text-amber-700 mb-1">1995</div>
                             <h4 class="font-heading font-bold text-amber-900 text-lg mb-1">AISA opens its doors</h4>
                             <p class="text-gray-600 text-sm">ESOL Education founds the American International School in Abu Dhabi to bring American-standards education to the UAE capital's international community.</p>
+                            <div class="leo-note mt-3"><span>Fun fact: if AISA were a student, it'd be old enough to apply to university&hellip; twice.</span></div>
                         </div>
                     </div>
                     <div class="relative">
@@ -187,6 +313,7 @@
                             <div class="text-xs font-black uppercase tracking-widest text-amber-700 mb-1">IB Firsts</div>
                             <h4 class="font-heading font-bold text-amber-900 text-lg mb-1">Leading the UAE into the IB</h4>
                             <p class="text-gray-600 text-sm">AISA becomes the <strong>first school in the UAE</strong> to offer the IB Diploma Programme, and later the <strong>first in Abu Dhabi</strong> to be authorised for the IB Primary Years Programme (PYP).</p>
+                            <div class="leo-note mt-3"><span>When people say AISA "pioneered IB in the UAE" &mdash; this is the moment they mean.</span></div>
                         </div>
                     </div>
                     <div class="relative">
@@ -203,6 +330,7 @@
                             <div class="text-xs font-black uppercase tracking-widest text-amber-700 mb-1">Today</div>
                             <h4 class="font-heading font-bold text-amber-900 text-lg mb-1">A global learning community</h4>
                             <p class="text-gray-600 text-sm">Around <strong>1,380 students</strong> from roughly <strong>75 countries</strong> study alongside a faculty drawn from more than 25 nationalities &mdash; across the U.S. Curriculum, the IB PYP (KG&ndash;5), and the IB Diploma Programme (Grades 11&ndash;12).</p>
+                            <div class="leo-note mt-3"><span>That's more nationalities than most UN subcommittees. &#127754;</span></div>
                         </div>
                     </div>
                 </div>
@@ -260,9 +388,122 @@
                 </div>
             </section>
 
-            <!-- Mission & Values -->
+            <!-- Speak AISA glossary -->
             <section class="mb-14">
                 <span class="text-amber-700 text-xs font-bold uppercase tracking-widest">Chapter Four</span>
+                <h3 class="font-heading font-black text-3xl md:text-4xl text-amber-900 mt-2 mb-2">Speak AISA</h3>
+                <p class="text-sm text-gray-600 mb-6">Acronyms come fast at international schools. Tap each card to flip it.</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <div class="flip-card" onclick="this.classList.toggle('is-flipped')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('is-flipped');}">
+                        <div class="flip-card-inner">
+                            <div class="flip-face">
+                                <div class="font-heading font-black text-amber-900 text-2xl leading-tight">PYP</div>
+                                <p class="text-xs text-gray-600 mt-1">Tap to see what it means</p>
+                                <span class="flip-hint text-amber-700">Flip</span>
+                            </div>
+                            <div class="flip-face back">
+                                <div class="font-heading font-bold text-sm leading-tight">Primary Years Programme</div>
+                                <p class="text-[11px] mt-1 opacity-90">IB's inquiry-led programme for KG&ndash;Grade 5.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card" onclick="this.classList.toggle('is-flipped')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('is-flipped');}">
+                        <div class="flip-card-inner">
+                            <div class="flip-face">
+                                <div class="font-heading font-black text-amber-900 text-2xl leading-tight">DP</div>
+                                <p class="text-xs text-gray-600 mt-1">Tap to see what it means</p>
+                                <span class="flip-hint text-amber-700">Flip</span>
+                            </div>
+                            <div class="flip-face back">
+                                <div class="font-heading font-bold text-sm leading-tight">Diploma Programme</div>
+                                <p class="text-[11px] mt-1 opacity-90">The IB college-prep qualification for Grades 11&ndash;12.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card" onclick="this.classList.toggle('is-flipped')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('is-flipped');}">
+                        <div class="flip-card-inner">
+                            <div class="flip-face">
+                                <div class="font-heading font-black text-amber-900 text-2xl leading-tight">MSA</div>
+                                <p class="text-xs text-gray-600 mt-1">Tap to see what it means</p>
+                                <span class="flip-hint text-amber-700">Flip</span>
+                            </div>
+                            <div class="flip-face back">
+                                <div class="font-heading font-bold text-sm leading-tight">Middle States Association</div>
+                                <p class="text-[11px] mt-1 opacity-90">AISA's U.S. accrediting body since October 1997.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card" onclick="this.classList.toggle('is-flipped')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('is-flipped');}">
+                        <div class="flip-card-inner">
+                            <div class="flip-face">
+                                <div class="font-heading font-black text-amber-900 text-2xl leading-tight">CIS</div>
+                                <p class="text-xs text-gray-600 mt-1">Tap to see what it means</p>
+                                <span class="flip-hint text-amber-700">Flip</span>
+                            </div>
+                            <div class="flip-face back">
+                                <div class="font-heading font-bold text-sm leading-tight">Council of International Schools</div>
+                                <p class="text-[11px] mt-1 opacity-90">International accrediting body &mdash; AISA joined in January 2010.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card" onclick="this.classList.toggle('is-flipped')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('is-flipped');}">
+                        <div class="flip-card-inner">
+                            <div class="flip-face">
+                                <div class="font-heading font-black text-amber-900 text-2xl leading-tight">ADEK</div>
+                                <p class="text-xs text-gray-600 mt-1">Tap to see what it means</p>
+                                <span class="flip-hint text-amber-700">Flip</span>
+                            </div>
+                            <div class="flip-face back">
+                                <div class="font-heading font-bold text-sm leading-tight">Abu Dhabi Dept. of Education &amp; Knowledge</div>
+                                <p class="text-[11px] mt-1 opacity-90">The regulator for all Abu Dhabi schools, including AISA.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card" onclick="this.classList.toggle('is-flipped')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('is-flipped');}">
+                        <div class="flip-card-inner">
+                            <div class="flip-face">
+                                <div class="font-heading font-black text-amber-900 text-2xl leading-tight">PBIS</div>
+                                <p class="text-xs text-gray-600 mt-1">Tap to see what it means</p>
+                                <span class="flip-hint text-amber-700">Flip</span>
+                            </div>
+                            <div class="flip-face back">
+                                <div class="font-heading font-bold text-sm leading-tight">Positive Behavioural Interventions &amp; Supports</div>
+                                <p class="text-[11px] mt-1 opacity-90">The behaviour framework behind The Lion's Way.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card" onclick="this.classList.toggle('is-flipped')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('is-flipped');}">
+                        <div class="flip-card-inner">
+                            <div class="flip-face">
+                                <div class="font-heading font-black text-amber-900 text-2xl leading-tight">T&amp;L</div>
+                                <p class="text-xs text-gray-600 mt-1">Tap to see what it means</p>
+                                <span class="flip-hint text-amber-700">Flip</span>
+                            </div>
+                            <div class="flip-face back">
+                                <div class="font-heading font-bold text-sm leading-tight">Teaching &amp; Learning</div>
+                                <p class="text-[11px] mt-1 opacity-90">The department behind this Learning Hub &mdash; your home base for PD.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flip-card" onclick="this.classList.toggle('is-flipped')" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('is-flipped');}">
+                        <div class="flip-card-inner">
+                            <div class="flip-face">
+                                <div class="font-heading font-black text-amber-900 text-2xl leading-tight">RAIL</div>
+                                <p class="text-xs text-gray-600 mt-1">Tap to see what it means</p>
+                                <span class="flip-hint text-amber-700">Flip</span>
+                            </div>
+                            <div class="flip-face back">
+                                <div class="font-heading font-bold text-sm leading-tight">Responsible AI for Learning</div>
+                                <p class="text-[11px] mt-1 opacity-90">AISA's subcommittee steering AI policy, ethics, and scaffolding.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mission & Values -->
+            <section class="mb-14">
+                <span class="text-amber-700 text-xs font-bold uppercase tracking-widest">Chapter Five</span>
                 <h3 class="font-heading font-black text-3xl md:text-4xl text-amber-900 mt-2 mb-4">Our Mission &amp; Values</h3>
                 <p class="text-sm text-gray-600 italic mb-4">The school's official statements are maintained by the governance team; the summaries below are working drafts until they're replaced with the current wording from official AISA documents.</p>
                 <div class="grid md:grid-cols-3 gap-5">
@@ -286,12 +527,71 @@
 
             <!-- People -->
             <section class="mb-14">
-                <span class="text-amber-700 text-xs font-bold uppercase tracking-widest">Chapter Five</span>
+                <span class="text-amber-700 text-xs font-bold uppercase tracking-widest">Chapter Six</span>
                 <h3 class="font-heading font-black text-3xl md:text-4xl text-amber-900 mt-2 mb-4">The People</h3>
                 <div class="bg-white rounded-2xl shadow-md border border-amber-100 p-7 space-y-4">
                     <p class="text-gray-700 leading-relaxed">AISA's faculty is drawn from <strong>more than 25 countries</strong>, with the largest groups coming from the United States, South Africa, and Canada. Roughly <strong>131 teachers</strong> serve about 1,277 students, giving AISA a student-to-teacher ratio of approximately <strong>1:10</strong>, well below the Abu Dhabi private-school average.</p>
                     <p class="text-gray-700 leading-relaxed">From the founding team at ESOL Education to today's Board of Directors, Heads of School, and programme leaders, AISA has been shaped by educators who believe international schooling should be rigorous, inclusive, and rooted in community. Named bios, portraits, and a full leadership timeline will be added as the governance team finalises this section.</p>
                     <p class="text-sm text-amber-700 italic">&mdash; Leadership names and photos to be added by the governance team.</p>
+                </div>
+            </section>
+
+            <!-- Mini quiz: Ready to Join the Pride? -->
+            <section class="mb-14 bg-gradient-to-br from-amber-50 via-yellow-50 to-white rounded-[2rem] border-2 border-amber-200 shadow-md p-6 md:p-10">
+                <div class="text-center mb-6">
+                    <div class="inline-flex items-center gap-2 bg-amber-700 text-white rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-widest mb-3">
+                        <span>&#127919;</span> Mini Challenge
+                    </div>
+                    <h3 class="font-heading font-black text-3xl md:text-4xl text-amber-900">Ready to join the pride?</h3>
+                    <p class="text-sm md:text-base text-gray-600 mt-2">Four quick questions to see what stuck. No grading &mdash; just bragging rights.</p>
+                </div>
+
+                <div class="space-y-7">
+                    <div>
+                        <p class="font-semibold text-amber-900 mb-3">1. What year did AISA open?</p>
+                        <div id="q-1-options" class="grid sm:grid-cols-3 gap-3">
+                            <button type="button" class="quiz-option bg-white border-2 border-amber-200 rounded-xl px-4 py-3 text-sm font-semibold text-left" onclick="checkQuiz(1, this, false)">1987</button>
+                            <button type="button" class="quiz-option bg-white border-2 border-amber-200 rounded-xl px-4 py-3 text-sm font-semibold text-left" onclick="checkQuiz(1, this, true)">1995</button>
+                            <button type="button" class="quiz-option bg-white border-2 border-amber-200 rounded-xl px-4 py-3 text-sm font-semibold text-left" onclick="checkQuiz(1, this, false)">2003</button>
+                        </div>
+                        <p id="q-1-feedback" class="hidden mt-3 text-sm font-medium rounded-xl p-3"></p>
+                    </div>
+
+                    <div>
+                        <p class="font-semibold text-amber-900 mb-3">2. AISA was the first school in the UAE to offer&hellip;</p>
+                        <div id="q-2-options" class="grid sm:grid-cols-3 gap-3">
+                            <button type="button" class="quiz-option bg-white border-2 border-amber-200 rounded-xl px-4 py-3 text-sm font-semibold text-left" onclick="checkQuiz(2, this, false)">The American SAT</button>
+                            <button type="button" class="quiz-option bg-white border-2 border-amber-200 rounded-xl px-4 py-3 text-sm font-semibold text-left" onclick="checkQuiz(2, this, true)">The IB Diploma Programme</button>
+                            <button type="button" class="quiz-option bg-white border-2 border-amber-200 rounded-xl px-4 py-3 text-sm font-semibold text-left" onclick="checkQuiz(2, this, false)">A House system</button>
+                        </div>
+                        <p id="q-2-feedback" class="hidden mt-3 text-sm font-medium rounded-xl p-3"></p>
+                    </div>
+
+                    <div>
+                        <p class="font-semibold text-amber-900 mb-3">3. Roughly how many nationalities are represented at AISA?</p>
+                        <div id="q-3-options" class="grid sm:grid-cols-3 gap-3">
+                            <button type="button" class="quiz-option bg-white border-2 border-amber-200 rounded-xl px-4 py-3 text-sm font-semibold text-left" onclick="checkQuiz(3, this, false)">Around 25</button>
+                            <button type="button" class="quiz-option bg-white border-2 border-amber-200 rounded-xl px-4 py-3 text-sm font-semibold text-left" onclick="checkQuiz(3, this, false)">Around 40</button>
+                            <button type="button" class="quiz-option bg-white border-2 border-amber-200 rounded-xl px-4 py-3 text-sm font-semibold text-left" onclick="checkQuiz(3, this, true)">Around 75</button>
+                        </div>
+                        <p id="q-3-feedback" class="hidden mt-3 text-sm font-medium rounded-xl p-3"></p>
+                    </div>
+
+                    <div>
+                        <p class="font-semibold text-amber-900 mb-3">4. What does <em>ADEK</em> stand for?</p>
+                        <div id="q-4-options" class="grid sm:grid-cols-1 gap-3">
+                            <button type="button" class="quiz-option bg-white border-2 border-amber-200 rounded-xl px-4 py-3 text-sm font-semibold text-left" onclick="checkQuiz(4, this, false)">Abu Dhabi Educational Knowledge Foundation</button>
+                            <button type="button" class="quiz-option bg-white border-2 border-amber-200 rounded-xl px-4 py-3 text-sm font-semibold text-left" onclick="checkQuiz(4, this, true)">Abu Dhabi Department of Education and Knowledge</button>
+                            <button type="button" class="quiz-option bg-white border-2 border-amber-200 rounded-xl px-4 py-3 text-sm font-semibold text-left" onclick="checkQuiz(4, this, false)">American Diploma and Examination Kit</button>
+                        </div>
+                        <p id="q-4-feedback" class="hidden mt-3 text-sm font-medium rounded-xl p-3"></p>
+                    </div>
+                </div>
+
+                <div id="quiz-scoreboard" class="hidden mt-8 text-center bg-white rounded-2xl border border-amber-200 p-5">
+                    <div class="text-4xl mb-2" aria-hidden="true">&#129409;</div>
+                    <p class="font-heading font-black text-2xl text-amber-900">You scored <span id="quiz-score">0</span> / 4</p>
+                    <p id="quiz-score-msg" class="text-sm text-gray-600 mt-1"></p>
                 </div>
             </section>
 
@@ -316,6 +616,156 @@
             <p class="text-xs text-amber-200/80">American International School in Abu Dhabi</p>
         </div>
     </footer>
+
+    <script>
+        // --- Animated stat counters ---
+        (function(){
+            const counters = document.querySelectorAll('.stat-counter');
+            if (!counters.length) return;
+            const format = n => (n >= 1000 ? n.toLocaleString() : String(n));
+            const animate = (el) => {
+                const target = parseInt(el.dataset.target, 10);
+                if (isNaN(target)) return;
+                const duration = 900;
+                const startTs = performance.now();
+                const startVal = 0;
+                function step(ts) {
+                    const t = Math.min((ts - startTs) / duration, 1);
+                    const eased = 1 - Math.pow(1 - t, 3);
+                    el.textContent = format(Math.round(startVal + (target - startVal) * eased));
+                    if (t < 1) requestAnimationFrame(step);
+                }
+                requestAnimationFrame(step);
+            };
+            if ('IntersectionObserver' in window) {
+                const io = new IntersectionObserver((entries) => {
+                    entries.forEach(e => {
+                        if (e.isIntersecting) { animate(e.target); io.unobserve(e.target); }
+                    });
+                }, { threshold: 0.4 });
+                counters.forEach(c => io.observe(c));
+            } else {
+                counters.forEach(animate);
+            }
+        })();
+
+        // --- Did You Know? rotator ---
+        (function(){
+            const facts = [
+                "AISA was the <strong>first school in the UAE</strong> to offer the IB Diploma Programme.",
+                "AISA is an IB World School authorised for the <strong>PYP</strong> (KG&ndash;5) and the <strong>Diploma Programme</strong> (Grades 11&ndash;12).",
+                "AISA earned its first U.S. accreditation from the <strong>Middle States Association</strong> in October 1997.",
+                "Around <strong>1,380 students</strong> from roughly <strong>75 countries</strong> call AISA home.",
+                "AISA is part of a family of international schools operated by <strong>ESOL Education</strong> across the Middle East.",
+                "AISA was the <strong>first school in Abu Dhabi</strong> authorised to deliver the IB Primary Years Programme."
+            ];
+            const textEl = document.getElementById('dyk-text');
+            const counterEl = document.getElementById('dyk-counter');
+            const prevBtn = document.getElementById('dyk-prev');
+            const nextBtn = document.getElementById('dyk-next');
+            if (!textEl || !counterEl || !prevBtn || !nextBtn) return;
+            let idx = 0;
+            let auto;
+            const render = () => {
+                textEl.classList.remove('dyk-fade');
+                void textEl.offsetWidth;
+                textEl.classList.add('dyk-fade');
+                textEl.innerHTML = facts[idx];
+                counterEl.textContent = (idx + 1) + ' / ' + facts.length;
+            };
+            const go = (delta) => {
+                idx = (idx + delta + facts.length) % facts.length;
+                render();
+                resetAuto();
+            };
+            const resetAuto = () => {
+                clearInterval(auto);
+                auto = setInterval(() => go(1), 6000);
+            };
+            prevBtn.addEventListener('click', () => go(-1));
+            nextBtn.addEventListener('click', () => go(1));
+            render();
+            resetAuto();
+        })();
+
+        // --- Mini quiz ---
+        const quizAnswered = {};
+        const quizScores = {};
+        const quizFeedback = {
+            correct: {
+                1: "Correct! AISA opened in 1995 &mdash; three decades and counting.",
+                2: "Correct! AISA brought the IB Diploma to the UAE first.",
+                3: "Right. Roughly 75 countries &mdash; that's why staff meetings feel like a UN session.",
+                4: "Nailed it. ADEK regulates every Abu Dhabi school."
+            },
+            wrong: {
+                1: "Close, but AISA's founding year is 1995.",
+                2: "Not quite &mdash; AISA was first in the UAE with the IB Diploma Programme.",
+                3: "Bigger than that &mdash; roughly 75 nationalities.",
+                4: "ADEK = Abu Dhabi Department of Education and Knowledge."
+            }
+        };
+
+        function checkQuiz(n, el, isCorrect) {
+            if (quizAnswered[n]) return;
+            quizAnswered[n] = true;
+            quizScores[n] = isCorrect ? 1 : 0;
+            const options = document.querySelectorAll('#q-' + n + '-options .quiz-option');
+            const feedback = document.getElementById('q-' + n + '-feedback');
+            options.forEach(opt => {
+                opt.disabled = true;
+                opt.style.opacity = '0.6';
+            });
+            el.style.opacity = '1';
+            el.classList.add('selected');
+            if (isCorrect) {
+                el.classList.add('correct');
+                feedback.innerHTML = '<span class="inline-block mr-1">&#10003;</span>' + quizFeedback.correct[n];
+                feedback.classList.remove('hidden');
+                feedback.classList.add('bg-emerald-50','border','border-emerald-200','text-emerald-800');
+            } else {
+                el.classList.add('incorrect');
+                options.forEach(opt => {
+                    if (opt.getAttribute('onclick') && opt.getAttribute('onclick').includes('true')) {
+                        opt.style.opacity = '1';
+                        opt.classList.add('correct');
+                    }
+                });
+                feedback.innerHTML = '<span class="inline-block mr-1">&#10007;</span>' + quizFeedback.wrong[n];
+                feedback.classList.remove('hidden');
+                feedback.classList.add('bg-rose-50','border','border-rose-200','text-rose-800');
+            }
+            if (Object.keys(quizAnswered).length === 4) showScoreboard();
+        }
+
+        function showScoreboard() {
+            const score = Object.values(quizScores).reduce((a,b) => a + b, 0);
+            const board = document.getElementById('quiz-scoreboard');
+            const scoreEl = document.getElementById('quiz-score');
+            const msgEl = document.getElementById('quiz-score-msg');
+            if (!board || !scoreEl || !msgEl) return;
+            scoreEl.textContent = score;
+            const msgs = {
+                0: "Hey, even seasoned Lions had a first day. Scroll back up for a refresher!",
+                1: "A roar of a start. Give the timeline another skim and come back!",
+                2: "Halfway to the pride. You've got the gist!",
+                3: "Three out of four &mdash; the pride is impressed.",
+                4: "Perfect score! You're officially ready for your first day. &#129409;"
+            };
+            msgEl.textContent = msgs[score] || msgs[0];
+            board.classList.remove('hidden');
+            board.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            if (score === 4 && typeof confetti === 'function') {
+                confetti({
+                    particleCount: 180,
+                    spread: 90,
+                    origin: { y: 0.55 },
+                    colors: ['#b45309','#d97706','#f59e0b','#fde68a','#fef3c7'],
+                    disableForReducedMotion: true
+                });
+            }
+        }
+    </script>
 
 </body>
 </html>
