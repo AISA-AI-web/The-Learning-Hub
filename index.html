@@ -71,6 +71,48 @@
         .leo-bob    { animation: leo-bob 3.4s ease-in-out infinite; transform-origin: bottom center; }
         .leo-bubble { animation: leo-bubble-pop 0.5s ease-out 0.4s both; }
         .leo-mascot:hover .leo-bob  { animation-duration: 1.6s; }
+
+        /* Hub search */
+        .hub-result {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.7rem 1rem;
+            color: #e2e8f0;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        .hub-result:hover,
+        .hub-result.is-active {
+            background-color: rgba(255,255,255,0.07);
+        }
+        .hub-result .hub-result-icon {
+            flex-shrink: 0;
+            width: 2.25rem;
+            height: 2.25rem;
+            border-radius: 0.7rem;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+        }
+        .hub-result .hub-result-title { font-weight: 700; color: #ffffff; font-size: 0.95rem; line-height: 1.2; }
+        .hub-result .hub-result-desc  { color: rgba(226,232,240,0.7); font-size: 0.78rem; line-height: 1.3; margin-top: 0.1rem; }
+        .hub-result .hub-result-type  {
+            flex-shrink: 0;
+            font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+            color: rgba(191,219,254,0.85);
+            background: rgba(59,130,246,0.15);
+            border: 1px solid rgba(96,165,250,0.25);
+            border-radius: 0.5rem;
+            padding: 0.2rem 0.55rem;
+        }
+        .hub-result mark {
+            background: rgba(250,204,21,0.3);
+            color: #fde68a;
+            padding: 0 2px;
+            border-radius: 3px;
+        }
     </style>
 </head>
 <body class="hub-bg text-white min-h-screen flex flex-col">
@@ -101,6 +143,45 @@
     <!-- Card Grid -->
     <main class="relative z-10 flex-grow flex items-center justify-center px-6 py-8">
         <div class="w-full max-w-7xl">
+
+            <!-- Hub search -->
+            <div class="mb-8 md:mb-10 flex justify-center">
+                <div class="relative w-full max-w-2xl">
+                    <label for="hub-search" class="sr-only">Search the Learning Hub</label>
+                    <div class="flex items-center bg-white/10 hover:bg-white/15 focus-within:bg-white/15 border border-white/20 focus-within:border-white/40 rounded-2xl shadow-xl backdrop-blur-md transition-all px-4 py-3">
+                        <svg class="w-5 h-5 text-blue-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input id="hub-search" type="text" autocomplete="off" spellcheck="false"
+                               placeholder="Search modules, tools, committees, and more&hellip;"
+                               aria-expanded="false" aria-controls="hub-search-results" aria-autocomplete="list"
+                               class="flex-grow bg-transparent outline-none px-3 py-1 text-white placeholder:text-blue-200/60 text-base md:text-lg font-medium">
+                        <kbd id="hub-search-kbd" class="hidden md:inline-flex items-center gap-1 text-[10px] font-bold text-blue-200/80 bg-white/10 border border-white/15 rounded-md px-1.5 py-0.5 uppercase tracking-widest">&#8984; K</kbd>
+                        <button id="hub-search-clear" type="button" aria-label="Clear search"
+                                class="hidden ml-1 w-7 h-7 rounded-lg text-blue-200/80 hover:text-white hover:bg-white/10 transition-colors items-center justify-center">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+                        </button>
+                    </div>
+
+                    <!-- Results dropdown -->
+                    <div id="hub-search-results" role="listbox"
+                         class="hidden absolute left-0 right-0 top-full mt-3 bg-slate-900/95 border border-white/15 rounded-2xl shadow-2xl backdrop-blur-xl overflow-hidden z-40">
+                        <div id="hub-search-empty" class="hidden px-5 py-8 text-center">
+                            <div class="text-3xl mb-2" aria-hidden="true">&#128269;</div>
+                            <p class="text-white font-semibold">No matches found.</p>
+                            <p class="text-blue-200/70 text-sm mt-1">Try "AI", "committee", "MAP", or "orientation".</p>
+                        </div>
+                        <ul id="hub-search-list" class="max-h-[28rem] overflow-y-auto py-2 divide-y divide-white/5"></ul>
+                        <div class="flex items-center justify-between gap-2 px-4 py-2 border-t border-white/10 bg-white/[0.03] text-[10px] text-blue-200/70 uppercase tracking-widest font-bold">
+                            <span class="flex items-center gap-3">
+                                <span class="flex items-center gap-1"><kbd class="bg-white/10 border border-white/15 rounded px-1 py-0.5 normal-case text-[10px]">&#8593;</kbd><kbd class="bg-white/10 border border-white/15 rounded px-1 py-0.5 normal-case text-[10px]">&#8595;</kbd> Navigate</span>
+                                <span class="flex items-center gap-1"><kbd class="bg-white/10 border border-white/15 rounded px-1 py-0.5 normal-case text-[10px]">Enter</kbd> Open</span>
+                                <span class="hidden sm:flex items-center gap-1"><kbd class="bg-white/10 border border-white/15 rounded px-1 py-0.5 normal-case text-[10px]">Esc</kbd> Close</span>
+                            </span>
+                            <span id="hub-search-count"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 md:gap-6">
 
                 <!-- PD Modules -->
@@ -204,6 +285,203 @@
             <p class="text-[11px]">Developed by the Head of AI Integration and Educational Innovation</p>
         </div>
     </footer>
+
+    <!-- Hub search index + logic -->
+    <script>
+        const HUB_INDEX = [
+            // === Top-level pages ===
+            { title: "PD Modules", desc: "Self-paced masterclasses and required training.", url: "pd.html", type: "Page", icon: "🎓", keywords: "professional development training masterclass pd" },
+            { title: "Tools & Resources", desc: "AI tools, assessment guides, and daily instruction resources.", url: "tools.html", type: "Page", icon: "🛠️", keywords: "tools resources ai assessment teaching" },
+            { title: "Media Hub", desc: "Podcasts, newsletters, and community updates.", url: "media.html", type: "Page", icon: "🎙️", keywords: "media podcast newsletter updates video" },
+            { title: "Governance & Committees", desc: "Staff committees, meeting notes, and ownership.", url: "committees.html", type: "Page", icon: "🏛️", keywords: "governance committees committee staff leadership policy" },
+            { title: "Orientation", desc: "New-staff onboarding, welcome pack, and school overview.", url: "orientation.html", type: "Page", icon: "🦁", keywords: "orientation onboarding welcome new staff leo induction" },
+            { title: "Library Hub", desc: "Reading resources and tools for students.", url: "library-hub.html", type: "Page", icon: "📚", keywords: "library reading books students" },
+            { title: "Secondary Hub", desc: "Daily portal for the secondary school (external).", url: "https://sites.google.com/aisa.sch.ae/aisa-secondary", type: "Page", icon: "🏫", keywords: "secondary hub portal daily google site" },
+
+            // === PD modules ===
+            { title: "Objectives & Success Criteria", desc: "Craft clear objectives and tiered success criteria.", url: "pd.html#module-objectives", type: "PD Module", icon: "🎯", keywords: "objectives success criteria lesson planning tiered differentiation" },
+            { title: "NotebookLM for Presentations", desc: "Generate, resource, and refine slide decks in minutes.", url: "pd.html#module-notebooklm", type: "PD Module", icon: "📊", keywords: "notebooklm ai presentations slides deck gemini lesson planning" },
+            { title: "AI Vision & Ethical Framework", desc: "AISA AI policy, six principles, data protection, AI scaffolding scale.", url: "ai-ethics-module.html", type: "PD Module", icon: "🤖", keywords: "ai ethics policy governance principles data protection academic integrity approved tools vision framework" },
+            { title: "AI & Assessment Design", desc: "AI-proof tasks, viva voce defense, citation & reflection templates.", url: "ai-and-assessment.html", type: "PD Module", icon: "📝", keywords: "ai assessment design academic integrity viva voce oral defense rubric aias traffic light citation reflection prompting" },
+            { title: "Return to School: Emergency Protocol", desc: "ADEK Safe Education Protocol — shelter-in-place, safe zones, drills.", url: "return-to-school.html", type: "PD Module", icon: "🛡️", keywords: "return to school emergency protocol safety adek shelter drill safe zone mandatory training wellbeing risk" },
+
+            // === AI Tools ===
+            { title: "Magic School AI", desc: "AI teaching assistant for lesson and rubric generation.", url: "tools.html", type: "AI Tool", icon: "✨", keywords: "magic school ai teaching assistant rubric lesson" },
+            { title: "NotebookLM", desc: "Google AI research notebook & audio overviews.", url: "tools.html", type: "AI Tool", icon: "📓", keywords: "notebooklm google ai research notes audio" },
+            { title: "Gemini Storybooks", desc: "Generate illustrated storybooks with Gemini.", url: "tools.html", type: "AI Tool", icon: "📖", keywords: "gemini storybook story generation google" },
+            { title: "EduSim", desc: "Interactive simulations for inquiry learning.", url: "tools.html", type: "AI Tool", icon: "🧪", keywords: "edusim simulation interactive learning inquiry science" },
+            { title: "PBL Chatbot", desc: "Project-based learning chatbot scaffold.", url: "tools.html", type: "AI Tool", icon: "💬", keywords: "pbl chatbot project based learning scaffolding" },
+            { title: "MAP Growth Guide", desc: "NWEA MAP preparation and interpretation resources.", url: "tools.html", type: "Tool", icon: "📈", keywords: "map growth nwea assessment test prep rit scores" },
+            { title: "PIRLSpal", desc: "PIRLS reading comprehension practice companion.", url: "tools.html", type: "Tool", icon: "📚", keywords: "pirls reading comprehension companion literacy" },
+            { title: "Twinkl Resources", desc: "Curriculum resources, printables, and worksheets.", url: "tools.html", type: "Tool", icon: "🖨️", keywords: "twinkl resources printables worksheets curriculum" },
+
+            // === Other ===
+            { title: "Request Additional AI Training", desc: "Reserve your spot for an advanced AI deep-dive.", url: "pd.html", type: "Action", icon: "✨", keywords: "ai training request additional reserve form deep dive" }
+        ];
+    </script>
+
+    <script>
+        (function () {
+            const input = document.getElementById('hub-search');
+            const resultsBox = document.getElementById('hub-search-results');
+            const list = document.getElementById('hub-search-list');
+            const emptyMsg = document.getElementById('hub-search-empty');
+            const countEl = document.getElementById('hub-search-count');
+            const clearBtn = document.getElementById('hub-search-clear');
+            const kbd = document.getElementById('hub-search-kbd');
+            if (!input || !resultsBox || !list) return;
+
+            const MAX_RESULTS = 8;
+            let activeIndex = -1;
+            let currentResults = [];
+
+            function escapeHtml(s) {
+                return String(s).replace(/[&<>"']/g, c => ({
+                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+                }[c]));
+            }
+
+            function highlight(text, q) {
+                const safe = escapeHtml(text);
+                if (!q) return safe;
+                const rx = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+                return safe.replace(rx, '<mark>$1</mark>');
+            }
+
+            function score(item, q) {
+                const title = item.title.toLowerCase();
+                const desc = (item.desc || '').toLowerCase();
+                const keywords = (item.keywords || '').toLowerCase();
+                const type = (item.type || '').toLowerCase();
+                if (title.startsWith(q)) return 100;
+                if (title.includes(q))   return 80;
+                if (keywords.includes(q)) return 60;
+                if (type.includes(q))     return 40;
+                if (desc.includes(q))     return 20;
+                return 0;
+            }
+
+            function renderResults(q) {
+                list.innerHTML = '';
+                currentResults = [];
+                activeIndex = -1;
+
+                if (!q) {
+                    resultsBox.classList.add('hidden');
+                    input.setAttribute('aria-expanded', 'false');
+                    return;
+                }
+
+                const scored = HUB_INDEX
+                    .map(item => ({ item, s: score(item, q) }))
+                    .filter(r => r.s > 0)
+                    .sort((a, b) => b.s - a.s)
+                    .slice(0, MAX_RESULTS)
+                    .map(r => r.item);
+
+                currentResults = scored;
+                resultsBox.classList.remove('hidden');
+                input.setAttribute('aria-expanded', 'true');
+
+                if (scored.length === 0) {
+                    emptyMsg.classList.remove('hidden');
+                    countEl.textContent = '';
+                    return;
+                }
+                emptyMsg.classList.add('hidden');
+                countEl.textContent = scored.length + (scored.length === 1 ? ' result' : ' results');
+
+                scored.forEach((item, i) => {
+                    const li = document.createElement('li');
+                    li.className = 'hub-result';
+                    li.setAttribute('role', 'option');
+                    li.setAttribute('data-index', i);
+                    li.innerHTML =
+                        '<span class="hub-result-icon" aria-hidden="true">' + escapeHtml(item.icon || '•') + '</span>' +
+                        '<span class="flex-grow min-w-0">' +
+                            '<span class="hub-result-title block truncate">' + highlight(item.title, q) + '</span>' +
+                            '<span class="hub-result-desc block truncate">' + highlight(item.desc || '', q) + '</span>' +
+                        '</span>' +
+                        '<span class="hub-result-type">' + escapeHtml(item.type || '') + '</span>';
+                    li.addEventListener('click', () => openResult(item));
+                    li.addEventListener('mouseenter', () => setActive(i));
+                    list.appendChild(li);
+                });
+                setActive(0);
+            }
+
+            function setActive(i) {
+                activeIndex = i;
+                const items = list.querySelectorAll('.hub-result');
+                items.forEach((el, idx) => el.classList.toggle('is-active', idx === i));
+                const el = items[i];
+                if (el) el.scrollIntoView({ block: 'nearest' });
+            }
+
+            function openResult(item) {
+                if (!item) return;
+                const external = /^https?:\/\//.test(item.url);
+                if (external) {
+                    window.open(item.url, '_blank', 'noopener');
+                } else {
+                    window.location.href = item.url;
+                }
+            }
+
+            input.addEventListener('input', e => {
+                const q = e.target.value.trim().toLowerCase();
+                clearBtn.classList.toggle('hidden', q.length === 0);
+                clearBtn.classList.toggle('flex', q.length > 0);
+                if (kbd) kbd.classList.toggle('hidden', q.length > 0 || window.innerWidth < 768);
+                renderResults(q);
+            });
+
+            input.addEventListener('keydown', e => {
+                if (!currentResults.length && e.key !== 'Escape') return;
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setActive((activeIndex + 1) % currentResults.length);
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setActive((activeIndex - 1 + currentResults.length) % currentResults.length);
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    openResult(currentResults[activeIndex] || currentResults[0]);
+                } else if (e.key === 'Escape') {
+                    input.value = '';
+                    renderResults('');
+                    clearBtn.classList.add('hidden');
+                    clearBtn.classList.remove('flex');
+                    input.blur();
+                }
+            });
+
+            clearBtn.addEventListener('click', () => {
+                input.value = '';
+                renderResults('');
+                clearBtn.classList.add('hidden');
+                clearBtn.classList.remove('flex');
+                input.focus();
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', e => {
+                if (!resultsBox.contains(e.target) && e.target !== input) {
+                    resultsBox.classList.add('hidden');
+                    input.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            // Global shortcut: ⌘K / Ctrl+K
+            document.addEventListener('keydown', e => {
+                if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    input.focus();
+                    input.select();
+                }
+            });
+        })();
+    </script>
 
 </body>
 </html>
