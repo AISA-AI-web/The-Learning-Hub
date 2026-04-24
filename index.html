@@ -212,28 +212,30 @@
                     </div>
                 </a>
 
-                <!-- Media Hub -->
-                <a href="media.html" class="hub-card group block rounded-2xl p-6 md:p-7 border border-pink-400/30 bg-gradient-to-br from-purple-600/40 to-pink-700/40 hover:border-pink-300/70">
-                    <div class="flex items-start justify-between mb-5">
-                        <div class="h-14 w-14 rounded-2xl bg-pink-500/40 border border-pink-300/40 flex items-center justify-center text-3xl shadow-lg">🎙️</div>
-                        <span class="text-[10px] font-bold text-pink-100 bg-pink-900/60 border border-pink-400/40 rounded-full px-3 py-1 uppercase tracking-widest">Updates</span>
-                    </div>
-                    <h3 class="font-heading font-extrabold text-xl md:text-2xl mb-2">Media Hub</h3>
-                    <p class="text-pink-100/80 text-sm leading-relaxed mb-5">Latest podcasts, newsletters, and community updates from the T&amp;L Department.</p>
-                    <div class="flex items-center text-pink-100 text-sm font-semibold">
-                        Listen &amp; read
-                        <svg class="w-4 h-4 ml-2 arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                    </div>
-                </a>
+                <!-- Row 2: 4 equal-sized tiles (2 under PD, 2 under Tools) -->
+                <div class="sm:col-span-2 grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
 
-                <!-- Mini-tile cluster: Governance / Secondary Hub / Library Hub / (empty) -->
-                <div class="grid grid-cols-2 grid-rows-2 gap-3 md:gap-4">
+                    <a href="media.html" class="hub-card group block rounded-xl p-4 md:p-5 border border-pink-400/30 bg-gradient-to-br from-purple-600/50 to-pink-700/50 hover:border-pink-300/70 flex flex-col justify-between min-h-[7rem]">
+                        <div class="text-3xl leading-none" aria-hidden="true">🎙️</div>
+                        <div class="mt-2">
+                            <h3 class="font-heading font-extrabold text-base md:text-lg leading-tight">Media Hub</h3>
+                            <p class="text-[10px] text-pink-100/70 uppercase tracking-widest font-bold mt-0.5">Podcasts &amp; News</p>
+                        </div>
+                    </a>
 
                     <a href="committees.html" class="hub-card group block rounded-xl p-4 md:p-5 border border-amber-400/30 bg-gradient-to-br from-amber-600/50 to-orange-700/50 hover:border-amber-300/70 flex flex-col justify-between min-h-[7rem]">
                         <div class="text-3xl leading-none" aria-hidden="true">🏛️</div>
                         <div class="mt-2">
                             <h3 class="font-heading font-extrabold text-base md:text-lg leading-tight">Governance</h3>
                             <p class="text-[10px] text-amber-100/70 uppercase tracking-widest font-bold mt-0.5">Committees</p>
+                        </div>
+                    </a>
+
+                    <a href="library-hub.html" class="hub-card group block rounded-xl p-4 md:p-5 border border-yellow-400/30 bg-gradient-to-br from-yellow-600/50 to-amber-700/50 hover:border-yellow-300/70 flex flex-col justify-between min-h-[7rem]">
+                        <div class="text-3xl leading-none" aria-hidden="true">📚</div>
+                        <div class="mt-2">
+                            <h3 class="font-heading font-extrabold text-base md:text-lg leading-tight">Library Hub</h3>
+                            <p class="text-[10px] text-yellow-100/70 uppercase tracking-widest font-bold mt-0.5">For Students</p>
                         </div>
                     </a>
 
@@ -247,18 +249,6 @@
                             <p class="text-[10px] text-sky-100/70 uppercase tracking-widest font-bold mt-0.5">Daily Portal</p>
                         </div>
                     </a>
-
-                    <a href="library-hub.html" class="hub-card group block rounded-xl p-4 md:p-5 border border-yellow-400/30 bg-gradient-to-br from-yellow-600/50 to-amber-700/50 hover:border-yellow-300/70 flex flex-col justify-between min-h-[7rem]">
-                        <div class="text-3xl leading-none" aria-hidden="true">📚</div>
-                        <div class="mt-2">
-                            <h3 class="font-heading font-extrabold text-base md:text-lg leading-tight">Library Hub</h3>
-                            <p class="text-[10px] text-yellow-100/70 uppercase tracking-widest font-bold mt-0.5">For Students</p>
-                        </div>
-                    </a>
-
-                    <div class="rounded-xl border border-dashed border-white/15 bg-white/[0.03] flex items-center justify-center min-h-[7rem]" aria-hidden="true">
-                        <span class="text-white/25 text-[10px] uppercase tracking-widest font-bold">Coming Soon</span>
-                    </div>
 
                 </div>
 
