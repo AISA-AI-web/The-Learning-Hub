@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Living in Abu Dhabi</title>
+    <meta name="description" content="Beyond the school day: leisure, shopping, food, events, useful apps, basic Arabic, the UAE national anthem, and AISA's address for new teachers.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: { extend: {
+                    fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                    colors: { primary: '#b45309', secondary: '#d97706', accent: '#fbbf24' }
+                }}
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .hero-gradient { background: linear-gradient(135deg, #78350f 0%, #b45309 45%, #f59e0b 100%); }
+        .bg-leo-pattern {
+            background-color: #fef3c7;
+            background-image:
+                radial-gradient(ellipse at top left, rgba(251, 191, 36, 0.18), transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(180, 83, 9, 0.12), transparent 50%);
+        }
+        .resource-pill { transition: background-color .2s ease; }
+        .resource-pill:hover { background-color: #fde68a; }
+    </style>
+</head>
+<body class="bg-leo-pattern text-gray-800 min-h-screen flex flex-col">
+
+    <header class="bg-white/85 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-amber-100">
+        <div class="h-1 bg-gradient-to-r from-amber-700 via-amber-500 to-yellow-400 w-full"></div>
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="orientation-hub.html" class="flex items-center gap-4 group" title="Back to Orientation Hub">
+                <img src="../AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/92400e/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-amber-900 tracking-tight leading-none uppercase font-heading group-hover:text-amber-700 transition-colors">Living in Abu Dhabi</h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-amber-700/80 uppercase tracking-widest mt-0.5">Orientation Hub</span>
+                </div>
+            </a>
+            <a href="orientation-hub.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-amber-800 transition-all duration-300 hover:bg-amber-50">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Back to Hub
+            </a>
+        </nav>
+    </header>
+
+    <section class="hero-gradient text-white relative overflow-hidden">
+        <div class="container mx-auto px-6 py-12 md:py-16 relative z-10">
+            <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-5">
+                <span class="text-xl">&#127964;</span>
+                <span class="text-xs font-bold uppercase tracking-widest">Beyond the School Day</span>
+            </div>
+            <h2 class="text-3xl md:text-5xl font-heading font-extrabold leading-tight mb-3 drop-shadow-lg">Living in Abu Dhabi.</h2>
+            <p class="text-lg max-w-2xl text-amber-50 drop-shadow">Stay curious, embrace the cultural differences, and take full advantage of the adventure ahead. Here's how AISA staff make the most of life in the capital.</p>
+        </div>
+    </section>
+
+    <main class="flex-grow">
+        <div class="container mx-auto px-6 py-12 max-w-5xl space-y-14">
+
+            <!-- Quick Nav -->
+            <nav class="bg-white rounded-2xl shadow-sm border border-amber-100 p-5">
+                <p class="text-[10px] font-bold text-amber-700 uppercase tracking-widest mb-3">Jump to</p>
+                <div class="flex flex-wrap gap-2 text-sm">
+                    <a href="#about" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">About the UAE</a>
+                    <a href="#leisure" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Leisure</a>
+                    <a href="#shopping" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Shopping</a>
+                    <a href="#food" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Food</a>
+                    <a href="#events" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Events</a>
+                    <a href="#apps" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Apps &amp; Groups</a>
+                    <a href="#arabic" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Basic Arabic</a>
+                    <a href="#anthem" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">National Anthem</a>
+                    <a href="#campus" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">AISA Campus</a>
+                </div>
+            </nav>
+
+            <!-- About the UAE / Abu Dhabi -->
+            <section id="about">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="h-9 w-9 rounded-xl bg-amber-100 flex items-center justify-center text-xl">&#127965;</span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">About the UAE &amp; Abu Dhabi</h3>
+                </div>
+                <div class="bg-white rounded-2xl shadow-md border-l-8 border-amber-600 p-6 md:p-7 mb-5">
+                    <p class="text-gray-700 mb-3">The UAE is a union of seven emirates formed in <strong>1971</strong>. Each emirate is ruled by a sheikh and is independent in its governance. <strong>Abu Dhabi</strong> is the richest emirate, with wealth from oil; <strong>Dubai</strong> is the second richest and the main trading port. The country has one of the highest incomes per capita in the world.</p>
+                    <p class="text-gray-700">Abu Dhabi is vibrant, safe, and rapidly growing &mdash; emerging as a cultural hub of the Gulf. The <strong>Saadiyat Island Cultural District</strong> hosts the Louvre Abu Dhabi, the upcoming Guggenheim, concert halls, and theaters. Outdoor enthusiasts have easy access to the Rub Al Khali (the world's largest sand desert), the Omani mountains, and miles of beaches. Many AISA teachers enjoy desert camping and coastal boating.</p>
+                </div>
+                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+                    <p class="text-sm text-gray-700">The cost of living for expatriates is reasonable compared to Europe, North America, or much of Asia &mdash; though prices have risen alongside the economic boom.</p>
+                </div>
+            </section>
+
+            <!-- Leisure -->
+            <section id="leisure">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="h-9 w-9 rounded-xl bg-sky-100 flex items-center justify-center text-xl">&#127946;</span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Leisure &amp; Activities</h3>
+                </div>
+                <p class="text-gray-700 mb-5 max-w-3xl">We work hard at AISA, but we also play hard. Make time for yourself &mdash; your students will benefit.</p>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-sky-500 p-5">
+                        <div class="text-3xl mb-2">&#127948;</div>
+                        <h4 class="font-heading font-bold text-sky-900 mb-1">Sports</h4>
+                        <p class="text-xs text-gray-600">Numerous golf courses with reasonable green fees. Many teachers play on basketball, football, and hockey teams.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-sky-500 p-5">
+                        <div class="text-3xl mb-2">&#127958;&#65039;</div>
+                        <h4 class="font-heading font-bold text-sky-900 mb-1">Beaches &amp; Resorts</h4>
+                        <p class="text-xs text-gray-600">The Corniche is the most famous; some have segregated sections. Bikinis are worn, topless bathing is prohibited. Resorts offer spas and water sports.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-sky-500 p-5">
+                        <div class="text-3xl mb-2">&#127904;</div>
+                        <h4 class="font-heading font-bold text-sky-900 mb-1">Theme Parks</h4>
+                        <p class="text-xs text-gray-600">Yas Water World and Ferrari World (with one of the fastest roller coasters anywhere). New parks open across the UAE often.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-sky-500 p-5">
+                        <div class="text-3xl mb-2">&#129704;</div>
+                        <h4 class="font-heading font-bold text-sky-900 mb-1">Spas &amp; Salons</h4>
+                        <p class="text-xs text-gray-600">Salons are gender-segregated. Tip to Toes and Bedashing are popular for manicures and pedicures.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Shopping -->
+            <section id="shopping">
+                <div class="flex items-center gap-3 mb-5">
+                    <span class="h-9 w-9 rounded-xl bg-rose-100 flex items-center justify-center text-xl">&#128722;</span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Shopping</h3>
+                </div>
+
+                <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-rose-500 p-5">
+                        <div class="text-3xl mb-2">&#127978;</div>
+                        <h4 class="font-heading font-bold text-rose-900 mb-1">Malls</h4>
+                        <p class="text-xs text-gray-600">Galleria, Reem, and Yas Mall. From Forever 21 and Gap to Chanel and Gucci. Many include ski slopes, flight simulators, and cafes for sightseeing.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-rose-500 p-5">
+                        <div class="text-3xl mb-2">&#129507;</div>
+                        <h4 class="font-heading font-bold text-rose-900 mb-1">Souks &amp; Fabrics</h4>
+                        <p class="text-xs text-gray-600">Souks in Abu Dhabi and Dubai for bargaining practice. Fabric is sold widely; many staff customize wardrobes via local tailors.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-rose-500 p-5">
+                        <div class="text-3xl mb-2">&#128230;</div>
+                        <h4 class="font-heading font-bold text-rose-900 mb-1">Dragon Mart</h4>
+                        <p class="text-xs text-gray-600">In Dubai &mdash; a mile of everything from bicycles to furniture, clothing, and food. Top spot for furnishing your apartment.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-rose-500 p-5">
+                        <div class="text-3xl mb-2">&#127979;</div>
+                        <h4 class="font-heading font-bold text-rose-900 mb-1">Local Shops</h4>
+                        <p class="text-xs text-gray-600">Exotic products: fabrics from India, bejewelled shoes from Pakistan, gold from everywhere. Don't skip them.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Placeholder: Food / Events / Apps / Arabic / Anthem / Campus in next chunk -->
+
+        </div>
+    </main>
+
+    <footer class="bg-amber-900 text-amber-100 mt-auto">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <img src="../AISA_logo.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
+                <span class="font-heading font-bold text-lg tracking-wide">AISA Orientation Hub</span>
+            </div>
+            <p class="text-xs text-amber-200/80">American International School in Abu Dhabi &middot; Welcome to the Pride</p>
+        </div>
+    </footer>
+
+</body>
+</html>
