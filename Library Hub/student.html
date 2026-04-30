@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Library Hub — For Students</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            heading: ['Poppins', 'sans-serif'],
+                        },
+                        colors: {
+                            primary: '#b45309',
+                            secondary: '#92400e',
+                            accent: '#f59e0b',
+                        },
+                        animation: {
+                            'blob': 'blob 7s infinite',
+                            'float-slow': 'float 6s ease-in-out infinite',
+                        },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            },
+                            float: {
+                                '0%, 100%': { transform: 'translateY(0)' },
+                                '50%': { transform: 'translateY(-8px)' },
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .bg-library-pattern {
+            background-color: #fffbeb;
+            background-image:
+                radial-gradient(ellipse at top left, rgba(251, 191, 36, 0.12), transparent 50%),
+                radial-gradient(ellipse at bottom right, rgba(180, 83, 9, 0.10), transparent 50%);
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -10px rgba(180, 83, 9, 0.25);
+        }
+        .hero-gradient {
+            background: linear-gradient(135deg, #78350f 0%, #b45309 45%, #d97706 100%);
+        }
+        .hero-overlay {
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 0, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.10) 0, transparent 40%);
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #fef3c7; }
+        ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b45309; }
+    </style>
+</head>
+<body class="bg-library-pattern text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header: Library branded, student view -->
+    <header class="bg-white/85 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-amber-100">
+        <div class="h-1 bg-gradient-to-r from-amber-700 via-amber-500 to-yellow-400 w-full"></div>
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <img src="../AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain" onerror="this.src='https://via.placeholder.com/150/92400e/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-amber-900 tracking-tight leading-none uppercase font-heading">AISA Library</h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-amber-700/80 uppercase tracking-widest mt-0.5">For Students</span>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center gap-2">
+                <a href="library-hub.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-amber-800 transition-all duration-300 hover:bg-amber-50">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                    Library Hub
+                </a>
+                <a href="#research-tools" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-amber-800 transition-all duration-300 hover:bg-amber-50">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    Research Tools
+                </a>
+                <a href="#databases" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-amber-800 transition-all duration-300 hover:bg-amber-50">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
+                    Databases
+                </a>
+                <a href="#guidelines" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-amber-800 transition-all duration-300 hover:bg-amber-50">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    AI Guidelines
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient text-white relative overflow-hidden">
+        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
+        <div class="absolute -top-20 -left-20 w-72 h-72 bg-amber-300/20 rounded-full blur-3xl animate-blob"></div>
+        <div class="absolute -bottom-24 -right-16 w-80 h-80 bg-yellow-200/20 rounded-full blur-3xl animate-blob" style="animation-delay: 2s;"></div>
+        <div class="container mx-auto px-6 py-20 md:py-24 text-center relative z-10">
+            <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
+                <span class="text-xl">📚</span>
+                <span class="text-xs font-bold uppercase tracking-widest">Welcome to the Library Hub</span>
+            </div>
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-5 drop-shadow-lg">Research Smarter. Read Deeper.</h2>
+            <p class="text-lg md:text-xl max-w-3xl mx-auto text-amber-50 drop-shadow">
+                Your one-stop destination for research tools, AI-powered study companions, and guidelines that help you explore ideas with confidence and integrity.
+            </p>
+            <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#research-tools" class="inline-flex items-center gap-2 bg-white text-amber-800 font-bold py-3 px-6 rounded-full shadow-lg hover:bg-amber-50 transition-colors">
+                    Explore Research Tools
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+        <div class="container mx-auto px-6 py-14">
+
+            <!-- Research Tools Section -->
+            <section id="research-tools" class="mb-16 bg-white rounded-3xl shadow-lg border border-amber-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-amber-700 to-yellow-600 p-8 md:p-10 text-white text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 opacity-10 transform translate-x-1/4 -translate-y-1/4">
+                        <svg width="220" height="220" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    </div>
+                    <h3 class="text-3xl md:text-4xl font-extrabold font-heading flex items-center justify-center mb-3 relative z-10">
+                        <span class="text-4xl mr-3">🔎</span> Research Tools
+                    </h3>
+                    <p class="text-amber-50 max-w-2xl mx-auto text-lg relative z-10">AI-powered companions to help you choose a topic, search effectively, and think critically about sources.</p>
+                </div>
+
+                <div class="p-6 md:p-10 bg-amber-50/30">
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                        <!-- Card 1: Research Topic Advisor -->
+                        <div class="bg-white p-7 rounded-2xl shadow-lg card-hover border-t-8 border-amber-600 flex flex-col">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="h-14 w-14 rounded-2xl bg-amber-100 flex items-center justify-center text-3xl">🧭</div>
+                                <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">AI Advisor</span>
+                            </div>
+                            <h4 class="text-xl font-bold font-heading text-amber-900 mb-2">Research Topic Advisor</h4>
+                            <p class="text-gray-600 text-sm mb-5 flex-grow">Not sure where to start? Brainstorm ideas, narrow a broad subject, and shape a focused, researchable question with an AI guide at your side.</p>
+                            <ul class="text-xs text-gray-500 mb-5 space-y-1.5">
+                                <li class="flex items-start"><span class="text-amber-600 mr-2">✓</span> Refine broad ideas into sharp research questions</li>
+                                <li class="flex items-start"><span class="text-amber-600 mr-2">✓</span> Explore angles, themes, and sub-topics</li>
+                                <li class="flex items-start"><span class="text-amber-600 mr-2">✓</span> Scaffolded prompts for any subject</li>
+                            </ul>
+                            <a href="https://gemini.google.com/gem/1QuNMomwigyvt_GltuOpN29fR78Y59xIQ?usp=sharing" target="_blank" rel="noopener noreferrer" class="mt-auto block w-full bg-amber-700 text-white text-center py-3 rounded-xl font-semibold hover:bg-amber-800 transition-colors shadow-md">
+                                Launch Advisor
+                            </a>
+                        </div>
+
+                        <!-- Card 2: Research Search Assistant Gem -->
+                        <div class="bg-white p-7 rounded-2xl shadow-lg card-hover border-t-8 border-yellow-500 flex flex-col">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="h-14 w-14 rounded-2xl bg-yellow-100 flex items-center justify-center text-3xl">💎</div>
+                                <span class="inline-block bg-yellow-100 text-yellow-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Gemini Gem</span>
+                            </div>
+                            <h4 class="text-xl font-bold font-heading text-amber-900 mb-2">Library Search Assistant</h4>
+                            <p class="text-gray-600 text-sm mb-5 flex-grow">A custom Gemini Gem that helps you search smarter — building keywords, suggesting databases, and evaluating the reliability of what you find.</p>
+                            <ul class="text-xs text-gray-500 mb-5 space-y-1.5">
+                                <li class="flex items-start"><span class="text-yellow-600 mr-2">✓</span> Generate effective search terms &amp; synonyms</li>
+                                <li class="flex items-start"><span class="text-yellow-600 mr-2">✓</span> Guidance on credible sources &amp; databases</li>
+                                <li class="flex items-start"><span class="text-yellow-600 mr-2">✓</span> Help evaluating and comparing results</li>
+                            </ul>
+                            <a href="https://gemini.google.com/gem/1Lg5ZDo_Fl09qhTBjYnVu2dADexhtf-3p?usp=sharing" target="_blank" rel="noopener noreferrer" class="mt-auto block w-full bg-yellow-600 text-white text-center py-3 rounded-xl font-semibold hover:bg-yellow-700 transition-colors shadow-md">
+                                Open the Gem
+                            </a>
+                        </div>
+
+                        <!-- Card 3: AI Research Guidelines (Coming Soon) -->
+                        <div id="guidelines" class="bg-white p-7 rounded-2xl shadow-lg card-hover border-t-8 border-orange-400 flex flex-col relative overflow-hidden">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="h-14 w-14 rounded-2xl bg-orange-100 flex items-center justify-center text-3xl">📖</div>
+                                <span class="inline-block bg-orange-100 text-orange-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Coming Soon</span>
+                            </div>
+                            <h4 class="text-xl font-bold font-heading text-amber-900 mb-2">AI Research Guidelines</h4>
+                            <p class="text-gray-600 text-sm mb-5 flex-grow">Student-friendly guidelines for using AI responsibly in research — what is okay, what is not, and how to cite your thinking with integrity. Embedded here once our scope &amp; sequence document is complete.</p>
+                            <ul class="text-xs text-gray-500 mb-5 space-y-1.5">
+                                <li class="flex items-start"><span class="text-orange-500 mr-2">✓</span> Clear do's and don'ts for students</li>
+                                <li class="flex items-start"><span class="text-orange-500 mr-2">✓</span> Citation and academic integrity guidance</li>
+                                <li class="flex items-start"><span class="text-orange-500 mr-2">✓</span> Aligned to AISA's AI framework</li>
+                            </ul>
+                            <button disabled class="mt-auto block w-full bg-orange-200 text-orange-800 text-center py-3 rounded-xl font-semibold cursor-not-allowed">
+                                Coming Soon
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- Research Databases Section -->
+            <section id="databases" class="mb-16 bg-white rounded-3xl shadow-lg border border-amber-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-stone-700 to-amber-800 p-8 md:p-10 text-white text-center relative overflow-hidden">
+                    <div class="absolute bottom-0 left-0 opacity-10 transform -translate-x-1/4 translate-y-1/4">
+                        <svg width="220" height="220" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+                    </div>
+                    <h3 class="text-3xl md:text-4xl font-extrabold font-heading flex items-center justify-center mb-3 relative z-10">
+                        <span class="text-4xl mr-3">🗄️</span> Research Databases
+                    </h3>
+                    <p class="text-amber-50 max-w-2xl mx-auto text-lg relative z-10">Trusted academic databases with peer-reviewed articles, magazines, and primary sources for your research projects.</p>
+                </div>
+
+                <div class="p-6 md:p-10 bg-amber-50/30">
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+                        <!-- Database: EBSCO -->
+                        <a href="https://www.ebsco.com/" target="_blank" rel="noopener noreferrer" class="block">
+                            <div class="bg-white p-7 rounded-2xl shadow-lg card-hover border-t-8 border-stone-600 flex flex-col h-full">
+                                <div class="flex items-start justify-between mb-4">
+                                    <div class="h-14 w-14 rounded-2xl bg-stone-100 flex items-center justify-center text-3xl">📰</div>
+                                    <span class="inline-block bg-stone-100 text-stone-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Database</span>
+                                </div>
+                                <h4 class="text-xl font-bold font-heading text-amber-900 mb-2">EBSCO Library</h4>
+                                <p class="text-gray-600 text-sm mb-5 flex-grow">Access peer-reviewed journals, magazines, newspapers, and reference materials across every subject area — a reliable starting point for any serious research project.</p>
+                                <ul class="text-xs text-gray-500 mb-5 space-y-1.5">
+                                    <li class="flex items-start"><span class="text-stone-600 mr-2">✓</span> Peer-reviewed academic sources</li>
+                                    <li class="flex items-start"><span class="text-stone-600 mr-2">✓</span> Full-text articles across subjects</li>
+                                    <li class="flex items-start"><span class="text-stone-600 mr-2">✓</span> Citation tools built in</li>
+                                </ul>
+                                <span class="mt-auto block w-full bg-stone-700 text-white text-center py-3 rounded-xl font-semibold hover:bg-stone-800 transition-colors shadow-md">
+                                    Visit EBSCO
+                                </span>
+                            </div>
+                        </a>
+
+                    </div>
+                </div>
+            </section>
+
+            <!-- Help Footer Callout -->
+            <section class="max-w-4xl mx-auto text-center bg-white rounded-2xl shadow-md border border-amber-100 p-8">
+                <div class="text-4xl mb-3">📚</div>
+                <h4 class="text-2xl font-heading font-bold text-amber-900 mb-2">Need a Hand with Your Research?</h4>
+                <p class="text-gray-600 max-w-2xl mx-auto">Stop by the library or reach out to your librarian — we're always happy to help you find the right sources, refine a topic, or think through your next project.</p>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-amber-900 text-amber-100 mt-auto">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <img src="../AISA_logo.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
+                <span class="font-heading font-bold text-lg tracking-wide">AISA Library Hub</span>
+            </div>
+            <p class="text-xs text-amber-200/80">American International School in Abu Dhabi &middot; Library &amp; Research Services</p>
+        </div>
+    </footer>
+
+</body>
+</html>
