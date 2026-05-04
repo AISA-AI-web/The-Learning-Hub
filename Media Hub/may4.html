@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
         if (window.tailwind) {
             tailwind.config = {
@@ -40,7 +40,41 @@
                 radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 0, transparent 40%),
                 radial-gradient(circle at 80% 70%, rgba(255,255,255,0.10) 0, transparent 40%);
         }
-        .prose-newsletter h3 { font-family: 'Poppins', sans-serif; }
+
+        /* --- Bilingual toggle: show only the active language --- */
+        html[lang="en"] .lang-ar { display: none !important; }
+        html[lang="ar"] .lang-en { display: none !important; }
+
+        /* Arabic typography */
+        html[lang="ar"] body,
+        html[lang="ar"] .font-heading { font-family: 'Cairo', 'Inter', sans-serif; }
+        html[lang="ar"] .uppercase { text-transform: none; letter-spacing: normal; }
+        html[lang="ar"] .tracking-widest,
+        html[lang="ar"] .tracking-wider { letter-spacing: normal; }
+
+        /* RTL flow: flip directional margins and arrow icons */
+        html[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+        html[dir="rtl"] .mr-1\.5 { margin-right: 0; margin-left: 0.375rem; }
+        html[dir="rtl"] .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+        html[dir="rtl"] .mr-3 { margin-right: 0; margin-left: 0.75rem; }
+        html[dir="rtl"] .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+        html[dir="rtl"] .text-left { text-align: right; }
+
+        /* Language toggle pill */
+        .lang-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #7e22ce, #ec4899);
+            color: #fff;
+            box-shadow: 0 4px 14px -4px rgba(126, 34, 206, 0.45);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .lang-toggle:hover { transform: translateY(-1px); box-shadow: 0 6px 18px -4px rgba(126, 34, 206, 0.55); }
     </style>
 </head>
 <body class="bg-purple-50 text-gray-800 min-h-screen flex flex-col">
@@ -48,23 +82,38 @@
     <!-- Header -->
     <header class="bg-white/85 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-purple-100">
         <div class="h-1 bg-gradient-to-r from-purple-700 via-pink-500 to-rose-400 w-full"></div>
-        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center gap-3">
             <a href="../index.html" class="flex items-center gap-4 group" title="Back to Learning Hub">
                 <img src="../AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/7e22ce/FFFFFF?text=AISA'">
                 <div class="flex flex-col justify-center">
-                    <h1 class="text-lg md:text-xl font-black text-purple-900 tracking-tight leading-none uppercase font-heading group-hover:text-purple-700 transition-colors">Digital Tools Newsletter</h1>
-                    <span class="text-[9px] md:text-[10px] font-semibold text-purple-700/80 uppercase tracking-widest mt-0.5">May 4 &middot; Teaching &amp; Learning</span>
+                    <h1 class="text-lg md:text-xl font-black text-purple-900 tracking-tight leading-none uppercase font-heading group-hover:text-purple-700 transition-colors">
+                        <span class="lang-en">Digital Tools Newsletter</span>
+                        <span class="lang-ar">نشرة الأدوات الرقمية</span>
+                    </h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-purple-700/80 uppercase tracking-widest mt-0.5">
+                        <span class="lang-en">May 4 &middot; Teaching &amp; Learning</span>
+                        <span class="lang-ar">٤ مايو · التعليم والتعلم</span>
+                    </span>
                 </div>
             </a>
-            <div class="hidden md:flex items-center gap-2">
-                <a href="media.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-purple-800 transition-all duration-300 hover:bg-purple-50">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    Media Hub
-                </a>
-                <a href="../index.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-purple-800 transition-all duration-300 hover:bg-purple-50">
-                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                    Learning Hub
-                </a>
+            <div class="flex items-center gap-2">
+                <button id="lang-toggle" type="button" class="lang-toggle" aria-label="Toggle language">
+                    <span aria-hidden="true">🌐</span>
+                    <span class="lang-en">العربية</span>
+                    <span class="lang-ar">English</span>
+                </button>
+                <div class="hidden md:flex items-center gap-2">
+                    <a href="media.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-purple-800 transition-all duration-300 hover:bg-purple-50">
+                        <svg class="w-4 h-4 mr-1.5 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        <span class="lang-en">Media Hub</span>
+                        <span class="lang-ar">مركز الإعلام</span>
+                    </a>
+                    <a href="../index.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-purple-800 transition-all duration-300 hover:bg-purple-50">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        <span class="lang-en">Learning Hub</span>
+                        <span class="lang-ar">مركز التعلم</span>
+                    </a>
+                </div>
             </div>
         </nav>
     </header>
@@ -77,20 +126,29 @@
         <div class="container mx-auto px-6 py-16 md:py-20 relative z-10 max-w-4xl">
             <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
                 <span class="text-xl">🛠️</span>
-                <span class="text-xs font-bold uppercase tracking-widest">Digital Tools &middot; Issue No. 1</span>
+                <span class="text-xs font-bold uppercase tracking-widest">
+                    <span class="lang-en">Digital Tools &middot; Issue No. 1</span>
+                    <span class="lang-ar">الأدوات الرقمية · العدد الأول</span>
+                </span>
             </div>
-            <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-5 drop-shadow-lg">What's New on the Learning Hub</h2>
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-5 drop-shadow-lg">
+                <span class="lang-en">What's New on the Learning Hub</span>
+                <span class="lang-ar">أحدث المستجدات في مركز التعلم</span>
+            </h2>
             <p class="text-lg md:text-xl max-w-3xl text-purple-50 drop-shadow">
-                A round-up of the digital tools, AI Gems, and Learning Hub upgrades the Learning Team has shipped for the AISA teaching staff.
+                <span class="lang-en">A round-up of the digital tools, AI Gems, and Learning Hub upgrades the Learning Team has shipped for the AISA teaching staff.</span>
+                <span class="lang-ar">ملخّص لأحدث الأدوات الرقمية وأدوات Gemini Gems وتحسينات مركز التعلم التي أطلقها فريق التعلم لطاقم التدريس في AISA.</span>
             </p>
             <div class="mt-6 flex flex-wrap items-center gap-3 text-sm">
                 <span class="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3 py-1 font-semibold">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    May 4
+                    <span class="lang-en">May 4</span>
+                    <span class="lang-ar">٤ مايو</span>
                 </span>
                 <span class="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3 py-1 font-semibold">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-5.13a4 4 0 11-8 0 4 4 0 018 0zm6 3a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                    For Teaching Staff
+                    <span class="lang-en">For Teaching Staff</span>
+                    <span class="lang-ar">لطاقم التدريس</span>
                 </span>
             </div>
         </div>
@@ -105,9 +163,13 @@
                 <div class="flex items-start gap-4">
                     <div class="hidden sm:flex h-12 w-12 rounded-2xl bg-purple-100 items-center justify-center text-2xl shrink-0">✏️</div>
                     <div>
-                        <h3 class="text-xl md:text-2xl font-heading font-bold text-purple-900 mb-2">A note from the Learning Team</h3>
+                        <h3 class="text-xl md:text-2xl font-heading font-bold text-purple-900 mb-2">
+                            <span class="lang-en">A note from the Learning Team</span>
+                            <span class="lang-ar">كلمة من فريق التعلم</span>
+                        </h3>
                         <p class="text-gray-700 leading-relaxed">
-                            Welcome to the very first <strong>Digital Tools</strong> newsletter. From this issue onward, we'll use this space to keep teachers in the loop on the AI tools, Gemini Gems, and Learning Hub upgrades we've shipped — what's new, what it does, and how to use it in your classroom tomorrow morning. Here's what landed this round.
+                            <span class="lang-en">Welcome to the very first <strong>Digital Tools</strong> newsletter. From this issue onward, we'll use this space to keep teachers in the loop on the AI tools, Gemini Gems, and Learning Hub upgrades we've shipped — what's new, what it does, and how to use it in your classroom tomorrow morning. Here's what landed this round.</span>
+                            <span class="lang-ar">أهلاً بكم في أول إصدار من نشرة <strong>الأدوات الرقمية</strong>. ابتداءً من هذا العدد، سنستخدم هذه المساحة لإطلاع المعلمين على آخر مستجدات أدوات الذكاء الاصطناعي وأدوات Gemini Gems وتحسينات مركز التعلم التي أطلقناها — ما الجديد، وما الذي تفعله، وكيف تستخدمونها في فصلكم صباح الغد. إليكم ما وصلنا إليه في هذا العدد.</span>
                         </p>
                     </div>
                 </div>
@@ -121,21 +183,38 @@
                             <img src="https://www.google.com/s2/favicons?domain=chalkie.ai&sz=128" alt="Chalkie.ai logo" class="h-9 w-9 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                             <span style="display:none;" class="text-3xl">🧠</span>
                         </div>
-                        <span class="inline-block bg-teal-100 text-teal-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">New Tool &middot; Trial</span>
+                        <span class="inline-block bg-teal-100 text-teal-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">New Tool &middot; Trial</span>
+                            <span class="lang-ar">أداة جديدة · نسخة تجريبية</span>
+                        </span>
                     </div>
                     <div class="flex-1">
-                        <h3 class="text-2xl font-heading font-bold text-teal-900 mb-2">Chalkie.ai trial — yours through the end of the year</h3>
+                        <h3 class="text-2xl font-heading font-bold text-teal-900 mb-2">
+                            <span class="lang-en">Chalkie.ai trial — yours through the end of the year</span>
+                            <span class="lang-ar">نسخة Chalkie.ai التجريبية — متاحة لكم حتى نهاية العام</span>
+                        </h3>
                         <p class="text-gray-700 leading-relaxed mb-3">
-                            We've secured an AISA-wide <strong>Chalkie.ai</strong> trial that runs <strong>until the end of the school year</strong>. Chalkie is an AI-powered teaching assistant for planning, content creation, and personalising learning. Think Magic School-style assistant with a focus on lesson design and student-friendly outputs.
+                            <span class="lang-en">We've secured an AISA-wide <strong>Chalkie.ai</strong> trial that runs <strong>until the end of the school year</strong>. Chalkie is an AI-powered teaching assistant for planning, content creation, and personalising learning. Think Magic School-style assistant with a focus on lesson design and student-friendly outputs.</span>
+                            <span class="lang-ar">حصلنا على نسخة تجريبية من <strong>Chalkie.ai</strong> متاحة لجميع طاقم AISA وتمتدّ <strong>حتى نهاية العام الدراسي</strong>. Chalkie هو مساعد تدريس مدعوم بالذكاء الاصطناعي للتخطيط وإنشاء المحتوى وتخصيص التعلم. تصوّروه كمساعد على غرار Magic School لكن بتركيز على تصميم الدروس ومخرجات ملائمة للطلاب.</span>
                         </p>
                         <ul class="text-sm text-gray-700 space-y-1.5 mb-4">
-                            <li class="flex items-start"><span class="text-teal-600 mr-2">✓</span> Card now live on the Learning Hub under <strong>Tools &amp; Resources → AI Teaching Assistants</strong>.</li>
-                            <li class="flex items-start"><span class="text-teal-600 mr-2">✓</span> Sign in with your AISA account at chalkie.ai to access the trial.</li>
-                            <li class="flex items-start"><span class="text-teal-600 mr-2">✓</span> Try it for one lesson this week and tell us how it goes — your feedback shapes whether we keep it past June.</li>
+                            <li class="flex items-start"><span class="text-teal-600 mr-2">✓</span>
+                                <span class="lang-en">Card now live on the Learning Hub under <strong>Tools &amp; Resources → AI Teaching Assistants</strong>.</span>
+                                <span class="lang-ar">البطاقة متاحة الآن في مركز التعلم ضمن <strong>الأدوات والموارد ← مساعدو التدريس بالذكاء الاصطناعي</strong>.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-teal-600 mr-2">✓</span>
+                                <span class="lang-en">Sign in with your AISA account at chalkie.ai to access the trial.</span>
+                                <span class="lang-ar">سجّلوا الدخول بحساب AISA الخاص بكم على chalkie.ai للوصول إلى النسخة التجريبية.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-teal-600 mr-2">✓</span>
+                                <span class="lang-en">Try it for one lesson this week and tell us how it goes — your feedback shapes whether we keep it past June.</span>
+                                <span class="lang-ar">جرّبوه في درس واحد هذا الأسبوع وأخبرونا بانطباعكم — ملاحظاتكم هي ما يحدد إن كنا سنُبقي عليه بعد شهر يونيو.</span>
+                            </li>
                         </ul>
                         <a href="https://chalkie.ai" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-teal-600 text-white py-2.5 px-5 rounded-full text-sm font-semibold hover:bg-teal-700 transition-colors shadow-md">
-                            Open Chalkie.ai
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            <span class="lang-en">Open Chalkie.ai</span>
+                            <span class="lang-ar">فتح Chalkie.ai</span>
+                            <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         </a>
                     </div>
                 </div>
@@ -149,28 +228,54 @@
                             <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="Gemini Gem logo" class="h-9 w-9 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
                             <span style="display:none;" class="text-3xl">📝</span>
                         </div>
-                        <span class="inline-block bg-blue-100 text-blue-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Built In-House</span>
+                        <span class="inline-block bg-blue-100 text-blue-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">Built In-House</span>
+                            <span class="lang-ar">تم تطويره داخلياً</span>
+                        </span>
                     </div>
                     <div class="flex-1">
-                        <h3 class="text-2xl font-heading font-bold text-blue-900 mb-2">IB Exam Format Generator (Gemini Gem)</h3>
+                        <h3 class="text-2xl font-heading font-bold text-blue-900 mb-2">
+                            <span class="lang-en">IB Exam Format Generator (Gemini Gem)</span>
+                            <span class="lang-ar">مولِّد تنسيق امتحان IB (Gemini Gem)</span>
+                        </h3>
                         <p class="text-gray-700 leading-relaxed mb-3">
-                            We designed a custom <strong>Gemini Gem</strong> that takes any content you share — a passage, a topic, a unit of work — and returns a downloadable PDF formatted to look exactly like an authentic <strong>IB exam paper</strong>. It's a fast way to give students realistic exposure to IB layout, instruction language, and question framing without rebuilding a paper from scratch.
+                            <span class="lang-en">We designed a custom <strong>Gemini Gem</strong> that takes any content you share — a passage, a topic, a unit of work — and returns a downloadable PDF formatted to look exactly like an authentic <strong>IB exam paper</strong>. It's a fast way to give students realistic exposure to IB layout, instruction language, and question framing without rebuilding a paper from scratch.</span>
+                            <span class="lang-ar">صمّمنا أداة <strong>Gemini Gem</strong> مخصّصة تستقبل أي محتوى تشاركونه — فقرة أو موضوعاً أو وحدة دراسية — وتُعيد ملف PDF قابلاً للتحميل بتنسيق يطابق ورقة امتحان <strong>IB</strong> الأصلية. وسيلة سريعة لإطلاع الطلاب بشكل واقعي على تخطيط ورقة IB ولغة التعليمات وصياغة الأسئلة دون الحاجة إلى بناء ورقة من الصفر.</span>
                         </p>
                         <ul class="text-sm text-gray-700 space-y-1.5 mb-4">
-                            <li class="flex items-start"><span class="text-blue-600 mr-2">✓</span> Card now live on the Learning Hub under <strong>Tools &amp; Resources → Assessment &amp; Test Prep</strong>.</li>
-                            <li class="flex items-start"><span class="text-blue-600 mr-2">✓</span> Drop in any source material — paragraphs, source documents, or learning outcomes.</li>
-                            <li class="flex items-start"><span class="text-blue-600 mr-2">✓</span> Output is a print-ready PDF that mirrors IB paper layout for student practice.</li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-2">✓</span>
+                                <span class="lang-en">Card now live on the Learning Hub under <strong>Tools &amp; Resources → Assessment &amp; Test Prep</strong>.</span>
+                                <span class="lang-ar">البطاقة متاحة الآن في مركز التعلم ضمن <strong>الأدوات والموارد ← التقييم والتحضير للاختبارات</strong>.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-2">✓</span>
+                                <span class="lang-en">Drop in any source material — paragraphs, source documents, or learning outcomes.</span>
+                                <span class="lang-ar">أدخلوا أي مادة مصدرية — فقرات، أو وثائق مصدر، أو نتائج تعلم.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-2">✓</span>
+                                <span class="lang-en">Output is a print-ready PDF that mirrors IB paper layout for student practice.</span>
+                                <span class="lang-ar">المخرَج هو ملف PDF جاهز للطباعة يحاكي تخطيط ورقة IB لتدريب الطلاب.</span>
+                            </li>
                         </ul>
                         <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 mb-4">
-                            <p class="text-[10px] font-bold uppercase tracking-widest text-blue-700 mb-2 flex items-center gap-1.5"><span>👏</span> Shoutouts</p>
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-blue-700 mb-2 flex items-center gap-1.5"><span>👏</span>
+                                <span class="lang-en">Shoutouts</span>
+                                <span class="lang-ar">إشادات</span>
+                            </p>
                             <ul class="text-sm text-gray-700 space-y-1.5">
-                                <li class="flex items-start"><span class="text-blue-600 mr-2">★</span> <span><strong>Will Lester</strong> — for requesting an IB-format generator in the first place. This one started with your ask.</span></li>
-                                <li class="flex items-start"><span class="text-blue-600 mr-2">★</span> <span><strong>Shawn Carder</strong> — for the spark of using <strong>LaTeX</strong> under the hood to render the downloadable PDFs. That's what gives the output its authentic IB paper look.</span></li>
+                                <li class="flex items-start"><span class="text-blue-600 mr-2">★</span>
+                                    <span class="lang-en"><strong>Will Lester</strong> — for requesting an IB-format generator in the first place. This one started with your ask.</span>
+                                    <span class="lang-ar"><strong>Will Lester</strong> — لأنه طلب مولِّد تنسيق IB ابتداءً. هذا المشروع بدأ من طلبه.</span>
+                                </li>
+                                <li class="flex items-start"><span class="text-blue-600 mr-2">★</span>
+                                    <span class="lang-en"><strong>Shawn Carder</strong> — for the spark of using <strong>LaTeX</strong> under the hood to render the downloadable PDFs. That's what gives the output its authentic IB paper look.</span>
+                                    <span class="lang-ar"><strong>Shawn Carder</strong> — لشرارة استخدام <strong>LaTeX</strong> خلف الكواليس لإنشاء ملفات PDF القابلة للتحميل. هذا ما يمنح المخرَج مظهر ورقة IB الأصلي.</span>
+                                </li>
                             </ul>
                         </div>
                         <a href="https://gemini.google.com/gem/14pHmK2jlEtOdhpc9v7HaplCuaWaEh0xf?usp=sharing" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-blue-600 text-white py-2.5 px-5 rounded-full text-sm font-semibold hover:bg-blue-700 transition-colors shadow-md">
-                            Open the Gem
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            <span class="lang-en">Open the Gem</span>
+                            <span class="lang-ar">فتح الـ Gem</span>
+                            <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         </a>
                     </div>
                 </div>
@@ -183,21 +288,38 @@
                         <div class="h-14 w-14 rounded-2xl bg-indigo-50 flex items-center justify-center">
                             <span class="text-3xl">🔎</span>
                         </div>
-                        <span class="inline-block bg-indigo-100 text-indigo-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Hub Upgrade</span>
+                        <span class="inline-block bg-indigo-100 text-indigo-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">Hub Upgrade</span>
+                            <span class="lang-ar">تحديث المركز</span>
+                        </span>
                     </div>
                     <div class="flex-1">
-                        <h3 class="text-2xl font-heading font-bold text-indigo-900 mb-2">A search bar across the entire Learning Hub</h3>
+                        <h3 class="text-2xl font-heading font-bold text-indigo-900 mb-2">
+                            <span class="lang-en">A search bar across the entire Learning Hub</span>
+                            <span class="lang-ar">شريط بحث يغطّي مركز التعلم بأكمله</span>
+                        </h3>
                         <p class="text-gray-700 leading-relaxed mb-3">
-                            The Learning Hub landing page now has a <strong>hub-wide search directory</strong>. One search box. Find any module, AI tool, library resource, committee, or orientation page in one keystroke — no more hunting through tabs.
+                            <span class="lang-en">The Learning Hub landing page now has a <strong>hub-wide search directory</strong>. One search box. Find any module, AI tool, library resource, committee, or orientation page in one keystroke — no more hunting through tabs.</span>
+                            <span class="lang-ar">أصبحت الصفحة الرئيسية لمركز التعلم تتضمّن <strong>دليل بحث شامل</strong>. صندوق بحث واحد. اعثروا على أي وحدة تدريبية أو أداة ذكاء اصطناعي أو مورد مكتبي أو لجنة أو صفحة توجيه بضغطة واحدة — دون البحث في علامات التبويب.</span>
                         </p>
                         <ul class="text-sm text-gray-700 space-y-1.5 mb-4">
-                            <li class="flex items-start"><span class="text-indigo-600 mr-2">✓</span> Type a keyword (e.g. "MAP", "ethics", "twinkl", "viva") and the directory surfaces matching pages and tools.</li>
-                            <li class="flex items-start"><span class="text-indigo-600 mr-2">✓</span> Keyboard shortcut: <kbd class="bg-gray-100 border border-gray-200 rounded px-1.5 py-0.5 text-xs font-mono">⌘ K</kbd> / <kbd class="bg-gray-100 border border-gray-200 rounded px-1.5 py-0.5 text-xs font-mono">Ctrl K</kbd> to jump straight to it.</li>
-                            <li class="flex items-start"><span class="text-indigo-600 mr-2">✓</span> Indexed across PD modules, AI tools, library, committees, orientation, and quick actions.</li>
+                            <li class="flex items-start"><span class="text-indigo-600 mr-2">✓</span>
+                                <span class="lang-en">Type a keyword (e.g. "MAP", "ethics", "twinkl", "viva") and the directory surfaces matching pages and tools.</span>
+                                <span class="lang-ar">اكتبوا كلمة مفتاحية (مثل "MAP" أو "ethics" أو "twinkl" أو "viva") وسيُظهر الدليل الصفحات والأدوات المطابقة.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-indigo-600 mr-2">✓</span>
+                                <span class="lang-en">Keyboard shortcut: <kbd class="bg-gray-100 border border-gray-200 rounded px-1.5 py-0.5 text-xs font-mono">⌘ K</kbd> / <kbd class="bg-gray-100 border border-gray-200 rounded px-1.5 py-0.5 text-xs font-mono">Ctrl K</kbd> to jump straight to it.</span>
+                                <span class="lang-ar">اختصار لوحة المفاتيح: <kbd class="bg-gray-100 border border-gray-200 rounded px-1.5 py-0.5 text-xs font-mono">⌘ K</kbd> / <kbd class="bg-gray-100 border border-gray-200 rounded px-1.5 py-0.5 text-xs font-mono">Ctrl K</kbd> للوصول المباشر.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-indigo-600 mr-2">✓</span>
+                                <span class="lang-en">Indexed across PD modules, AI tools, library, committees, orientation, and quick actions.</span>
+                                <span class="lang-ar">مفهرَس عبر وحدات التطوير المهني، وأدوات الذكاء الاصطناعي، والمكتبة، واللجان، والتوجيه، والإجراءات السريعة.</span>
+                            </li>
                         </ul>
                         <a href="../index.html" class="inline-flex items-center gap-2 bg-indigo-600 text-white py-2.5 px-5 rounded-full text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-md">
-                            Try the Hub Search
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            <span class="lang-en">Try the Hub Search</span>
+                            <span class="lang-ar">جرّبوا بحث المركز</span>
+                            <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                         </a>
                     </div>
                 </div>
@@ -207,28 +329,55 @@
             <section class="bg-white rounded-2xl shadow-lg border-t-8 border-purple-500 p-7 md:p-9 mb-8">
                 <div class="flex items-center gap-3 mb-5">
                     <div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-2xl">✨</div>
-                    <h3 class="text-2xl font-heading font-bold text-purple-900">Smaller upgrades worth a mention</h3>
+                    <h3 class="text-2xl font-heading font-bold text-purple-900">
+                        <span class="lang-en">Smaller upgrades worth a mention</span>
+                        <span class="lang-ar">تحديثات أصغر تستحق الإشارة</span>
+                    </h3>
                 </div>
 
                 <div class="grid sm:grid-cols-2 gap-5">
                     <div class="bg-purple-50/50 border border-purple-100 rounded-xl p-5">
-                        <h4 class="font-bold text-purple-900 mb-1.5 flex items-center gap-2"><span>📚</span> Library Hub split into two views</h4>
-                        <p class="text-sm text-gray-700">A chooser landing page now routes <strong>students</strong> to research tools and AI Gems, and <strong>teachers &amp; staff</strong> to collection &amp; compliance resources. The student view is locked from the wider Hub to reduce confusion.</p>
+                        <h4 class="font-bold text-purple-900 mb-1.5 flex items-center gap-2"><span>📚</span>
+                            <span class="lang-en">Library Hub split into two views</span>
+                            <span class="lang-ar">تقسيم مركز المكتبة إلى عرضَين</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">A chooser landing page now routes <strong>students</strong> to research tools and AI Gems, and <strong>teachers &amp; staff</strong> to collection &amp; compliance resources. The student view is locked from the wider Hub to reduce confusion.</span>
+                            <span class="lang-ar">صفحة اختيار جديدة توجِّه <strong>الطلاب</strong> إلى أدوات البحث وأدوات Gems للذكاء الاصطناعي، وتوجِّه <strong>المعلمين والطاقم</strong> إلى موارد المجموعات والامتثال. عرض الطلاب مغلق عن باقي المركز لتقليل الارتباك.</span>
+                        </p>
                     </div>
 
                     <div class="bg-purple-50/50 border border-purple-100 rounded-xl p-5">
-                        <h4 class="font-bold text-purple-900 mb-1.5 flex items-center gap-2"><span>✨</span> Request buttons on PD &amp; Tools pages</h4>
-                        <p class="text-sm text-gray-700">A floating <strong>Request a Module</strong> button now lives on the PD Modules page, and a <strong>Request a Tool or Resource</strong> button on Tools &amp; Resources — tell us what to build or add next.</p>
+                        <h4 class="font-bold text-purple-900 mb-1.5 flex items-center gap-2"><span>✨</span>
+                            <span class="lang-en">Request buttons on PD &amp; Tools pages</span>
+                            <span class="lang-ar">أزرار طلب على صفحات التطوير المهني والأدوات</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">A floating <strong>Request a Module</strong> button now lives on the PD Modules page, and a <strong>Request a Tool or Resource</strong> button on Tools &amp; Resources — tell us what to build or add next.</span>
+                            <span class="lang-ar">زر عائم <strong>اطلب وحدة تدريبية</strong> أصبح متاحاً على صفحة وحدات التطوير المهني، وزر <strong>اطلب أداة أو مورداً</strong> على صفحة الأدوات والموارد — أخبرونا بما نبنيه أو نضيفه تالياً.</span>
+                        </p>
                     </div>
 
                     <div class="bg-purple-50/50 border border-purple-100 rounded-xl p-5">
-                        <h4 class="font-bold text-purple-900 mb-1.5 flex items-center gap-2"><span>🏷️</span> Real brand logos on AI tool cards</h4>
-                        <p class="text-sm text-gray-700">Magic School AI, NotebookLM, Gemini Storybooks, and Chalkie.ai cards now show their actual product logos instead of generic emojis — easier to scan at a glance.</p>
+                        <h4 class="font-bold text-purple-900 mb-1.5 flex items-center gap-2"><span>🏷️</span>
+                            <span class="lang-en">Real brand logos on AI tool cards</span>
+                            <span class="lang-ar">شعارات حقيقية على بطاقات أدوات الذكاء الاصطناعي</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">Magic School AI, NotebookLM, Gemini Storybooks, and Chalkie.ai cards now show their actual product logos instead of generic emojis — easier to scan at a glance.</span>
+                            <span class="lang-ar">بطاقات Magic School AI و NotebookLM و Gemini Storybooks و Chalkie.ai أصبحت تعرض شعارات المنتجات الفعلية بدلاً من الرموز التعبيرية العامة — أسهل في التصفّح بنظرة سريعة.</span>
+                        </p>
                     </div>
 
                     <div class="bg-purple-50/50 border border-purple-100 rounded-xl p-5">
-                        <h4 class="font-bold text-purple-900 mb-1.5 flex items-center gap-2"><span>🦁</span> Orientation Hub for new staff</h4>
-                        <p class="text-sm text-gray-700">Leo's guided trail covers AISA history, the Thinking Ladder, and the Question Transformation Lab — bookmark it for new colleagues joining mid-year.</p>
+                        <h4 class="font-bold text-purple-900 mb-1.5 flex items-center gap-2"><span>🦁</span>
+                            <span class="lang-en">Orientation Hub for new staff</span>
+                            <span class="lang-ar">مركز التوجيه للموظفين الجدد</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">Leo's guided trail covers AISA history, the Thinking Ladder, and the Question Transformation Lab — bookmark it for new colleagues joining mid-year.</span>
+                            <span class="lang-ar">مسار Leo الموجَّه يغطّي تاريخ AISA وسلّم التفكير ومختبر تحويل الأسئلة — احفظوه كمرجع للزملاء الجدد الملتحقين خلال العام.</span>
+                        </p>
                     </div>
                 </div>
             </section>
@@ -238,78 +387,141 @@
                 <div class="flex items-center gap-3 mb-2">
                     <div class="h-12 w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-2xl">🚧</div>
                     <div>
-                        <span class="block text-[10px] font-bold uppercase tracking-widest text-amber-700">On the roadmap</span>
-                        <h3 class="text-2xl font-heading font-bold text-amber-900">Coming Soon</h3>
+                        <span class="block text-[10px] font-bold uppercase tracking-widest text-amber-700">
+                            <span class="lang-en">On the roadmap</span>
+                            <span class="lang-ar">في خارطة الطريق</span>
+                        </span>
+                        <h3 class="text-2xl font-heading font-bold text-amber-900">
+                            <span class="lang-en">Coming Soon</span>
+                            <span class="lang-ar">قريباً</span>
+                        </h3>
                     </div>
                 </div>
-                <p class="text-gray-700 leading-relaxed mb-5">A peek at what the Learning Team is building next. Want to weigh in on priority? Hit the request form linked below.</p>
+                <p class="text-gray-700 leading-relaxed mb-5">
+                    <span class="lang-en">A peek at what the Learning Team is building next. Want to weigh in on priority? Hit the request form linked below.</span>
+                    <span class="lang-ar">نظرة على ما يعمل عليه فريق التعلم تالياً. هل تودّون المشاركة في تحديد الأولويات؟ استخدموا نموذج الطلب أدناه.</span>
+                </p>
 
                 <div class="grid sm:grid-cols-2 gap-5">
                     <div class="bg-amber-50/50 border border-amber-100 rounded-xl p-5">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="text-xl">🧠</span>
-                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">In Progress</span>
+                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                <span class="lang-en">In Progress</span>
+                                <span class="lang-ar">قيد التنفيذ</span>
+                            </span>
                         </div>
-                        <h4 class="font-bold text-amber-900 mb-1.5">Chalkie.ai training module</h4>
-                        <p class="text-sm text-gray-700">A short PD module on getting the most out of Chalkie — prompt patterns, output tuning, and classroom-ready workflows so the trial actually pays off.</p>
+                        <h4 class="font-bold text-amber-900 mb-1.5">
+                            <span class="lang-en">Chalkie.ai training module</span>
+                            <span class="lang-ar">وحدة تدريب على Chalkie.ai</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">A short PD module on getting the most out of Chalkie — prompt patterns, output tuning, and classroom-ready workflows so the trial actually pays off.</span>
+                            <span class="lang-ar">وحدة تطوير مهني قصيرة للاستفادة القصوى من Chalkie — أنماط المطالبات، وضبط المخرجات، وسير عمل جاهز للفصل ليؤتي التجريب ثماره.</span>
+                        </p>
                     </div>
 
                     <div class="bg-amber-50/50 border border-amber-100 rounded-xl p-5">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="text-xl">📝</span>
-                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">In Progress</span>
+                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                <span class="lang-en">In Progress</span>
+                                <span class="lang-ar">قيد التنفيذ</span>
+                            </span>
                         </div>
-                        <h4 class="font-bold text-amber-900 mb-1.5">IB Exam Format Generator training</h4>
-                        <p class="text-sm text-gray-700">A walkthrough module for the new Gemini Gem — what to feed it, how to nudge the LaTeX output, and how to integrate the PDFs into mock-exam practice.</p>
+                        <h4 class="font-bold text-amber-900 mb-1.5">
+                            <span class="lang-en">IB Exam Format Generator training</span>
+                            <span class="lang-ar">تدريب على مولِّد تنسيق امتحان IB</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">A walkthrough module for the new Gemini Gem — what to feed it, how to nudge the LaTeX output, and how to integrate the PDFs into mock-exam practice.</span>
+                            <span class="lang-ar">وحدة شرح للأداة الجديدة Gemini Gem — ماذا تُدخلون، وكيف توجِّهون مخرجات LaTeX، وكيف تدمجون ملفات PDF في تدريبات الامتحانات التجريبية.</span>
+                        </p>
                     </div>
 
                     <div class="bg-amber-50/50 border border-amber-100 rounded-xl p-5">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="text-xl">🔗</span>
-                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Planned</span>
+                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                <span class="lang-en">Planned</span>
+                                <span class="lang-ar">مخطَّط له</span>
+                            </span>
                         </div>
-                        <h4 class="font-bold text-amber-900 mb-1.5">Training embedded into Tool cards</h4>
-                        <p class="text-sm text-gray-700">Each card on Tools &amp; Resources will link directly to its matching training module, so PD is one click away from the tool itself — no more hunting across pages.</p>
+                        <h4 class="font-bold text-amber-900 mb-1.5">
+                            <span class="lang-en">Training embedded into Tool cards</span>
+                            <span class="lang-ar">تدريب مدمج في بطاقات الأدوات</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">Each card on Tools &amp; Resources will link directly to its matching training module, so PD is one click away from the tool itself — no more hunting across pages.</span>
+                            <span class="lang-ar">ستربط كل بطاقة في الأدوات والموارد مباشرة بوحدة التدريب المناظرة لها، ليكون التطوير المهني على بُعد نقرة واحدة من الأداة نفسها — دون التنقّل بين الصفحات.</span>
+                        </p>
                     </div>
 
                     <div class="bg-amber-50/50 border border-amber-100 rounded-xl p-5">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="text-xl">📋</span>
-                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Planned</span>
+                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                <span class="lang-en">Planned</span>
+                                <span class="lang-ar">مخطَّط له</span>
+                            </span>
                         </div>
-                        <h4 class="font-bold text-amber-900 mb-1.5">Refreshed Google Forms links</h4>
-                        <p class="text-sm text-gray-700">The Request a Module and Request a Tool or Resource buttons will be re-pointed to dedicated, purpose-built forms — cleaner intake for the team and tighter follow-up for you.</p>
+                        <h4 class="font-bold text-amber-900 mb-1.5">
+                            <span class="lang-en">Refreshed Google Forms links</span>
+                            <span class="lang-ar">تحديث روابط نماذج Google</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">The Request a Module and Request a Tool or Resource buttons will be re-pointed to dedicated, purpose-built forms — cleaner intake for the team and tighter follow-up for you.</span>
+                            <span class="lang-ar">ستُعاد توجيه زرّي اطلب وحدة تدريبية واطلب أداة أو مورداً إلى نماذج مخصّصة لكل غرض — استقبال أوضح للفريق ومتابعة أدقّ لكم.</span>
+                        </p>
                     </div>
 
                     <div class="bg-amber-50/50 border border-amber-100 rounded-xl p-5 sm:col-span-2">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="text-xl">📄</span>
-                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Planned &middot; Co-design</span>
+                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                <span class="lang-en">Planned &middot; Co-design</span>
+                                <span class="lang-ar">مخطَّط له · تصميم مشترك</span>
+                            </span>
                         </div>
-                        <h4 class="font-bold text-amber-900 mb-1.5">LaTeX-to-PDF module — co-designed with Shawn Carder</h4>
-                        <p class="text-sm text-gray-700">A standalone PD module on using <strong>LaTeX</strong> to render polished, exam-quality PDFs from any source — the same technique behind the IB Exam Format Generator. Built in collaboration with <strong>Shawn Carder</strong> so teachers across departments can spin up authentic-looking handouts, problem sets, and mock papers themselves.</p>
+                        <h4 class="font-bold text-amber-900 mb-1.5">
+                            <span class="lang-en">LaTeX-to-PDF module — co-designed with Shawn Carder</span>
+                            <span class="lang-ar">وحدة LaTeX إلى PDF — بالتعاون مع Shawn Carder</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">A standalone PD module on using <strong>LaTeX</strong> to render polished, exam-quality PDFs from any source — the same technique behind the IB Exam Format Generator. Built in collaboration with <strong>Shawn Carder</strong> so teachers across departments can spin up authentic-looking handouts, problem sets, and mock papers themselves.</span>
+                            <span class="lang-ar">وحدة تطوير مهني مستقلة حول استخدام <strong>LaTeX</strong> لإنتاج ملفات PDF أنيقة بجودة امتحانية من أي مصدر — التقنية ذاتها التي يقوم عليها مولِّد تنسيق امتحان IB. بالتعاون مع <strong>Shawn Carder</strong> ليتمكّن المعلمون عبر مختلف الأقسام من إنتاج النشرات ومجموعات الأسئلة والأوراق التجريبية بشكل احترافي بأنفسهم.</span>
+                        </p>
                     </div>
                 </div>
             </section>
 
             <!-- CTA -->
             <section class="bg-gradient-to-r from-purple-700 to-pink-600 rounded-2xl shadow-xl p-8 md:p-10 text-white text-center mb-8">
-                <h3 class="text-2xl md:text-3xl font-heading font-extrabold mb-3">Got an idea for the next tool?</h3>
-                <p class="text-purple-50 max-w-2xl mx-auto mb-6">If there's an AI tool, Gemini Gem, or workflow you'd love us to build for your classroom, drop it in the request form. The more specific the use case, the faster we can ship it.</p>
+                <h3 class="text-2xl md:text-3xl font-heading font-extrabold mb-3">
+                    <span class="lang-en">Got an idea for the next tool?</span>
+                    <span class="lang-ar">لديكم فكرة لأداة جديدة؟</span>
+                </h3>
+                <p class="text-purple-50 max-w-2xl mx-auto mb-6">
+                    <span class="lang-en">If there's an AI tool, Gemini Gem, or workflow you'd love us to build for your classroom, drop it in the request form. The more specific the use case, the faster we can ship it.</span>
+                    <span class="lang-ar">إن كانت هناك أداة ذكاء اصطناعي أو Gemini Gem أو سير عمل تودّون أن نبنيه لفصلكم، شاركونا التفاصيل في نموذج الطلب. كلما كانت الحالة أكثر تحديداً، كلما أسرعنا في إطلاقها.</span>
+                </p>
                 <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
                     <a href="../Tools%20and%20Resources/tools.html" class="inline-flex items-center gap-2 bg-white text-purple-800 py-3 px-6 rounded-full font-bold hover:bg-purple-50 transition-colors shadow-lg">
-                        Browse Tools &amp; Resources
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        <span class="lang-en">Browse Tools &amp; Resources</span>
+                        <span class="lang-ar">تصفّحوا الأدوات والموارد</span>
+                        <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </a>
                     <a href="https://docs.google.com/forms/d/e/1FAIpQLSeN_BO2PljIaKgvU-Khn-Zzr0mHsuyXTSamizOU3bV3rWhm-w/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-white/15 border border-white/30 text-white py-3 px-6 rounded-full font-bold hover:bg-white/25 transition-colors">
-                        Request a Tool
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        <span class="lang-en">Request a Tool</span>
+                        <span class="lang-ar">اطلبوا أداة</span>
+                        <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     </a>
                 </div>
             </section>
 
             <p class="text-center text-xs text-gray-500">
-                Digital Tools Newsletter &middot; Issue No. 1 &middot; May 4 &middot; AISA Teaching &amp; Learning Department
+                <span class="lang-en">Digital Tools Newsletter &middot; Issue No. 1 &middot; May 4 &middot; AISA Teaching &amp; Learning Department</span>
+                <span class="lang-ar">نشرة الأدوات الرقمية · العدد الأول · ٤ مايو · قسم التعليم والتعلم في AISA</span>
             </p>
         </div>
     </main>
@@ -319,11 +531,43 @@
         <div class="container mx-auto px-6 py-8 text-center">
             <div class="flex items-center justify-center gap-3 mb-3">
                 <img src="../AISA_logo.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
-                <span class="font-heading font-bold text-lg tracking-wide">AISA Media Hub</span>
+                <span class="font-heading font-bold text-lg tracking-wide">
+                    <span class="lang-en">AISA Media Hub</span>
+                    <span class="lang-ar">مركز الإعلام في AISA</span>
+                </span>
             </div>
-            <p class="text-xs text-purple-200/80">American International School in Abu Dhabi &middot; Teaching &amp; Learning Department</p>
+            <p class="text-xs text-purple-200/80">
+                <span class="lang-en">American International School in Abu Dhabi &middot; Teaching &amp; Learning Department</span>
+                <span class="lang-ar">المدرسة الأمريكية الدولية في أبوظبي · قسم التعليم والتعلم</span>
+            </p>
         </div>
     </footer>
+
+    <script>
+        (function () {
+            const STORAGE_KEY = 'aisa-newsletter-lang';
+            const html = document.documentElement;
+            const toggleBtn = document.getElementById('lang-toggle');
+
+            function applyLang(lang) {
+                const next = lang === 'ar' ? 'ar' : 'en';
+                html.setAttribute('lang', next);
+                html.setAttribute('dir', next === 'ar' ? 'rtl' : 'ltr');
+                try { localStorage.setItem(STORAGE_KEY, next); } catch (e) { /* ignore */ }
+            }
+
+            let saved = 'en';
+            try { saved = localStorage.getItem(STORAGE_KEY) || 'en'; } catch (e) { /* ignore */ }
+            applyLang(saved);
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    const current = html.getAttribute('lang') === 'ar' ? 'ar' : 'en';
+                    applyLang(current === 'ar' ? 'en' : 'ar');
+                });
+            }
+        })();
+    </script>
 
 </body>
 </html>
