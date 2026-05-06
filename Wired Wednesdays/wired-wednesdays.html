@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Wired Wednesdays</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: {
+                            navy: '#0b1533',
+                            navy2: '#13224d',
+                            gold: '#f5c542',
+                            gold2: '#d4a017'
+                        },
+                        animation: {
+                            'blob': 'blob 12s infinite',
+                            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                        },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .hero-gradient {
+            background: linear-gradient(135deg, #06102a 0%, #0b1533 45%, #1b2a5e 100%);
+        }
+        .hero-overlay {
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(245,197,66,0.18) 0, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(99,102,241,0.18) 0, transparent 40%);
+        }
+        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -10px rgba(11,21,51,0.25); }
+        .schedule-row { transition: background-color 0.2s ease; }
+        .schedule-row:hover { background-color: #fffbeb; }
+        .gold-glow {
+            box-shadow: 0 0 0 1px rgba(245,197,66,0.4), 0 10px 30px -8px rgba(245,197,66,0.35);
+        }
+        .live-dot {
+            width: 0.5rem; height: 0.5rem; border-radius: 9999px;
+            background: #f5c542;
+            box-shadow: 0 0 0 0 rgba(245,197,66,0.6);
+            animation: live-pulse 1.6s infinite;
+        }
+        @keyframes live-pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(245,197,66,0.6); }
+            70%  { box-shadow: 0 0 0 10px rgba(245,197,66,0); }
+            100% { box-shadow: 0 0 0 0 rgba(245,197,66,0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-slate-200">
+        <div class="h-1 bg-gradient-to-r from-navy via-indigo-700 to-gold w-full"></div>
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center gap-4 group" title="Back to Learning Hub">
+                <img src="../AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/0b1533/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-navy tracking-tight leading-none uppercase font-heading group-hover:text-indigo-800 transition-colors">Wired Wednesdays</h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-gold2 uppercase tracking-widest mt-0.5">Drop-in &middot; 30 min &middot; Online</span>
+                </div>
+            </a>
+            <a href="../index.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-navy transition-all duration-300 hover:bg-slate-100">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Back to Learning Hub
+            </a>
+        </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero-gradient text-white relative overflow-hidden">
+        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
+        <div class="absolute -top-20 -left-20 w-72 h-72 bg-indigo-500/20 rounded-full blur-3xl animate-blob"></div>
+        <div class="absolute -bottom-24 -right-16 w-80 h-80 bg-gold/15 rounded-full blur-3xl animate-blob" style="animation-delay: 2s;"></div>
+        <div class="container mx-auto px-6 py-14 md:py-16 relative z-10">
+            <div class="grid md:grid-cols-2 gap-10 items-center max-w-6xl mx-auto">
+                <!-- Logo -->
+                <div class="flex justify-center md:justify-start">
+                    <img src="../wired-wednesdays-logo.png" alt="Wired Wednesdays logo"
+                         class="w-64 md:w-80 lg:w-96 h-auto drop-shadow-2xl rounded-2xl">
+                </div>
+                <!-- Pitch -->
+                <div class="text-center md:text-left">
+                    <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-5">
+                        <span class="live-dot"></span>
+                        <span class="text-xs font-bold uppercase tracking-widest text-gold">Weekly &middot; Voluntary</span>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl lg:text-5xl font-heading font-extrabold leading-tight mb-4 drop-shadow-lg">
+                        30 minutes. One idea you can use tomorrow.
+                    </h2>
+                    <p class="text-base md:text-lg text-blue-100 mb-7 max-w-xl">
+                        Drop in every <strong class="text-white">Wednesday from 3:00&ndash;3:30 PM</strong>
+                        for a short, no-prep session on AI &amp; ed-tech in the classroom.
+                        Same day, same time, same link &mdash; no pressure, no homework.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
+                        <a href="https://meet.google.com/yhf-vppd-hnh" target="_blank" rel="noopener noreferrer"
+                           class="inline-flex items-center justify-center gap-2 bg-gold hover:bg-gold2 text-navy font-bold px-7 py-3 rounded-full shadow-lg gold-glow transition-all hover:scale-105">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            Join This Wednesday
+                        </a>
+                        <a href="#schedule"
+                           class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-6 py-3 rounded-full transition-all">
+                            See the schedule
+                        </a>
+                    </div>
+                    <p class="text-xs text-blue-200/80 mt-4 font-mono break-all">
+                        meet.google.com/yhf-vppd-hnh
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main -->
+    <main class="flex-grow">
+        <div class="container mx-auto px-6 py-14 max-w-5xl">
+
+            <!-- Next session highlight -->
+            <section class="mb-14">
+                <div class="bg-white rounded-3xl shadow-xl border-t-8 border-gold overflow-hidden">
+                    <div class="grid md:grid-cols-3">
+                        <div class="bg-navy text-white p-8 flex flex-col justify-center text-center md:text-left">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-gold mb-2">Next Session</p>
+                            <p class="text-4xl md:text-5xl font-heading font-black leading-none">May 13</p>
+                            <p class="text-sm text-blue-200 mt-1">Wednesday &middot; 3:00&ndash;3:30 PM</p>
+                        </div>
+                        <div class="md:col-span-2 p-8">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-[10px] font-bold uppercase tracking-widest bg-gold/20 text-gold2 border border-gold/30 rounded-full px-3 py-1">Topic</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500">Session 01</span>
+                            </div>
+                            <h3 class="text-2xl md:text-3xl font-heading font-extrabold text-navy mb-3">
+                                NotebookLM Interactive Podcasts
+                            </h3>
+                            <p class="text-gray-600 mb-5 leading-relaxed">
+                                Turn your unit materials into a two-host podcast that students can <em>talk back to</em>.
+                                We'll generate an interactive Audio Overview live, walk through how to steer the hosts, and discuss
+                                where it fits in lesson cycles &mdash; from pre-reading to revision.
+                            </p>
+                            <div class="flex flex-wrap gap-3">
+                                <a href="https://meet.google.com/yhf-vppd-hnh" target="_blank" rel="noopener noreferrer"
+                                   class="inline-flex items-center gap-2 bg-navy hover:bg-navy2 text-white font-semibold px-5 py-2.5 rounded-full text-sm transition-all hover:scale-105 shadow-md">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                    Join the session
+                                </a>
+                                <a href="../PD%20Modules/pd.html#module-notebooklm"
+                                   class="inline-flex items-center gap-2 bg-white border border-slate-300 hover:border-navy hover:text-navy text-slate-700 font-semibold px-5 py-2.5 rounded-full text-sm transition-all">
+                                    Pre-reading: NotebookLM module
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- What is Wired Wednesdays -->
+            <section class="mb-14">
+                <h3 class="text-2xl md:text-3xl font-heading font-extrabold text-navy mb-6 text-center">What is Wired Wednesdays?</h3>
+                <div class="grid md:grid-cols-3 gap-5">
+                    <div class="bg-white rounded-2xl p-6 shadow-md card-hover border border-slate-200">
+                        <div class="w-12 h-12 rounded-xl bg-navy/10 text-navy flex items-center justify-center text-2xl mb-3">⏱️</div>
+                        <h4 class="font-heading font-bold text-lg text-navy mb-1">Short by design</h4>
+                        <p class="text-sm text-gray-600 leading-relaxed">30 minutes, no longer. Mid-week, post-school. Sustainable for everyone &mdash; especially you.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-6 shadow-md card-hover border border-slate-200">
+                        <div class="w-12 h-12 rounded-xl bg-gold/15 text-gold2 flex items-center justify-center text-2xl mb-3">🚪</div>
+                        <h4 class="font-heading font-bold text-lg text-navy mb-1">Drop in &mdash; no prep</h4>
+                        <p class="text-sm text-gray-600 leading-relaxed">Show up if you can. Skip if you can't. No pre-reading, no follow-up homework, no signup form.</p>
+                    </div>
+                    <div class="bg-white rounded-2xl p-6 shadow-md card-hover border border-slate-200">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-2xl mb-3">🧰</div>
+                        <h4 class="font-heading font-bold text-lg text-navy mb-1">Use it tomorrow</h4>
+                        <p class="text-sm text-gray-600 leading-relaxed">Every session is built around something concrete &mdash; a tool, a workflow, a prompt &mdash; you can take into class the next day.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Schedule -->
+            <section id="schedule" class="mb-14 scroll-mt-24">
+                <div class="flex items-end justify-between mb-5 flex-wrap gap-3">
+                    <div>
+                        <h3 class="text-2xl md:text-3xl font-heading font-extrabold text-navy">Spring Season Schedule</h3>
+                        <p class="text-sm text-slate-500 mt-1">Every Wednesday, 3:00&ndash;3:30 PM &middot; through the last Wednesday before July</p>
+                    </div>
+                    <a href="https://meet.google.com/yhf-vppd-hnh" target="_blank" rel="noopener noreferrer"
+                       class="text-sm font-semibold text-navy hover:text-indigo-700 inline-flex items-center gap-1">
+                        Recurring join link
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+                </div>
+                <div class="bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden divide-y divide-slate-100">
+                    <!-- Session 01 -->
+                    <div class="schedule-row p-5 flex items-center gap-5 bg-amber-50/60">
+                        <div class="flex-shrink-0 w-16 text-center">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-gold2">May</p>
+                            <p class="text-3xl font-heading font-black text-navy leading-none">13</p>
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest bg-gold text-navy rounded-full px-2.5 py-0.5">
+                                    <span class="live-dot"></span> This Week
+                                </span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Session 01</span>
+                            </div>
+                            <p class="font-heading font-bold text-navy text-base md:text-lg truncate">NotebookLM Interactive Podcasts</p>
+                            <p class="text-xs text-slate-500 mt-0.5">Audio overviews students can talk back to.</p>
+                        </div>
+                        <a href="https://meet.google.com/yhf-vppd-hnh" target="_blank" rel="noopener noreferrer"
+                           class="flex-shrink-0 inline-flex items-center gap-1.5 bg-navy hover:bg-navy2 text-white text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full transition-all hover:scale-105">
+                            Join
+                        </a>
+                    </div>
+                    <!-- Session 02 -->
+                    <div class="schedule-row p-5 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-16 text-center">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">May</p>
+                            <p class="text-3xl font-heading font-black text-slate-700 leading-none">20</p>
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Session 02</p>
+                            <p class="font-heading font-semibold text-slate-700 italic text-base">Topic to be announced</p>
+                            <p class="text-xs text-slate-400 mt-0.5">Suggest a topic &mdash; see below.</p>
+                        </div>
+                        <span class="flex-shrink-0 text-[10px] font-bold uppercase tracking-widest text-slate-400 border border-slate-200 rounded-full px-3 py-1.5">Upcoming</span>
+                    </div>
+                    <!-- Session 03 -->
+                    <div class="schedule-row p-5 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-16 text-center">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">May</p>
+                            <p class="text-3xl font-heading font-black text-slate-700 leading-none">27</p>
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Session 03</p>
+                            <p class="font-heading font-semibold text-slate-700 italic text-base">Topic to be announced</p>
+                        </div>
+                        <span class="flex-shrink-0 text-[10px] font-bold uppercase tracking-widest text-slate-400 border border-slate-200 rounded-full px-3 py-1.5">Upcoming</span>
+                    </div>
+                    <!-- Session 04 -->
+                    <div class="schedule-row p-5 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-16 text-center">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Jun</p>
+                            <p class="text-3xl font-heading font-black text-slate-700 leading-none">3</p>
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Session 04</p>
+                            <p class="font-heading font-semibold text-slate-700 italic text-base">Topic to be announced</p>
+                        </div>
+                        <span class="flex-shrink-0 text-[10px] font-bold uppercase tracking-widest text-slate-400 border border-slate-200 rounded-full px-3 py-1.5">Upcoming</span>
+                    </div>
+                    <!-- Session 05 -->
+                    <div class="schedule-row p-5 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-16 text-center">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Jun</p>
+                            <p class="text-3xl font-heading font-black text-slate-700 leading-none">10</p>
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Session 05</p>
+                            <p class="font-heading font-semibold text-slate-700 italic text-base">Topic to be announced</p>
+                        </div>
+                        <span class="flex-shrink-0 text-[10px] font-bold uppercase tracking-widest text-slate-400 border border-slate-200 rounded-full px-3 py-1.5">Upcoming</span>
+                    </div>
+                    <!-- Session 06 -->
+                    <div class="schedule-row p-5 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-16 text-center">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Jun</p>
+                            <p class="text-3xl font-heading font-black text-slate-700 leading-none">17</p>
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Session 06</p>
+                            <p class="font-heading font-semibold text-slate-700 italic text-base">Topic to be announced</p>
+                        </div>
+                        <span class="flex-shrink-0 text-[10px] font-bold uppercase tracking-widest text-slate-400 border border-slate-200 rounded-full px-3 py-1.5">Upcoming</span>
+                    </div>
+                    <!-- Session 07 -->
+                    <div class="schedule-row p-5 flex items-center gap-5">
+                        <div class="flex-shrink-0 w-16 text-center">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Jun</p>
+                            <p class="text-3xl font-heading font-black text-slate-700 leading-none">24</p>
+                        </div>
+                        <div class="flex-grow min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Session 07</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest bg-slate-100 text-slate-600 rounded-full px-2 py-0.5">Season Finale</span>
+                            </div>
+                            <p class="font-heading font-semibold text-slate-700 italic text-base">Topic to be announced</p>
+                            <p class="text-xs text-slate-400 mt-0.5">Last session before the summer break.</p>
+                        </div>
+                        <span class="flex-shrink-0 text-[10px] font-bold uppercase tracking-widest text-slate-400 border border-slate-200 rounded-full px-3 py-1.5">Upcoming</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Session archive -->
+            <section class="mb-14">
+                <h3 class="text-2xl md:text-3xl font-heading font-extrabold text-navy mb-2">Session Archive</h3>
+                <p class="text-sm text-slate-500 mb-5">Recordings, slides, and notes from past sessions will live here.</p>
+                <div class="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-10 text-center">
+                    <div class="text-5xl mb-3">📼</div>
+                    <p class="font-heading font-bold text-navy text-lg">No sessions yet &mdash; check back after May 13.</p>
+                    <p class="text-sm text-slate-500 mt-1 max-w-md mx-auto">
+                        Each week we'll add a brief recap, any links shared during the session, and (where appropriate) a recording.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Suggest a topic -->
+            <section id="suggest" class="scroll-mt-24">
+                <div class="bg-gradient-to-br from-navy to-navy2 text-white rounded-3xl p-8 md:p-10 text-center shadow-xl relative overflow-hidden">
+                    <div class="absolute -top-10 -right-10 w-48 h-48 bg-gold/10 rounded-full blur-3xl"></div>
+                    <div class="relative z-10">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gold mb-2">Have an idea?</p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-extrabold mb-3">Suggest a topic for a future Wednesday</h3>
+                        <p class="text-blue-100 max-w-xl mx-auto mb-6">
+                            A tool you'd like demoed, a workflow you've been wondering about, or something you've tried in class and want to share &mdash; all welcome.
+                        </p>
+                        <a href="mailto:?subject=Wired%20Wednesdays%20topic%20suggestion&amp;body=Hi%2C%0A%0AI%27d%20like%20to%20suggest%20the%20following%20topic%20for%20a%20future%20Wired%20Wednesdays%20session%3A%0A%0A"
+                           class="inline-flex items-center gap-2 bg-gold hover:bg-gold2 text-navy font-bold px-7 py-3 rounded-full shadow-lg transition-all hover:scale-105">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            Email a suggestion
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200">
+        <div class="container mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-1 text-xs text-slate-500">
+            <p>&copy; 2026 American International School in Abu Dhabi</p>
+            <p class="text-[11px]">Wired Wednesdays &middot; Teaching &amp; Learning Department</p>
+        </div>
+    </footer>
+
+</body>
+</html>
