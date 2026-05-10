@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Digital Tools Newsletter — May 11</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: { primary: '#7e22ce', secondary: '#be185d', accent: '#ec4899' },
+                        animation: { 'blob': 'blob 7s infinite' },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(126, 34, 206, 0.25); }
+        .hero-gradient { background: linear-gradient(135deg, #4c1d95 0%, #7e22ce 45%, #ec4899 100%); }
+        .hero-overlay {
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 0, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.10) 0, transparent 40%);
+        }
+
+        /* --- Bilingual toggle: show only the active language --- */
+        html[lang="en"] .lang-ar { display: none !important; }
+        html[lang="ar"] .lang-en { display: none !important; }
+
+        /* Arabic typography */
+        html[lang="ar"] body,
+        html[lang="ar"] .font-heading { font-family: 'Cairo', 'Inter', sans-serif; }
+        html[lang="ar"] .uppercase { text-transform: none; letter-spacing: normal; }
+        html[lang="ar"] .tracking-widest,
+        html[lang="ar"] .tracking-wider { letter-spacing: normal; }
+
+        /* RTL flow: flip directional margins and arrow icons */
+        html[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+        html[dir="rtl"] .mr-1\.5 { margin-right: 0; margin-left: 0.375rem; }
+        html[dir="rtl"] .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+        html[dir="rtl"] .mr-3 { margin-right: 0; margin-left: 0.75rem; }
+        html[dir="rtl"] .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+        html[dir="rtl"] .text-left { text-align: right; }
+
+        /* Language toggle pill */
+        .lang-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #7e22ce, #ec4899);
+            color: #fff;
+            box-shadow: 0 4px 14px -4px rgba(126, 34, 206, 0.45);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .lang-toggle:hover { transform: translateY(-1px); box-shadow: 0 6px 18px -4px rgba(126, 34, 206, 0.55); }
+    </style>
+</head>
+<body class="bg-purple-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white/85 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-purple-100">
+        <div class="h-1 bg-gradient-to-r from-purple-700 via-pink-500 to-rose-400 w-full"></div>
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center gap-3">
+            <a href="../index.html" class="flex items-center gap-4 group" title="Back to Learning Hub">
+                <img src="../AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/7e22ce/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-purple-900 tracking-tight leading-none uppercase font-heading group-hover:text-purple-700 transition-colors">
+                        <span class="lang-en">Digital Tools Newsletter</span>
+                        <span class="lang-ar">نشرة الأدوات الرقمية</span>
+                    </h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-purple-700/80 uppercase tracking-widest mt-0.5">
+                        <span class="lang-en">May 11 &middot; Learning Team</span>
+                        <span class="lang-ar">١١ مايو · فريق التعلم</span>
+                    </span>
+                </div>
+            </a>
+            <div class="flex items-center gap-2">
+                <button id="lang-toggle" type="button" class="lang-toggle" aria-label="Toggle language">
+                    <span aria-hidden="true">🌐</span>
+                    <span class="lang-en">العربية</span>
+                    <span class="lang-ar">English</span>
+                </button>
+                <div class="hidden md:flex items-center gap-2">
+                    <a href="media.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-purple-800 transition-all duration-300 hover:bg-purple-50">
+                        <svg class="w-4 h-4 mr-1.5 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        <span class="lang-en">Media Hub</span>
+                        <span class="lang-ar">مركز الإعلام</span>
+                    </a>
+                    <a href="../index.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-purple-800 transition-all duration-300 hover:bg-purple-50">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        <span class="lang-en">Learning Hub</span>
+                        <span class="lang-ar">مركز التعلم</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero-gradient text-white relative overflow-hidden">
+        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
+        <div class="absolute -top-20 -left-20 w-72 h-72 bg-purple-300/20 rounded-full blur-3xl animate-blob"></div>
+        <div class="absolute -bottom-24 -right-16 w-80 h-80 bg-pink-200/20 rounded-full blur-3xl animate-blob" style="animation-delay: 2s;"></div>
+        <div class="container mx-auto px-6 py-16 md:py-20 relative z-10 max-w-4xl">
+            <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
+                <span class="text-xl">🛠️</span>
+                <span class="text-xs font-bold uppercase tracking-widest">
+                    <span class="lang-en">Digital Tools &middot; Issue No. 2</span>
+                    <span class="lang-ar">الأدوات الرقمية · العدد الثاني</span>
+                </span>
+            </div>
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-5 drop-shadow-lg">
+                <span class="lang-en">What's New on the Learning Hub</span>
+                <span class="lang-ar">أحدث المستجدات في مركز التعلم</span>
+            </h2>
+            <p class="text-lg md:text-xl max-w-3xl text-purple-50 drop-shadow">
+                <span class="lang-en">A round-up of the digital tools, AI Gems, and Learning Hub upgrades the Learning Team has shipped for the AISA teaching staff.</span>
+                <span class="lang-ar">ملخّص لأحدث الأدوات الرقمية وأدوات Gemini Gems وتحسينات مركز التعلم التي أطلقها فريق التعلم لطاقم التدريس في AISA.</span>
+            </p>
+            <div class="mt-6 flex flex-wrap items-center gap-3 text-sm">
+                <span class="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3 py-1 font-semibold">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span class="lang-en">May 11</span>
+                    <span class="lang-ar">١١ مايو</span>
+                </span>
+                <span class="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3 py-1 font-semibold">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-5.13a4 4 0 11-8 0 4 4 0 018 0zm6 3a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span class="lang-en">For Teaching Staff</span>
+                    <span class="lang-ar">لطاقم التدريس</span>
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main -->
+    <main class="flex-grow">
+        <div class="container mx-auto px-6 py-14 max-w-4xl">
+
+            <!-- Editor's Note -->
+            <section class="bg-white rounded-2xl shadow-md border border-purple-100 p-7 md:p-9 mb-12">
+                <div class="flex items-start gap-4">
+                    <div class="hidden sm:flex h-12 w-12 rounded-2xl bg-purple-100 items-center justify-center text-2xl shrink-0">✏️</div>
+                    <div>
+                        <h3 class="text-xl md:text-2xl font-heading font-bold text-purple-900 mb-2">
+                            <span class="lang-en">A note from the Learning Team</span>
+                            <span class="lang-ar">كلمة من فريق التعلم</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed">
+                            <span class="lang-en">Welcome back to the <strong>Digital Tools</strong> newsletter. This week is a big one: we're launching a brand-new weekly drop-in series, Google has pushed two Gemini upgrades that change the way you can work in <strong>Gmail</strong> and <strong>Drive</strong>, and <strong>NotebookLM</strong> can now sit inside your custom Gems as a research-backed knowledge base. Here's everything that landed.</span>
+                            <span class="lang-ar">أهلاً بكم مجدّداً في نشرة <strong>الأدوات الرقمية</strong>. هذا الأسبوع حافل: نطلق سلسلة أسبوعية جديدة بصيغة الحضور المفتوح، وأطلقت Google تحديثَين على Gemini يغيّران طريقة عملكم داخل <strong>Gmail</strong> و<strong>Drive</strong>، وأصبح بإمكان <strong>NotebookLM</strong> العمل داخل أدوات Gems المخصّصة لكم كقاعدة معرفية مدعومة بمصادر بحثية. إليكم تفاصيل ما وصلنا إليه.</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Wired Wednesdays -->
+            <section class="bg-white rounded-2xl shadow-lg border-t-8 border-indigo-700 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-indigo-50 flex items-center justify-center">
+                            <img src="../wired-wednesdays-logo.png" alt="Wired Wednesdays logo" class="h-12 w-12 object-contain rounded-xl" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <span style="display:none;" class="text-3xl">⚡</span>
+                        </div>
+                        <span class="inline-block bg-indigo-100 text-indigo-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">New Series &middot; Live</span>
+                            <span class="lang-ar">سلسلة جديدة · مباشرة</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-heading font-bold text-indigo-900 mb-2">
+                            <span class="lang-en">Wired Wednesdays — drop in every week, 30 minutes, no prep</span>
+                            <span class="lang-ar">Wired Wednesdays — حضور أسبوعي مفتوح، ٣٠ دقيقة، دون تحضير</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-3">
+                            <span class="lang-en">We've launched <strong>Wired Wednesdays</strong>: a short, drop-in PD series on AI &amp; ed-tech in the classroom. Same day, same time, same Google Meet link — show up if you can, skip if you can't. The first session is <strong>this Wednesday, May 13</strong>: <em>NotebookLM Interactive Podcasts</em> — turn your unit materials into a two-host audio overview your students can talk back to.</span>
+                            <span class="lang-ar">أطلقنا <strong>Wired Wednesdays</strong>: سلسلة تطوير مهني قصيرة بصيغة الحضور المفتوح حول الذكاء الاصطناعي وتقنيات التعليم في الفصل. اليوم نفسه، الوقت نفسه، رابط Google Meet نفسه — احضروا إن استطعتم، وتجاوزوها إن لم تستطيعوا. أول جلسة <strong>الأربعاء ١٣ مايو</strong>: <em>بودكاست NotebookLM التفاعلي</em> — حوّلوا موادّ وحدتكم إلى ملخّص صوتي بصوتَي مذيعَين يمكن لطلابكم التحاور معه.</span>
+                        </p>
+                        <ul class="text-sm text-gray-700 space-y-1.5 mb-4">
+                            <li class="flex items-start"><span class="text-indigo-700 mr-2">✓</span>
+                                <span class="lang-en">Every Wednesday, <strong>3:00–3:30 PM</strong>, online — recurring Meet link, no signup form.</span>
+                                <span class="lang-ar">كل أربعاء من الساعة <strong>٣:٠٠ إلى ٣:٣٠ مساءً</strong>، عبر الإنترنت — رابط Meet ثابت، دون نموذج تسجيل.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-indigo-700 mr-2">✓</span>
+                                <span class="lang-en">Spring season runs <strong>May 13 → June 24</strong> — seven sessions, last Wednesday before summer break.</span>
+                                <span class="lang-ar">يمتدّ موسم الربيع من <strong>١٣ مايو إلى ٢٤ يونيو</strong> — سبع جلسات، آخر أربعاء قبل عطلة الصيف.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-indigo-700 mr-2">✓</span>
+                                <span class="lang-en">Featured card now live on the Learning Hub landing page, and the schedule, Meet link, and "suggest a topic" are indexed in hub search.</span>
+                                <span class="lang-ar">بطاقة مميّزة باتت متاحة الآن على الصفحة الرئيسية لمركز التعلم، والجدول ورابط Meet وخيار "اقترِح موضوعاً" مفهرسة جميعها في بحث المركز.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-indigo-700 mr-2">✓</span>
+                                <span class="lang-en">Got a tool you'd like demoed or a workflow you've tried in class? Pitch it for a future Wednesday.</span>
+                                <span class="lang-ar">لديكم أداة تودّون عرضها أو سير عمل جرّبتموه في الفصل؟ اقترحوه لجلسة قادمة.</span>
+                            </li>
+                        </ul>
+                        <div class="flex flex-wrap gap-3">
+                            <a href="../Wired%20Wednesdays/wired-wednesdays.html" class="inline-flex items-center gap-2 bg-indigo-700 text-white py-2.5 px-5 rounded-full text-sm font-semibold hover:bg-indigo-800 transition-colors shadow-md">
+                                <span class="lang-en">See the schedule</span>
+                                <span class="lang-ar">عرض الجدول</span>
+                                <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </a>
+                            <a href="https://meet.google.com/yhf-vppd-hnh" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-amber-400 text-indigo-900 py-2.5 px-5 rounded-full text-sm font-semibold hover:bg-amber-500 transition-colors shadow-md">
+                                <span class="lang-en">Join this Wednesday</span>
+                                <span class="lang-ar">انضموا هذا الأربعاء</span>
+                                <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Gemini in Gmail & Drive -->
+            <section class="bg-white rounded-2xl shadow-lg border-t-8 border-rose-500 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-rose-50 flex items-center justify-center">
+                            <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="Gemini logo" class="h-9 w-9 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <span style="display:none;" class="text-3xl">✨</span>
+                        </div>
+                        <span class="inline-block bg-rose-100 text-rose-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">Gemini Update</span>
+                            <span class="lang-ar">تحديث Gemini</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-heading font-bold text-rose-900 mb-2">
+                            <span class="lang-en">Gemini now reaches into Gmail and Drive</span>
+                            <span class="lang-ar">Gemini يصل الآن إلى Gmail و Drive</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-3">
+                            <span class="lang-en">Two new app integrations are live in your AISA Gemini account. <strong>Gemini can now read your Gmail on demand</strong> — ask it what someone emailed you about exam prep last week and it'll summarise the thread. It can also <strong>create files directly on your Google Drive</strong> — Docs, Sheets, and more — without the copy-paste round trip.</span>
+                            <span class="lang-ar">إضافتان جديدتان داخل حساب Gemini الخاص بـ AISA. <strong>أصبح بإمكان Gemini قراءة بريدكم في Gmail عند الطلب</strong> — اسألوه ماذا أرسل لكم زميل بشأن التحضير للامتحانات الأسبوع الماضي وسيلخّص لكم الرسائل. وكذلك <strong>إنشاء ملفات مباشرة على Google Drive</strong> الخاص بكم — مستندات وجداول وغيرها — دون الحاجة إلى النسخ واللصق.</span>
+                        </p>
+                        <ul class="text-sm text-gray-700 space-y-1.5 mb-4">
+                            <li class="flex items-start"><span class="text-rose-600 mr-2">✓</span>
+                                <span class="lang-en"><strong>Gmail:</strong> ask Gemini to summarise a thread, find an email about a topic, or surface action items from your inbox.</span>
+                                <span class="lang-ar"><strong>Gmail:</strong> اطلبوا من Gemini تلخيص محادثة، أو إيجاد رسالة حول موضوع معيّن، أو استخراج المهام من صندوق الوارد.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-rose-600 mr-2">✓</span>
+                                <span class="lang-en"><strong>Drive:</strong> ask Gemini to draft a handout, create a rubric in Sheets, or write a cover letter — and it lands in your Drive ready to share.</span>
+                                <span class="lang-ar"><strong>Drive:</strong> اطلبوا من Gemini صياغة نشرة، أو إنشاء معيار تقييم في Sheets، أو كتابة رسالة تغطية — يصلكم الملف على Drive جاهزاً للمشاركة.</span>
+                            </li>
+                        </ul>
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-amber-700 mb-2 flex items-center gap-1.5"><span>⚠️</span>
+                                <span class="lang-en">Heads-up: Slides is glitchy</span>
+                                <span class="lang-ar">تنبيه: Slides غير مستقرّ</span>
+                            </p>
+                            <p class="text-sm text-gray-700">
+                                <span class="lang-en">Slides generation is currently <strong>glitchy</strong> because Gemini tries to <em>code</em> the deck rather than build it natively in Slides. If you're making a presentation, generate the outline and copy in a Doc first, then paste into a fresh Slides file by hand. We'll update the moment Google fixes it.</span>
+                                <span class="lang-ar">إنشاء Slides حالياً <strong>غير مستقرّ</strong> لأن Gemini يحاول <em>برمجة</em> العرض بدلاً من بنائه أصلياً داخل Slides. إن كنتم تعدّون عرضاً تقديمياً، فاطلبوا أولاً المخطّط والنصوص في مستند Doc ثم انسخوها يدوياً إلى ملف Slides جديد. سنحدّث هذا فور إصلاح Google له.</span>
+                            </p>
+                        </div>
+                        <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-rose-600 text-white py-2.5 px-5 rounded-full text-sm font-semibold hover:bg-rose-700 transition-colors shadow-md">
+                            <span class="lang-en">Open Gemini</span>
+                            <span class="lang-ar">فتح Gemini</span>
+                            <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: NotebookLM in Gemini & Gems -->
+            <section class="bg-white rounded-2xl shadow-lg border-t-8 border-emerald-500 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-emerald-50 flex items-center justify-center">
+                            <img src="https://www.google.com/s2/favicons?domain=notebooklm.google.com&sz=128" alt="NotebookLM logo" class="h-9 w-9 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <span style="display:none;" class="text-3xl">📓</span>
+                        </div>
+                        <span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">Gemini × NotebookLM</span>
+                            <span class="lang-ar">Gemini × NotebookLM</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-heading font-bold text-emerald-900 mb-2">
+                            <span class="lang-en">Plug your NotebookLM notebooks into Gemini — and into your Gems</span>
+                            <span class="lang-ar">اربطوا دفاتر NotebookLM بـ Gemini — وبأدوات Gems الخاصة بكم</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-3">
+                            <span class="lang-en">A <strong>NotebookLM notebook</strong> can now be attached to a Gemini chat to ground its answers in <em>your</em> sources, AND embedded directly in the <strong>knowledge base of any custom Gem</strong> you build. That means a Gem you design — say, a Year 12 Biology tutor or an IB syllabus assistant — can cite your curriculum docs, IB guides, and research papers instead of leaning on the open web. Everything you do is relevant, and everything you do is backed.</span>
+                            <span class="lang-ar">أصبح بإمكانكم إرفاق <strong>دفتر NotebookLM</strong> بمحادثة Gemini ليُجيب استناداً إلى مصادركم <em>أنتم</em>، وكذلك إدراجه مباشرة ضمن <strong>قاعدة المعرفة لأي Gem مخصّص</strong> تصمّمونه. ذلك يعني أن أي Gem تبنونه — مثلاً معلّم لمادة الأحياء للصف الثاني عشر أو مساعد لمنهاج IB — سيستند إلى وثائق منهاجكم وأدلة IB والأوراق البحثية بدلاً من الاعتماد على الويب المفتوح. كلّ ما تقومون به وثيق الصلة، ومدعوم بمصادر.</span>
+                        </p>
+                        <ul class="text-sm text-gray-700 space-y-1.5 mb-4">
+                            <li class="flex items-start"><span class="text-emerald-600 mr-2">✓</span>
+                                <span class="lang-en"><strong>Attach to a chat:</strong> drop a notebook into a one-off Gemini conversation for source-grounded answers in the moment.</span>
+                                <span class="lang-ar"><strong>الإرفاق بمحادثة:</strong> أدرجوا دفتراً داخل محادثة Gemini فردية للحصول على إجابات مستندة إلى مصادركم لحظياً.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-emerald-600 mr-2">✓</span>
+                                <span class="lang-en"><strong>Bake into a Gem:</strong> add a notebook to a Gem's knowledge base so every response is grounded in your sources, not the open web.</span>
+                                <span class="lang-ar"><strong>الدمج داخل Gem:</strong> أضيفوا دفتراً إلى قاعدة معرفة Gem ليكون كل ردّ مستنداً إلى مصادركم لا إلى الويب المفتوح.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-emerald-600 mr-2">✓</span>
+                                <span class="lang-en"><strong>Use it for:</strong> subject-specific tutoring Gems, IB syllabus assistants, departmental policy helpers, research-grounded planning bots.</span>
+                                <span class="lang-ar"><strong>استخدموه في:</strong> أدوات Gems لتعليم مواد محدّدة، مساعدات منهاج IB، مساعدات سياسات الأقسام، مساعدات تخطيط مدعومة بالبحث.</span>
+                            </li>
+                        </ul>
+                        <a href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-emerald-600 text-white py-2.5 px-5 rounded-full text-sm font-semibold hover:bg-emerald-700 transition-colors shadow-md">
+                            <span class="lang-en">Open NotebookLM</span>
+                            <span class="lang-ar">فتح NotebookLM</span>
+                            <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Other updates -->
+            <section class="bg-white rounded-2xl shadow-lg border-t-8 border-purple-500 p-7 md:p-9 mb-8">
+                <div class="flex items-center gap-3 mb-5">
+                    <div class="h-12 w-12 rounded-2xl bg-purple-50 flex items-center justify-center text-2xl">✨</div>
+                    <h3 class="text-2xl font-heading font-bold text-purple-900">
+                        <span class="lang-en">Smaller upgrades worth a mention</span>
+                        <span class="lang-ar">تحديثات أصغر تستحق الإشارة</span>
+                    </h3>
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-5">
+                    <div class="bg-purple-50/50 border border-purple-100 rounded-xl p-5">
+                        <h4 class="font-bold text-purple-900 mb-1.5 flex items-center gap-2"><span>👋</span>
+                            <span class="lang-en">New face on the Curriculum team</span>
+                            <span class="lang-ar">وجه جديد في فريق المناهج</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">Welcome <strong>Brandon Baki</strong> as <strong>Head of AI &amp; Innovation</strong> — now live on the Orientation Hub's Meet the Team wall. <strong>Amira Al Turabi</strong> has stepped into the K12 Curriculum Coordinator role, replacing Sarah Layman.</span>
+                            <span class="lang-ar">نرحّب بـ<strong>Brandon Baki</strong> في منصب <strong>رئيس قسم الذكاء الاصطناعي والابتكار</strong> — وقد أصبح ضمن لوحة "تعرّفوا على الفريق" في مركز التوجيه. كما تولّت <strong>Amira Al Turabi</strong> منصب منسّقة منهاج K12 خلفاً لـ Sarah Layman.</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-purple-50/50 border border-purple-100 rounded-xl p-5">
+                        <h4 class="font-bold text-purple-900 mb-1.5 flex items-center gap-2"><span>🌐</span>
+                            <span class="lang-en">Bilingual newsletters — Arabic &amp; English</span>
+                            <span class="lang-ar">نشرات ثنائية اللغة — عربية وإنجليزية</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">Last week's May 4 issue gained an <strong>Arabic/English toggle</strong>, and this issue ships with it built in. Tap the 🌐 button at the top to switch — your choice is remembered for next time.</span>
+                            <span class="lang-ar">أُضيف <strong>زر التبديل بين العربية والإنجليزية</strong> إلى نشرة ٤ مايو الماضية، وتأتي هذه النشرة مزوَّدة به افتراضياً. اضغطوا زر 🌐 في الأعلى للتبديل — يتمّ تذكّر اختياركم في المرات التالية.</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-purple-50/50 border border-purple-100 rounded-xl p-5">
+                        <h4 class="font-bold text-purple-900 mb-1.5 flex items-center gap-2"><span>⚡</span>
+                            <span class="lang-en">Wired Wednesdays on the Hub home</span>
+                            <span class="lang-ar">Wired Wednesdays على واجهة المركز</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">A featured Wired Wednesdays card is now front-and-centre on the Learning Hub landing page, and the schedule, recurring Meet link, and "suggest a topic" form are all indexed in hub search.</span>
+                            <span class="lang-ar">باتت بطاقة Wired Wednesdays المميّزة في صدارة الصفحة الرئيسية لمركز التعلم، كما أصبح الجدول ورابط Meet الثابت ونموذج "اقترِح موضوعاً" مفهرَسة في بحث المركز.</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-purple-50/50 border border-purple-100 rounded-xl p-5">
+                        <h4 class="font-bold text-purple-900 mb-1.5 flex items-center gap-2"><span>📰</span>
+                            <span class="lang-en">Newsletter archive on the Media Hub</span>
+                            <span class="lang-ar">أرشيف النشرات في مركز الإعلام</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">The Media Hub now surfaces this latest issue and keeps the May 4 issue accessible — issues will accumulate as a browsable archive over the coming weeks.</span>
+                            <span class="lang-ar">يعرض مركز الإعلام الآن هذا العدد الأحدث ويُبقي العدد الصادر في ٤ مايو متاحاً — ستتراكم الأعداد كأرشيف قابل للتصفّح خلال الأسابيع القادمة.</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Coming Soon -->
+            <section class="bg-white rounded-2xl shadow-lg border-t-8 border-amber-500 p-7 md:p-9 mb-8">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="h-12 w-12 rounded-2xl bg-amber-50 flex items-center justify-center text-2xl">🚧</div>
+                    <div>
+                        <span class="block text-[10px] font-bold uppercase tracking-widest text-amber-700">
+                            <span class="lang-en">On the roadmap</span>
+                            <span class="lang-ar">في خارطة الطريق</span>
+                        </span>
+                        <h3 class="text-2xl font-heading font-bold text-amber-900">
+                            <span class="lang-en">Coming Soon</span>
+                            <span class="lang-ar">قريباً</span>
+                        </h3>
+                    </div>
+                </div>
+                <p class="text-gray-700 leading-relaxed mb-5">
+                    <span class="lang-en">A peek at what the Learning Team is building next. Want to weigh in on priority? Hit the request form linked below.</span>
+                    <span class="lang-ar">نظرة على ما يعمل عليه فريق التعلم تالياً. هل تودّون المشاركة في تحديد الأولويات؟ استخدموا نموذج الطلب أدناه.</span>
+                </p>
+
+                <div class="grid sm:grid-cols-2 gap-5">
+                    <div class="bg-amber-50/50 border border-amber-100 rounded-xl p-5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xl">🧠</span>
+                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                <span class="lang-en">In Progress</span>
+                                <span class="lang-ar">قيد التنفيذ</span>
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-amber-900 mb-1.5">
+                            <span class="lang-en">Chalkie.ai training module</span>
+                            <span class="lang-ar">وحدة تدريب على Chalkie.ai</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">A short PD module on getting the most out of Chalkie — prompt patterns, output tuning, and classroom-ready workflows so the trial actually pays off.</span>
+                            <span class="lang-ar">وحدة تطوير مهني قصيرة للاستفادة القصوى من Chalkie — أنماط المطالبات، وضبط المخرجات، وسير عمل جاهز للفصل ليؤتي التجريب ثماره.</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-amber-50/50 border border-amber-100 rounded-xl p-5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xl">📝</span>
+                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                <span class="lang-en">In Progress</span>
+                                <span class="lang-ar">قيد التنفيذ</span>
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-amber-900 mb-1.5">
+                            <span class="lang-en">IB Exam Format Generator training</span>
+                            <span class="lang-ar">تدريب على مولِّد تنسيق امتحان IB</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">A walkthrough module for the Gemini Gem — what to feed it, how to nudge the LaTeX output, and how to integrate the PDFs into mock-exam practice.</span>
+                            <span class="lang-ar">وحدة شرح للأداة Gemini Gem — ماذا تُدخلون، وكيف توجِّهون مخرجات LaTeX، وكيف تدمجون ملفات PDF في تدريبات الامتحانات التجريبية.</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-amber-50/50 border border-amber-100 rounded-xl p-5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xl">📓</span>
+                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                <span class="lang-en">In Progress</span>
+                                <span class="lang-ar">قيد التنفيذ</span>
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-amber-900 mb-1.5">
+                            <span class="lang-en">"NotebookLM-powered Gems" recipe pack</span>
+                            <span class="lang-ar">حزمة وصفات لأدوات Gems مدعومة بـ NotebookLM</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">A short PD module showing how to bundle a NotebookLM notebook into a Gem's knowledge base — with ready-made templates for an IB tutor Gem, a research-grounded planner, and a department policy helper.</span>
+                            <span class="lang-ar">وحدة تطوير مهني قصيرة تشرح كيفية إدراج دفتر NotebookLM ضمن قاعدة معرفة Gem — مع قوالب جاهزة لـ Gem معلّم IB، ومخطّط مدعوم بالبحث، ومساعد سياسات الأقسام.</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-amber-50/50 border border-amber-100 rounded-xl p-5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xl">🔗</span>
+                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                <span class="lang-en">Planned</span>
+                                <span class="lang-ar">مخطَّط له</span>
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-amber-900 mb-1.5">
+                            <span class="lang-en">Training embedded into Tool cards</span>
+                            <span class="lang-ar">تدريب مدمج في بطاقات الأدوات</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">Each card on Tools &amp; Resources will link directly to its matching training module, so PD is one click away from the tool itself — no more hunting across pages.</span>
+                            <span class="lang-ar">ستربط كل بطاقة في الأدوات والموارد مباشرة بوحدة التدريب المناظرة لها، ليكون التطوير المهني على بُعد نقرة واحدة من الأداة نفسها — دون التنقّل بين الصفحات.</span>
+                        </p>
+                    </div>
+
+                    <div class="bg-amber-50/50 border border-amber-100 rounded-xl p-5 sm:col-span-2">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xl">📄</span>
+                            <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                                <span class="lang-en">Planned &middot; Co-design</span>
+                                <span class="lang-ar">مخطَّط له · تصميم مشترك</span>
+                            </span>
+                        </div>
+                        <h4 class="font-bold text-amber-900 mb-1.5">
+                            <span class="lang-en">LaTeX-to-PDF module — co-designed with Shawn Carder</span>
+                            <span class="lang-ar">وحدة LaTeX إلى PDF — بالتعاون مع Shawn Carder</span>
+                        </h4>
+                        <p class="text-sm text-gray-700">
+                            <span class="lang-en">A standalone PD module on using <strong>LaTeX</strong> to render polished, exam-quality PDFs from any source — the same technique behind the IB Exam Format Generator. Built in collaboration with <strong>Shawn Carder</strong> so teachers across departments can spin up authentic-looking handouts, problem sets, and mock papers themselves.</span>
+                            <span class="lang-ar">وحدة تطوير مهني مستقلة حول استخدام <strong>LaTeX</strong> لإنتاج ملفات PDF أنيقة بجودة امتحانية من أي مصدر — التقنية ذاتها التي يقوم عليها مولِّد تنسيق امتحان IB. بالتعاون مع <strong>Shawn Carder</strong> ليتمكّن المعلمون عبر مختلف الأقسام من إنتاج النشرات ومجموعات الأسئلة والأوراق التجريبية بشكل احترافي بأنفسهم.</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA -->
+            <section class="bg-gradient-to-r from-purple-700 to-pink-600 rounded-2xl shadow-xl p-8 md:p-10 text-white text-center mb-8">
+                <h3 class="text-2xl md:text-3xl font-heading font-extrabold mb-3">
+                    <span class="lang-en">Got an idea for the next tool?</span>
+                    <span class="lang-ar">لديكم فكرة لأداة جديدة؟</span>
+                </h3>
+                <p class="text-purple-50 max-w-2xl mx-auto mb-6">
+                    <span class="lang-en">If there's an AI tool, Gemini Gem, or workflow you'd love us to build for your classroom, drop it in the request form. The more specific the use case, the faster we can ship it.</span>
+                    <span class="lang-ar">إن كانت هناك أداة ذكاء اصطناعي أو Gemini Gem أو سير عمل تودّون أن نبنيه لفصلكم، شاركونا التفاصيل في نموذج الطلب. كلما كانت الحالة أكثر تحديداً، كلما أسرعنا في إطلاقها.</span>
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="../Tools%20and%20Resources/tools.html" class="inline-flex items-center gap-2 bg-white text-purple-800 py-3 px-6 rounded-full font-bold hover:bg-purple-50 transition-colors shadow-lg">
+                        <span class="lang-en">Browse Tools &amp; Resources</span>
+                        <span class="lang-ar">تصفّحوا الأدوات والموارد</span>
+                        <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeN_BO2PljIaKgvU-Khn-Zzr0mHsuyXTSamizOU3bV3rWhm-w/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-white/15 border border-white/30 text-white py-3 px-6 rounded-full font-bold hover:bg-white/25 transition-colors">
+                        <span class="lang-en">Request a Tool</span>
+                        <span class="lang-ar">اطلبوا أداة</span>
+                        <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Previous issue -->
+            <section class="bg-white rounded-2xl shadow-md border border-purple-100 p-6 mb-8">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-purple-700 mb-1">
+                            <span class="lang-en">Previous Issue</span>
+                            <span class="lang-ar">العدد السابق</span>
+                        </p>
+                        <p class="font-heading font-bold text-purple-900">
+                            <span class="lang-en">May 4 — Issue No. 1: Chalkie.ai trial, IB Exam Format Generator, Hub-wide search</span>
+                            <span class="lang-ar">٤ مايو — العدد الأول: نسخة Chalkie.ai التجريبية، ومولِّد تنسيق امتحان IB، وبحث المركز الشامل</span>
+                        </p>
+                    </div>
+                    <a href="may4.html" class="inline-flex items-center gap-2 text-purple-700 font-semibold hover:text-purple-900 text-sm">
+                        <span class="lang-en">Read May 4</span>
+                        <span class="lang-ar">قراءة عدد ٤ مايو</span>
+                        <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                </div>
+            </section>
+
+            <p class="text-center text-xs text-gray-500">
+                <span class="lang-en">Digital Tools Newsletter &middot; Issue No. 2 &middot; May 11 &middot; AISA Teaching &amp; Learning Department</span>
+                <span class="lang-ar">نشرة الأدوات الرقمية · العدد الثاني · ١١ مايو · قسم التعليم والتعلم في AISA</span>
+            </p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-purple-900 text-purple-100 mt-auto">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <img src="../AISA_logo.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
+                <span class="font-heading font-bold text-lg tracking-wide">
+                    <span class="lang-en">AISA Media Hub</span>
+                    <span class="lang-ar">مركز الإعلام في AISA</span>
+                </span>
+            </div>
+            <p class="text-xs text-purple-200/80">
+                <span class="lang-en">American International School in Abu Dhabi &middot; Teaching &amp; Learning Department</span>
+                <span class="lang-ar">المدرسة الأمريكية الدولية في أبوظبي · قسم التعليم والتعلم</span>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        (function () {
+            const STORAGE_KEY = 'aisa-newsletter-lang';
+            const html = document.documentElement;
+            const toggleBtn = document.getElementById('lang-toggle');
+
+            function applyLang(lang) {
+                const next = lang === 'ar' ? 'ar' : 'en';
+                html.setAttribute('lang', next);
+                html.setAttribute('dir', next === 'ar' ? 'rtl' : 'ltr');
+                try { localStorage.setItem(STORAGE_KEY, next); } catch (e) { /* ignore */ }
+            }
+
+            let saved = 'en';
+            try { saved = localStorage.getItem(STORAGE_KEY) || 'en'; } catch (e) { /* ignore */ }
+            applyLang(saved);
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    const current = html.getAttribute('lang') === 'ar' ? 'ar' : 'en';
+                    applyLang(current === 'ar' ? 'en' : 'ar');
+                });
+            }
+        })();
+    </script>
+
+</body>
+</html>
