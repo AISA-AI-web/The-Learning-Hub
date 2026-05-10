@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Chalkie.ai Training Module</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: { primary: '#0d9488', secondary: '#0891b2', accent: '#14b8a6' },
+                        animation: { 'blob': 'blob 7s infinite' },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .bg-dot-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .checkbox-custom:checked + div {
+            background-color: #10b981;
+            border-color: #10b981;
+            transform: scale(1.05);
+        }
+        .checkbox-custom:checked + div svg { display: block; }
+        .principle-card { transition: all 0.3s ease; }
+        .principle-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -6px rgba(0,0,0,0.12); }
+        .quiz-option { transition: all 0.2s ease; cursor: pointer; }
+        .quiz-option:hover { transform: scale(1.02); }
+        .quiz-option.correct { background-color: #ecfdf5; border-color: #10b981; }
+        .quiz-option.incorrect { background-color: #fef2f2; border-color: #ef4444; }
+        .quiz-option.selected { border-width: 2px; }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .timeline-container { position: relative; }
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            bottom: 2rem;
+            left: 1.25rem;
+            width: 2px;
+            background: #e2e8f0;
+            z-index: 0;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="bg-dot-pattern text-gray-800 min-h-screen">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-gray-100">
+        <div class="h-1 bg-gradient-to-r from-teal-600 via-cyan-500 to-emerald-500 w-full"></div>
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="../index.html" class="flex items-center gap-4 group" title="Back to Learning Hub">
+                <img src="../AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/0d9488/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-teal-900 tracking-tight leading-none uppercase font-heading">AISA</h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-gray-500 uppercase tracking-widest mt-0.5">Teaching &amp; Learning Guide</span>
+                </div>
+            </a>
+            <button onclick="window.location.href='pd.html'" class="flex items-center text-gray-500 hover:text-teal-800 transition-colors font-medium text-sm">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                <span class="hidden sm:inline">Back to Modules</span>
+                <span class="sm:hidden">Back</span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <div class="max-w-5xl mx-auto px-4 lg:px-6 pt-8 pb-20">
+
+        <!-- Module Header -->
+        <div class="mb-8">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="inline-block bg-teal-100 text-teal-800 text-xs font-bold px-3 py-1 rounded-full">New Module</span>
+                <span class="inline-block bg-cyan-100 text-cyan-800 text-xs font-bold px-3 py-1 rounded-full">Tool Training</span>
+            </div>
+            <h1 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">Chalkie.ai — A Practical Training Guide</h1>
+            <p class="text-teal-700 font-medium mt-1">Getting useful work out of Chalkie without outsourcing your professional judgement</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="bg-white/85 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-sm mb-10 p-4 flex items-center justify-between gap-4">
+            <span class="font-heading font-extrabold text-slate-900 text-base md:text-lg tracking-tight">Module Progress</span>
+            <div class="flex items-center space-x-4 bg-slate-50 border border-slate-200 px-4 py-2 rounded-xl">
+                <span id="progress-text" class="text-xs font-bold text-slate-500 uppercase tracking-widest">0% Done</span>
+                <div class="w-32 md:w-48 h-3 bg-slate-200 rounded-full overflow-hidden shadow-inner">
+                    <div id="progress-bar" class="h-full bg-gradient-to-r from-teal-500 via-cyan-500 to-emerald-500 w-0 transition-all duration-700 ease-out"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hero Section -->
+        <header class="relative py-12 lg:py-16 overflow-hidden rounded-[2rem] bg-white/70 mb-16 border border-white shadow-sm">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-full pointer-events-none opacity-60">
+                <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-teal-400/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob"></div>
+                <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-cyan-400/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" style="animation-delay:2s"></div>
+                <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-emerald-500/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" style="animation-delay:4s"></div>
+            </div>
+            <div class="relative z-10 text-center px-6">
+                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-600 shadow-lg mb-6">
+                    <span class="text-4xl">🧠</span>
+                </div>
+                <h2 class="font-heading text-3xl lg:text-4xl font-black text-slate-900 mb-4">Chalkie is a Drafting Partner — Not a Lesson Designer</h2>
+                <p class="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">This module walks through what Chalkie.ai does well, where it falls short, and a planning workflow that keeps the teaching expertise where it belongs: with the teacher.</p>
+                <div class="flex flex-wrap justify-center gap-4 mt-8 text-sm font-semibold">
+                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
+                        <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        ~20 min read
+                    </div>
+                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
+                        <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        2 Knowledge Checks
+                    </div>
+                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        Plan-then-Prompt Workflow
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Timeline -->
+        <div class="timeline-container">
+
+            <!-- Section 1: What Chalkie is for -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-teal-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-teal-700 to-cyan-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-teal-200">Section 1</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">What Chalkie.ai Is — and What It Isn't</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Chalkie.ai is an AI-powered teaching assistant for drafting lesson materials, presentations, worksheets, and supporting content. Think of it as a fast first-draft partner — comparable in spirit to MagicSchool — with a focus on speed and student-friendly formatting.</p>
+
+                        <p class="text-gray-700 leading-relaxed">It is <strong class="text-teal-800">strongest as a drafting and reformatting tool</strong>, and <strong class="text-rose-700">weakest when teachers expect it to make pedagogical decisions</strong> — sequencing, cognitive demand, differentiation, alignment to specific learner needs. Those decisions remain with the teacher.</p>
+
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+                                <h4 class="font-bold text-emerald-900 mb-3 flex items-center gap-2"><span class="text-xl">✅</span> Where Chalkie helps</h4>
+                                <ul class="text-sm text-emerald-900 space-y-1.5">
+                                    <li class="flex items-start"><span class="text-emerald-600 mr-2">•</span> Turning a topic or text into a starter slide deck</li>
+                                    <li class="flex items-start"><span class="text-emerald-600 mr-2">•</span> Producing student-friendly explainers from dense source material</li>
+                                    <li class="flex items-start"><span class="text-emerald-600 mr-2">•</span> Brainstorming activity ideas around a learning goal</li>
+                                    <li class="flex items-start"><span class="text-emerald-600 mr-2">•</span> Summarising, rewording, or shortening teacher-generated text</li>
+                                </ul>
+                            </div>
+                            <div class="bg-rose-50 border border-rose-200 rounded-xl p-5">
+                                <h4 class="font-bold text-rose-900 mb-3 flex items-center gap-2"><span class="text-xl">⚠️</span> Where Chalkie struggles</h4>
+                                <ul class="text-sm text-rose-900 space-y-1.5">
+                                    <li class="flex items-start"><span class="text-rose-600 mr-2">•</span> Hitting varied DOK levels by default (see Section 3)</li>
+                                    <li class="flex items-start"><span class="text-rose-600 mr-2">•</span> Producing reliable differentiated worksheets (see Section 4)</li>
+                                    <li class="flex items-start"><span class="text-rose-600 mr-2">•</span> Aligning to your specific class, IEPs, or context</li>
+                                    <li class="flex items-start"><span class="text-rose-600 mr-2">•</span> Catching subtle subject-matter errors</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-teal-50 to-cyan-50 border border-teal-200 rounded-xl p-6">
+                            <div class="flex items-start gap-3">
+                                <div class="bg-teal-100 p-2 rounded-lg flex-shrink-0"><span class="text-xl">🎯</span></div>
+                                <div>
+                                    <h4 class="font-bold text-teal-900 mb-2">Frame for this module</h4>
+                                    <p class="text-teal-800 text-sm leading-relaxed">Treat every Chalkie output as a <strong>draft</strong>, not a finished resource. The job of this training is to help you draft faster <em>and</em> review more rigorously — not to hand the planning to the AI.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Getting Started -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-teal-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-cyan-700 to-sky-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-cyan-200">Section 2</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Getting Started: Sign-In &amp; First Output</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <ol class="space-y-3 text-sm text-gray-700">
+                            <li class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-7 h-7 rounded-full bg-cyan-100 text-cyan-800 font-bold flex items-center justify-center text-xs">1</span>
+                                <span>Visit <a href="https://chalkie.ai" target="_blank" rel="noopener noreferrer" class="text-cyan-700 font-semibold underline hover:text-cyan-900">chalkie.ai</a> and sign in with your AISA Google account. The trial is active for all AISA staff through the end of the school year.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-7 h-7 rounded-full bg-cyan-100 text-cyan-800 font-bold flex items-center justify-center text-xs">2</span>
+                                <span>Pick a tool from the Chalkie home — Lesson Plan, Slide Deck, Worksheet, Quiz, or one of the smaller utilities.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-7 h-7 rounded-full bg-cyan-100 text-cyan-800 font-bold flex items-center justify-center text-xs">3</span>
+                                <span>Provide topic, year group, subject, and any source text or learning outcomes you want it to work from. The more specific the inputs, the more useful the draft.</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="flex-shrink-0 w-7 h-7 rounded-full bg-cyan-100 text-cyan-800 font-bold flex items-center justify-center text-xs">4</span>
+                                <span>Generate, then <strong>read every line</strong> before exporting. This is the step that separates useful Chalkie use from risky Chalkie use.</span>
+                            </li>
+                        </ol>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span class="text-lg">💡</span> Tip</h4>
+                            <p class="text-sm text-gray-700">Drop in your own learning objectives and tiered success criteria as part of the prompt. Chalkie will follow them more often than it will invent good ones on its own.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: DOK Caution (KEY SECTION) -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-teal-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-amber-600 to-orange-600 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Section 3 &middot; Critical Watch-out</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Default Chalkie Presentations Cluster at DOK 1</h3>
+                        <p class="text-amber-100 text-sm mt-1">Why teachers should plan the slide deck <em>before</em> Chalkie touches it.</p>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Reviews of Chalkie-generated slide decks consistently show the same pattern: questions and tasks land at <strong class="text-amber-800">Webb's Depth of Knowledge Level 1 (Recall &amp; Reproduction)</strong>. Definitions, list-the-features, label-the-diagram, restate-the-rule. There is very little DOK 2 (skills/concepts), DOK 3 (strategic thinking), or DOK 4 (extended thinking) unless the teacher explicitly demands it.</p>
+
+                        <p class="text-gray-700 leading-relaxed">Left as-is, this produces lessons that look polished and finished but never push students past surface-level cognition. Success criteria, when Chalkie generates them, mirror the same flatness — typically a list of "students will know…" statements with no graduated challenge.</p>
+
+                        <div class="grid md:grid-cols-4 gap-3">
+                            <div class="principle-card bg-gradient-to-br from-rose-50 to-white border border-rose-200 rounded-xl p-4 text-center">
+                                <div class="text-2xl mb-2">📋</div>
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-rose-600">DOK 1</p>
+                                <p class="text-xs font-bold text-rose-900 mt-1">Recall</p>
+                                <p class="text-[11px] text-gray-600 mt-1">Define, identify, list</p>
+                                <p class="text-[10px] font-bold text-rose-700 mt-2 bg-rose-100 rounded-full px-2 py-0.5">Chalkie default</p>
+                            </div>
+                            <div class="principle-card bg-gradient-to-br from-amber-50 to-white border border-amber-200 rounded-xl p-4 text-center">
+                                <div class="text-2xl mb-2">🔧</div>
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-amber-600">DOK 2</p>
+                                <p class="text-xs font-bold text-amber-900 mt-1">Skills</p>
+                                <p class="text-[11px] text-gray-600 mt-1">Apply, classify, summarise</p>
+                            </div>
+                            <div class="principle-card bg-gradient-to-br from-emerald-50 to-white border border-emerald-200 rounded-xl p-4 text-center">
+                                <div class="text-2xl mb-2">🧭</div>
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-emerald-600">DOK 3</p>
+                                <p class="text-xs font-bold text-emerald-900 mt-1">Strategic</p>
+                                <p class="text-[11px] text-gray-600 mt-1">Justify, critique, infer</p>
+                            </div>
+                            <div class="principle-card bg-gradient-to-br from-indigo-50 to-white border border-indigo-200 rounded-xl p-4 text-center">
+                                <div class="text-2xl mb-2">🛰️</div>
+                                <p class="text-[10px] font-bold uppercase tracking-wider text-indigo-600">DOK 4</p>
+                                <p class="text-xs font-bold text-indigo-900 mt-1">Extended</p>
+                                <p class="text-[11px] text-gray-600 mt-1">Investigate, design, transfer</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-amber-50 border-l-4 border-amber-500 rounded-r-xl p-5">
+                            <h4 class="font-bold text-amber-900 mb-2 flex items-center gap-2"><span class="text-lg">📌</span> Recommended workflow</h4>
+                            <p class="text-sm text-amber-900 leading-relaxed mb-3">Build the cognitive backbone of the lesson <strong>elsewhere</strong>, then hand a finished plan to Chalkie for visual polish.</p>
+                            <ol class="text-sm text-amber-900 space-y-2">
+                                <li class="flex items-start gap-2"><span class="font-bold">①</span> <span>Use <strong>MagicSchool</strong> or <strong>Gemini</strong> to draft a slide-by-slide outline that explicitly maps DOK 1 → DOK 3/4 across the lesson, with success criteria graduated to match.</span></li>
+                                <li class="flex items-start gap-2"><span class="font-bold">②</span> <span>Review and edit that outline yourself — anchor it to your students, your unit, and your assessment.</span></li>
+                                <li class="flex items-start gap-2"><span class="font-bold">③</span> <span>Paste the finished outline into Chalkie and ask it to <em>render</em> the deck (visuals, layout, student-friendly phrasing). Don't ask it to <em>design</em> the deck.</span></li>
+                                <li class="flex items-start gap-2"><span class="font-bold">④</span> <span>Re-check the rendered slides for slipped-back-to-DOK-1 questions and rewrite where needed.</span></li>
+                            </ol>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span class="text-lg">📚</span> Cross-reference</h4>
+                            <p class="text-sm text-gray-700">If you want a deeper grounding in tiered success criteria before you build a Chalkie deck, work through the <a href="pd.html#module-objectives" class="text-teal-700 font-semibold underline hover:text-teal-900">Objectives &amp; Success Criteria</a> module first. The <a href="pd.html#module-notebooklm" class="text-teal-700 font-semibold underline hover:text-teal-900">NotebookLM for Presentations</a> module is also a stronger starting point when the slide content needs to be sourced from specific texts.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Check 1 -->
+            <div class="relative pl-12 mb-16">
+                <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
+                    <span class="text-white font-bold text-sm">?</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden" id="quiz-1">
+                    <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 1</span>
+                        <h3 class="text-lg font-heading font-bold mt-1">DOK &amp; the Plan-then-Prompt Workflow</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="font-semibold text-gray-800 mb-4">A teacher generates a Chalkie slide deck on photosynthesis. Every question on the deck is "define / list / identify". What is the recommended next step?</p>
+                        <div class="space-y-3" id="quiz-1-options">
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
+                                <span class="text-sm text-gray-700">Use the deck as-is — Chalkie has produced a finished resource.</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
+                                <span class="text-sm text-gray-700">Re-prompt Chalkie until it stops producing DOK 1 content.</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, true)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
+                                <span class="text-sm text-gray-700">Plan a DOK-graduated slide outline in MagicSchool or Gemini, edit it yourself, then hand the finished plan to Chalkie to render.</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
+                                <span class="text-sm text-gray-700">Stop using Chalkie altogether — it cannot support good teaching.</span>
+                            </div>
+                        </div>
+                        <div id="quiz-1-feedback" class="hidden mt-4 p-4 rounded-xl text-sm fade-in"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Differentiated Worksheets Caution -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-teal-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-rose-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-rose-600 to-pink-600 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-rose-100">Section 4 &middot; Proceed with Caution</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Differentiated Worksheets — A Known Weak Spot</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Chalkie offers a "differentiated worksheet" feature that is intended to produce parallel tasks at different levels of challenge or support. In practice, the outputs have been <strong class="text-rose-800">inconsistent</strong>: tiers often differ only in length or font size, the "support" tier sometimes oversimplifies to the point of removing the learning, and the "stretch" tier sometimes produces tasks that no longer assess the same outcome.</p>
+
+                        <div class="bg-rose-50 border-l-4 border-rose-500 rounded-r-xl p-5">
+                            <h4 class="font-bold text-rose-900 mb-2 flex items-center gap-2"><span class="text-lg">⚠️</span> Guidance</h4>
+                            <p class="text-sm text-rose-900 leading-relaxed mb-3">Treat Chalkie's differentiated worksheets as a <strong>raw draft only</strong>. Before they go to students:</p>
+                            <ul class="text-sm text-rose-900 space-y-1.5">
+                                <li class="flex items-start"><span class="text-rose-600 mr-2">✓</span> Verify each tier still assesses the same learning outcome.</li>
+                                <li class="flex items-start"><span class="text-rose-600 mr-2">✓</span> Check that scaffolds genuinely support — not replace — the thinking.</li>
+                                <li class="flex items-start"><span class="text-rose-600 mr-2">✓</span> Check that stretch tasks extend cognition, not just task length.</li>
+                                <li class="flex items-start"><span class="text-rose-600 mr-2">✓</span> Sense-check accuracy against your subject knowledge — particularly in maths, science, and language structures.</li>
+                                <li class="flex items-start"><span class="text-rose-600 mr-2">✓</span> Match each tier to the actual students it is intended for.</li>
+                            </ul>
+                        </div>
+
+                        <p class="text-gray-700 leading-relaxed text-sm italic">If a Chalkie-generated worksheet would need to be substantially rewritten to be classroom-ready, that's a signal to draft it from scratch — or differentiate from a single high-quality worksheet you already trust.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: Plan-then-Prompt Workflow -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-teal-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-teal-700 to-emerald-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-teal-200">Section 5</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">The Plan-then-Prompt Workflow</h3>
+                        <p class="text-teal-100 text-sm mt-1">A four-stage routine that gets the most out of Chalkie while keeping pedagogical decisions in teacher hands.</p>
+                    </div>
+                    <div class="p-6 lg:p-8">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="principle-card bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-xl p-5">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-xl">🧭</div>
+                                    <div>
+                                        <span class="text-xs font-bold text-blue-500 uppercase tracking-wider">Stage 1</span>
+                                        <h4 class="font-bold text-blue-900">Plan the cognitive shape</h4>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">In MagicSchool or Gemini, draft a slide-by-slide map that lists the DOK target and success criterion for each section. This is the part Chalkie cannot do well — the part that requires the teacher.</p>
+                            </div>
+                            <div class="principle-card bg-gradient-to-br from-purple-50 to-white border border-purple-100 rounded-xl p-5">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center text-xl">✍️</div>
+                                    <div>
+                                        <span class="text-xs font-bold text-purple-500 uppercase tracking-wider">Stage 2</span>
+                                        <h4 class="font-bold text-purple-900">Edit the plan as a teacher</h4>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">Anchor the AI-drafted plan to your actual students. Add the IEP-relevant adjustments, the local examples, the assessment connection. This is professional judgement, not prompt engineering.</p>
+                            </div>
+                            <div class="principle-card bg-gradient-to-br from-teal-50 to-white border border-teal-100 rounded-xl p-5">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-teal-100 flex items-center justify-center text-xl">🎨</div>
+                                    <div>
+                                        <span class="text-xs font-bold text-teal-500 uppercase tracking-wider">Stage 3</span>
+                                        <h4 class="font-bold text-teal-900">Hand a finished plan to Chalkie</h4>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">Paste the edited plan into Chalkie and let it do what it does well: produce a polished, student-friendly slide deck or worksheet from a finished outline. Visuals, layout, phrasing.</p>
+                            </div>
+                            <div class="principle-card bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 rounded-xl p-5">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center text-xl">🔍</div>
+                                    <div>
+                                        <span class="text-xs font-bold text-emerald-500 uppercase tracking-wider">Stage 4</span>
+                                        <h4 class="font-bold text-emerald-900">Final read-through</h4>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-600 leading-relaxed">Read every slide and every task before it reaches students. Look for slipped DOK levels, factual drift, and anything that feels off for the class you're teaching tomorrow.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 6: Professional Accountability -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-teal-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-slate-800 to-slate-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-300">Section 6</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Professional Accountability — The Final Decision Is Yours</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Chalkie is a tool. The expert teaching decisions sit with the teacher. Two principles to hold steady on every time Chalkie is used:</p>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-xl p-5">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-xl">👤</div>
+                                    <h4 class="font-bold text-slate-900">You know your students. The AI does not.</h4>
+                                </div>
+                                <p class="text-sm text-gray-700 leading-relaxed">Chalkie has no access to which students are present in your class, who needs scaffolding for what, who has just had a tough week, who is ready to be stretched. Every output has to be filtered through your knowledge of those students before it lands in front of them.</p>
+                            </div>
+                            <div class="bg-gradient-to-br from-slate-50 to-white border border-slate-200 rounded-xl p-5">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-xl">📜</div>
+                                    <h4 class="font-bold text-slate-900">You are accountable for what you share.</h4>
+                                </div>
+                                <p class="text-sm text-gray-700 leading-relaxed">Anything that goes to students under your name carries your professional accountability — for accuracy, age-appropriateness, alignment to outcomes, and tone. "Chalkie generated it" is not a defence. The same standard applies as to anything you'd write yourself.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-violet-50 to-fuchsia-50 border border-violet-200 rounded-xl p-6">
+                            <h4 class="font-bold text-violet-900 mb-2 flex items-center gap-2"><span class="text-xl">🪞</span> Reflection prompt</h4>
+                            <p class="text-violet-900 font-semibold text-sm">For your last Chalkie-generated resource: would you have signed off on it if a colleague had handed it to you to review? If not — what would you have asked them to change? That's the same review you owe your own AI drafts.</p>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span class="text-lg">🔗</span> Connect to AISA's AI Policy</h4>
+                            <p class="text-sm text-gray-700">This section is the operational form of <strong>Principle 1 (Human-Centered Learning)</strong> and <strong>Principle 6 (Professional Accountability)</strong> from the AISA AI Policy. If you haven't yet, work through the <a href="ai-ethics-module.html" class="text-teal-700 font-semibold underline hover:text-teal-900">AI Vision &amp; Ethical Framework</a> module — it provides the wider governance frame for tools like Chalkie.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Check 2 -->
+            <div class="relative pl-12 mb-16">
+                <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
+                    <span class="text-white font-bold text-sm">?</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden" id="quiz-2">
+                    <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 2</span>
+                        <h3 class="text-lg font-heading font-bold mt-1">Accountability &amp; Differentiated Worksheets</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="font-semibold text-gray-800 mb-4">A Chalkie-generated differentiated worksheet has three tiers, but the "support" tier removes most of the thinking and the "stretch" tier asks a different question entirely. The lesson is in 30 minutes. What is the most professionally appropriate response?</p>
+                        <div class="space-y-3" id="quiz-2-options">
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
+                                <span class="text-sm text-gray-700">Print all three tiers — Chalkie generated them, so they must be correctly differentiated.</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, true)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
+                                <span class="text-sm text-gray-700">Treat the output as a draft — rewrite the support and stretch tiers so all three assess the same outcome, or fall back to a single trusted worksheet and differentiate it manually.</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
+                                <span class="text-sm text-gray-700">Use the worksheet anyway — if it doesn't work, blame the tool in the lesson reflection.</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
+                                <span class="text-sm text-gray-700">Cancel the lesson and reschedule.</span>
+                            </div>
+                        </div>
+                        <div id="quiz-2-feedback" class="hidden mt-4 p-4 rounded-xl text-sm fade-in"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 7: Quick Reference -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-teal-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-700 to-teal-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-emerald-200">Section 7</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Quick Reference — Dos &amp; Don'ts</h3>
+                    </div>
+                    <div class="p-6 lg:p-8">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+                                <h4 class="font-bold text-emerald-900 mb-3 flex items-center gap-2"><span class="text-xl">✅</span> Do</h4>
+                                <ul class="text-sm text-emerald-900 space-y-2">
+                                    <li class="flex items-start"><span class="text-emerald-600 mr-2">•</span> Plan the cognitive structure of the lesson before opening Chalkie.</li>
+                                    <li class="flex items-start"><span class="text-emerald-600 mr-2">•</span> Provide your own learning objectives and success criteria as inputs.</li>
+                                    <li class="flex items-start"><span class="text-emerald-600 mr-2">•</span> Treat every output as a draft to review.</li>
+                                    <li class="flex items-start"><span class="text-emerald-600 mr-2">•</span> Read every slide / task before it reaches students.</li>
+                                    <li class="flex items-start"><span class="text-emerald-600 mr-2">•</span> Use Chalkie alongside MagicSchool, Gemini, and NotebookLM — not instead of professional planning.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-rose-50 border border-rose-200 rounded-xl p-5">
+                                <h4 class="font-bold text-rose-900 mb-3 flex items-center gap-2"><span class="text-xl">🚫</span> Don't</h4>
+                                <ul class="text-sm text-rose-900 space-y-2">
+                                    <li class="flex items-start"><span class="text-rose-600 mr-2">•</span> Hand Chalkie a topic and use the first output unedited.</li>
+                                    <li class="flex items-start"><span class="text-rose-600 mr-2">•</span> Assume the differentiated worksheet feature has differentiated correctly.</li>
+                                    <li class="flex items-start"><span class="text-rose-600 mr-2">•</span> Send AI-generated content to students without a professional review.</li>
+                                    <li class="flex items-start"><span class="text-rose-600 mr-2">•</span> Treat polished formatting as evidence of pedagogical depth.</li>
+                                    <li class="flex items-start"><span class="text-rose-600 mr-2">•</span> Assume the AI knows your class. It does not.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h4 class="font-bold text-slate-800 mb-3">Where to go next</h4>
+                            <div class="grid sm:grid-cols-2 gap-3 text-sm">
+                                <div class="flex items-center gap-2 text-gray-700">
+                                    <span class="text-teal-500">&#9654;</span>
+                                    <span><strong>Try the trial:</strong> <a href="https://chalkie.ai" target="_blank" rel="noopener noreferrer" class="text-teal-700 font-semibold underline hover:text-teal-900">chalkie.ai</a></span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-700">
+                                    <span class="text-teal-500">&#9654;</span>
+                                    <span><strong>Plan your decks:</strong> <a href="pd.html#module-objectives" class="text-teal-700 font-semibold underline hover:text-teal-900">Objectives &amp; Success Criteria</a></span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-700">
+                                    <span class="text-teal-500">&#9654;</span>
+                                    <span><strong>Source-grounded slides:</strong> <a href="pd.html#module-notebooklm" class="text-teal-700 font-semibold underline hover:text-teal-900">NotebookLM for Presentations</a></span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-700">
+                                    <span class="text-teal-500">&#9654;</span>
+                                    <span><strong>Policy frame:</strong> <a href="ai-ethics-module.html" class="text-teal-700 font-semibold underline hover:text-teal-900">AI Vision &amp; Ethical Framework</a></span>
+                                </div>
+                                <div class="flex items-center gap-2 text-gray-700 sm:col-span-2">
+                                    <span class="text-teal-500">&#9654;</span>
+                                    <span><strong>Drop-in support:</strong> bring a Chalkie deck to <a href="../Wired%20Wednesdays/wired-wednesdays.html" class="text-teal-700 font-semibold underline hover:text-teal-900">Wired Wednesdays</a> for a 30-minute review.</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end timeline -->
+
+        <!-- Completion Banner -->
+        <div id="completion-banner" class="hidden bg-gradient-to-r from-teal-600 via-cyan-600 to-emerald-600 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
+            <span class="text-5xl mb-4 block">🎉</span>
+            <h3 class="text-2xl font-heading font-black mb-2">Module Complete!</h3>
+            <p class="text-teal-100 max-w-lg mx-auto">You've completed the Chalkie.ai training module. Use what you've learned to draft faster and review more rigorously — your students will get the better resource for it.</p>
+        </div>
+
+        <!-- Return Button -->
+        <div class="text-center pb-10">
+            <button onclick="window.location.href='pd.html'" class="bg-teal-700 text-white py-3 px-8 rounded-full hover:bg-teal-800 transition-colors shadow-lg font-semibold">
+                Return to Modules
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-teal-900 text-teal-200 py-10">
+        <div class="container mx-auto px-6 text-center">
+            <p class="font-bold text-white mb-1 font-heading">AISA — American International School in Abu Dhabi</p>
+            <p class="text-sm text-teal-300">Teaching &amp; Learning Guide | Chalkie.ai Training Module</p>
+            <p class="text-xs text-teal-400 mt-4">Tool training is guidance, not endorsement. Final teaching decisions remain with the teacher.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Progress Tracking ---
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.module-checkbox');
+            const total = checkboxes.length;
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const pct = total === 0 ? 0 : Math.round((checked / total) * 100);
+
+            document.getElementById('progress-bar').style.width = pct + '%';
+            document.getElementById('progress-text').textContent = pct + '% Done';
+
+            if (pct === 100) {
+                document.getElementById('completion-banner').classList.remove('hidden');
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                }
+            } else {
+                document.getElementById('completion-banner').classList.add('hidden');
+            }
+        }
+
+        // --- Quiz Logic ---
+        const quizAnswered = {};
+
+        function checkAnswer(quizNum, el, isCorrect) {
+            if (quizAnswered[quizNum]) return;
+            quizAnswered[quizNum] = true;
+
+            const options = document.querySelectorAll(`#quiz-${quizNum}-options .quiz-option`);
+            const feedback = document.getElementById(`quiz-${quizNum}-feedback`);
+
+            options.forEach(opt => {
+                opt.style.pointerEvents = 'none';
+                opt.style.opacity = '0.6';
+            });
+
+            el.style.opacity = '1';
+            el.classList.add('selected');
+
+            if (isCorrect) {
+                el.classList.add('correct');
+                el.querySelector('span:first-child').classList.add('!bg-emerald-500', '!text-white');
+                feedback.className = 'mt-4 p-4 rounded-xl text-sm fade-in bg-emerald-50 border border-emerald-200 text-emerald-900';
+                feedback.innerHTML = '<strong>Correct.</strong> Chalkie outputs are drafts. The teacher\'s job is to plan the cognitive structure first, edit for the actual class, and verify everything before it reaches students.';
+                feedback.classList.remove('hidden');
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 60, spread: 60, origin: { y: 0.7 } });
+                }
+            } else {
+                el.classList.add('incorrect');
+                el.querySelector('span:first-child').classList.add('!bg-rose-500', '!text-white');
+                const correctOption = Array.from(options).find(opt => opt.getAttribute('onclick').includes('true'));
+                if (correctOption) {
+                    correctOption.classList.add('correct');
+                    correctOption.style.opacity = '1';
+                    correctOption.querySelector('span:first-child').classList.add('!bg-emerald-500', '!text-white');
+                }
+                feedback.className = 'mt-4 p-4 rounded-xl text-sm fade-in bg-rose-50 border border-rose-200 text-rose-900';
+                feedback.innerHTML = '<strong>Not quite.</strong> Review the section above — the recommended approach treats Chalkie outputs as drafts to be planned, edited, and reviewed by the teacher before they reach students.';
+                feedback.classList.remove('hidden');
+            }
+        }
+    </script>
+
+</body>
+</html>
