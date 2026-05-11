@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AISA | Google Workspace Studio — Automating Your Workflows</title>
+    <title>AISA | Google Workspace Studio — Build AI Flows for the Work You Do Every Week</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,7 +25,7 @@
                             gyellow: '#f9ab00',
                             gpurple: '#9334e6'
                         },
-                        animation: { 'blob': 'blob 7s infinite', 'pulse-slow': 'pulse 3s infinite' },
+                        animation: { 'blob': 'blob 7s infinite' },
                         keyframes: {
                             blob: {
                                 '0%': { transform: 'translate(0px, 0px) scale(1)' },
@@ -79,7 +79,7 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* --- Workspace UI mockups --- */
+        /* --- Workspace Studio UI mockups --- */
         .ws-window {
             border: 1px solid #e5e7eb;
             border-radius: 12px;
@@ -120,99 +120,141 @@
             letter-spacing: 0.04em;
             text-transform: uppercase;
         }
-        .gemini-icon-grad {
-            background: linear-gradient(135deg, #4285f4, #9334e6);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+        .studio-shell {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            min-height: 360px;
         }
-        .prompt-pill {
-            display: inline-block;
-            background: #e8f0fe;
-            border: 1px solid #c2d7fc;
-            color: #1a73e8;
-            padding: 6px 12px;
+        .studio-sidebar {
+            background: #f8f9fa;
+            border-right: 1px solid #e5e7eb;
+            padding: 14px 12px;
+            font-size: 12px;
+        }
+        .studio-side-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 7px 10px;
             border-radius: 999px;
-            font-size: 12px;
-            font-weight: 500;
-            margin-right: 6px;
-            margin-bottom: 6px;
-        }
-        .ws-toolbar {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 12px;
-            border-bottom: 1px solid #e5e7eb;
-            background: #fafbfc;
-            font-size: 12px;
-            color: #5f6368;
-        }
-        .ws-tool-btn {
-            padding: 4px 10px;
-            border-radius: 6px;
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            font-size: 11px;
             color: #3c4043;
+            font-weight: 500;
+            margin-bottom: 2px;
         }
-        .ws-doc {
-            padding: 16px 24px;
+        .studio-side-item.active { background: #e8f0fe; color: #1967d2; font-weight: 600; }
+        .studio-content { padding: 18px 22px; }
+        .new-flow-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #1a73e8; color: #fff;
+            padding: 8px 14px; border-radius: 999px;
+            font-size: 12px; font-weight: 600;
+            box-shadow: 0 2px 6px -2px rgba(26, 115, 232, 0.4);
+        }
+        .gemini-prompt-box {
+            background: #ffffff;
+            border: 1.5px solid #d2e3fc;
+            border-radius: 16px;
+            padding: 14px 16px;
+            box-shadow: 0 4px 12px -4px rgba(15, 23, 42, 0.10);
+            position: relative;
+        }
+        .gemini-prompt-box::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 18px;
+            padding: 2px;
+            background: linear-gradient(90deg, #4285f4, #9334e6, #d93025, #f9ab00);
+            -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+            -webkit-mask-composite: xor; mask-composite: exclude;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        /* Flow editor */
+        .flow-canvas {
+            background: #fafbfc;
+            border-radius: 12px;
+            padding: 18px;
+            border: 1px dashed #d2e3fc;
+        }
+        .flow-card {
+            background: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px -4px rgba(15, 23, 42, 0.10);
+            padding: 12px 14px;
+            margin: 0 auto;
+            max-width: 420px;
+            position: relative;
+        }
+        .flow-card .badge {
+            display: inline-block;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 2px 8px;
+            border-radius: 999px;
+        }
+        .flow-card .badge.starter { background: #fef7e0; color: #b06000; }
+        .flow-card .badge.step { background: #e8f0fe; color: #1967d2; }
+        .flow-card .badge.ai { background: linear-gradient(90deg, #e8f0fe, #f3e8fd); color: #6c2bd9; }
+        .flow-arrow {
+            width: 2px; height: 22px; background: #d2e3fc;
+            margin: 0 auto;
+            position: relative;
+        }
+        .flow-arrow::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            width: 8px; height: 8px;
+            border-right: 2px solid #d2e3fc;
+            border-bottom: 2px solid #d2e3fc;
+        }
+        .flow-card-title {
+            font-weight: 600;
             font-size: 13px;
             color: #202124;
-            line-height: 1.6;
+            margin-top: 4px;
         }
-        .ws-sheet-grid {
-            display: grid;
-            grid-template-columns: 32px repeat(4, 1fr);
-            font-size: 11px;
-            border-top: 1px solid #e5e7eb;
+        .flow-card-sub { font-size: 11px; color: #5f6368; margin-top: 2px; }
+        .flow-icon {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 28px; height: 28px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-right: 8px;
         }
-        .ws-sheet-grid > div {
-            border-right: 1px solid #f1f3f4;
-            border-bottom: 1px solid #f1f3f4;
-            padding: 6px 8px;
-            background: #ffffff;
-        }
-        .ws-sheet-grid .head {
-            background: #f8f9fa;
-            font-weight: 600;
-            color: #5f6368;
-            text-align: center;
-        }
-        .ws-sheet-grid .row-label {
-            background: #f8f9fa;
-            text-align: center;
-            color: #5f6368;
-            font-weight: 600;
-        }
-        .ws-sheet-grid .ai-cell {
-            background: #fef7e0;
-            color: #b06000;
-            font-weight: 500;
-        }
-        .ws-side-panel {
-            border-left: 1px solid #e5e7eb;
-            background: #f8fbff;
-            padding: 14px;
-            font-size: 12px;
-        }
-        .ws-side-card {
-            background: #ffffff;
+        .flow-icon.gmail { background: #fce8e6; color: #d93025; }
+        .flow-icon.cal { background: #e8f0fe; color: #1a73e8; }
+        .flow-icon.drive { background: #fef7e0; color: #f9ab00; }
+        .flow-icon.sheet { background: #e6f4ea; color: #188038; }
+        .flow-icon.doc { background: #e8f0fe; color: #1a73e8; }
+        .flow-icon.gem { background: linear-gradient(135deg, #e8f0fe, #fce8f5); color: #6c2bd9; }
+        .flow-icon.chat { background: #e6f4ea; color: #188038; }
+        .flow-icon.clock { background: #fef7e0; color: #b06000; }
+
+        /* Templates row */
+        .template-card {
+            background: #fff;
             border: 1px solid #e5e7eb;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 12px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 6px -2px rgba(15, 23, 42, 0.08);
+            font-size: 12px;
+            transition: all 0.2s ease;
         }
-        .gem-card {
-            border-radius: 14px;
-            padding: 14px;
-            background: #ffffff;
+        .template-card:hover { border-color: #1a73e8; transform: translateY(-2px); }
+
+        /* Skill chip */
+        .skill-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #fff;
             border: 1px solid #e5e7eb;
-            transition: all 0.25s ease;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 12px;
+            margin: 4px 4px 0 0;
         }
-        .gem-card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px -8px rgba(15, 23, 42, 0.15); }
         .mock-label {
             position: absolute;
             top: 8px;
@@ -226,40 +268,9 @@
             border: 1px solid #e2e8f0;
             border-radius: 999px;
             padding: 2px 8px;
+            z-index: 5;
         }
         .mock-wrapper { position: relative; }
-
-        /* Slide thumbnail */
-        .slide-thumb {
-            aspect-ratio: 16 / 9;
-            border-radius: 8px;
-            background: #fff;
-            border: 1px solid #e5e7eb;
-            padding: 10px;
-            font-size: 9px;
-            line-height: 1.3;
-            color: #3c4043;
-            box-shadow: 0 4px 12px -4px rgba(15, 23, 42, 0.12);
-            display: flex;
-            flex-direction: column;
-        }
-        .slide-thumb h5 {
-            font-weight: 700;
-            font-size: 10px;
-            color: #1a73e8;
-            margin-bottom: 4px;
-        }
-
-        /* Email mock */
-        .email-row {
-            display: flex;
-            gap: 10px;
-            padding: 10px 14px;
-            border-bottom: 1px solid #f1f3f4;
-            font-size: 12px;
-            align-items: center;
-        }
-        .email-row.unread { background: #f8fbff; font-weight: 600; }
     </style>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
@@ -291,9 +302,10 @@
             <div class="flex items-center gap-2 mb-3">
                 <span class="inline-block bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">New Module</span>
                 <span class="inline-block bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full">Workflow Automation</span>
+                <span class="inline-block bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">No-Code AI Agents</span>
             </div>
-            <h1 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">Google Workspace Studio — Automating the Work That Steals Your Week</h1>
-            <p class="text-blue-700 font-medium mt-1">Seven concrete teacher and staff workflows you can run today using Gemini inside Gmail, Docs, Sheets, Slides, Drive and Meet.</p>
+            <h1 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">Google Workspace Studio — Build AI Flows for the Work You Do Every Week</h1>
+            <p class="text-blue-700 font-medium mt-1">Use Gemini-powered Flows to triage your inbox, build meeting prep briefs, file attachments, and turn repetitive jobs into one-time builds. No code.</p>
         </div>
 
         <!-- Progress Bar -->
@@ -316,10 +328,10 @@
             </div>
             <div class="relative z-10 text-center px-6">
                 <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-amber-500 shadow-lg mb-6">
-                    <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 L14 9 L21 12 L14 15 L12 22 L10 15 L3 12 L10 9 Z"/></svg>
+                    <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM14 13l3 3 3-3-3-3z"/></svg>
                 </div>
-                <h2 class="font-heading text-3xl lg:text-4xl font-black text-slate-900 mb-4">Stop doing the work the AI is sitting next to you</h2>
-                <p class="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">Gemini already lives inside the Workspace tools you use every day. This module shows the seven highest-leverage automations for teachers and school staff — with real prompts, real outputs, and real time savings.</p>
+                <h2 class="font-heading text-3xl lg:text-4xl font-black text-slate-900 mb-4">Build it once. Let it run forever.</h2>
+                <p class="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">Workspace Studio is Google's no-code builder for <strong>AI flows</strong> — Gemini-powered agents that watch your Gmail, Calendar, Drive and Chat for a trigger, then act for you. This module walks you through building five flows you can deploy this week.</p>
                 <div class="flex flex-wrap justify-center gap-4 mt-8 text-sm font-semibold">
                     <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
                         <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -327,20 +339,24 @@
                     </div>
                     <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
                         <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        7 Worked Workflows
+                        5 Worked Flows
                     </div>
                     <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
                         <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
                         2 Knowledge Checks
                     </div>
                 </div>
+                <a href="https://studio.workspace.google.com" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 mt-8 bg-blue-600 text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-blue-700 transition-colors">
+                    Open Workspace Studio
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </a>
             </div>
         </header>
 
         <!-- Note about visuals -->
         <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-12 flex gap-3 items-start">
             <span class="text-xl">🖼️</span>
-            <p class="text-sm text-blue-900 leading-relaxed"><strong>About the visuals:</strong> The interface panels in this module are styled examples that mirror what you'll see inside Workspace Studio. They're designed to be self-explanatory so you can recognise the same buttons, panels and prompt boxes when you open the real product. Capture your own screenshots as you work through the examples and add them to your team's playbook.</p>
+            <p class="text-sm text-blue-900 leading-relaxed"><strong>About the visuals:</strong> The interface panels in this module are styled examples that mirror what you'll see inside Workspace Studio at <a href="https://studio.workspace.google.com" target="_blank" rel="noopener noreferrer" class="underline font-semibold">studio.workspace.google.com</a>. They're designed to be self-explanatory so you can recognise the same buttons and panels — Starter, Step, Test run, Turn on — when you open the real product.</p>
         </div>
 
         <!-- Timeline -->
@@ -357,67 +373,88 @@
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-blue-700 to-purple-700 p-6 text-white">
                         <span class="text-xs font-bold uppercase tracking-widest text-blue-200">Section 1</span>
-                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">What "Workspace Studio" Actually Means</h3>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">What Workspace Studio Actually Is</h3>
                     </div>
                     <div class="p-6 lg:p-8 space-y-6">
-                        <p class="text-gray-700 leading-relaxed"><strong>Google Workspace Studio</strong> is the umbrella term for Gemini's AI features built directly into the Workspace apps you already use — Gmail, Docs, Sheets, Slides, Drive, Meet, and Calendar — plus the standalone <strong>gemini.google.com</strong> workspace and reusable <strong>Gems</strong> (custom AI assistants).</p>
+                        <p class="text-gray-700 leading-relaxed"><strong>Google Workspace Studio</strong> (at <a href="https://studio.workspace.google.com" target="_blank" rel="noopener noreferrer" class="text-blue-700 font-semibold underline hover:text-blue-900">studio.workspace.google.com</a>) is the place to design, manage, and share <strong>AI-powered workflows</strong> — Google calls them <strong>Flows</strong> — that run across your Workspace apps. It is <strong>no-code</strong>: you describe the work in plain English, and Gemini builds the steps for you.</p>
 
-                        <p class="text-gray-700 leading-relaxed">It's not a new app. It's an <strong>AI side-panel and prompt layer</strong> that sits inside the tools where your work already lives, plus a small set of new surfaces (Gems, Audio Overviews, Deep Research) that use the same Gemini engine.</p>
+                        <p class="text-gray-700 leading-relaxed">Each Flow is an <strong>AI agent</strong>. It waits for an event you specify (a new email arrives, a meeting is in two hours, a file lands in a folder), then runs a chain of steps — read, summarise, decide, draft, save, send — and either acts directly or hands a result to you for approval.</p>
 
                         <div class="grid sm:grid-cols-3 gap-3">
                             <div class="principle-card bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-xl p-4">
-                                <div class="text-2xl mb-2">📥</div>
-                                <h4 class="font-bold text-blue-900 text-sm">Side-panel Gemini</h4>
-                                <p class="text-xs text-gray-600 mt-1">A "Help me…" sparkle button inside Gmail, Docs, Sheets, Slides, Drive and Meet.</p>
+                                <div class="text-2xl mb-2">⚡</div>
+                                <h4 class="font-bold text-blue-900 text-sm">Flows</h4>
+                                <p class="text-xs text-gray-600 mt-1">Reusable automations you build once. Each Flow has one <em>Starter</em> and one or more <em>Steps</em>.</p>
                             </div>
                             <div class="principle-card bg-gradient-to-br from-purple-50 to-white border border-purple-100 rounded-xl p-4">
-                                <div class="text-2xl mb-2">💎</div>
-                                <h4 class="font-bold text-purple-900 text-sm">Custom Gems</h4>
-                                <p class="text-xs text-gray-600 mt-1">Reusable, pre-configured assistants you build once and call repeatedly — your own "Year 6 Reading Coach", your "ADEK Email Translator".</p>
+                                <div class="text-2xl mb-2">🧩</div>
+                                <h4 class="font-bold text-purple-900 text-sm">Skills</h4>
+                                <p class="text-xs text-gray-600 mt-1">A Flow you've turned into a callable command. Invoke it from inside Gemini in Gmail, Drive or Chat.</p>
                             </div>
                             <div class="principle-card bg-gradient-to-br from-amber-50 to-white border border-amber-100 rounded-xl p-4">
-                                <div class="text-2xl mb-2">🧪</div>
-                                <h4 class="font-bold text-amber-900 text-sm">Gemini app</h4>
-                                <p class="text-xs text-gray-600 mt-1">The standalone workspace at <code class="text-[11px] bg-amber-100 px-1 rounded">gemini.google.com</code> for longer chats, file uploads, Deep Research and Audio Overviews.</p>
+                                <div class="text-2xl mb-2">📚</div>
+                                <h4 class="font-bold text-amber-900 text-sm">Templates</h4>
+                                <p class="text-xs text-gray-600 mt-1">Pre-built Flows ("Daily summary of unread emails", "Auto-request agenda updates before a meeting") you can copy and customise.</p>
                             </div>
                         </div>
 
-                        <!-- Mockup: side panel sparkle -->
+                        <!-- Mockup: Studio home -->
                         <div class="mock-wrapper mt-4">
                             <div class="ws-window">
                                 <div class="ws-titlebar">
-                                    <span class="ws-dot r"></span>
-                                    <span class="ws-dot y"></span>
-                                    <span class="ws-dot g"></span>
-                                    <div class="ws-url">docs.google.com/document/d/1aXxYz…/edit</div>
+                                    <span class="ws-dot r"></span><span class="ws-dot y"></span><span class="ws-dot g"></span>
+                                    <div class="ws-url">studio.workspace.google.com</div>
                                 </div>
-                                <div class="grid grid-cols-12">
-                                    <div class="col-span-8 ws-doc">
-                                        <h4 class="text-base font-bold mb-2 font-google">Year 8 Geography — Plate Tectonics, Lesson 3</h4>
-                                        <p class="text-xs text-gray-600 mb-3">Learning objective: Students will explain how convergent and divergent boundaries shape landforms.</p>
-                                        <p class="text-xs text-gray-700">Today's lesson opens with a 4-minute clip of the 2011 Tōhoku earthquake…</p>
-                                        <div class="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 text-xs font-semibold text-blue-800">
-                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 L14 9 L21 12 L14 15 L12 22 L10 15 L3 12 L10 9 Z"/></svg>
-                                            Selected: 1 paragraph
+                                <div class="studio-shell">
+                                    <div class="studio-sidebar">
+                                        <div class="font-google font-bold text-blue-700 text-sm mb-3 flex items-center gap-1.5">
+                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM14 13l3 3 3-3-3-3z"/></svg>
+                                            Workspace Studio
                                         </div>
+                                        <div class="studio-side-item active">⚡ My flows</div>
+                                        <div class="studio-side-item">📚 Templates</div>
+                                        <div class="studio-side-item">🧩 Skills</div>
+                                        <div class="studio-side-item">📊 Run history</div>
+                                        <div class="studio-side-item">👥 Shared with me</div>
                                     </div>
-                                    <div class="col-span-4 ws-side-panel">
-                                        <div class="flex items-center gap-2 mb-3">
-                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="#1a73e8"><path d="M12 2 L14 9 L21 12 L14 15 L12 22 L10 15 L3 12 L10 9 Z"/></svg>
-                                            <span class="font-google font-bold text-blue-700 text-sm">Gemini</span>
-                                            <span class="gemini-badge">Workspace</span>
+                                    <div class="studio-content">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <h4 class="font-google font-bold text-slate-900">My flows</h4>
+                                            <span class="new-flow-btn">+ New flow</span>
                                         </div>
-                                        <div class="ws-side-card">
-                                            <p class="text-[11px] text-gray-500 uppercase tracking-wider mb-1">Suggested</p>
-                                            <p class="text-xs text-gray-800">Rewrite for Grade 8 reading level</p>
-                                        </div>
-                                        <div class="ws-side-card">
-                                            <p class="text-[11px] text-gray-500 uppercase tracking-wider mb-1">Suggested</p>
-                                            <p class="text-xs text-gray-800">Generate 5 hinge questions</p>
-                                        </div>
-                                        <div class="ws-side-card">
-                                            <p class="text-[11px] text-gray-500 uppercase tracking-wider mb-1">Suggested</p>
-                                            <p class="text-xs text-gray-800">Summarise this lesson plan</p>
+                                        <div class="space-y-2">
+                                            <div class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50">
+                                                <span class="flow-icon gmail">✉️</span>
+                                                <div class="flex-1">
+                                                    <div class="text-sm font-semibold text-slate-900">Daily inbox briefing — 7:30 AM</div>
+                                                    <div class="text-[11px] text-gray-500">Runs daily · Last run: today, 7:30 AM · ✓ Success</div>
+                                                </div>
+                                                <span class="text-[10px] font-bold text-green-700 bg-green-100 rounded-full px-2 py-0.5">ON</span>
+                                            </div>
+                                            <div class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50">
+                                                <span class="flow-icon cal">📅</span>
+                                                <div class="flex-1">
+                                                    <div class="text-sm font-semibold text-slate-900">Meeting prep brief — 2 hrs before</div>
+                                                    <div class="text-[11px] text-gray-500">Triggered by Calendar · Last run: yesterday · ✓ Success</div>
+                                                </div>
+                                                <span class="text-[10px] font-bold text-green-700 bg-green-100 rounded-full px-2 py-0.5">ON</span>
+                                            </div>
+                                            <div class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50">
+                                                <span class="flow-icon drive">📎</span>
+                                                <div class="flex-1">
+                                                    <div class="text-sm font-semibold text-slate-900">Permission slip filer</div>
+                                                    <div class="text-[11px] text-gray-500">Triggered by labelled Gmail · 12 runs this term</div>
+                                                </div>
+                                                <span class="text-[10px] font-bold text-green-700 bg-green-100 rounded-full px-2 py-0.5">ON</span>
+                                            </div>
+                                            <div class="flex items-center gap-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 opacity-70">
+                                                <span class="flow-icon chat">💬</span>
+                                                <div class="flex-1">
+                                                    <div class="text-sm font-semibold text-slate-900">Action-item dispatcher (after Meet)</div>
+                                                    <div class="text-[11px] text-gray-500">Draft · Not yet turned on</div>
+                                                </div>
+                                                <span class="text-[10px] font-bold text-gray-500 bg-gray-100 rounded-full px-2 py-0.5">OFF</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -426,14 +463,207 @@
                         </div>
 
                         <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
-                            <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span class="text-lg">🔑</span> Where to find it</h4>
-                            <p class="text-sm text-gray-700">Look for the small <strong>sparkle (✨) icon</strong> in the top-right of any Workspace app, the "Help me write" / "Help me organize" buttons in compose windows, and the standalone Gemini workspace at <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" class="text-blue-700 font-semibold underline hover:text-blue-900">gemini.google.com</a>. AISA staff are signed in automatically through their @aisa.edu account.</p>
+                            <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span class="text-lg">🔑</span> How to get to it</h4>
+                            <p class="text-sm text-gray-700">Two routes: visit <a href="https://studio.workspace.google.com" target="_blank" rel="noopener noreferrer" class="text-blue-700 font-semibold underline hover:text-blue-900">studio.workspace.google.com</a> directly, or click the <strong>Studio shortcut</strong> (the small double-arrow icon next to Gemini) inside Gmail, Drive or Chat. Workspace Studio is generally available with all Business and Enterprise Workspace plans — your AISA account already has it.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Section 2: Workflow 1 — Gmail -->
+            <!-- Section 2: Anatomy of a flow -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-800 to-blue-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-blue-200">Section 2</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Anatomy of a Flow — Starter, Steps, Variables</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Every Flow has the same shape:</p>
+                        <div class="grid md:grid-cols-3 gap-3">
+                            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                                <p class="text-[10px] uppercase font-bold text-amber-700 tracking-wider">①</p>
+                                <h4 class="font-bold text-amber-900 mt-1">Starter</h4>
+                                <p class="text-xs text-amber-900 mt-1">The trigger that wakes the Flow up. A new email matching a filter. A calendar meeting starting in 2 hours. A file added to a Drive folder. Or just a schedule — every day at 7:30 AM.</p>
+                            </div>
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                <p class="text-[10px] uppercase font-bold text-blue-700 tracking-wider">②</p>
+                                <h4 class="font-bold text-blue-900 mt-1">Steps</h4>
+                                <p class="text-xs text-blue-900 mt-1">The actions the Flow takes. Read a thread, summarise it with Gemini, label the email, draft a reply, save an attachment, write a row to a Sheet, post in Chat. Steps run in order, top to bottom.</p>
+                            </div>
+                            <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                                <p class="text-[10px] uppercase font-bold text-purple-700 tracking-wider">③</p>
+                                <h4 class="font-bold text-purple-900 mt-1">Variables</h4>
+                                <p class="text-xs text-purple-900 mt-1">Each Step has inputs and outputs. The output of one Step (e.g. "summary") can be plugged into the input of any later Step (e.g. the body of a draft email). This is how Steps chain together.</p>
+                            </div>
+                        </div>
+
+                        <!-- Mockup: Flow editor with Starter + 3 Steps -->
+                        <div class="mock-wrapper">
+                            <div class="ws-window">
+                                <div class="ws-titlebar">
+                                    <span class="ws-dot r"></span><span class="ws-dot y"></span><span class="ws-dot g"></span>
+                                    <div class="ws-url">studio.workspace.google.com/flow/abc123</div>
+                                </div>
+                                <div class="studio-content">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <div>
+                                            <div class="text-xs text-gray-500">My flows / </div>
+                                            <h4 class="font-google font-bold text-slate-900">Daily inbox briefing</h4>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button class="text-xs font-semibold border border-blue-200 text-blue-700 rounded-full px-4 py-1.5">▶ Test run</button>
+                                            <button class="text-xs font-semibold bg-blue-600 text-white rounded-full px-4 py-1.5">Turn on</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="flow-canvas">
+                                        <div class="flow-card border-amber-200">
+                                            <span class="badge starter">Starter · Schedule</span>
+                                            <div class="flex items-center mt-1.5">
+                                                <span class="flow-icon clock">⏰</span>
+                                                <div>
+                                                    <div class="flow-card-title">Every weekday at 7:30 AM</div>
+                                                    <div class="flow-card-sub">Runs in your local time zone</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flow-arrow"></div>
+                                        <div class="flow-card">
+                                            <span class="badge step">Step 1 · Gmail</span>
+                                            <div class="flex items-center mt-1.5">
+                                                <span class="flow-icon gmail">✉️</span>
+                                                <div>
+                                                    <div class="flow-card-title">Get unread emails from last 24 hours</div>
+                                                    <div class="flow-card-sub">Output → <code class="text-[10px] bg-gray-100 px-1 rounded">unreadEmails[]</code></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flow-arrow"></div>
+                                        <div class="flow-card">
+                                            <span class="badge ai">Step 2 · Gemini</span>
+                                            <div class="flex items-center mt-1.5">
+                                                <span class="flow-icon gem">✨</span>
+                                                <div>
+                                                    <div class="flow-card-title">Summarise &amp; rank by urgency</div>
+                                                    <div class="flow-card-sub">Input ← <code class="text-[10px] bg-gray-100 px-1 rounded">unreadEmails[]</code> · Output → <code class="text-[10px] bg-gray-100 px-1 rounded">briefing</code></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flow-arrow"></div>
+                                        <div class="flow-card">
+                                            <span class="badge step">Step 3 · Gmail</span>
+                                            <div class="flex items-center mt-1.5">
+                                                <span class="flow-icon gmail">📨</span>
+                                                <div>
+                                                    <div class="flow-card-title">Email briefing to me</div>
+                                                    <div class="flow-card-sub">Body ← <code class="text-[10px] bg-gray-100 px-1 rounded">briefing</code></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="mock-label">Example interface</span>
+                        </div>
+
+                        <div class="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl p-4">
+                            <p class="text-xs text-blue-900"><strong>💡 The mental model:</strong> Starter says <em>when</em>. Steps say <em>what</em>. Variables connect them. If you can describe a recurring task as "every time X happens, do Y, then Z, then send me the result" — it's a Flow.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Three ways to build -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-purple-700 to-fuchsia-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-purple-200">Section 3</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Three Ways to Build a Flow</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Click <strong>+ New flow</strong> in the top right of Studio and you get three on-ramps. They produce the same kind of Flow — pick whichever matches how clearly you've thought about the task.</p>
+
+                        <!-- Mockup: New flow modal with 3 options -->
+                        <div class="mock-wrapper">
+                            <div class="ws-window">
+                                <div class="ws-titlebar">
+                                    <span class="ws-dot r"></span><span class="ws-dot y"></span><span class="ws-dot g"></span>
+                                    <div class="ws-url">studio.workspace.google.com/new</div>
+                                </div>
+                                <div class="studio-content">
+                                    <h4 class="font-google font-bold text-slate-900 mb-4">Create a new flow</h4>
+                                    <div class="gemini-prompt-box mb-4">
+                                        <div class="flex items-center gap-2 mb-1.5">
+                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="#1a73e8"><path d="M12 2 L14 9 L21 12 L14 15 L12 22 L10 15 L3 12 L10 9 Z"/></svg>
+                                            <span class="text-xs font-bold text-blue-700">Describe a task for Gemini</span>
+                                        </div>
+                                        <p class="text-xs text-gray-500 italic">e.g. "When a parent emails me with the word 'permission slip', save the attachment to my Drive folder 'Permission slips' and add a row to my tracking sheet."</p>
+                                        <div class="flex justify-end mt-2">
+                                            <button class="text-xs font-semibold bg-blue-600 text-white rounded-full px-4 py-1">Create ✨</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <div class="template-card">
+                                            <p class="text-[10px] uppercase font-bold text-blue-700 mb-1">Start from a template</p>
+                                            <div class="text-sm font-semibold text-slate-900">Daily summary of unread emails</div>
+                                        </div>
+                                        <div class="template-card">
+                                            <p class="text-[10px] uppercase font-bold text-blue-700 mb-1">Start from a template</p>
+                                            <div class="text-sm font-semibold text-slate-900">Auto-request agenda updates before a meeting</div>
+                                        </div>
+                                        <div class="template-card">
+                                            <p class="text-[10px] uppercase font-bold text-blue-700 mb-1">Start from a template</p>
+                                            <div class="text-sm font-semibold text-slate-900">Save Gmail attachments to Drive</div>
+                                        </div>
+                                        <div class="template-card border-dashed">
+                                            <p class="text-[10px] uppercase font-bold text-gray-500 mb-1">From scratch</p>
+                                            <div class="text-sm font-semibold text-slate-900">Empty flow → choose a Starter</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="mock-label">Example interface</span>
+                        </div>
+
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="principle-card bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-xl p-5">
+                                <p class="text-[10px] uppercase font-bold text-blue-600 tracking-wider mb-1">Best when…</p>
+                                <h4 class="font-bold text-blue-900 mb-2">Describe with Gemini</h4>
+                                <p class="text-xs text-gray-600">You can say it in one paragraph. Gemini will draft the Starter and Steps; you tweak.</p>
+                            </div>
+                            <div class="principle-card bg-gradient-to-br from-amber-50 to-white border border-amber-100 rounded-xl p-5">
+                                <p class="text-[10px] uppercase font-bold text-amber-600 tracking-wider mb-1">Best when…</p>
+                                <h4 class="font-bold text-amber-900 mb-2">Start from a template</h4>
+                                <p class="text-xs text-gray-600">Your task is close to one of the prebuilt patterns. Templates ship pre-wired and you just adapt the filters and recipients.</p>
+                            </div>
+                            <div class="principle-card bg-gradient-to-br from-purple-50 to-white border border-purple-100 rounded-xl p-5">
+                                <p class="text-[10px] uppercase font-bold text-purple-600 tracking-wider mb-1">Best when…</p>
+                                <h4 class="font-bold text-purple-900 mb-2">Build from scratch</h4>
+                                <p class="text-xs text-gray-600">You want full control. Pick the Starter, then add Steps one by one from the Step library.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                            <p class="text-sm text-gray-700"><strong>Always:</strong> click <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs font-semibold">▶ Test run</span> before <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-xs font-semibold">Turn on</span>. Test run executes the Flow once on your live data so you can see exactly what it would do — without committing to the schedule.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Flow 1 — Daily inbox briefing -->
             <div class="relative pl-12 mb-16">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
@@ -443,83 +673,65 @@
                 </label>
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-red-600 to-rose-700 p-6 text-white">
-                        <span class="text-xs font-bold uppercase tracking-widest text-red-100">Workflow 1 · Gmail</span>
-                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Drowning in parent emails? Triage, summarise and reply in 90 seconds.</h3>
+                        <span class="text-xs font-bold uppercase tracking-widest text-red-100">Flow 1 · Gmail</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Walk in to a 60-second briefing of your overnight inbox</h3>
                     </div>
                     <div class="p-6 lg:p-8 space-y-6">
-                        <p class="text-gray-700 leading-relaxed">Gmail's side panel can <strong>summarise long threads</strong>, <strong>draft replies in your tone</strong>, and <strong>extract action items</strong> from a parent or admin email. Three taps replace twenty minutes of re-reading.</p>
+                        <p class="text-gray-700 leading-relaxed">A daily Flow that runs at 7:30 AM, reads everything that arrived overnight, sorts it by who needs what from you, and emails you a one-page briefing before your first lesson.</p>
 
-                        <!-- Mockup: Gmail thread summary -->
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                            <p class="text-[10px] uppercase font-bold text-blue-700 tracking-wider mb-1">Prompt to paste into "Describe a task for Gemini"</p>
+                            <div class="bg-white rounded-lg p-3 text-xs text-gray-700 font-mono leading-relaxed border border-blue-100">
+                                Every weekday at 7:30 AM, get all unread emails from the last 24 hours. Use Gemini to group them by sender type (Parent, Admin, Student, Other), summarise each one in one line, and flag anything that needs a reply today. Email the briefing to me with the subject "Inbox briefing — [today's date]".
+                            </div>
+                        </div>
+
+                        <!-- Mockup: result email -->
                         <div class="mock-wrapper">
                             <div class="ws-window">
                                 <div class="ws-titlebar">
                                     <span class="ws-dot r"></span><span class="ws-dot y"></span><span class="ws-dot g"></span>
-                                    <div class="ws-url">mail.google.com/mail/u/0/#inbox/FMfcgz...</div>
+                                    <div class="ws-url">mail.google.com — Inbox briefing — 11 May</div>
                                 </div>
-                                <div class="grid grid-cols-12">
-                                    <div class="col-span-8 border-r border-gray-100">
-                                        <div class="email-row unread">
-                                            <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 text-xs font-bold">SA</div>
-                                            <div class="flex-1">
-                                                <div class="flex justify-between"><span>Sarah Al-Hashimi (Parent)</span><span class="text-[10px] text-gray-500">9:42 AM</span></div>
-                                                <div class="text-[11px] text-gray-600 font-normal truncate">Re: Re: Re: Sami's reading progress &amp; weekend homework concerns — 14 messages</div>
-                                            </div>
-                                        </div>
-                                        <div class="px-4 py-3 bg-gray-50">
-                                            <p class="text-[11px] text-gray-500 uppercase tracking-wider font-semibold">Thread · 14 messages · since 28 Apr</p>
-                                            <p class="text-xs text-gray-700 mt-2 italic">"Dear Ms. Carter, thank you for your reply on Tuesday but I am still concerned that…"</p>
-                                        </div>
+                                <div class="p-5">
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <span class="gemini-badge">Sent by Workspace Studio</span>
+                                        <span class="text-[10px] text-gray-500">Flow: Daily inbox briefing</span>
                                     </div>
-                                    <div class="col-span-4 ws-side-panel">
-                                        <div class="flex items-center gap-2 mb-3">
-                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="#1a73e8"><path d="M12 2 L14 9 L21 12 L14 15 L12 22 L10 15 L3 12 L10 9 Z"/></svg>
-                                            <span class="font-google font-bold text-blue-700 text-sm">Summary of this thread</span>
+                                    <h4 class="font-google font-bold text-slate-900 text-base mb-2">Inbox briefing — Monday 11 May</h4>
+                                    <p class="text-xs text-gray-500 mb-3">14 unread · 3 marked "needs reply today"</p>
+
+                                    <div class="space-y-2 text-xs">
+                                        <div class="border-l-4 border-rose-400 pl-3 py-1">
+                                            <p class="font-bold text-rose-800">🚨 Reply today (3)</p>
+                                            <p class="text-gray-700"><strong>Sarah Al-Hashimi (Parent):</strong> requesting a meeting before Friday re Sami's reading.</p>
+                                            <p class="text-gray-700"><strong>Mr Khoury (HoD):</strong> needs Year 9 unit map by Wed.</p>
+                                            <p class="text-gray-700"><strong>L. Pérez (Year Lead):</strong> sub cover request for Thursday p3.</p>
                                         </div>
-                                        <div class="ws-side-card">
-                                            <p class="text-[10px] uppercase font-bold text-gray-500 mb-1">Key points</p>
-                                            <ul class="text-xs text-gray-800 space-y-1.5 list-disc pl-4">
-                                                <li>Parent is concerned Sami's reading homework is too long on weekends.</li>
-                                                <li>Sami missed two reading conferences (8 May, 10 May).</li>
-                                                <li>Parent has requested a meeting before Friday.</li>
-                                            </ul>
+                                        <div class="border-l-4 border-amber-300 pl-3 py-1">
+                                            <p class="font-bold text-amber-800">📌 FYI (5)</p>
+                                            <p class="text-gray-700">PD calendar update · cafeteria menu · MAP testing schedule · two student absence notes · payroll reminder.</p>
                                         </div>
-                                        <div class="ws-side-card">
-                                            <p class="text-[10px] uppercase font-bold text-gray-500 mb-1">Action items</p>
-                                            <ul class="text-xs text-gray-800 space-y-1.5">
-                                                <li>📅 Offer a meeting slot Thu/Fri</li>
-                                                <li>📚 Share differentiated weekend reading list</li>
-                                                <li>👥 Loop in Year Lead (cc'd Tuesday)</li>
-                                            </ul>
+                                        <div class="border-l-4 border-slate-200 pl-3 py-1">
+                                            <p class="font-bold text-slate-700">📰 Newsletters / low priority (6)</p>
+                                            <p class="text-gray-600">Six newsletters and platform updates — collapsed.</p>
                                         </div>
-                                        <button class="w-full text-xs font-semibold bg-blue-600 text-white rounded-full py-2 mt-1">✨ Draft reply</button>
                                     </div>
                                 </div>
                             </div>
-                            <span class="mock-label">Example interface</span>
+                            <span class="mock-label">Example output</span>
                         </div>
 
-                        <div class="grid md:grid-cols-2 gap-4 mt-4">
-                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-5">
-                                <h4 class="font-bold text-blue-900 mb-2 text-sm">Try this prompt in "Help me write"</h4>
-                                <div class="bg-white rounded-lg p-3 text-xs text-gray-700 font-mono leading-relaxed border border-blue-100">
-                                    Reply professionally and warmly. Acknowledge the parent's concern, offer two meeting times this Thursday or Friday between 3–4pm, attach the differentiated reading list, and confirm I'll loop in the Year 5 Lead. Keep it under 120 words.
-                                </div>
-                            </div>
-                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
-                                <h4 class="font-bold text-emerald-900 mb-2 text-sm">Time saved per teacher per week</h4>
-                                <p class="text-3xl font-black text-emerald-800 font-heading">~3.5 hrs</p>
-                                <p class="text-xs text-emerald-900 mt-1">Based on triaging ~40 parent / admin emails per week. Most of the saving is in <em>not re-reading 14-message threads</em>.</p>
-                            </div>
-                        </div>
-
-                        <div class="bg-amber-50 border-l-4 border-amber-500 rounded-r-xl p-4">
-                            <p class="text-xs text-amber-900"><strong>⚠️ Read before sending.</strong> Gemini drafts can omit nuance, get tone wrong for a sensitive parent, or invent attachments that don't exist. Every email goes out with your name on it — read every line.</p>
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+                            <h4 class="font-bold text-emerald-900 mb-2 text-sm">Time saved per teacher per week</h4>
+                            <p class="text-3xl font-black text-emerald-800 font-heading">~2.5 hrs</p>
+                            <p class="text-xs text-emerald-900 mt-1">Most of the saving is the morning re-orientation — the briefing tells you what to open first instead of you scrolling through 14 unread.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Section 3: Workflow 2 — Docs -->
+            <!-- Section 5: Flow 2 — Meeting prep brief -->
             <div class="relative pl-12 mb-16">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
@@ -529,147 +741,84 @@
                 </label>
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-blue-700 to-blue-800 p-6 text-white">
-                        <span class="text-xs font-bold uppercase tracking-widest text-blue-100">Workflow 2 · Docs</span>
-                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Generate first-draft rubrics, IEP language and feedback comments</h3>
+                        <span class="text-xs font-bold uppercase tracking-widest text-blue-100">Flow 2 · Calendar + Drive</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Stop scrambling: get a prep brief 2 hours before every meeting</h3>
                     </div>
                     <div class="p-6 lg:p-8 space-y-6">
-                        <p class="text-gray-700 leading-relaxed">Inside Docs, Gemini's "Help me write" can scaffold structures that are tedious to start from scratch — a 4-criterion rubric for a Year 9 essay, neutral language for a sensitive parent letter, or a stem bank of feedback comments aligned to a specific learning outcome.</p>
+                        <p class="text-gray-700 leading-relaxed">Two hours before any meeting on your Calendar, this Flow finds the related emails and Drive files, summarises them against the meeting's topic, and saves a one-page prep brief to a "Meeting briefs" Doc folder. You walk into the room ready.</p>
 
-                        <!-- Mockup: Docs help me write -->
+                        <!-- Flow editor -->
                         <div class="mock-wrapper">
                             <div class="ws-window">
                                 <div class="ws-titlebar">
                                     <span class="ws-dot r"></span><span class="ws-dot y"></span><span class="ws-dot g"></span>
-                                    <div class="ws-url">docs.google.com/document/d/1xY…/edit</div>
+                                    <div class="ws-url">studio.workspace.google.com/flow/prep-brief</div>
                                 </div>
-                                <div class="ws-toolbar">
-                                    <span class="ws-tool-btn">File</span><span class="ws-tool-btn">Edit</span><span class="ws-tool-btn">Insert</span><span class="ws-tool-btn">Format</span>
-                                    <span class="ml-auto inline-flex items-center gap-1.5 text-xs font-semibold text-blue-700"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 L14 9 L21 12 L14 15 L12 22 L10 15 L3 12 L10 9 Z"/></svg> Help me write</span>
-                                </div>
-                                <div class="p-5 bg-gradient-to-b from-blue-50/50 to-white">
-                                    <div class="bg-white rounded-xl border border-blue-200 shadow-md p-4 max-w-xl mx-auto">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="#1a73e8"><path d="M12 2 L14 9 L21 12 L14 15 L12 22 L10 15 L3 12 L10 9 Z"/></svg>
-                                            <span class="text-xs font-bold text-blue-700 font-google">Help me write</span>
+                                <div class="studio-content">
+                                    <h4 class="font-google font-bold text-slate-900 mb-3">Meeting prep brief</h4>
+                                    <div class="flow-canvas">
+                                        <div class="flow-card border-amber-200">
+                                            <span class="badge starter">Starter · Calendar</span>
+                                            <div class="flex items-center mt-1.5">
+                                                <span class="flow-icon cal">📅</span>
+                                                <div>
+                                                    <div class="flow-card-title">2 hours before any meeting I'm attending</div>
+                                                    <div class="flow-card-sub">Filter: meetings with ≥ 3 attendees</div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="border border-gray-200 rounded-lg p-3 text-sm text-gray-700 leading-relaxed">
-                                            Build a 4-criterion analytic rubric for a Year 9 persuasive essay on climate policy. Tiers: Beginning, Developing, Proficient, Mastery. Aligned to MYP Language &amp; Literature criterion C.
+                                        <div class="flow-arrow"></div>
+                                        <div class="flow-card">
+                                            <span class="badge step">Step 1 · Gmail</span>
+                                            <div class="flex items-center mt-1.5">
+                                                <span class="flow-icon gmail">🔎</span>
+                                                <div>
+                                                    <div class="flow-card-title">Find recent emails matching meeting topic / attendees</div>
+                                                    <div class="flow-card-sub">Output → <code class="text-[10px] bg-gray-100 px-1 rounded">relatedThreads</code></div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="flex flex-wrap mt-3">
-                                            <span class="prompt-pill">Formal</span>
-                                            <span class="prompt-pill">Bulleted</span>
-                                            <span class="prompt-pill">Year 9</span>
-                                            <span class="prompt-pill">+ Insert table</span>
+                                        <div class="flow-arrow"></div>
+                                        <div class="flow-card">
+                                            <span class="badge step">Step 2 · Drive</span>
+                                            <div class="flex items-center mt-1.5">
+                                                <span class="flow-icon drive">📂</span>
+                                                <div>
+                                                    <div class="flow-card-title">Find Docs &amp; Sheets shared with attendees in last 7 days</div>
+                                                    <div class="flow-card-sub">Output → <code class="text-[10px] bg-gray-100 px-1 rounded">relatedFiles</code></div>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="mt-3 flex gap-2 justify-end">
-                                            <button class="text-xs px-3 py-1.5 rounded-full border border-gray-200 text-gray-600">Cancel</button>
-                                            <button class="text-xs px-4 py-1.5 rounded-full bg-blue-600 text-white font-semibold">Create ✨</button>
+                                        <div class="flow-arrow"></div>
+                                        <div class="flow-card">
+                                            <span class="badge ai">Step 3 · Gemini</span>
+                                            <div class="flex items-center mt-1.5">
+                                                <span class="flow-icon gem">✨</span>
+                                                <div>
+                                                    <div class="flow-card-title">Summarise into a 1-page brief: agenda, decisions needed, open items</div>
+                                                    <div class="flow-card-sub">Inputs ← <code class="text-[10px] bg-gray-100 px-1 rounded">relatedThreads</code>, <code class="text-[10px] bg-gray-100 px-1 rounded">relatedFiles</code></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="flow-arrow"></div>
+                                        <div class="flow-card">
+                                            <span class="badge step">Step 4 · Docs</span>
+                                            <div class="flex items-center mt-1.5">
+                                                <span class="flow-icon doc">📝</span>
+                                                <div>
+                                                    <div class="flow-card-title">Save brief to Drive folder "Meeting briefs"</div>
+                                                    <div class="flow-card-sub">Filename: <code class="text-[10px] bg-gray-100 px-1 rounded">[date] — [meeting title].doc</code></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <span class="mock-label">Example interface</span>
+                            <span class="mock-label">Example flow</span>
                         </div>
 
-                        <div class="grid md:grid-cols-3 gap-3 mt-4">
-                            <div class="principle-card bg-white border border-gray-200 rounded-xl p-4">
-                                <p class="text-[10px] uppercase font-bold text-blue-600 tracking-wider mb-1">Use case</p>
-                                <h4 class="font-bold text-slate-900 text-sm mb-2">First-draft rubrics</h4>
-                                <p class="text-xs text-gray-600">Hand it the criterion + grade level + tier names. You will still refine the descriptors.</p>
-                            </div>
-                            <div class="principle-card bg-white border border-gray-200 rounded-xl p-4">
-                                <p class="text-[10px] uppercase font-bold text-blue-600 tracking-wider mb-1">Use case</p>
-                                <h4 class="font-bold text-slate-900 text-sm mb-2">IEP / behaviour language</h4>
-                                <p class="text-xs text-gray-600">"Rewrite this neutrally for a parent letter." Removes blame language without removing the facts.</p>
-                            </div>
-                            <div class="principle-card bg-white border border-gray-200 rounded-xl p-4">
-                                <p class="text-[10px] uppercase font-bold text-blue-600 tracking-wider mb-1">Use case</p>
-                                <h4 class="font-bold text-slate-900 text-sm mb-2">Feedback comment banks</h4>
-                                <p class="text-xs text-gray-600">"Generate 12 differentiated feedback comments for a Year 6 narrative writing piece, levels emerging → mastery."</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 4: Workflow 3 — Sheets -->
-            <div class="relative pl-12 mb-16">
-                <label class="absolute left-0 top-0 cursor-pointer z-10">
-                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
-                    <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
-                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                    </div>
-                </label>
-                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div class="bg-gradient-to-r from-emerald-700 to-green-800 p-6 text-white">
-                        <span class="text-xs font-bold uppercase tracking-widest text-emerald-100">Workflow 3 · Sheets</span>
-                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Spot trends in your data without writing a single formula</h3>
-                    </div>
-                    <div class="p-6 lg:p-8 space-y-6">
-                        <p class="text-gray-700 leading-relaxed">Open your MAP, formative assessment, or attendance spreadsheet and ask Gemini in plain English: <em>"Which students dropped more than 5 RIT points between fall and spring?"</em> Gemini will write the formula, fill the column, and explain what it did.</p>
-
-                        <!-- Mockup: Sheets analysis -->
-                        <div class="mock-wrapper">
-                            <div class="ws-window">
-                                <div class="ws-titlebar">
-                                    <span class="ws-dot r"></span><span class="ws-dot y"></span><span class="ws-dot g"></span>
-                                    <div class="ws-url">docs.google.com/spreadsheets/d/1Z…/edit</div>
-                                </div>
-                                <div class="grid grid-cols-12">
-                                    <div class="col-span-8">
-                                        <div class="ws-toolbar">
-                                            <span class="ws-tool-btn">File</span><span class="ws-tool-btn">Edit</span><span class="ws-tool-btn">View</span><span class="ws-tool-btn">Insert</span>
-                                            <span class="ml-auto inline-flex items-center gap-1.5 text-xs font-semibold text-blue-700"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 L14 9 L21 12 L14 15 L12 22 L10 15 L3 12 L10 9 Z"/></svg> Ask Gemini</span>
-                                        </div>
-                                        <div class="ws-sheet-grid">
-                                            <div class="head"></div><div class="head">A: Student</div><div class="head">B: Fall RIT</div><div class="head">C: Spring RIT</div><div class="head">D: Trend</div>
-                                            <div class="row-label">2</div><div>Aisha K.</div><div>211</div><div>219</div><div class="ai-cell">↑ Growth</div>
-                                            <div class="row-label">3</div><div>Daniel M.</div><div>205</div><div>198</div><div class="ai-cell">↓ At risk</div>
-                                            <div class="row-label">4</div><div>Fatima R.</div><div>222</div><div>231</div><div class="ai-cell">↑ Growth</div>
-                                            <div class="row-label">5</div><div>Hassan O.</div><div>189</div><div>183</div><div class="ai-cell">↓ At risk</div>
-                                            <div class="row-label">6</div><div>Layla S.</div><div>234</div><div>238</div><div class="ai-cell">→ Stable</div>
-                                            <div class="row-label">7</div><div>Omar T.</div><div>197</div><div>205</div><div class="ai-cell">↑ Growth</div>
-                                        </div>
-                                    </div>
-                                    <div class="col-span-4 ws-side-panel">
-                                        <div class="flex items-center gap-2 mb-3">
-                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="#1a73e8"><path d="M12 2 L14 9 L21 12 L14 15 L12 22 L10 15 L3 12 L10 9 Z"/></svg>
-                                            <span class="font-google font-bold text-blue-700 text-sm">Gemini in Sheets</span>
-                                        </div>
-                                        <div class="ws-side-card">
-                                            <p class="text-[10px] uppercase font-bold text-gray-500 mb-1">You asked</p>
-                                            <p class="text-xs text-gray-800 italic">"Flag students who dropped &gt;5 points between fall and spring."</p>
-                                        </div>
-                                        <div class="ws-side-card">
-                                            <p class="text-[10px] uppercase font-bold text-gray-500 mb-1">I added column D</p>
-                                            <code class="text-[10px] bg-gray-100 rounded px-1 py-0.5 block break-all">=IF(C2-B2&lt;-5,"↓ At risk", IF(C2-B2&gt;5,"↑ Growth","→ Stable"))</code>
-                                            <p class="text-[11px] text-gray-700 mt-2"><strong>2 students flagged at risk</strong>: Daniel M. (-7), Hassan O. (-6).</p>
-                                        </div>
-                                        <button class="w-full text-xs font-semibold bg-blue-600 text-white rounded-full py-2 mt-1">✨ Create chart</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <span class="mock-label">Example interface</span>
-                        </div>
-
-                        <div class="grid md:grid-cols-2 gap-4 mt-4">
-                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
-                                <h4 class="font-bold text-emerald-900 mb-2 text-sm flex items-center gap-2"><span>✅</span> Great for</h4>
-                                <ul class="text-xs text-emerald-900 space-y-1.5">
-                                    <li>• Writing formulas you don't remember (XLOOKUP, ARRAYFORMULA)</li>
-                                    <li>• Cleaning messy data ("split full names into first / last")</li>
-                                    <li>• Spotting trends in attendance, MAP, NWEA, formative data</li>
-                                    <li>• Generating quick charts from a verbal description</li>
-                                </ul>
-                            </div>
-                            <div class="bg-rose-50 border border-rose-200 rounded-xl p-5">
-                                <h4 class="font-bold text-rose-900 mb-2 text-sm flex items-center gap-2"><span>⚠️</span> Watch out for</h4>
-                                <ul class="text-xs text-rose-900 space-y-1.5">
-                                    <li>• Confidently wrong calculations on edge cases — spot-check</li>
-                                    <li>• Identifiable student data in prompts to the public Gemini app (use the Workspace side panel, which respects your domain controls)</li>
-                                    <li>• Conclusions that need pedagogical context Gemini can't see</li>
-                                </ul>
-                            </div>
+                        <div class="bg-blue-50 border-l-4 border-blue-500 rounded-r-xl p-4">
+                            <p class="text-xs text-blue-900"><strong>📌 Variation worth building:</strong> add a Step 5 that posts the brief to Chat in a "Just for me" space, so it pops up on your phone too.</p>
                         </div>
                     </div>
                 </div>
@@ -683,26 +832,26 @@
                 <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden" id="quiz-1">
                     <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
                         <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 1</span>
-                        <h3 class="text-lg font-heading font-bold mt-1">Picking the right surface for the job</h3>
+                        <h3 class="text-lg font-heading font-bold mt-1">Naming the parts of a Flow</h3>
                     </div>
                     <div class="p-6">
-                        <p class="font-semibold text-gray-800 mb-4">You need to analyse a class spreadsheet that contains <em>identifiable student names and assessment scores</em>. Where should you ask Gemini to do the work?</p>
+                        <p class="font-semibold text-gray-800 mb-4">In the Meeting prep brief Flow above, what part is "2 hours before any meeting I'm attending"?</p>
                         <div class="space-y-3" id="quiz-1-options">
                             <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
-                                <span class="text-sm text-gray-700">Copy the table into <code class="text-xs bg-gray-100 rounded px-1">gemini.google.com</code> with a personal Gmail account.</span>
-                            </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
-                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
-                                <span class="text-sm text-gray-700">Paste the data into ChatGPT free tier — it's quicker than logging in.</span>
+                                <span class="text-sm text-gray-700">A Step.</span>
                             </div>
                             <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, true)">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
+                                <span class="text-sm text-gray-700">The Starter — the trigger that wakes the Flow up.</span>
+                            </div>
+                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
-                                <span class="text-sm text-gray-700">Use the Gemini side panel <em>inside</em> the Sheet, signed in with your AISA account, so the data stays inside your Workspace domain.</span>
+                                <span class="text-sm text-gray-700">A Variable.</span>
                             </div>
                             <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
-                                <span class="text-sm text-gray-700">Anonymise nothing and email screenshots to a colleague to discuss.</span>
+                                <span class="text-sm text-gray-700">A Skill.</span>
                             </div>
                         </div>
                         <div id="quiz-1-feedback" class="hidden mt-4 p-4 rounded-xl text-sm fade-in"></div>
@@ -710,7 +859,72 @@
                 </div>
             </div>
 
-            <!-- Section 5: Workflow 4 — Slides -->
+            <!-- Section 6: Flow 3 — Action item dispatcher -->
+            <div class="relative pl-12 mb-16">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-700 to-green-800 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-emerald-100">Flow 3 · Meet + Chat</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Capture meeting action items, translate, and dispatch them</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">When a Google Meet ends and "Take notes for me" produces a notes Doc, this Flow picks it up, extracts only the action items, tags each with an owner, translates them into Arabic for parent-facing items, and posts them in your team's Chat space.</p>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                                <p class="text-[10px] uppercase font-bold text-emerald-700 tracking-wider mb-1">Starter</p>
+                                <p class="text-sm font-semibold text-emerald-900">A new file is added to Drive folder "Meet notes"</p>
+                            </div>
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                <p class="text-[10px] uppercase font-bold text-blue-700 tracking-wider mb-1">Steps (in order)</p>
+                                <ol class="text-xs text-blue-900 space-y-1 list-decimal pl-4">
+                                    <li>Read the new Meet notes Doc</li>
+                                    <li>Gemini: extract action items + owners</li>
+                                    <li>Gemini: translate parent-facing items to Arabic</li>
+                                    <li>Post the list to the team's Chat space</li>
+                                    <li>Email any items owned by me to my inbox</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <!-- Chat output mockup -->
+                        <div class="mock-wrapper">
+                            <div class="ws-window">
+                                <div class="ws-titlebar">
+                                    <span class="ws-dot r"></span><span class="ws-dot y"></span><span class="ws-dot g"></span>
+                                    <div class="ws-url">chat.google.com — Year 8 Team</div>
+                                </div>
+                                <div class="p-5">
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold">WS</div>
+                                        <div>
+                                            <div class="text-sm font-bold text-slate-900">Workspace Studio</div>
+                                            <div class="text-[10px] text-gray-500">App · 11:08 AM</div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-blue-50 border border-blue-100 rounded-xl rounded-tl-sm p-4 ml-10">
+                                        <p class="text-xs font-bold text-slate-900 mb-2">📋 Action items — Year 8 Team Meeting (11 May)</p>
+                                        <ul class="text-xs text-slate-800 space-y-1.5">
+                                            <li>📌 <strong>M. Carter</strong> — draft formative by Friday</li>
+                                            <li>📌 <strong>J. Pérez</strong> — email parents of flagged students <span class="text-[10px] text-gray-500">(Arabic version attached)</span></li>
+                                            <li>📌 <strong>A. Khan</strong> — share differentiated reading list</li>
+                                        </ul>
+                                        <p class="text-[10px] text-gray-500 mt-3 border-t border-blue-100 pt-2">Personal items have been emailed to each owner.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="mock-label">Example output</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 7: Flow 4 — Permission slip filer -->
             <div class="relative pl-12 mb-16">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
@@ -720,52 +934,51 @@
                 </label>
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-amber-600 to-orange-600 p-6 text-white">
-                        <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Workflow 4 · Slides</span>
-                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Generate slide images and starter decks from a prompt</h3>
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Flow 4 · Gmail + Drive + Sheets</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">"Permission slip filer" — never lose an attachment again</h3>
                     </div>
                     <div class="p-6 lg:p-8 space-y-6">
-                        <p class="text-gray-700 leading-relaxed">Slides has two strong Gemini integrations: <strong>"Help me visualize"</strong> for AI-generated images that match your slide topic, and <strong>"Help me create"</strong> for a 5–8 slide starter deck from a single prompt. Pair this with NotebookLM-sourced content for a polished result.</p>
+                        <p class="text-gray-700 leading-relaxed">Every time a parent emails back a signed permission slip, this Flow saves the attachment to your Drive folder, logs the sender's name, the student's name (extracted by Gemini), and the date received into a tracking Sheet — then replies to the parent with a confirmation.</p>
 
-                        <!-- Mockup: slide grid -->
+                        <!-- Sheet output mockup -->
                         <div class="mock-wrapper">
                             <div class="ws-window">
                                 <div class="ws-titlebar">
                                     <span class="ws-dot r"></span><span class="ws-dot y"></span><span class="ws-dot g"></span>
-                                    <div class="ws-url">docs.google.com/presentation/d/1m…/edit</div>
+                                    <div class="ws-url">docs.google.com/spreadsheets — Permission slip tracker</div>
                                 </div>
-                                <div class="p-5 bg-gradient-to-b from-amber-50/40 to-white">
-                                    <div class="bg-white border border-amber-200 rounded-xl p-4 mb-4 max-w-2xl mx-auto shadow-md">
-                                        <div class="flex items-center gap-2 mb-2">
-                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="#1a73e8"><path d="M12 2 L14 9 L21 12 L14 15 L12 22 L10 15 L3 12 L10 9 Z"/></svg>
-                                            <span class="text-xs font-bold text-blue-700 font-google">Help me create a presentation</span>
-                                        </div>
-                                        <div class="border border-gray-200 rounded-lg p-3 text-sm text-gray-700 italic">
-                                            "Create an 8-slide intro deck on the water cycle for Year 4. Include a hook, key vocabulary, a labelled diagram slide, two activity prompts, and an exit ticket. Tone: curious, age-appropriate."
-                                        </div>
-                                    </div>
-                                    <div class="grid grid-cols-4 gap-3">
-                                        <div class="slide-thumb"><h5>1 · Hook</h5><p>"Why is the puddle outside gone today?"</p></div>
-                                        <div class="slide-thumb"><h5>2 · Key Words</h5><p>evaporation · condensation · precipitation · collection</p></div>
-                                        <div class="slide-thumb"><h5>3 · Diagram</h5><p>Labelled water cycle (image generated)</p></div>
-                                        <div class="slide-thumb"><h5>4 · Phase 1</h5><p>The Sun's role &amp; evaporation</p></div>
-                                        <div class="slide-thumb"><h5>5 · Phase 2</h5><p>Clouds &amp; condensation</p></div>
-                                        <div class="slide-thumb"><h5>6 · Activity A</h5><p>Sketch the cycle for your bedroom window</p></div>
-                                        <div class="slide-thumb"><h5>7 · Activity B</h5><p>Predict: where does this droplet go next?</p></div>
-                                        <div class="slide-thumb"><h5>8 · Exit ticket</h5><p>"Tell me one new word from today."</p></div>
-                                    </div>
+                                <div class="p-0">
+                                    <table class="w-full text-xs">
+                                        <thead class="bg-slate-100 text-left">
+                                            <tr>
+                                                <th class="p-2 font-bold text-slate-700 uppercase text-[10px] tracking-wider">Date</th>
+                                                <th class="p-2 font-bold text-slate-700 uppercase text-[10px] tracking-wider">Parent</th>
+                                                <th class="p-2 font-bold text-slate-700 uppercase text-[10px] tracking-wider">Student (extracted by Gemini)</th>
+                                                <th class="p-2 font-bold text-slate-700 uppercase text-[10px] tracking-wider">File</th>
+                                                <th class="p-2 font-bold text-slate-700 uppercase text-[10px] tracking-wider">Reply sent</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-slate-100">
+                                            <tr><td class="p-2">11 May</td><td class="p-2">Sarah Al-Hashimi</td><td class="p-2">Sami Al-Hashimi (Y5)</td><td class="p-2 text-blue-600">📎 slip-sami.pdf</td><td class="p-2 text-green-700">✓</td></tr>
+                                            <tr><td class="p-2">10 May</td><td class="p-2">Khaled Mansour</td><td class="p-2">Lina Mansour (Y5)</td><td class="p-2 text-blue-600">📎 slip-lina.pdf</td><td class="p-2 text-green-700">✓</td></tr>
+                                            <tr><td class="p-2">10 May</td><td class="p-2">P. Williams</td><td class="p-2">Ben Williams (Y5)</td><td class="p-2 text-blue-600">📎 ben-form.jpg</td><td class="p-2 text-green-700">✓</td></tr>
+                                            <tr><td class="p-2">9 May</td><td class="p-2">F. Nguyen</td><td class="p-2">An Nguyen (Y5)</td><td class="p-2 text-blue-600">📎 permission.pdf</td><td class="p-2 text-green-700">✓</td></tr>
+                                            <tr class="bg-amber-50"><td class="p-2 text-amber-800" colspan="5">8 unmatched parents · Gemini drafted a chase email — review &amp; send</td></tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
-                            <span class="mock-label">Example interface</span>
+                            <span class="mock-label">Example output</span>
                         </div>
 
                         <div class="bg-amber-50 border-l-4 border-amber-500 rounded-r-xl p-4 mt-4">
-                            <p class="text-xs text-amber-900"><strong>📚 Pair this with the <a href="chalkie-module.html" class="text-amber-900 underline font-bold">Chalkie module</a>:</strong> the same DOK-1 risk applies. Generated decks default to "define / list / identify". Plan the cognitive shape first, then ask Gemini to render it.</p>
+                            <p class="text-xs text-amber-900"><strong>🛟 Why this one is a quick win:</strong> the chase email is the bit teachers always forget. Add a Step that, every Friday at 3pm, compares the tracker Sheet to your class roster and drafts a polite reminder to the parents who haven't responded. Review, then send.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Section 6: Workflow 5 — Custom Gems -->
+            <!-- Section 8: Flow 5 — Skills -->
             <div class="relative pl-12 mb-16">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
@@ -775,72 +988,35 @@
                 </label>
                 <div class="bg-white rounded-2xl shadow-lg border-2 border-purple-200 overflow-hidden">
                     <div class="bg-gradient-to-r from-purple-700 to-fuchsia-700 p-6 text-white">
-                        <span class="text-xs font-bold uppercase tracking-widest text-purple-100">Workflow 5 · Gems</span>
-                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Build a Gem once, run it 100 times</h3>
-                        <p class="text-purple-100 text-sm mt-1">The single highest-leverage feature in Workspace Studio.</p>
+                        <span class="text-xs font-bold uppercase tracking-widest text-purple-100">Flow 5 · Skills</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Turn a Flow into a Skill — call it from anywhere in Gemini</h3>
                     </div>
                     <div class="p-6 lg:p-8 space-y-6">
-                        <p class="text-gray-700 leading-relaxed">A <strong>Gem</strong> is a custom, reusable Gemini assistant you configure once with detailed instructions, persona, examples, and source files. Then it lives in your Gem gallery and you call it any time without re-typing context.</p>
+                        <p class="text-gray-700 leading-relaxed"><strong>Skills</strong> are Flows you've published as reusable commands. Once a Skill exists, you can invoke it from inside Gemini in Gmail, Drive or Chat by typing <code class="bg-purple-100 text-purple-800 rounded px-1.5 py-0.5 text-xs">@</code> and the Skill's name. The Flow runs on demand, in context, with whatever item you're looking at as input.</p>
 
-                        <p class="text-gray-700 leading-relaxed">If you find yourself writing the same kind of prompt more than three times — <em>build it as a Gem</em>.</p>
+                        <p class="text-gray-700 leading-relaxed">If a Flow is something that should run <em>on a schedule or trigger</em>, leave it as a Flow. If it's something you want to <em>summon manually when you need it</em>, publish it as a Skill.</p>
 
-                        <!-- Mockup: Gem gallery -->
+                        <!-- Mockup: invoking a Skill in Gmail -->
                         <div class="mock-wrapper">
                             <div class="ws-window">
                                 <div class="ws-titlebar">
                                     <span class="ws-dot r"></span><span class="ws-dot y"></span><span class="ws-dot g"></span>
-                                    <div class="ws-url">gemini.google.com/gems</div>
+                                    <div class="ws-url">mail.google.com — Compose</div>
                                 </div>
-                                <div class="p-5 bg-gradient-to-br from-purple-50/40 to-white">
-                                    <p class="text-[10px] uppercase font-bold text-purple-700 tracking-wider mb-3 font-google">My Gems</p>
-                                    <div class="grid md:grid-cols-3 gap-3">
-                                        <div class="gem-card border-l-4 border-l-blue-500">
-                                            <div class="flex items-center gap-2 mb-2">
-                                                <span class="text-xl">📝</span>
-                                                <span class="text-[10px] uppercase font-bold text-gray-500">Custom Gem</span>
-                                            </div>
-                                            <h4 class="font-bold text-slate-900 text-sm mb-1">Year 5 Reading Coach</h4>
-                                            <p class="text-[11px] text-gray-600 leading-snug">Generates 3 differentiated comprehension questions from any text I paste, aligned to MAP RIT bands.</p>
+                                <div class="p-5 bg-gradient-to-b from-purple-50/40 to-white">
+                                    <div class="bg-white rounded-xl border border-purple-200 shadow-md p-4 max-w-xl mx-auto">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="#1a73e8"><path d="M12 2 L14 9 L21 12 L14 15 L12 22 L10 15 L3 12 L10 9 Z"/></svg>
+                                            <span class="text-xs font-bold text-blue-700 font-google">Gemini in Gmail</span>
                                         </div>
-                                        <div class="gem-card border-l-4 border-l-emerald-500">
-                                            <div class="flex items-center gap-2 mb-2">
-                                                <span class="text-xl">📧</span>
-                                                <span class="text-[10px] uppercase font-bold text-gray-500">Custom Gem</span>
-                                            </div>
-                                            <h4 class="font-bold text-slate-900 text-sm mb-1">Parent Email Translator</h4>
-                                            <p class="text-[11px] text-gray-600 leading-snug">Rewrites my English drafts into Arabic, plus a back-translation so I can verify before sending.</p>
+                                        <div class="border border-gray-200 rounded-lg p-3 text-xs text-gray-700">
+                                            <span class="text-purple-700 font-semibold">@parent-translator</span> reply in Arabic with a warm tone, offer a meeting Thursday or Friday afternoon.
                                         </div>
-                                        <div class="gem-card border-l-4 border-l-amber-500">
-                                            <div class="flex items-center gap-2 mb-2">
-                                                <span class="text-xl">🧪</span>
-                                                <span class="text-[10px] uppercase font-bold text-gray-500">Custom Gem</span>
-                                            </div>
-                                            <h4 class="font-bold text-slate-900 text-sm mb-1">DP Lab Report Critic</h4>
-                                            <p class="text-[11px] text-gray-600 leading-snug">Reviews student lab reports against IB Group 4 criteria, returning a marked-up Doc with specific feedback.</p>
-                                        </div>
-                                        <div class="gem-card border-l-4 border-l-rose-500">
-                                            <div class="flex items-center gap-2 mb-2">
-                                                <span class="text-xl">🪄</span>
-                                                <span class="text-[10px] uppercase font-bold text-gray-500">Custom Gem</span>
-                                            </div>
-                                            <h4 class="font-bold text-slate-900 text-sm mb-1">Behaviour Note Anonymiser</h4>
-                                            <p class="text-[11px] text-gray-600 leading-snug">Strips names &amp; identifying details from incident notes before sharing with admin.</p>
-                                        </div>
-                                        <div class="gem-card border-l-4 border-l-purple-500">
-                                            <div class="flex items-center gap-2 mb-2">
-                                                <span class="text-xl">🎯</span>
-                                                <span class="text-[10px] uppercase font-bold text-gray-500">Custom Gem</span>
-                                            </div>
-                                            <h4 class="font-bold text-slate-900 text-sm mb-1">Success Criteria Builder</h4>
-                                            <p class="text-[11px] text-gray-600 leading-snug">Turns a learning objective into 3 tiered success criteria (Beginning / Developing / Mastery).</p>
-                                        </div>
-                                        <div class="gem-card border-l-4 border-l-cyan-500">
-                                            <div class="flex items-center gap-2 mb-2">
-                                                <span class="text-xl">📊</span>
-                                                <span class="text-[10px] uppercase font-bold text-gray-500">Custom Gem</span>
-                                            </div>
-                                            <h4 class="font-bold text-slate-900 text-sm mb-1">Report Comment Polisher</h4>
-                                            <p class="text-[11px] text-gray-600 leading-snug">Takes my bullet-point notes and produces a 60–80 word report card paragraph in our school's house style.</p>
+                                        <div class="mt-2 flex flex-wrap">
+                                            <span class="skill-chip"><span class="text-purple-600">🧩</span> @parent-translator</span>
+                                            <span class="skill-chip"><span class="text-purple-600">🧩</span> @rubric-builder</span>
+                                            <span class="skill-chip"><span class="text-purple-600">🧩</span> @report-comment-polisher</span>
+                                            <span class="skill-chip"><span class="text-purple-600">🧩</span> @anonymise-incident</span>
                                         </div>
                                     </div>
                                 </div>
@@ -848,145 +1024,8 @@
                             <span class="mock-label">Example interface</span>
                         </div>
 
-                        <div class="bg-purple-50 border-l-4 border-purple-500 rounded-r-xl p-5 mt-4">
-                            <h4 class="font-bold text-purple-900 mb-2 flex items-center gap-2"><span>🛠️</span> Anatomy of a good Gem</h4>
-                            <ol class="text-sm text-purple-900 space-y-2">
-                                <li class="flex items-start gap-2"><span class="font-bold">①</span> <span><strong>Persona &amp; tone:</strong> "You are a calm, experienced Year 5 reading coach who…"</span></li>
-                                <li class="flex items-start gap-2"><span class="font-bold">②</span> <span><strong>Specific task:</strong> "When given a text, produce 3 questions: one literal, one inferential, one evaluative."</span></li>
-                                <li class="flex items-start gap-2"><span class="font-bold">③</span> <span><strong>Format constraints:</strong> "Output as a numbered list. Tag each question with its DOK level."</span></li>
-                                <li class="flex items-start gap-2"><span class="font-bold">④</span> <span><strong>Worked example:</strong> One sample input + the exact output you want. This is the single biggest quality lever.</span></li>
-                                <li class="flex items-start gap-2"><span class="font-bold">⑤</span> <span><strong>Knowledge file (optional):</strong> Attach your scope &amp; sequence, rubric, or style guide so it answers in context.</span></li>
-                            </ol>
-                        </div>
-
-                        <p class="text-gray-700 text-sm italic">A team of teachers building 6–8 shared Gems for the year covers about 70% of the recurring AI tasks across a department.</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 7: Workflow 6 — Drive + NotebookLM -->
-            <div class="relative pl-12 mb-16">
-                <label class="absolute left-0 top-0 cursor-pointer z-10">
-                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
-                    <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
-                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                    </div>
-                </label>
-                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div class="bg-gradient-to-r from-cyan-700 to-blue-700 p-6 text-white">
-                        <span class="text-xs font-bold uppercase tracking-widest text-cyan-100">Workflow 6 · Drive + NotebookLM</span>
-                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Turn a folder of PDFs into a study guide, audio overview, or quiz</h3>
-                    </div>
-                    <div class="p-6 lg:p-8 space-y-6">
-                        <p class="text-gray-700 leading-relaxed">Point NotebookLM at a Drive folder of textbook chapters, lesson PDFs and articles. It will produce a <strong>source-grounded summary</strong>, a <strong>study guide</strong>, an <strong>FAQ</strong>, and an <strong>Audio Overview</strong> — a 6–10 minute podcast-style explainer two AI hosts narrate from your sources.</p>
-
-                        <!-- Mockup: NotebookLM -->
-                        <div class="mock-wrapper">
-                            <div class="ws-window">
-                                <div class="ws-titlebar">
-                                    <span class="ws-dot r"></span><span class="ws-dot y"></span><span class="ws-dot g"></span>
-                                    <div class="ws-url">notebooklm.google.com/notebook/8d2…</div>
-                                </div>
-                                <div class="grid grid-cols-12">
-                                    <div class="col-span-3 border-r border-gray-100 p-3 bg-slate-50">
-                                        <p class="text-[10px] uppercase font-bold text-gray-500 mb-2 tracking-wider">Sources (7)</p>
-                                        <div class="space-y-1.5 text-[11px] text-gray-700">
-                                            <div class="flex items-center gap-1.5"><span>📄</span><span class="truncate">Ch4_PlateTectonics.pdf</span></div>
-                                            <div class="flex items-center gap-1.5"><span>📄</span><span class="truncate">Tohoku_Quake_USGS.pdf</span></div>
-                                            <div class="flex items-center gap-1.5"><span>📄</span><span class="truncate">MYP_Geo_Outcomes.docx</span></div>
-                                            <div class="flex items-center gap-1.5"><span>🌐</span><span class="truncate">BBC: Ring of Fire</span></div>
-                                            <div class="flex items-center gap-1.5"><span>📄</span><span class="truncate">Volcano_Lab_2024.pdf</span></div>
-                                            <div class="flex items-center gap-1.5"><span>📄</span><span class="truncate">Y8_PriorAssess.pdf</span></div>
-                                            <div class="flex items-center gap-1.5"><span>📄</span><span class="truncate">Lesson_Plan_T2.pdf</span></div>
-                                        </div>
-                                    </div>
-                                    <div class="col-span-9 p-5">
-                                        <h4 class="font-bold text-slate-900 mb-3 font-google">Plate Tectonics — Year 8 Notebook</h4>
-                                        <div class="grid grid-cols-2 gap-3">
-                                            <div class="ws-side-card !mb-0">
-                                                <p class="text-[10px] uppercase font-bold text-cyan-700 mb-1">📚 Study Guide</p>
-                                                <p class="text-[11px] text-gray-700">12 key concepts pulled from your sources, with citations.</p>
-                                            </div>
-                                            <div class="ws-side-card !mb-0">
-                                                <p class="text-[10px] uppercase font-bold text-cyan-700 mb-1">❓ FAQ</p>
-                                                <p class="text-[11px] text-gray-700">Anticipated student questions, answered from sources only.</p>
-                                            </div>
-                                            <div class="ws-side-card !mb-0">
-                                                <p class="text-[10px] uppercase font-bold text-cyan-700 mb-1">🎧 Audio Overview</p>
-                                                <p class="text-[11px] text-gray-700">8:42 podcast — two AI hosts walk through the material.</p>
-                                            </div>
-                                            <div class="ws-side-card !mb-0">
-                                                <p class="text-[10px] uppercase font-bold text-cyan-700 mb-1">📝 Briefing Doc</p>
-                                                <p class="text-[11px] text-gray-700">One-pager teacher summary with cited evidence.</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <span class="mock-label">Example interface</span>
-                        </div>
-
-                        <div class="bg-cyan-50 border border-cyan-200 rounded-xl p-5 mt-4">
-                            <h4 class="font-bold text-cyan-900 mb-2 flex items-center gap-2"><span>🎙️</span> Use case that teachers love</h4>
-                            <p class="text-sm text-cyan-900 leading-relaxed">Generate the Audio Overview, share the link with students <strong>and</strong> with parents who want to support revision at home but are short on time. Two days before a unit test, this consistently lifts engagement with the material.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Section 8: Workflow 7 — Meet -->
-            <div class="relative pl-12 mb-16">
-                <label class="absolute left-0 top-0 cursor-pointer z-10">
-                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
-                    <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
-                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                    </div>
-                </label>
-                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div class="bg-gradient-to-r from-slate-700 to-slate-800 p-6 text-white">
-                        <span class="text-xs font-bold uppercase tracking-widest text-slate-300">Workflow 7 · Meet</span>
-                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">"Take notes for me" — and stop dreading meeting minutes</h3>
-                    </div>
-                    <div class="p-6 lg:p-8 space-y-6">
-                        <p class="text-gray-700 leading-relaxed">Inside any Google Meet, click the sparkle and choose <strong>"Take notes for me"</strong>. At the end of the meeting, every attendee gets a Doc with a structured summary, key decisions, and action items tagged by owner.</p>
-
-                        <!-- Mockup: Meet notes -->
-                        <div class="mock-wrapper">
-                            <div class="ws-window">
-                                <div class="ws-titlebar">
-                                    <span class="ws-dot r"></span><span class="ws-dot y"></span><span class="ws-dot g"></span>
-                                    <div class="ws-url">docs.google.com/document/d/1mn… (Meeting notes)</div>
-                                </div>
-                                <div class="ws-doc">
-                                    <div class="flex items-center gap-2 mb-2">
-                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="#1a73e8"><path d="M12 2 L14 9 L21 12 L14 15 L12 22 L10 15 L3 12 L10 9 Z"/></svg>
-                                        <span class="text-[10px] uppercase font-bold text-blue-700 tracking-wider">Generated by Gemini in Meet</span>
-                                    </div>
-                                    <h4 class="text-base font-bold mb-1 font-google">Year 8 Team Meeting — 11 May</h4>
-                                    <p class="text-[11px] text-gray-500 mb-3">Attendees: M. Carter, J. Pérez, A. Khan, L. Hassan · Duration: 28 min</p>
-
-                                    <p class="text-xs font-bold text-slate-800 mt-3 mb-1">Summary</p>
-                                    <p class="text-xs text-gray-700">The team reviewed mid-unit progress on the Plate Tectonics unit, discussed two students flagged in the MAP data, and agreed on a shared formative assessment for next week.</p>
-
-                                    <p class="text-xs font-bold text-slate-800 mt-3 mb-1">Decisions</p>
-                                    <ul class="text-xs text-gray-700 list-disc pl-5 space-y-0.5">
-                                        <li>Shared formative will be released on Monday, due Thursday.</li>
-                                        <li>Daniel M. and Hassan O. to enter Tier 2 reading support.</li>
-                                    </ul>
-
-                                    <p class="text-xs font-bold text-slate-800 mt-3 mb-1">Action items</p>
-                                    <ul class="text-xs text-gray-700 list-none pl-0 space-y-1">
-                                        <li>📌 <strong>M. Carter</strong> — draft formative by Friday.</li>
-                                        <li>📌 <strong>J. Pérez</strong> — email parents of flagged students.</li>
-                                        <li>📌 <strong>A. Khan</strong> — share differentiated reading list.</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <span class="mock-label">Example interface</span>
-                        </div>
-
-                        <div class="bg-amber-50 border-l-4 border-amber-500 rounded-r-xl p-4 mt-4">
-                            <p class="text-xs text-amber-900"><strong>📋 Etiquette:</strong> Always tell attendees the meeting is being summarised by AI before you start. For meetings that touch confidential student or staff information, leave the AI note-taker off and write the summary yourself.</p>
+                        <div class="bg-purple-50 border-l-4 border-purple-500 rounded-r-xl p-4 mt-4">
+                            <p class="text-xs text-purple-900"><strong>📚 Department win:</strong> a team that publishes 6–8 shared Skills (rubric builder, success-criteria builder, parent translator, comment polisher, IEP-language neutraliser, behaviour-note anonymiser) covers most of the recurring AI tasks across a department, with consistent quality.</p>
                         </div>
                     </div>
                 </div>
@@ -1000,26 +1039,26 @@
                 <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden" id="quiz-2">
                     <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
                         <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 2</span>
-                        <h3 class="text-lg font-heading font-bold mt-1">Spotting the right Gem moment</h3>
+                        <h3 class="text-lg font-heading font-bold mt-1">Flow or Skill?</h3>
                     </div>
                     <div class="p-6">
-                        <p class="font-semibold text-gray-800 mb-4">For the third time this term, a colleague is re-typing the same long prompt to turn lesson objectives into tiered success criteria. What is the highest-leverage advice?</p>
+                        <p class="font-semibold text-gray-800 mb-4">You want a way to <em>summon</em> the Parent Email Translator <strong>only when you actually need it</strong> — say, when you're typing a reply to a specific parent. Should you build it as a Flow or publish it as a Skill?</p>
                         <div class="space-y-3" id="quiz-2-options">
                             <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
-                                <span class="text-sm text-gray-700">Suggest they save the prompt as a Google Keep note and copy-paste it next time.</span>
+                                <span class="text-sm text-gray-700">A Flow with a "every new parent email" Starter — let it run automatically.</span>
                             </div>
                             <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, true)">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
-                                <span class="text-sm text-gray-700">Suggest they build a "Success Criteria Builder" Gem with persona, format, and a worked example, and share it with the team.</span>
+                                <span class="text-sm text-gray-700">A Skill — so you can invoke it with <code class="text-xs bg-gray-100 rounded px-1">@parent-translator</code> from inside Gemini in Gmail when you choose to.</span>
                             </div>
                             <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
-                                <span class="text-sm text-gray-700">Tell them to stop using AI and just write the criteria from scratch.</span>
+                                <span class="text-sm text-gray-700">Neither — Workspace Studio can't translate.</span>
                             </div>
                             <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
-                                <span class="text-sm text-gray-700">Ask them to use ChatGPT instead — it remembers prompts automatically.</span>
+                                <span class="text-sm text-gray-700">A Flow with a Calendar Starter.</span>
                             </div>
                         </div>
                         <div id="quiz-2-feedback" class="hidden mt-4 p-4 rounded-xl text-sm fade-in"></div>
@@ -1038,31 +1077,39 @@
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-rose-700 to-red-800 p-6 text-white">
                         <span class="text-xs font-bold uppercase tracking-widest text-rose-100">Section 9</span>
-                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Three rules that keep you (and your students) safe</h3>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Four rules that keep your Flows safe</h3>
                     </div>
                     <div class="p-6 lg:p-8 space-y-4">
-                        <div class="grid md:grid-cols-3 gap-4">
+                        <div class="grid md:grid-cols-2 gap-4">
                             <div class="bg-gradient-to-br from-rose-50 to-white border border-rose-200 rounded-xl p-5">
-                                <div class="text-3xl mb-2">🔒</div>
-                                <h4 class="font-bold text-rose-900 mb-2 text-sm">1. Stay inside the AISA domain</h4>
-                                <p class="text-xs text-rose-900">Use Gemini signed in with your @aisa.edu account, in the Workspace side panels. Don't paste student data into personal Gemini, ChatGPT, or any free public model.</p>
+                                <div class="text-2xl mb-1">🧪</div>
+                                <h4 class="font-bold text-rose-900 mb-1 text-sm">1. Always Test run before Turn on</h4>
+                                <p class="text-xs text-rose-900">A Flow that auto-replies to parents is a bigger blast radius than a Sheet formula. Run it once with Test run, read what it would have done, and only then activate.</p>
                             </div>
                             <div class="bg-gradient-to-br from-rose-50 to-white border border-rose-200 rounded-xl p-5">
-                                <div class="text-3xl mb-2">👁️</div>
-                                <h4 class="font-bold text-rose-900 mb-2 text-sm">2. Read every output</h4>
-                                <p class="text-xs text-rose-900">Hallucinations happen — wrong dates, fabricated quotes, miscalculated formulas. Anything that goes out under your name carries your professional accountability.</p>
+                                <div class="text-2xl mb-1">👁️</div>
+                                <h4 class="font-bold text-rose-900 mb-1 text-sm">2. Keep a human in the loop for outbound messages</h4>
+                                <p class="text-xs text-rose-900">For anything that goes to parents, students or admin, end the Flow with <strong>"draft an email to me to review"</strong> rather than <strong>"send the email"</strong>. The time saved is in the drafting, not the sending.</p>
                             </div>
                             <div class="bg-gradient-to-br from-rose-50 to-white border border-rose-200 rounded-xl p-5">
-                                <div class="text-3xl mb-2">🧭</div>
-                                <h4 class="font-bold text-rose-900 mb-2 text-sm">3. Keep the pedagogy yours</h4>
-                                <p class="text-xs text-rose-900">Use Gemini for first drafts and tedium. Cognitive sequencing, differentiation, and judgements about specific students remain teacher work — see the <a href="ai-ethics-module.html" class="underline font-bold">AI Ethics</a> module.</p>
+                                <div class="text-2xl mb-1">🔒</div>
+                                <h4 class="font-bold text-rose-900 mb-1 text-sm">3. Keep student data inside Workspace</h4>
+                                <p class="text-xs text-rose-900">Workspace Studio runs inside the AISA domain, but be careful about Steps that send data to third-party add-ons. If in doubt, stick to native Gmail / Drive / Docs / Sheets / Calendar / Chat Steps.</p>
                             </div>
+                            <div class="bg-gradient-to-br from-rose-50 to-white border border-rose-200 rounded-xl p-5">
+                                <div class="text-2xl mb-1">🔍</div>
+                                <h4 class="font-bold text-rose-900 mb-1 text-sm">4. Check Run history weekly</h4>
+                                <p class="text-xs text-rose-900">Studio's <strong>Run history</strong> tab shows every execution of every Flow with status, inputs and outputs. A weekly scan catches Flows that started misbehaving after a Gmail filter changed.</p>
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                            <p class="text-sm text-gray-700"><strong>The professional accountability principle still applies:</strong> any email, comment, or document that goes out under your name is yours, even if a Flow drafted it. See the <a href="ai-ethics-module.html" class="text-blue-700 font-semibold underline">AI Ethics module</a> for the wider frame.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Section 10: Quick Reference -->
+            <!-- Section 10: Quick reference -->
             <div class="relative pl-12 mb-16">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
@@ -1073,45 +1120,42 @@
                 <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                     <div class="bg-gradient-to-r from-blue-700 to-purple-700 p-6 text-white">
                         <span class="text-xs font-bold uppercase tracking-widest text-blue-200">Section 10</span>
-                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Quick Reference — Workflow Cheat Sheet</h3>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Quick Reference — Starters &amp; Steps glossary</h3>
                     </div>
-                    <div class="p-6 lg:p-8">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm">
-                                <thead class="bg-slate-50 text-left">
-                                    <tr>
-                                        <th class="p-3 font-bold text-slate-700 text-xs uppercase tracking-wider">When you need to…</th>
-                                        <th class="p-3 font-bold text-slate-700 text-xs uppercase tracking-wider">Open</th>
-                                        <th class="p-3 font-bold text-slate-700 text-xs uppercase tracking-wider">Click / type</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-100">
-                                    <tr><td class="p-3">Catch up on a long parent thread</td><td class="p-3 text-blue-700 font-semibold">Gmail</td><td class="p-3 text-xs">Sparkle ✨ → "Summarise this thread"</td></tr>
-                                    <tr><td class="p-3">Draft a polite reply</td><td class="p-3 text-blue-700 font-semibold">Gmail</td><td class="p-3 text-xs">Compose → "Help me write" → describe the reply</td></tr>
-                                    <tr><td class="p-3">Build a rubric / IEP language</td><td class="p-3 text-blue-700 font-semibold">Docs</td><td class="p-3 text-xs">Insert → "Help me write" → specify criterion + grade</td></tr>
-                                    <tr><td class="p-3">Find at-risk students in MAP data</td><td class="p-3 text-emerald-700 font-semibold">Sheets</td><td class="p-3 text-xs">Side panel → "Flag students who…"</td></tr>
-                                    <tr><td class="p-3">Generate a starter slide deck</td><td class="p-3 text-amber-700 font-semibold">Slides</td><td class="p-3 text-xs">Side panel → "Help me create a presentation"</td></tr>
-                                    <tr><td class="p-3">Reuse the same workflow weekly</td><td class="p-3 text-purple-700 font-semibold">Gemini</td><td class="p-3 text-xs">gemini.google.com → Gems → Create new</td></tr>
-                                    <tr><td class="p-3">Turn a folder of PDFs into a study guide</td><td class="p-3 text-cyan-700 font-semibold">NotebookLM</td><td class="p-3 text-xs">notebooklm.google.com → New notebook → add Drive sources</td></tr>
-                                    <tr><td class="p-3">Get meeting notes &amp; action items</td><td class="p-3 text-slate-700 font-semibold">Meet</td><td class="p-3 text-xs">In-call sparkle → "Take notes for me"</td></tr>
-                                </tbody>
-                            </table>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div>
+                            <h4 class="font-bold text-amber-900 mb-2 text-sm uppercase tracking-wider">Common Starters</h4>
+                            <div class="grid sm:grid-cols-2 gap-2 text-xs">
+                                <div class="border border-amber-100 bg-amber-50/50 rounded-lg p-2.5"><strong>Gmail:</strong> a new email matches a filter (sender, subject, label)</div>
+                                <div class="border border-amber-100 bg-amber-50/50 rounded-lg p-2.5"><strong>Calendar:</strong> X minutes before / after an event</div>
+                                <div class="border border-amber-100 bg-amber-50/50 rounded-lg p-2.5"><strong>Drive:</strong> a new file is added to a folder</div>
+                                <div class="border border-amber-100 bg-amber-50/50 rounded-lg p-2.5"><strong>Schedule:</strong> daily / weekly / monthly at a set time</div>
+                                <div class="border border-amber-100 bg-amber-50/50 rounded-lg p-2.5"><strong>Chat:</strong> a message is posted in a space</div>
+                                <div class="border border-amber-100 bg-amber-50/50 rounded-lg p-2.5"><strong>Forms:</strong> a new response is submitted</div>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-blue-900 mb-2 text-sm uppercase tracking-wider">Common Steps</h4>
+                            <div class="grid sm:grid-cols-2 gap-2 text-xs">
+                                <div class="border border-blue-100 bg-blue-50/50 rounded-lg p-2.5"><strong>Gmail:</strong> get / label / draft / send / search</div>
+                                <div class="border border-blue-100 bg-blue-50/50 rounded-lg p-2.5"><strong>Docs:</strong> create / append / get text from</div>
+                                <div class="border border-blue-100 bg-blue-50/50 rounded-lg p-2.5"><strong>Sheets:</strong> append row / read range / find row</div>
+                                <div class="border border-blue-100 bg-blue-50/50 rounded-lg p-2.5"><strong>Drive:</strong> save file / move file / share file</div>
+                                <div class="border border-blue-100 bg-blue-50/50 rounded-lg p-2.5"><strong>Chat:</strong> post message to space / DM</div>
+                                <div class="border border-blue-100 bg-blue-50/50 rounded-lg p-2.5"><strong>Gemini:</strong> summarise / classify / extract / translate / draft</div>
+                            </div>
                         </div>
 
-                        <div class="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-5">
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
                             <h4 class="font-bold text-slate-800 mb-3">Where to go next</h4>
                             <div class="grid sm:grid-cols-2 gap-3 text-sm">
                                 <div class="flex items-center gap-2 text-gray-700">
                                     <span class="text-blue-500">▶</span>
-                                    <span><strong>Open Gemini:</strong> <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" class="text-blue-700 font-semibold underline hover:text-blue-900">gemini.google.com</a></span>
+                                    <span><strong>Open Workspace Studio:</strong> <a href="https://studio.workspace.google.com" target="_blank" rel="noopener noreferrer" class="text-blue-700 font-semibold underline hover:text-blue-900">studio.workspace.google.com</a></span>
                                 </div>
                                 <div class="flex items-center gap-2 text-gray-700">
                                     <span class="text-blue-500">▶</span>
-                                    <span><strong>Open NotebookLM:</strong> <a href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer" class="text-blue-700 font-semibold underline hover:text-blue-900">notebooklm.google.com</a></span>
-                                </div>
-                                <div class="flex items-center gap-2 text-gray-700">
-                                    <span class="text-blue-500">▶</span>
-                                    <span><strong>Plan your decks first:</strong> <a href="pd.html#module-objectives" class="text-blue-700 font-semibold underline hover:text-blue-900">Objectives &amp; Success Criteria</a></span>
+                                    <span><strong>Browse templates:</strong> Studio → Templates tab</span>
                                 </div>
                                 <div class="flex items-center gap-2 text-gray-700">
                                     <span class="text-blue-500">▶</span>
@@ -1121,9 +1165,9 @@
                                     <span class="text-blue-500">▶</span>
                                     <span><strong>Policy frame:</strong> <a href="ai-ethics-module.html" class="text-blue-700 font-semibold underline hover:text-blue-900">AI Vision &amp; Ethical Framework</a></span>
                                 </div>
-                                <div class="flex items-center gap-2 text-gray-700">
+                                <div class="flex items-center gap-2 text-gray-700 sm:col-span-2">
                                     <span class="text-blue-500">▶</span>
-                                    <span><strong>Drop-in support:</strong> bring a workflow to <a href="../Wired%20Wednesdays/wired-wednesdays.html" class="text-blue-700 font-semibold underline hover:text-blue-900">Wired Wednesdays</a> to build it together.</span>
+                                    <span><strong>Drop-in support:</strong> bring a Flow you'd like to build to <a href="../Wired%20Wednesdays/wired-wednesdays.html" class="text-blue-700 font-semibold underline hover:text-blue-900">Wired Wednesdays</a> and we'll wire it up together.</span>
                                 </div>
                             </div>
                         </div>
@@ -1137,7 +1181,7 @@
         <div id="completion-banner" class="hidden bg-gradient-to-r from-blue-600 via-purple-600 to-amber-500 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
             <span class="text-5xl mb-4 block">🎉</span>
             <h3 class="text-2xl font-heading font-black mb-2">Module Complete!</h3>
-            <p class="text-blue-100 max-w-lg mx-auto">You've worked through seven Workspace Studio automations. Pick one to actually run this week — the time saving compounds fast.</p>
+            <p class="text-blue-100 max-w-lg mx-auto">You know the parts of a Flow, you've seen five worked examples, and you can publish a Skill. Pick one Flow and build it this week — start with the Daily inbox briefing if you're not sure.</p>
         </div>
 
         <!-- Return Button -->
@@ -1183,12 +1227,12 @@
         const quizAnswered = {};
         const quizFeedback = {
             1: {
-                correct: '<strong>Correct.</strong> The Workspace side panel keeps the data inside your AISA domain and your school\'s data-protection controls. Public Gemini and free chatbots do not.',
-                incorrect: '<strong>Not quite.</strong> Identifiable student data should never leave the AISA Workspace domain. Use the in-app Gemini side panel signed in with your AISA account.'
+                correct: '<strong>Correct.</strong> Every Flow begins with one Starter — the trigger that wakes it up. Steps then run in order. Variables carry data between Steps.',
+                incorrect: '<strong>Not quite.</strong> "2 hours before any meeting" is the <em>trigger</em>, which Workspace Studio calls the Starter. Steps are the actions that run after.'
             },
             2: {
-                correct: '<strong>Correct.</strong> Gems are built for exactly this — repeated, structured prompts. Bake the persona, format and a worked example in once, then everyone in the team can call it.',
-                incorrect: '<strong>Not quite.</strong> The repeated-prompt pattern is the textbook signal to build a Gem. Persona + format + a worked example raises the quality of every future run.'
+                correct: '<strong>Correct.</strong> Skills are Flows you summon on demand from inside Gemini. A Flow runs on a schedule or trigger; a Skill runs when you call it with <code class="bg-gray-100 rounded px-1">@</code>.',
+                incorrect: '<strong>Not quite.</strong> The give-away is "summon when I need it". An automatic Starter would run on every parent email; a Skill lets you invoke it manually with <code class="bg-gray-100 rounded px-1">@parent-translator</code>.'
             }
         };
 
