@@ -239,8 +239,8 @@
                                 <span class="lang-ar">⏰ تغيير في الموعد هذا الأسبوع — ٢:٣٠ مساءً (وليس ٣:٠٠)</span>
                             </p>
                             <p class="text-amber-900">
-                                <span class="lang-en">This Wednesday's session is at <strong>2:30 PM</strong>. The session will be <strong>recorded and archived on the Learning Hub</strong> for anyone who can't make it live. Feel free to <a href="mailto:bbaki@aisa.sch.ae" class="underline font-semibold">email me</a> with any questions.</span>
-                                <span class="lang-ar">جلسة هذا الأربعاء ستُعقد عند الساعة <strong>٢:٣٠ مساءً</strong>. سيتمّ <strong>تسجيل الجلسة وأرشفتها على مركز التعلم</strong> لمن لم يستطع الحضور مباشرة. لا تتردّدوا في <a href="mailto:bbaki@aisa.sch.ae" class="underline font-semibold">مراسلتي</a> بأيّ استفسارات.</span>
+                                <span class="lang-en">This Wednesday's session is at <strong>2:30 PM</strong>. The session will be <strong>recorded and archived on the Learning Hub</strong> for anyone who can't make it live. Feel free to <button type="button" class="copy-email underline font-semibold text-amber-900 hover:text-amber-700 transition-colors" data-email="bbaki@aisa.sch.ae" data-toast-en="Email copied to clipboard: bbaki@aisa.sch.ae" data-toast-ar="تم نسخ البريد الإلكتروني: bbaki@aisa.sch.ae">email me</button> with any questions.</span>
+                                <span class="lang-ar">جلسة هذا الأربعاء ستُعقد عند الساعة <strong>٢:٣٠ مساءً</strong>. سيتمّ <strong>تسجيل الجلسة وأرشفتها على مركز التعلم</strong> لمن لم يستطع الحضور مباشرة. لا تتردّدوا في <button type="button" class="copy-email underline font-semibold text-amber-900 hover:text-amber-700 transition-colors" data-email="bbaki@aisa.sch.ae" data-toast-en="Email copied to clipboard: bbaki@aisa.sch.ae" data-toast-ar="تم نسخ البريد الإلكتروني: bbaki@aisa.sch.ae">مراسلتي</button> بأيّ استفسارات.</span>
                             </p>
                         </div>
                         <p class="text-gray-700 leading-relaxed mb-3">
@@ -569,12 +569,12 @@
                 <div class="grid sm:grid-cols-2 gap-5">
                     <div class="bg-purple-50/50 border border-purple-100 rounded-xl p-5">
                         <h4 class="font-bold text-purple-900 mb-1.5 flex items-center gap-2"><span>🦁</span>
-                            <span class="lang-en">Leo's orientation walkthrough on the homepage</span>
-                            <span class="lang-ar">جولة Leo التعريفية على الصفحة الرئيسية</span>
+                            <span class="lang-en">Leo's staff orientation walkthrough on the homepage</span>
+                            <span class="lang-ar">جولة Leo التعريفية لتوجيه الموظفين على الصفحة الرئيسية</span>
                         </h4>
                         <p class="text-sm text-gray-700">
-                            <span class="lang-en"><strong>Leo</strong> — the friendly guide on the Learning Hub homepage — now offers a much more <strong>detailed orientation</strong> walkthrough of the Hub: what sits where, which tools are approved, how to find PD modules, and where to ask for help. Especially useful for <strong>staff who joined mid-year</strong> and didn't get a full induction, and a ready-made on-ramp for new staff at the start of next year.</span>
-                            <span class="lang-ar">يقدّم <strong>Leo</strong> — المرشد الودود على الصفحة الرئيسية لمركز التعلم — جولة <strong>تعريفية أكثر تفصيلاً</strong> للمركز: ما يوجد أين، وأيّ الأدوات معتمَدة، وكيف تجدون وحدات التطوير المهني، وأين تطلبون المساعدة. مفيد بشكل خاص <strong>لمن انضمّ إلى الفريق في منتصف العام</strong> ولم يحظَ بفترة توجيه كاملة، ونقطة انطلاق جاهزة للموظفين الجدد في بداية العام القادم.</span>
+                            <span class="lang-en"><strong>Leo</strong> — the friendly guide on the Learning Hub homepage — now offers a much more <strong>detailed staff orientation</strong>: a proper induction to working at AISA covering who's who, how the school runs day-to-day, the policies that matter, key calendars and routines, and where to turn for support. Especially useful for <strong>staff who joined mid-year</strong> and didn't get a full induction, and a ready-made on-ramp for new staff at the start of next year.</span>
+                            <span class="lang-ar">يقدّم <strong>Leo</strong> — المرشد الودود على الصفحة الرئيسية لمركز التعلم — جولة <strong>توجيه أكثر تفصيلاً للموظفين</strong>: استقبال متكامل للعمل في AISA يغطّي الفريق وأبرز المسؤوليات، وطريقة سير اليوم الدراسي، والسياسات الأساسية، والتقاويم والإجراءات الروتينية المهمّة، وأماكن طلب الدعم. مفيد بشكل خاص <strong>لمن انضمّ إلى الفريق في منتصف العام</strong> ولم يحظَ بفترة توجيه كاملة، ونقطة انطلاق جاهزة للموظفين الجدد في بداية العام القادم.</span>
                         </p>
                     </div>
 
@@ -788,6 +788,65 @@
             </p>
         </div>
     </footer>
+
+    <!-- Copy-to-clipboard toast -->
+    <div id="copy-toast" role="status" aria-live="polite" class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 pointer-events-none z-[100] flex items-center gap-3 bg-slate-900 text-white text-sm font-medium px-5 py-3 rounded-full shadow-xl border border-white/10 transition-all duration-300">
+        <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        <span id="copy-toast-msg">Copied!</span>
+    </div>
+
+    <script>
+        // --- Copy email to clipboard with toast ---
+        (function () {
+            const toast = document.getElementById('copy-toast');
+            const msg = document.getElementById('copy-toast-msg');
+            let hideTimer = null;
+
+            function showToast(text) {
+                if (!toast || !msg) return;
+                msg.textContent = text;
+                clearTimeout(hideTimer);
+                toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                hideTimer = setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                }, 2400);
+            }
+
+            async function copyText(text) {
+                if (navigator.clipboard && window.isSecureContext) {
+                    try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+                }
+                // Fallback for older browsers / insecure contexts
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                let ok = false;
+                try { ok = document.execCommand('copy'); } catch (e) {}
+                document.body.removeChild(ta);
+                return ok;
+            }
+
+            document.addEventListener('click', async (event) => {
+                const btn = event.target.closest('.copy-email');
+                if (!btn) return;
+                event.preventDefault();
+                const email = btn.getAttribute('data-email') || '';
+                const isArabic = document.documentElement.getAttribute('lang') === 'ar';
+                const successText = isArabic
+                    ? (btn.getAttribute('data-toast-ar') || 'تم نسخ البريد الإلكتروني')
+                    : (btn.getAttribute('data-toast-en') || 'Email copied to clipboard');
+                const failureText = isArabic ? 'تعذّر النسخ — البريد: ' + email : "Couldn't copy — email: " + email;
+                const ok = await copyText(email);
+                showToast(ok ? successText : failureText);
+            });
+        })();
+    </script>
 
     <script>
         (function () {
