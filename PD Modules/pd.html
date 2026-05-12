@@ -111,6 +111,65 @@
         ::-webkit-scrollbar-track { background: #e0e7ff; }
         ::-webkit-scrollbar-thumb { background: #4338ca; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #3730a3; }
+
+        /* --- Module card redesign --- */
+        .pd-module .module-icon { transition: transform .3s ease; }
+        .pd-module:hover .module-icon { transform: scale(1.08) rotate(-2deg); }
+
+        /* --- Filter pills --- */
+        .pd-filter {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.8rem; font-weight: 600;
+            background: #ffffff;
+            border: 1px solid #e0e7ff;
+            color: #4338ca;
+            transition: all .2s ease;
+            cursor: pointer;
+        }
+        .pd-filter:hover { border-color: #818cf8; background: #eef2ff; }
+        .pd-filter.active {
+            background: linear-gradient(135deg, #4338ca, #6366f1);
+            border-color: transparent;
+            color: #ffffff;
+            box-shadow: 0 6px 18px -6px rgba(67, 56, 202, 0.55);
+        }
+        .pd-filter .pd-filter-count {
+            font-size: 0.65rem; font-weight: 800;
+            background: rgba(99, 102, 241, 0.12);
+            color: #4338ca;
+            padding: 0.1rem 0.45rem;
+            border-radius: 9999px;
+        }
+        .pd-filter.active .pd-filter-count {
+            background: rgba(255,255,255,0.25);
+            color: #ffffff;
+        }
+
+        /* --- Required-module pulse dot --- */
+        .required-dot {
+            position: relative;
+            display: inline-block;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+        .required-dot::after {
+            content: '';
+            position: absolute; inset: -4px;
+            border-radius: 50%;
+            background: rgba(239, 68, 68, 0.55);
+            animation: requiredPing 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        @keyframes requiredPing {
+            0%   { transform: scale(.6); opacity: .9; }
+            80%  { transform: scale(1.6); opacity: 0; }
+            100% { transform: scale(1.6); opacity: 0; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .required-dot::after, .pd-module:hover .module-icon { animation: none; transform: none; }
+        }
     </style>
 </head>
 <body class="bg-pd-pattern text-gray-800 min-h-screen flex flex-col">
@@ -158,131 +217,201 @@
                 <p id="pd-search-empty" class="hidden mt-4 text-center text-gray-500 text-sm">No modules match your search. Try a different keyword.</p>
             </div>
 
+            <!-- Category filter chips -->
+            <div id="pd-filters" class="flex flex-wrap justify-center gap-2 mb-8" role="tablist" aria-label="Module categories">
+                <button type="button" class="pd-filter active" data-filter="all" role="tab" aria-selected="true">
+                    <span>📚 All modules</span>
+                    <span class="pd-filter-count" data-count-for="all">7</span>
+                </button>
+                <button type="button" class="pd-filter" data-filter="required" role="tab" aria-selected="false">
+                    <span class="required-dot" aria-hidden="true"></span>
+                    <span>Required</span>
+                    <span class="pd-filter-count" data-count-for="required">2</span>
+                </button>
+                <button type="button" class="pd-filter" data-filter="ai-tools" role="tab" aria-selected="false">
+                    <span>🤖 AI Tools</span>
+                    <span class="pd-filter-count" data-count-for="ai-tools">3</span>
+                </button>
+                <button type="button" class="pd-filter" data-filter="pedagogy" role="tab" aria-selected="false">
+                    <span>🎯 Pedagogy</span>
+                    <span class="pd-filter-count" data-count-for="pedagogy">2</span>
+                </button>
+            </div>
+
             <!-- Modules Grid -->
             <section class="mb-16">
-                <div id="pd-modules-grid" class="grid md:grid-cols-2 gap-8 mb-12">
+                <div id="pd-modules-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 mb-12">
 
-                    <!-- Module: Success Criteria -->
-                    <div class="pd-module bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 border-l-4 border-indigo-600" data-keywords="objectives success criteria lesson planning goals cognitive tiered differentiation must watch">
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="inline-block bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full">New Module</span>
-                            <span class="text-indigo-600 text-xs uppercase font-bold tracking-wide">Must Watch</span>
+                    <!-- Module: AI Vision & Ethical Framework — REQUIRED -->
+                    <a href="ai-ethics-module.html" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="required" data-keywords="ai artificial intelligence ethics policy governance principles data protection academic integrity scaffolding approved tools vision framework required">
+                        <div class="h-1.5 bg-gradient-to-r from-emerald-500 to-emerald-700"></div>
+                        <div class="p-5 flex flex-col h-full">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="module-icon h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 flex items-center justify-center text-3xl shadow-sm">🛡️</div>
+                                <div class="flex flex-col items-end gap-1.5">
+                                    <span class="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest bg-red-50 text-red-700 border border-red-200 rounded-full px-2.5 py-1">
+                                        <span class="required-dot" aria-hidden="true"></span>
+                                        Required
+                                    </span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-700">Policy &amp; Ethics</span>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-gray-900 leading-tight mb-1.5">AI Vision &amp; Ethical Framework</h4>
+                            <p class="text-sm text-gray-600 leading-snug mb-3 flex-1">AISA's AI policy, the six guiding principles, staff expectations, data protection rules, and the AI scaffolding scale.</p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 mb-3 pt-3 border-t border-gray-100">
+                                <span class="inline-flex items-center gap-1">⏱ ~15 min</span>
+                                <span class="inline-flex items-center gap-1">✓ Knowledge checks</span>
+                            </div>
+                            <span class="block w-full text-center bg-emerald-600 group-hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold text-sm transition-colors">
+                                Start module →
+                            </span>
                         </div>
-                        <h4 class="text-xl font-bold mb-2 text-gray-900">Objectives &amp; Success Criteria</h4>
-                        <p class="text-gray-600 mb-4 text-sm">Master the art of crafting clear learning objectives and tiered success criteria.</p>
-                        <div class="text-sm text-gray-500 mb-4 border-t pt-3">
-                            <p class="flex items-center"><svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 5 min video + Resources</p>
-                        </div>
-                        <a href="#module-objectives" class="block w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition-colors shadow-md text-center font-medium">
-                            Start Module
-                        </a>
-                    </div>
+                    </a>
 
-                    <!-- Module: NotebookLM for Presentations -->
-                    <div class="pd-module bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 border-l-4 border-purple-600" data-keywords="notebooklm ai presentations powerpoint slides deck masterclass gemini lesson planning sandbox">
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="inline-block bg-purple-100 text-purple-800 text-xs font-bold px-3 py-1 rounded-full">New Module</span>
-                            <span class="text-purple-600 text-xs uppercase font-bold tracking-wide">Masterclass</span>
+                    <!-- Module: Return to School Emergency Protocol — REQUIRED -->
+                    <a href="return-to-school.html" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="required" data-keywords="return to school emergency protocol safety adek shelter drill safe zone reopening mandatory training wellbeing risk">
+                        <div class="h-1.5 bg-gradient-to-r from-red-500 to-red-700"></div>
+                        <div class="p-5 flex flex-col h-full">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="module-icon h-14 w-14 rounded-2xl bg-gradient-to-br from-red-50 to-red-100 border border-red-200 flex items-center justify-center text-3xl shadow-sm">🚨</div>
+                                <div class="flex flex-col items-end gap-1.5">
+                                    <span class="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest bg-red-50 text-red-700 border border-red-200 rounded-full px-2.5 py-1">
+                                        <span class="required-dot" aria-hidden="true"></span>
+                                        ADEK Mandatory
+                                    </span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-red-700">Safety</span>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-gray-900 leading-tight mb-1.5">Return to School — Emergency Protocol</h4>
+                            <p class="text-sm text-gray-600 leading-snug mb-3 flex-1">ADEK Safe Education Protocol — shelter-in-place, risk levels, safe zones, student wellbeing, and drill prep.</p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 mb-3 pt-3 border-t border-gray-100">
+                                <span class="inline-flex items-center gap-1">⏱ ~90 min</span>
+                                <span class="inline-flex items-center gap-1">📚 9 sections</span>
+                                <span class="inline-flex items-center gap-1">✓ Knowledge checks</span>
+                            </div>
+                            <span class="block w-full text-center bg-red-600 group-hover:bg-red-700 text-white py-2.5 rounded-xl font-bold text-sm transition-colors">
+                                Start module →
+                            </span>
                         </div>
-                        <h4 class="text-xl font-bold mb-2 text-gray-900">Crafting AI Presentations with NotebookLM</h4>
-                        <p class="text-gray-600 mb-4 text-sm">Transform your lesson planning by generating, resourcing, and refining world-class slide decks in minutes.</p>
-                        <div class="text-sm text-gray-500 mb-4 border-t pt-3">
-                            <p class="flex items-center"><svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 3 videos + Interactive Sandbox</p>
-                        </div>
-                        <a href="#module-notebooklm" class="block w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors shadow-md text-center font-medium">
-                            Start Module
-                        </a>
-                    </div>
+                    </a>
 
-                    <!-- Module: Google Workspace Studio -->
-                    <div class="pd-module bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 border-l-4 border-blue-600" data-keywords="google workspace studio flows skills starter steps no code automation ai agent gemini 3 trigger inbox briefing meeting prep brief permission slip filer attachment chat templates studio workspace google com">
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="inline-block bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">New Module</span>
-                            <span class="text-blue-600 text-xs uppercase font-bold tracking-wide">No-Code AI Agents</span>
+                    <!-- Module: Google Workspace Studio — AI TOOLS -->
+                    <a href="workspace-studio-module.html" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-tools" data-keywords="google workspace studio flows skills starter steps no code automation ai agent gemini 3 trigger inbox briefing meeting prep brief permission slip filer attachment chat templates studio workspace google com new">
+                        <div class="h-1.5 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
+                        <div class="p-5 flex flex-col h-full">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="module-icon h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-50 to-cyan-100 border border-blue-200 flex items-center justify-center text-3xl shadow-sm">⚡</div>
+                                <div class="flex flex-col items-end gap-1.5">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-widest bg-amber-100 text-amber-800 border border-amber-200 rounded-full px-2.5 py-1">✨ New</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-blue-700">No-Code AI Agents</span>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-gray-900 leading-tight mb-1.5">Google Workspace Studio</h4>
+                            <p class="text-sm text-gray-600 leading-snug mb-3 flex-1">No-code Gemini Flows that triage your inbox, prep you for meetings, file attachments, and dispatch action items.</p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 mb-3 pt-3 border-t border-gray-100">
+                                <span class="inline-flex items-center gap-1">⏱ ~25 min</span>
+                                <span class="inline-flex items-center gap-1">⚙️ 5 Flows</span>
+                                <span class="inline-flex items-center gap-1">✓ 2 checks</span>
+                            </div>
+                            <span class="block w-full text-center bg-blue-600 group-hover:bg-blue-700 text-white py-2.5 rounded-xl font-bold text-sm transition-colors">
+                                Start module →
+                            </span>
                         </div>
-                        <h4 class="text-xl font-bold mb-2 text-gray-900">Google Workspace Studio — Build AI Flows for Your Week</h4>
-                        <p class="text-gray-600 mb-4 text-sm">Build no-code Gemini-powered <strong>Flows</strong> that triage your inbox, prep you for meetings, file attachments, and dispatch action items — and turn your best ones into reusable <strong>Skills</strong>.</p>
-                        <div class="text-sm text-gray-500 mb-4 border-t pt-3">
-                            <p class="flex items-center"><svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ~25 min read + 5 Worked Flows + 2 Knowledge Checks</p>
-                        </div>
-                        <a href="workspace-studio-module.html" class="block w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-md text-center font-medium">
-                            Start Module
-                        </a>
-                    </div>
+                    </a>
 
-                    <!-- Module: Chalkie.ai Training -->
-                    <div class="pd-module bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 border-l-4 border-teal-600" data-keywords="chalkie ai teaching assistant lesson planning slides worksheets dok depth of knowledge differentiation success criteria magicschool gemini accountability tool training">
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="inline-block bg-teal-100 text-teal-800 text-xs font-bold px-3 py-1 rounded-full">New Module</span>
-                            <span class="text-teal-600 text-xs uppercase font-bold tracking-wide">Tool Training</span>
+                    <!-- Module: NotebookLM for Presentations — AI TOOLS -->
+                    <a href="#module-notebooklm" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-tools" data-keywords="notebooklm ai presentations powerpoint slides deck masterclass gemini lesson planning sandbox">
+                        <div class="h-1.5 bg-gradient-to-r from-purple-500 to-fuchsia-500"></div>
+                        <div class="p-5 flex flex-col h-full">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="module-icon h-14 w-14 rounded-2xl bg-gradient-to-br from-purple-50 to-fuchsia-100 border border-purple-200 flex items-center justify-center text-3xl shadow-sm">📓</div>
+                                <div class="flex flex-col items-end gap-1.5">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-widest bg-purple-100 text-purple-800 border border-purple-200 rounded-full px-2.5 py-1">Masterclass</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-purple-700">AI Presentations</span>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-gray-900 leading-tight mb-1.5">NotebookLM for Presentations</h4>
+                            <p class="text-sm text-gray-600 leading-snug mb-3 flex-1">Generate, resource, and refine world-class slide decks in minutes. Includes interactive sandbox.</p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 mb-3 pt-3 border-t border-gray-100">
+                                <span class="inline-flex items-center gap-1">🎬 3 videos</span>
+                                <span class="inline-flex items-center gap-1">🧪 Sandbox</span>
+                            </div>
+                            <span class="block w-full text-center bg-purple-600 group-hover:bg-purple-700 text-white py-2.5 rounded-xl font-bold text-sm transition-colors">
+                                Start module →
+                            </span>
                         </div>
-                        <h4 class="text-xl font-bold mb-2 text-gray-900">Chalkie.ai — A Practical Training Guide</h4>
-                        <p class="text-gray-600 mb-4 text-sm">Use Chalkie as a drafting partner — not a lesson designer. DOK watch-outs, the differentiated worksheet caveat, and a plan-then-prompt workflow.</p>
-                        <div class="text-sm text-gray-500 mb-4 border-t pt-3">
-                            <p class="flex items-center"><svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ~20 min read + 2 Knowledge Checks</p>
-                        </div>
-                        <a href="chalkie-module.html" class="block w-full bg-teal-600 text-white py-2 rounded-lg hover:bg-teal-700 transition-colors shadow-md text-center font-medium">
-                            Start Module
-                        </a>
-                    </div>
+                    </a>
 
-                    <!-- Module: AI Vision & Ethical Framework -->
-                    <div class="pd-module bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 border-l-4 border-emerald-600" data-keywords="ai artificial intelligence ethics policy governance principles data protection academic integrity scaffolding approved tools vision framework required">
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">New Module</span>
-                            <span class="text-emerald-600 text-xs uppercase font-bold tracking-wide">Required</span>
+                    <!-- Module: Chalkie.ai Training — AI TOOLS -->
+                    <a href="chalkie-module.html" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-tools" data-keywords="chalkie ai teaching assistant lesson planning slides worksheets dok depth of knowledge differentiation success criteria magicschool gemini accountability tool training">
+                        <div class="h-1.5 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
+                        <div class="p-5 flex flex-col h-full">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="module-icon h-14 w-14 rounded-2xl bg-gradient-to-br from-teal-50 to-emerald-100 border border-teal-200 flex items-center justify-center text-3xl shadow-sm">🧠</div>
+                                <div class="flex flex-col items-end gap-1.5">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-widest bg-teal-100 text-teal-800 border border-teal-200 rounded-full px-2.5 py-1">Tool Training</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-teal-700">Drafting Partner</span>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-gray-900 leading-tight mb-1.5">Chalkie.ai — Practical Training Guide</h4>
+                            <p class="text-sm text-gray-600 leading-snug mb-3 flex-1">Use Chalkie as a drafting partner — not a lesson designer. DOK watch-outs and the plan-then-prompt workflow.</p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 mb-3 pt-3 border-t border-gray-100">
+                                <span class="inline-flex items-center gap-1">⏱ ~20 min</span>
+                                <span class="inline-flex items-center gap-1">✓ 2 checks</span>
+                            </div>
+                            <span class="block w-full text-center bg-teal-600 group-hover:bg-teal-700 text-white py-2.5 rounded-xl font-bold text-sm transition-colors">
+                                Start module →
+                            </span>
                         </div>
-                        <h4 class="text-xl font-bold mb-2 text-gray-900">AI Vision &amp; Ethical Framework</h4>
-                        <p class="text-gray-600 mb-4 text-sm">Understand AISA's AI policy, the six guiding principles, staff expectations, data protection rules, and the AI scaffolding scale.</p>
-                        <div class="text-sm text-gray-500 mb-4 border-t pt-3">
-                            <p class="flex items-center"><svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ~15 min read + Knowledge Checks</p>
-                        </div>
-                        <a href="ai-ethics-module.html" class="block w-full bg-emerald-600 text-white py-2 rounded-lg hover:bg-emerald-700 transition-colors shadow-md text-center font-medium">
-                            Start Module
-                        </a>
-                    </div>
+                    </a>
 
-                    <!-- Module: AI & Assessment Design -->
-                    <div class="pd-module bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 border-l-4 border-fuchsia-600" data-keywords="ai assessment design academic integrity viva voce oral defense rubric aias scale perkins furze traffic light citation reflection prompting plagiarism cheat hallucination red team masterclass">
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="inline-block bg-fuchsia-100 text-fuchsia-800 text-xs font-bold px-3 py-1 rounded-full">New Module</span>
-                            <span class="text-fuchsia-600 text-xs uppercase font-bold tracking-wide">Masterclass</span>
+                    <!-- Module: Success Criteria — PEDAGOGY -->
+                    <a href="#module-objectives" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="pedagogy" data-keywords="objectives success criteria lesson planning goals cognitive tiered differentiation must watch">
+                        <div class="h-1.5 bg-gradient-to-r from-indigo-500 to-blue-600"></div>
+                        <div class="p-5 flex flex-col h-full">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="module-icon h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-50 to-blue-100 border border-indigo-200 flex items-center justify-center text-3xl shadow-sm">🎯</div>
+                                <div class="flex flex-col items-end gap-1.5">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-widest bg-indigo-100 text-indigo-800 border border-indigo-200 rounded-full px-2.5 py-1">Must Watch</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-700">Lesson Planning</span>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-gray-900 leading-tight mb-1.5">Objectives &amp; Success Criteria</h4>
+                            <p class="text-sm text-gray-600 leading-snug mb-3 flex-1">Master the art of crafting clear learning objectives and tiered success criteria.</p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 mb-3 pt-3 border-t border-gray-100">
+                                <span class="inline-flex items-center gap-1">🎬 5 min video</span>
+                                <span class="inline-flex items-center gap-1">📚 Resources</span>
+                            </div>
+                            <span class="block w-full text-center bg-indigo-600 group-hover:bg-indigo-700 text-white py-2.5 rounded-xl font-bold text-sm transition-colors">
+                                Start module →
+                            </span>
                         </div>
-                        <h4 class="text-xl font-bold mb-2 text-gray-900">AI &amp; Assessment Design</h4>
-                        <p class="text-gray-600 mb-4 text-sm">AI-proof your tasks, integrate AI into assessments, and reform grading with oral defense (viva voce) and process-based evaluation.</p>
-                        <div class="text-sm text-gray-500 mb-4 border-t pt-3">
-                            <p class="flex items-center"><svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ~25 min + 6 units + Scenario Quiz + Planner</p>
-                        </div>
-                        <a href="ai-and-assessment.html" class="block w-full bg-fuchsia-600 text-white py-2 rounded-lg hover:bg-fuchsia-700 transition-colors shadow-md text-center font-medium">
-                            Start Module
-                        </a>
-                    </div>
+                    </a>
 
-                    <!-- Module: Return to School Emergency Protocol -->
-                    <div class="pd-module bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 border-l-4 border-red-600" data-featured="false" data-keywords="return to school emergency protocol safety adek shelter drill safe zone reopening mandatory training wellbeing risk">
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="inline-block bg-red-100 text-red-800 text-xs font-bold px-3 py-1 rounded-full">ADEK Mandatory</span>
-                            <span class="text-red-600 text-xs uppercase font-bold tracking-wide">Required</span>
+                    <!-- Module: AI & Assessment Design — PEDAGOGY -->
+                    <a href="ai-and-assessment.html" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="pedagogy" data-keywords="ai assessment design academic integrity viva voce oral defense rubric aias scale perkins furze traffic light citation reflection prompting plagiarism cheat hallucination red team masterclass">
+                        <div class="h-1.5 bg-gradient-to-r from-fuchsia-500 to-pink-500"></div>
+                        <div class="p-5 flex flex-col h-full">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="module-icon h-14 w-14 rounded-2xl bg-gradient-to-br from-fuchsia-50 to-pink-100 border border-fuchsia-200 flex items-center justify-center text-3xl shadow-sm">📝</div>
+                                <div class="flex flex-col items-end gap-1.5">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-widest bg-fuchsia-100 text-fuchsia-800 border border-fuchsia-200 rounded-full px-2.5 py-1">Masterclass</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-fuchsia-700">Assessment</span>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-gray-900 leading-tight mb-1.5">AI &amp; Assessment Design</h4>
+                            <p class="text-sm text-gray-600 leading-snug mb-3 flex-1">AI-proof your tasks, integrate AI into assessments, and reform grading with oral defense and process-based evaluation.</p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 mb-3 pt-3 border-t border-gray-100">
+                                <span class="inline-flex items-center gap-1">⏱ ~25 min</span>
+                                <span class="inline-flex items-center gap-1">📚 6 units</span>
+                                <span class="inline-flex items-center gap-1">✓ Quiz + Planner</span>
+                            </div>
+                            <span class="block w-full text-center bg-fuchsia-600 group-hover:bg-fuchsia-700 text-white py-2.5 rounded-xl font-bold text-sm transition-colors">
+                                Start module →
+                            </span>
                         </div>
-                        <h4 class="text-xl font-bold mb-2 text-gray-900">Return to School: Emergency Protocol</h4>
-                        <p class="text-gray-600 mb-4 text-sm">ADEK Safe Education Protocol training — shelter-in-place procedures, risk levels, safe zones, student wellbeing, and drill preparation.</p>
-                        <div class="text-sm text-gray-500 mb-4 border-t pt-3">
-                            <p class="flex items-center"><svg class="w-4 h-4 mr-1 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ~90 min + 9 Modules + Knowledge Checks</p>
-                        </div>
-                        <a href="return-to-school.html" class="block w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors shadow-md text-center font-medium">
-                            Start Module
-                        </a>
-                    </div>
+                    </a>
 
-                </div>
-
-                <!-- View more / less toggle -->
-                <div class="flex justify-center mb-12">
-                    <button id="pd-view-toggle" type="button" class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-white border border-indigo-200 text-indigo-800 font-semibold text-sm shadow-sm hover:bg-indigo-50 hover:border-indigo-400 transition-all">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                        <span id="pd-view-toggle-label">View all modules</span>
-                        <span id="pd-view-toggle-count" class="text-xs font-bold text-indigo-500 bg-indigo-50 border border-indigo-100 rounded-full px-2 py-0.5"></span>
-                    </button>
                 </div>
 
             </section>
@@ -821,55 +950,49 @@
             const clearBtn = document.getElementById('pd-search-clear');
             const emptyMsg = document.getElementById('pd-search-empty');
             const modules = document.querySelectorAll('.pd-module');
+            const filterBtns = document.querySelectorAll('.pd-filter');
             if (!input) return;
 
-            const viewToggle = document.getElementById('pd-view-toggle');
-            const viewToggleLabel = document.getElementById('pd-view-toggle-label');
-            const viewToggleCount = document.getElementById('pd-view-toggle-count');
-            const viewToggleIcon = viewToggle ? viewToggle.querySelector('svg') : null;
-            const nonFeaturedCount = Array.from(modules).filter(c => c.getAttribute('data-featured') === 'false').length;
-            let showAll = false;
+            let activeFilter = 'all';
 
-            function applyFilter(term) {
-                const q = term.trim().toLowerCase();
-                const searching = q.length > 0;
+            function applyFilter() {
+                const q = input.value.trim().toLowerCase();
                 let visible = 0;
                 modules.forEach(card => {
                     const keywords = (card.getAttribute('data-keywords') || '').toLowerCase();
                     const text = card.innerText.toLowerCase();
+                    const cat = (card.getAttribute('data-category') || '').toLowerCase();
                     const textMatch = !q || text.includes(q) || keywords.includes(q);
-                    const isFeatured = card.getAttribute('data-featured') !== 'false';
-                    const allowedByView = searching || showAll || isFeatured;
-                    const show = textMatch && allowedByView;
+                    const catMatch = activeFilter === 'all' || cat === activeFilter;
+                    const show = textMatch && catMatch;
                     card.style.display = show ? '' : 'none';
                     if (show) visible++;
                 });
                 emptyMsg.classList.toggle('hidden', visible !== 0);
                 clearBtn.classList.toggle('hidden', q.length === 0);
                 clearBtn.classList.toggle('flex', q.length > 0);
-                if (viewToggle) {
-                    viewToggle.classList.toggle('hidden', searching || nonFeaturedCount === 0);
-                    if (viewToggleLabel) viewToggleLabel.textContent = showAll ? 'Show featured only' : 'View all modules';
-                    if (viewToggleCount) viewToggleCount.textContent = showAll ? '' : '+' + nonFeaturedCount;
-                    if (viewToggleIcon) viewToggleIcon.style.transform = showAll ? 'rotate(180deg)' : '';
-                }
             }
 
-            if (viewToggle) {
-                viewToggle.addEventListener('click', () => {
-                    showAll = !showAll;
-                    applyFilter(input.value);
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    activeFilter = btn.getAttribute('data-filter') || 'all';
+                    filterBtns.forEach(b => {
+                        const isActive = b === btn;
+                        b.classList.toggle('active', isActive);
+                        b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                    });
+                    applyFilter();
                 });
-            }
+            });
 
-            input.addEventListener('input', e => applyFilter(e.target.value));
+            input.addEventListener('input', applyFilter);
             clearBtn.addEventListener('click', () => {
                 input.value = '';
-                applyFilter('');
+                applyFilter();
                 input.focus();
             });
 
-            applyFilter('');
+            applyFilter();
 
             document.addEventListener('keydown', e => {
                 if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
@@ -878,7 +1001,7 @@
                 }
                 if (e.key === 'Escape' && document.activeElement === input) {
                     input.value = '';
-                    applyFilter('');
+                    applyFilter();
                 }
             });
         })();
