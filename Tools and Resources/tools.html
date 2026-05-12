@@ -73,7 +73,7 @@
             border-radius: 1.25rem;
             padding: 1.5rem 1.5rem 2rem;
         }
-        /* Quick-jump pill styling */
+        /* Quick-jump pill styling (subtler — for navigation only) */
         .quickjump-pill {
             display: inline-flex;
             align-items: center;
@@ -92,9 +92,236 @@
         .quickjump-pill:hover { background: #f0fdfa; border-color: #5eead4; color: #0f766e; transform: translateY(-1px); }
         .quickjump-pill.is-gems { border-color: #ddd6fe; color: #6b21a8; }
         .quickjump-pill.is-gems:hover { background: #faf5ff; border-color: #c4b5fd; color: #5b21b6; }
-        /* Hide scrollbar on horizontal pill nav for clean look */
         .quickjump-bar::-webkit-scrollbar { display: none; }
         .quickjump-bar { scrollbar-width: none; }
+
+        /* ============== Revamped filter command bar ============== */
+        .filter-command-bar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid #ccfbf1;
+            border-radius: 1.5rem;
+            box-shadow: 0 24px 60px -28px rgba(15, 118, 110, 0.35), 0 2px 6px -3px rgba(15, 118, 110, 0.12);
+            padding: 1.25rem 1.25rem 1.1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .filter-command-bar::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #14b8a6 0%, #0f766e 50%, #a855f7 100%);
+            opacity: 0.85;
+        }
+        @media (min-width: 768px) {
+            .filter-command-bar { padding: 1.5rem 1.75rem 1.25rem; }
+        }
+        .filter-search-wrap { position: relative; }
+        .filter-search-input {
+            width: 100%;
+            padding: 1rem 6rem 1rem 3.25rem;
+            border-radius: 1rem;
+            border: 1.5px solid #e2e8f0;
+            background: #ffffff;
+            color: #0f172a;
+            font-size: 0.9375rem;
+            font-weight: 500;
+            box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
+            transition: all 0.2s ease;
+        }
+        .filter-search-input::placeholder { color: #94a3b8; font-weight: 400; }
+        .filter-search-input:focus {
+            outline: none;
+            border-color: #14b8a6;
+            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15), inset 0 1px 2px rgba(15, 23, 42, 0.04);
+        }
+        .filter-search-icon {
+            position: absolute;
+            left: 1.125rem; top: 50%;
+            transform: translateY(-50%);
+            color: #14b8a6;
+            pointer-events: none;
+        }
+        .filter-search-actions {
+            position: absolute;
+            right: 0.625rem; top: 50%;
+            transform: translateY(-50%);
+            display: flex; align-items: center; gap: 0.375rem;
+        }
+        .filter-kbd {
+            display: inline-flex; align-items: center;
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 0.6875rem;
+            font-weight: 700;
+            background: #f1f5f9;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+            border-bottom-width: 2px;
+            border-radius: 0.375rem;
+            padding: 0.125rem 0.4rem;
+            line-height: 1;
+        }
+        @media (max-width: 640px) { .filter-kbd { display: none; } }
+        .filter-search-clear {
+            display: none;
+            align-items: center; justify-content: center;
+            width: 1.875rem; height: 1.875rem;
+            border-radius: 9999px;
+            color: #94a3b8;
+            transition: all 0.15s ease;
+        }
+        .filter-search-clear.is-visible { display: inline-flex; }
+        .filter-search-clear:hover { background: #f1f5f9; color: #0f766e; }
+
+        .filter-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        .filter-row-label {
+            display: inline-flex; align-items: center;
+            font-size: 0.6875rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: #134e4a;
+            opacity: 0.7;
+            margin-right: 0.125rem;
+            flex-shrink: 0;
+        }
+        .filter-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.45rem 0.875rem;
+            border-radius: 9999px;
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            color: #334155;
+            font-size: 0.8125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.18s ease;
+            user-select: none;
+            white-space: nowrap;
+            line-height: 1.2;
+        }
+        .filter-chip:hover {
+            background: #f0fdfa;
+            border-color: #5eead4;
+            color: #0f766e;
+            transform: translateY(-1px);
+        }
+        .filter-chip.is-active {
+            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+            border-color: transparent;
+            color: #ffffff;
+            box-shadow: 0 8px 18px -8px rgba(15, 118, 110, 0.6);
+        }
+        .filter-chip.is-active:hover { transform: translateY(-1px); }
+        .filter-chip[data-type-filter="gem"].is-active {
+            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+            box-shadow: 0 8px 18px -8px rgba(124, 58, 237, 0.6);
+        }
+        .chip-count {
+            display: inline-flex; align-items: center; justify-content: center;
+            min-width: 1.4rem;
+            padding: 0.05rem 0.4rem;
+            background: #f1f5f9;
+            color: #475569;
+            font-size: 0.65rem;
+            font-weight: 800;
+            border-radius: 9999px;
+            line-height: 1.3;
+        }
+        .filter-chip:hover .chip-count { background: #ccfbf1; color: #0f766e; }
+        .filter-chip.is-active .chip-count {
+            background: rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+        }
+        .filter-chip[data-type-filter="gem"]:not(.is-active) .chip-count { background: #f5f3ff; color: #6b21a8; }
+
+        /* Active filter strip */
+        .active-filter-strip {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            flex-wrap: wrap;
+            margin-top: 0.875rem;
+            padding: 0.625rem 0.875rem;
+            background: linear-gradient(90deg, #f0fdfa 0%, #ecfeff 100%);
+            border: 1px solid #99f6e4;
+            border-radius: 0.875rem;
+            font-size: 0.8125rem;
+        }
+        .results-count {
+            font-weight: 700;
+            color: #134e4a;
+            white-space: nowrap;
+        }
+        .results-count .num {
+            display: inline-block;
+            color: #0f766e;
+            background: rgba(15, 118, 110, 0.1);
+            border-radius: 0.375rem;
+            padding: 0.05rem 0.45rem;
+            margin: 0 0.1rem;
+            font-variant-numeric: tabular-nums;
+        }
+        .active-filter-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            background: #ffffff;
+            border: 1px solid #5eead4;
+            color: #115e59;
+            border-radius: 9999px;
+            padding: 0.2rem 0.35rem 0.2rem 0.7rem;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+        .active-filter-tag .tag-label-key { color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 0.625rem; letter-spacing: 0.06em; margin-right: 0.15rem; }
+        .active-filter-tag button {
+            display: inline-flex; align-items: center; justify-content: center;
+            width: 1.125rem; height: 1.125rem;
+            border-radius: 9999px;
+            background: #ccfbf1;
+            color: #0f766e;
+            font-size: 0.875rem;
+            font-weight: 700;
+            line-height: 1;
+            transition: all 0.15s ease;
+        }
+        .active-filter-tag button:hover { background: #f87171; color: #ffffff; transform: rotate(90deg); }
+        .clear-all-btn {
+            margin-left: auto;
+            display: inline-flex; align-items: center; gap: 0.35rem;
+            color: #0f766e;
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            padding: 0.4rem 0.7rem;
+            border-radius: 0.5rem;
+            transition: all 0.15s ease;
+        }
+        .clear-all-btn:hover { background: #99f6e4; color: #115e59; }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            background: #ffffff;
+            border: 2px dashed #ccfbf1;
+            border-radius: 1.25rem;
+            color: #475569;
+        }
+        .empty-state .empty-emoji { font-size: 3rem; margin-bottom: 0.5rem; line-height: 1; }
+        .empty-state h3 { font-size: 1.125rem; font-weight: 800; color: #134e4a; margin-bottom: 0.375rem; }
+        .empty-state p { font-size: 0.875rem; max-width: 28rem; margin: 0 auto; }
     </style>
 </head>
 <body class="bg-teal-50 text-gray-800 min-h-screen flex flex-col">
@@ -132,27 +359,56 @@
         <main class="flex-grow">
             <div class="container mx-auto px-6 py-14">
 
-                <!-- Search -->
-                <div class="max-w-2xl mx-auto mb-10">
+                <!-- Filter command bar -->
+                <div class="filter-command-bar max-w-4xl mx-auto mb-8">
                     <label for="tools-search" class="sr-only">Search tools</label>
-                    <div class="relative">
-                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        </div>
+                    <div class="filter-search-wrap">
+                        <svg class="filter-search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                         <input type="text" id="tools-search"
-                               class="w-full pl-12 pr-12 py-4 rounded-full border border-teal-200 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 text-gray-800 placeholder-gray-400"
+                               class="filter-search-input"
                                placeholder="Search tools by name or keyword…"
-                               autocomplete="off">
-                        <button type="button" id="tools-search-clear" class="hidden absolute inset-y-0 right-0 pr-4 items-center text-gray-400 hover:text-teal-600" aria-label="Clear search">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                               autocomplete="off"
+                               aria-describedby="filter-result-summary">
+                        <div class="filter-search-actions">
+                            <kbd class="filter-kbd" aria-hidden="true">⌘K</kbd>
+                            <button type="button" id="tools-search-clear" class="filter-search-clear" aria-label="Clear search">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="filter-row" role="group" aria-label="Filter tools by type">
+                        <span class="filter-row-label">Filter</span>
+                        <button type="button" class="filter-chip is-active" data-type-filter="all" aria-pressed="true">All <span class="chip-count" data-count="all">0</span></button>
+                        <button type="button" class="filter-chip" data-type-filter="gem" aria-pressed="false"><span aria-hidden="true">✨</span> Gems <span class="chip-count" data-count="gem">0</span></button>
+                        <button type="button" class="filter-chip" data-type-filter="web" aria-pressed="false"><span aria-hidden="true">🌐</span> Web Tools <span class="chip-count" data-count="web">0</span></button>
+                        <button type="button" class="filter-chip" data-type-filter="module" aria-pressed="false"><span aria-hidden="true">📦</span> Modules <span class="chip-count" data-count="module">0</span></button>
+                        <button type="button" class="filter-chip" data-type-filter="login" aria-pressed="false"><span aria-hidden="true">🔐</span> Login Required <span class="chip-count" data-count="login">0</span></button>
+                    </div>
+
+                    <div id="active-filter-strip" class="active-filter-strip hidden" role="status" aria-live="polite">
+                        <span class="results-count" id="filter-result-summary">
+                            Showing <span class="num" id="filter-result-count">0</span> of <span class="num" id="filter-total-count">0</span> tools
+                        </span>
+                        <div id="active-filter-tags" class="flex flex-wrap items-center gap-1.5"></div>
+                        <button type="button" id="clear-all-filters" class="clear-all-btn">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                            Clear all
                         </button>
                     </div>
-                    <p id="tools-search-empty" class="hidden mt-4 text-center text-gray-500 text-sm">No tools match your search. Try a different keyword.</p>
+                </div>
+
+                <!-- Empty state (shown when no results) -->
+                <div id="tools-search-empty" class="empty-state hidden max-w-xl mx-auto mb-10">
+                    <div class="empty-emoji" aria-hidden="true">🔎</div>
+                    <h3 class="font-heading">No tools match your filters</h3>
+                    <p>Try a different keyword or remove a filter to see more results.</p>
                 </div>
 
                 <!-- Sticky quick-jump category nav -->
                 <div id="quickjump" class="sticky top-[68px] md:top-[76px] z-30 -mx-6 px-6 py-3 bg-teal-50/90 backdrop-blur-md border-y border-teal-100 mb-10">
-                    <nav class="quickjump-bar flex gap-2 overflow-x-auto" aria-label="Jump to category">
+                    <nav class="quickjump-bar flex gap-2 overflow-x-auto items-center" aria-label="Jump to category">
+                        <span class="text-[10px] font-extrabold uppercase tracking-[0.12em] text-teal-900/60 mr-1 flex-shrink-0">Jump to</span>
                         <a href="#cat-gems" class="quickjump-pill is-gems"><span aria-hidden="true">✨</span> Gemini Gems</a>
                         <a href="#cat-ai" class="quickjump-pill"><span aria-hidden="true">🪄</span> AI Assistants</a>
                         <a href="#cat-interactive" class="quickjump-pill"><span aria-hidden="true">🤖</span> Interactive Learning</a>
@@ -175,7 +431,7 @@
                         <p class="text-sm text-violet-900/70 mb-5 -mt-2 max-w-3xl">Purpose-built Gemini Gems crafted for AISA educators. Each one packages an expert workflow into a single click — open the Gem in Gemini and follow the prompts.</p>
                         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                            <a href="https://gemini.google.com/gem/11QD4AkTJjpXVgEGw8SJ74nq99ntDfv8V?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="edusim simulation ai agent coding generator interactive experiences gemini gem">
+                            <a href="https://gemini.google.com/gem/11QD4AkTJjpXVgEGw8SJ74nq99ntDfv8V?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-type="gem" data-keywords="edusim simulation ai agent coding generator interactive experiences gemini gem">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-violet-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-gem">Gem</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
@@ -187,7 +443,7 @@
                                 </div>
                             </a>
 
-                            <a href="https://gemini.google.com/gem/12iqOP-kkxq4Cs7QGoMfGN3Ga7h2tQgD4?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="ib exam format generator pdf gemini gem international baccalaureate paper test prep mock practice diploma">
+                            <a href="https://gemini.google.com/gem/12iqOP-kkxq4Cs7QGoMfGN3Ga7h2tQgD4?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-type="gem" data-keywords="ib exam format generator pdf gemini gem international baccalaureate paper test prep mock practice diploma">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-violet-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-gem">Gem</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
@@ -199,7 +455,7 @@
                                 </div>
                             </a>
 
-                            <a href="https://gemini.google.com/gem/1UC0q8U9gJpQ1nr9uhWlFaUah3QL2EKUc?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="scope sequence auditor curriculum review report pdf gemini gem teachers audit alignment standards mapping vertical horizontal coherence">
+                            <a href="https://gemini.google.com/gem/1UC0q8U9gJpQ1nr9uhWlFaUah3QL2EKUc?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-type="gem" data-keywords="scope sequence auditor curriculum review report pdf gemini gem teachers audit alignment standards mapping vertical horizontal coherence">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-violet-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-gem">Gem</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
@@ -223,7 +479,7 @@
                         </div>
                         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                            <a href="https://www.magicschool.ai/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="magic school ai lesson planning tools generator teachers">
+                            <a href="https://www.magicschool.ai/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-type="web" data-keywords="magic school ai lesson planning tools generator teachers">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-green-50 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-web">Web Tool</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
@@ -235,7 +491,7 @@
                                 </div>
                             </a>
 
-                            <a href="https://notebooklm.google/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="notebooklm research ai study notes google">
+                            <a href="https://notebooklm.google/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-type="web" data-keywords="notebooklm research ai study notes google">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-blue-50 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-web">Web Tool</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
@@ -247,7 +503,7 @@
                                 </div>
                             </a>
 
-                            <a href="https://gemini.google/overview/storybook/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="gemini storybooks ai reading english">
+                            <a href="https://gemini.google/overview/storybook/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-type="web" data-keywords="gemini storybooks ai reading english">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-purple-50 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-web">Web Tool</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
@@ -259,7 +515,7 @@
                                 </div>
                             </a>
 
-                            <div class="block tool-item" data-keywords="chalkie ai teacher assistant lesson planning teaching training module dok depth of knowledge differentiation success criteria">
+                            <div class="block tool-item" data-type="web" data-keywords="chalkie ai teacher assistant lesson planning teaching training module dok depth of knowledge differentiation success criteria">
                                 <div class="relative bg-white rounded-lg shadow-lg card-hover transition-all duration-300 h-full border border-teal-100 flex flex-col items-stretch overflow-hidden">
                                     <span class="type-badge type-badge-web">Web Tool</span>
                                     <a href="https://chalkie.ai" target="_blank" rel="noopener noreferrer" class="flex-grow p-6 flex flex-col items-center justify-start text-center hover:bg-teal-50/40 transition-colors">
@@ -296,7 +552,7 @@
                         </div>
                         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                            <a href="https://gemini.google.com/gem/11QD4AkTJjpXVgEGw8SJ74nq99ntDfv8V?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-canonical="false" data-keywords="edusim simulation ai agent coding generator interactive experiences gemini gem">
+                            <a href="https://gemini.google.com/gem/11QD4AkTJjpXVgEGw8SJ74nq99ntDfv8V?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-canonical="false" data-type="gem" data-keywords="edusim simulation ai agent coding generator interactive experiences gemini gem">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-yellow-100">
                                     <span class="type-badge type-badge-gem">Gem</span>
                                     <div class="text-4xl text-blue-600 mb-3">🤖</div>
@@ -305,7 +561,7 @@
                                 </div>
                             </a>
 
-                            <a href="https://app.magicschool.ai/magic-student/rooms?room-sharing-id=a86b4fad-e4a2-45d6-a23e-b463082d27a7" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="pbl project based learning chatbot ai magicschool student room inquiry">
+                            <a href="https://app.magicschool.ai/magic-student/rooms?room-sharing-id=a86b4fad-e4a2-45d6-a23e-b463082d27a7" target="_blank" rel="noopener noreferrer" class="block tool-item" data-type="web" data-keywords="pbl project based learning chatbot ai magicschool student room inquiry">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-orange-100">
                                     <span class="type-badge type-badge-web">Web Tool</span>
                                     <div class="text-4xl mb-3">💬</div>
@@ -326,7 +582,7 @@
                         </div>
                         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                            <a href="#module-map" class="block tool-item" data-keywords="map testing growth rit score assessment adaptive nwea">
+                            <a href="#module-map" class="block tool-item" data-type="module" data-keywords="map testing growth rit score assessment adaptive nwea">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-pink-100 flex flex-col items-center justify-center">
                                     <span class="type-badge type-badge-module">Module</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
@@ -338,7 +594,7 @@
                                 </div>
                             </a>
 
-                            <a href="https://brandonabaki-design.github.io/PIRLS-pal/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-keywords="pirls test reading literacy pal students parents teachers expectations">
+                            <a href="https://brandonabaki-design.github.io/PIRLS-pal/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-type="web" data-keywords="pirls test reading literacy pal students parents teachers expectations">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-indigo-100">
                                     <span class="type-badge type-badge-web">Web Tool</span>
                                     <div class="text-4xl mb-3">📚</div>
@@ -347,7 +603,7 @@
                                 </div>
                             </a>
 
-                            <a href="https://gemini.google.com/gem/12iqOP-kkxq4Cs7QGoMfGN3Ga7h2tQgD4?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-canonical="false" data-keywords="ib exam format generator pdf gemini gem international baccalaureate paper test prep mock practice diploma">
+                            <a href="https://gemini.google.com/gem/12iqOP-kkxq4Cs7QGoMfGN3Ga7h2tQgD4?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-canonical="false" data-type="gem" data-keywords="ib exam format generator pdf gemini gem international baccalaureate paper test prep mock practice diploma">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-blue-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-gem">Gem</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
@@ -371,7 +627,7 @@
                         </div>
                         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
 
-                            <a href="#module-twinkl" class="block tool-item" data-keywords="twinkl resources worksheets lesson plans assessment materials uae teachers login">
+                            <a href="#module-twinkl" class="block tool-item" data-type="login" data-keywords="twinkl resources worksheets lesson plans assessment materials uae teachers login">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-pink-200">
                                     <span class="type-badge type-badge-login">Login</span>
                                     <div class="text-4xl mb-3">⭐</div>
@@ -380,7 +636,7 @@
                                 </div>
                             </a>
 
-                            <a href="https://gemini.google.com/gem/1UC0q8U9gJpQ1nr9uhWlFaUah3QL2EKUc?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-canonical="false" data-keywords="scope sequence auditor curriculum review report pdf gemini gem teachers audit alignment standards mapping vertical horizontal coherence">
+                            <a href="https://gemini.google.com/gem/1UC0q8U9gJpQ1nr9uhWlFaUah3QL2EKUc?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-canonical="false" data-type="gem" data-keywords="scope sequence auditor curriculum review report pdf gemini gem teachers audit alignment standards mapping vertical horizontal coherence">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-emerald-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-gem">Gem</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
@@ -591,21 +847,67 @@
             window.addEventListener('hashchange', render);
             window.addEventListener('load', render);
 
-            // --- Search: filter tool cards by keywords/text ---
+            // --- Combined search + type filter ---
             const input = document.getElementById('tools-search');
             const clearBtn = document.getElementById('tools-search-clear');
             const emptyMsg = document.getElementById('tools-search-empty');
             const categories = document.querySelectorAll('.tool-category');
             const searchGrid = document.getElementById('tools-search-grid');
             const items = document.querySelectorAll('.tool-item');
+            const typeButtons = document.querySelectorAll('[data-type-filter]');
+            const stripEl = document.getElementById('active-filter-strip');
+            const tagsEl = document.getElementById('active-filter-tags');
+            const resultCountEl = document.getElementById('filter-result-count');
+            const totalCountEl = document.getElementById('filter-total-count');
+            const clearAllBtn = document.getElementById('clear-all-filters');
+            const quickjumpBar = document.getElementById('quickjump');
 
-            // Remember each card's home so we can put it back when search clears.
+            // Remember each card's home so we can put it back when filters clear.
             items.forEach(card => { card._homeParent = card.parentElement; });
 
-            function applyFilter(term) {
-                const q = term.trim().toLowerCase();
+            // Compute canonical counts (skip duplicates flagged data-canonical="false").
+            const TYPE_LABELS = { gem: '✨ Gems', web: '🌐 Web Tools', module: '📦 Modules', login: '🔐 Login Required' };
+            const counts = { all: 0, gem: 0, web: 0, module: 0, login: 0 };
+            items.forEach(card => {
+                if (card.getAttribute('data-canonical') === 'false') return;
+                counts.all++;
+                const t = card.getAttribute('data-type');
+                if (counts[t] !== undefined) counts[t]++;
+            });
+            Object.keys(counts).forEach(k => {
+                const el = document.querySelector(`[data-count="${k}"]`);
+                if (el) el.textContent = counts[k];
+            });
+            if (totalCountEl) totalCountEl.textContent = counts.all;
 
-                if (!q) {
+            let activeType = 'all';
+            let activeSearch = '';
+
+            function escapeHtml(s) {
+                return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+            }
+
+            function renderActiveFilterTags() {
+                tagsEl.innerHTML = '';
+                if (activeType !== 'all') {
+                    tagsEl.insertAdjacentHTML('beforeend',
+                        `<span class="active-filter-tag"><span class="tag-label-key">Type</span> ${TYPE_LABELS[activeType] || activeType}<button type="button" data-remove-filter="type" aria-label="Remove type filter">&times;</button></span>`);
+                }
+                if (activeSearch) {
+                    tagsEl.insertAdjacentHTML('beforeend',
+                        `<span class="active-filter-tag"><span class="tag-label-key">Search</span> &ldquo;${escapeHtml(activeSearch)}&rdquo;<button type="button" data-remove-filter="search" aria-label="Remove search">&times;</button></span>`);
+                }
+            }
+
+            function applyAllFilters() {
+                const q = activeSearch.trim().toLowerCase();
+                const t = activeType;
+                const isFiltered = q !== '' || t !== 'all';
+
+                // Toggle clear-search button
+                if (q) clearBtn.classList.add('is-visible'); else clearBtn.classList.remove('is-visible');
+
+                if (!isFiltered) {
                     // Restore categorized view
                     items.forEach(card => {
                         card.style.display = '';
@@ -614,21 +916,15 @@
                         }
                     });
                     categories.forEach(sec => sec.classList.remove('hidden'));
-                    const quickjumpBar = document.getElementById('quickjump');
                     if (quickjumpBar) quickjumpBar.classList.remove('hidden');
                     searchGrid.style.display = 'none';
                     emptyMsg.classList.add('hidden');
-                    clearBtn.classList.add('hidden');
-                    clearBtn.classList.remove('flex');
+                    stripEl.classList.add('hidden');
                     return;
                 }
 
-                // Flatten into the search grid, showing only matching cards.
-                // Skip cards explicitly marked as duplicates (data-canonical="false")
-                // so Gems featured in multiple sections only appear once in results.
+                // Flatten matching canonical cards into the search grid
                 categories.forEach(sec => sec.classList.add('hidden'));
-                // Also hide the sticky quick-jump bar while searching
-                const quickjumpBar = document.getElementById('quickjump');
                 if (quickjumpBar) quickjumpBar.classList.add('hidden');
                 searchGrid.style.display = '';
                 let visible = 0;
@@ -637,10 +933,10 @@
                         card.style.display = 'none';
                         return;
                     }
-                    const keywords = (card.getAttribute('data-keywords') || '').toLowerCase();
-                    const text = card.innerText.toLowerCase();
-                    const match = text.includes(q) || keywords.includes(q);
-                    if (match) {
+                    const matchesType = (t === 'all') || (card.getAttribute('data-type') === t);
+                    const text = (card.innerText + ' ' + (card.getAttribute('data-keywords') || '')).toLowerCase();
+                    const matchesSearch = !q || text.includes(q);
+                    if (matchesType && matchesSearch) {
                         card.style.display = '';
                         if (card.parentElement !== searchGrid) searchGrid.appendChild(card);
                         visible++;
@@ -648,16 +944,85 @@
                         card.style.display = 'none';
                     }
                 });
+
+                resultCountEl.textContent = visible;
+                stripEl.classList.remove('hidden');
+                renderActiveFilterTags();
                 emptyMsg.classList.toggle('hidden', visible !== 0);
-                clearBtn.classList.remove('hidden');
-                clearBtn.classList.add('flex');
             }
+
+            // Type filter buttons
+            typeButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    activeType = btn.getAttribute('data-type-filter');
+                    typeButtons.forEach(b => {
+                        const isActive = b === btn;
+                        b.classList.toggle('is-active', isActive);
+                        b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+                    });
+                    applyAllFilters();
+                });
+            });
+
+            // Search input
             if (input) {
-                input.addEventListener('input', e => applyFilter(e.target.value));
-                clearBtn.addEventListener('click', () => { input.value = ''; applyFilter(''); input.focus(); });
+                input.addEventListener('input', e => {
+                    activeSearch = e.target.value;
+                    applyAllFilters();
+                });
+                clearBtn.addEventListener('click', () => {
+                    input.value = '';
+                    activeSearch = '';
+                    applyAllFilters();
+                    input.focus();
+                });
                 document.addEventListener('keydown', e => {
-                    if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); input.focus(); }
-                    if (e.key === 'Escape' && document.activeElement === input) { input.value = ''; applyFilter(''); }
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                        e.preventDefault();
+                        input.focus();
+                        input.select();
+                    }
+                    if (e.key === 'Escape' && document.activeElement === input) {
+                        input.value = '';
+                        activeSearch = '';
+                        applyAllFilters();
+                    }
+                });
+            }
+
+            // Active-filter tag removal
+            if (tagsEl) {
+                tagsEl.addEventListener('click', e => {
+                    const btn = e.target.closest('[data-remove-filter]');
+                    if (!btn) return;
+                    const kind = btn.getAttribute('data-remove-filter');
+                    if (kind === 'type') {
+                        activeType = 'all';
+                        typeButtons.forEach(b => {
+                            const isAll = b.getAttribute('data-type-filter') === 'all';
+                            b.classList.toggle('is-active', isAll);
+                            b.setAttribute('aria-pressed', isAll ? 'true' : 'false');
+                        });
+                    } else if (kind === 'search') {
+                        activeSearch = '';
+                        if (input) input.value = '';
+                    }
+                    applyAllFilters();
+                });
+            }
+
+            // Clear-all button
+            if (clearAllBtn) {
+                clearAllBtn.addEventListener('click', () => {
+                    activeType = 'all';
+                    activeSearch = '';
+                    if (input) input.value = '';
+                    typeButtons.forEach(b => {
+                        const isAll = b.getAttribute('data-type-filter') === 'all';
+                        b.classList.toggle('is-active', isAll);
+                        b.setAttribute('aria-pressed', isAll ? 'true' : 'false');
+                    });
+                    applyAllFilters();
                 });
             }
 
