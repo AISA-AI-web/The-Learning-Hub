@@ -249,27 +249,40 @@
             <!-- Survey banner — inline, full-width minus Leo's reserved corner -->
             <a href="https://docs.google.com/forms/d/e/1FAIpQLScMbNJ1xK6-63sCTpkAN8C6cXKirHGsXwj5furPuzTqS9j7Fw/viewform?usp=header"
                target="_blank" rel="noopener noreferrer"
-               class="survey-banner shrink-0 relative group flex items-center gap-3 rounded-2xl bg-gradient-to-r from-amber-300 via-amber-400 to-orange-500 hover:from-amber-200 hover:via-amber-300 hover:to-orange-400 text-[#0b1533] px-4 py-2.5 transition-all sm:mr-20"
+               class="survey-banner shrink-0 relative group flex items-center gap-3 rounded-2xl bg-gradient-to-r from-amber-300 via-amber-400 to-orange-500 hover:from-amber-200 hover:via-amber-300 hover:to-orange-400 text-[#0b1533] px-3 sm:px-4 py-2.5 transition-all sm:mr-20"
                aria-label="Take Brandon's 2-minute AI &amp; Innovation survey"
                data-aria-label-en="Take Brandon's 2-minute AI &amp; Innovation survey"
                data-aria-label-ar="شاركوا في استبيان الذكاء الاصطناعي والابتكار — دقيقتان">
-                <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[#0b1533] text-amber-300 text-lg shadow-inner shrink-0">📋</span>
+                <span class="inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-[#0b1533] text-amber-300 text-base sm:text-lg shadow-inner shrink-0">📋</span>
                 <div class="flex flex-col leading-tight flex-1 min-w-0">
-                    <span class="text-[10px] font-black uppercase tracking-[0.18em] text-orange-900/85">
+                    <!-- Mobile: concise single-line copy -->
+                    <span class="sm:hidden block text-[13px] font-extrabold leading-tight">
+                        <span class="lang-en">⚡ Take our 2-min AI survey</span>
+                        <span class="lang-ar">⚡ شاركوا في استبيان الذكاء الاصطناعي (دقيقتان)</span>
+                    </span>
+                    <span class="sm:hidden block text-[11px] font-bold text-orange-900/80 leading-tight mt-0.5">
+                        <span class="lang-en">Help shape what we build next</span>
+                        <span class="lang-ar">ساهموا في تحديد ما نبنيه تالياً</span>
+                    </span>
+                    <!-- sm+: original preamble + headline -->
+                    <span class="hidden sm:block text-[10px] font-black uppercase tracking-[0.18em] text-orange-900/85">
                         <span class="lang-en">⚡ 2-min survey · From the Head of AI &amp; Innovation</span>
                         <span class="lang-ar">⚡ استبيان دقيقتين · من رئيس قسم الذكاء الاصطناعي والابتكار</span>
                     </span>
-                    <span class="text-sm md:text-base font-extrabold leading-snug">
+                    <span class="hidden sm:block text-sm md:text-base font-extrabold leading-snug">
                         <span class="lang-en">Tell us where to invest next — your input shapes what we build.</span>
                         <span class="lang-ar">أخبرونا أين نستثمر تالياً — رأيكم يصوغ ما نبنيه.</span>
                     </span>
                 </div>
+                <!-- CTA: pill on sm+, compact chevron on mobile -->
                 <span class="hidden sm:inline-flex items-center gap-2 bg-[#0b1533] text-amber-300 group-hover:bg-[#0a1f3d] font-bold text-xs md:text-sm px-4 py-2 rounded-full shrink-0 transition-all">
                     <span class="lang-en">Open survey</span>
                     <span class="lang-ar">فتح الاستبيان</span>
                     <svg class="w-4 h-4 arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
                 </span>
-                <svg class="sm:hidden w-5 h-5 arrow shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                <span class="sm:hidden inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#0b1533] text-amber-300 shrink-0">
+                    <svg class="w-4 h-4 arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                </span>
             </a>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 sm:flex-1 sm:min-h-[18rem] sm:[grid-template-rows:1fr_1fr]">
