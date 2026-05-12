@@ -155,7 +155,7 @@
             gap: 0.4rem;
             font-weight: 700;
             font-size: 0.8rem;
-            padding: 0.55rem 1rem;
+            padding: 0.55rem 0.65rem;
             border-radius: 9999px;
             background: linear-gradient(135deg, #7e22ce, #ec4899);
             color: #fff;
@@ -163,6 +163,9 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
             white-space: nowrap;
             flex-shrink: 0;
+        }
+        @media (min-width: 640px) {
+            .lang-toggle { padding: 0.55rem 1rem; }
         }
         .lang-toggle:hover { transform: translateY(-1px); box-shadow: 0 10px 22px -6px rgba(126, 34, 206, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.12) inset; }
         .lang-toggle:active { transform: translateY(0); }
@@ -223,12 +226,12 @@
                         </div>
                         <ul id="hub-search-list" class="max-h-[28rem] overflow-y-auto py-2 divide-y divide-white/5"></ul>
                         <div class="flex items-center justify-between gap-2 px-4 py-2 border-t border-white/10 bg-white/[0.03] text-[10px] text-blue-200/70 uppercase tracking-widest font-bold">
-                            <span class="flex items-center gap-3">
+                            <span class="hidden md:flex items-center gap-3">
                                 <span class="flex items-center gap-1"><kbd class="bg-white/10 border border-white/15 rounded px-1 py-0.5 normal-case text-[10px]">&#8593;</kbd><kbd class="bg-white/10 border border-white/15 rounded px-1 py-0.5 normal-case text-[10px]">&#8595;</kbd> <span class="lang-en">Navigate</span><span class="lang-ar">التنقّل</span></span>
                                 <span class="flex items-center gap-1"><kbd class="bg-white/10 border border-white/15 rounded px-1 py-0.5 normal-case text-[10px]">Enter</kbd> <span class="lang-en">Open</span><span class="lang-ar">فتح</span></span>
-                                <span class="hidden sm:flex items-center gap-1"><kbd class="bg-white/10 border border-white/15 rounded px-1 py-0.5 normal-case text-[10px]">Esc</kbd> <span class="lang-en">Close</span><span class="lang-ar">إغلاق</span></span>
+                                <span class="flex items-center gap-1"><kbd class="bg-white/10 border border-white/15 rounded px-1 py-0.5 normal-case text-[10px]">Esc</kbd> <span class="lang-en">Close</span><span class="lang-ar">إغلاق</span></span>
                             </span>
-                            <span id="hub-search-count"></span>
+                            <span id="hub-search-count" class="ml-auto"></span>
                         </div>
                     </div>
                 </div>
@@ -238,15 +241,15 @@
                         data-aria-label-en="Switch to Arabic"
                         data-aria-label-ar="Switch to English">
                     <span class="globe" aria-hidden="true">🌐</span>
-                    <span class="lang-en">العربية</span>
-                    <span class="lang-ar">English</span>
+                    <span class="hidden sm:inline lang-en">العربية</span>
+                    <span class="hidden sm:inline lang-ar">English</span>
                 </button>
             </div>
 
             <!-- Survey banner — inline, full-width minus Leo's reserved corner -->
             <a href="https://docs.google.com/forms/d/e/1FAIpQLScMbNJ1xK6-63sCTpkAN8C6cXKirHGsXwj5furPuzTqS9j7Fw/viewform?usp=header"
                target="_blank" rel="noopener noreferrer"
-               class="survey-banner shrink-0 relative group flex items-center gap-3 rounded-2xl bg-gradient-to-r from-amber-300 via-amber-400 to-orange-500 hover:from-amber-200 hover:via-amber-300 hover:to-orange-400 text-[#0b1533] px-4 py-2.5 transition-all mr-16 sm:mr-20"
+               class="survey-banner shrink-0 relative group flex items-center gap-3 rounded-2xl bg-gradient-to-r from-amber-300 via-amber-400 to-orange-500 hover:from-amber-200 hover:via-amber-300 hover:to-orange-400 text-[#0b1533] px-4 py-2.5 transition-all sm:mr-20"
                aria-label="Take Brandon's 2-minute AI &amp; Innovation survey"
                data-aria-label-en="Take Brandon's 2-minute AI &amp; Innovation survey"
                data-aria-label-ar="شاركوا في استبيان الذكاء الاصطناعي والابتكار — دقيقتان">
@@ -269,7 +272,7 @@
                 <svg class="sm:hidden w-5 h-5 arrow shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
             </a>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 flex-1 min-h-[18rem]" style="grid-template-rows: 1fr 1fr;">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 sm:flex-1 sm:min-h-[18rem] sm:[grid-template-rows:1fr_1fr]">
 
                 <!-- PD Modules -->
                 <a href="PD%20Modules/pd.html" class="hub-card group block rounded-2xl border border-indigo-400/30 bg-gradient-to-br from-indigo-600/45 to-blue-700/45 hover:border-indigo-300/70 p-5 md:p-6 flex items-center gap-5 min-h-[7rem]">
@@ -325,8 +328,8 @@
 
                 <!-- Wired Wednesdays — featured weekly initiative -->
                 <a href="Wired%20Wednesdays/wired-wednesdays.html"
-                   class="hub-card group block rounded-2xl border border-amber-300/40 bg-gradient-to-br from-[#0b1533] via-[#13224d] to-[#1b2a5e] hover:border-amber-300/80 p-4 md:p-5 flex items-stretch gap-4 md:gap-6 min-h-[10rem] md:min-h-[12rem]">
-                    <div class="w-32 md:w-44 lg:w-52 shrink-0 flex items-center justify-center">
+                   class="hub-card group block rounded-2xl border border-amber-300/40 bg-gradient-to-br from-[#0b1533] via-[#13224d] to-[#1b2a5e] hover:border-amber-300/80 p-3 sm:p-4 md:p-5 flex items-stretch gap-3 sm:gap-4 md:gap-6 min-h-[8rem] sm:min-h-[10rem] md:min-h-[12rem]">
+                    <div class="w-24 sm:w-32 md:w-44 lg:w-52 shrink-0 flex items-center justify-center">
                         <img src="wired-wednesdays-logo.png" alt="Wired Wednesdays" class="max-h-full max-w-full w-auto h-auto object-contain rounded-xl shadow-lg" onerror="this.style.display='none'">
                     </div>
                     <div class="flex-1 min-w-0 flex flex-col justify-center">
@@ -354,8 +357,8 @@
 
                 <!-- Digital Lion — latest newsletter -->
                 <a href="Media%20Hub/may11.html"
-                   class="hub-card group block rounded-2xl border border-cyan-300/40 bg-gradient-to-br from-[#0a1929] via-[#0b3559] to-[#0e6e91] hover:border-amber-300/80 p-4 md:p-5 flex items-stretch gap-4 md:gap-6 min-h-[10rem] md:min-h-[12rem]">
-                    <div class="w-44 md:w-64 lg:w-80 shrink-0 flex items-center justify-center">
+                   class="hub-card group block rounded-2xl border border-cyan-300/40 bg-gradient-to-br from-[#0a1929] via-[#0b3559] to-[#0e6e91] hover:border-amber-300/80 p-3 sm:p-4 md:p-5 flex items-stretch gap-3 sm:gap-4 md:gap-6 min-h-[8rem] sm:min-h-[10rem] md:min-h-[12rem]">
+                    <div class="w-28 sm:w-44 md:w-64 lg:w-80 shrink-0 flex items-center justify-center">
                         <img src="Media%20Hub/the_digital_lion_logo.png" alt="Digital Lion Newsletter" class="max-h-full max-w-full w-auto h-auto object-contain rounded-xl shadow-lg" onerror="this.style.display='none'">
                     </div>
                     <div class="flex-1 min-w-0 flex flex-col justify-center">
@@ -454,9 +457,9 @@
         </div>
     </main>
 
-    <!-- Leo the Lion: Orientation mascot -->
+    <!-- Leo the Lion: Orientation mascot — bottom-right on mobile so it doesn't overlap the toggle / search row -->
     <a href="Orientation%20Hub/orientation-hub.html"
-       class="leo-mascot fixed top-4 right-4 z-30 flex items-start gap-2 group"
+       class="leo-mascot fixed bottom-4 right-4 sm:bottom-auto sm:top-4 z-30 flex items-start gap-2 group"
        aria-label="New to AISA? Click here for orientation"
        data-aria-label-en="New to AISA? Click here for orientation"
        data-aria-label-ar="جديد في AISA؟ اضغطوا هنا للتهيئة">
