@@ -143,10 +143,9 @@
         html[lang="ar"] .tracking-widest,
         html[lang="ar"] .tracking-wider { letter-spacing: normal; }
 
-        /* RTL flow: flip directional arrows and reverse search-bar children */
-        html[dir="rtl"] .rtl-flip,
-        html[dir="rtl"] .hub-card .arrow { transform: scaleX(-1); }
-        html[dir="rtl"] .hub-card:hover .arrow { transform: scaleX(-1) translateX(4px); }
+        /* Arabic text: render RTL inside its own bidi context without flipping the surrounding layout */
+        .lang-ar { unicode-bidi: isolate; }
+        html[lang="ar"] .lang-ar { direction: rtl; }
 
         /* Language toggle pill (matches the Digital Lion newsletter) */
         .lang-toggle {
@@ -769,7 +768,9 @@
             function applyLang(lang) {
                 const next = lang === 'ar' ? 'ar' : 'en';
                 html.setAttribute('lang', next);
-                html.setAttribute('dir', next === 'ar' ? 'rtl' : 'ltr');
+                // Keep document dir="ltr" in both languages so the grid/flex layout
+                // (cards, toggle position) stays fixed. Arabic spans handle their own RTL.
+                html.setAttribute('dir', 'ltr');
                 document.title = TITLES[next];
 
                 // Update any element with data-placeholder-en/-ar or data-aria-label-en/-ar.
