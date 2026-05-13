@@ -165,6 +165,11 @@
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                                     Join the session
                                 </a>
+                                <a href="notebooklm-interactive-podcasts.html"
+                                   class="inline-flex items-center gap-2 bg-gold hover:bg-gold2 text-navy font-semibold px-5 py-2.5 rounded-full text-sm transition-all hover:scale-105 shadow-md">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                                    Open the session deck
+                                </a>
                                 <a href="../PD%20Modules/pd.html#module-notebooklm"
                                    class="inline-flex items-center gap-2 bg-white border border-slate-300 hover:border-navy hover:text-navy text-slate-700 font-semibold px-5 py-2.5 rounded-full text-sm transition-all">
                                     Pre-reading: NotebookLM module
@@ -227,10 +232,16 @@
                             <p class="font-heading font-bold text-navy text-base md:text-lg truncate">NotebookLM Interactive Podcasts</p>
                             <p class="text-xs text-slate-500 mt-0.5">Audio overviews students can talk back to.</p>
                         </div>
-                        <a href="https://meet.google.com/yhf-vppd-hnh" target="_blank" rel="noopener noreferrer"
-                           class="flex-shrink-0 inline-flex items-center gap-1.5 bg-navy hover:bg-navy2 text-white text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full transition-all hover:scale-105">
-                            Join
-                        </a>
+                        <div class="flex-shrink-0 flex items-center gap-2">
+                            <a href="notebooklm-interactive-podcasts.html"
+                               class="inline-flex items-center gap-1.5 bg-white border border-slate-300 hover:border-navy hover:text-navy text-slate-700 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full transition-all">
+                                Deck
+                            </a>
+                            <a href="https://meet.google.com/yhf-vppd-hnh" target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-1.5 bg-navy hover:bg-navy2 text-white text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full transition-all hover:scale-105">
+                                Join
+                            </a>
+                        </div>
                     </div>
                     <!-- Session 02 -->
                     <div class="schedule-row p-5 flex items-center gap-5">
@@ -315,13 +326,34 @@
             <!-- Session archive -->
             <section class="mb-14">
                 <h3 class="text-2xl md:text-3xl font-heading font-extrabold text-navy mb-2">Session Archive</h3>
-                <p class="text-sm text-slate-500 mb-5">Recordings, slides, and notes from past sessions will live here.</p>
-                <div class="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-10 text-center">
-                    <div class="text-5xl mb-3">📼</div>
-                    <p class="font-heading font-bold text-navy text-lg">No sessions yet &mdash; check back after May 13.</p>
-                    <p class="text-sm text-slate-500 mt-1 max-w-md mx-auto">
-                        Each week we'll add a brief recap, any links shared during the session, and (where appropriate) a recording.
-                    </p>
+                <p class="text-sm text-slate-500 mb-5">Slides, notes, and (where appropriate) recordings from past sessions live here.</p>
+
+                <div class="grid md:grid-cols-2 gap-5">
+                    <!-- Session 01 archive card -->
+                    <a href="notebooklm-interactive-podcasts.html" class="group block bg-white rounded-2xl shadow-md border border-slate-200 overflow-hidden card-hover">
+                        <div class="h-1.5 bg-gradient-to-r from-navy via-indigo-700 to-gold"></div>
+                        <div class="p-5">
+                            <div class="flex items-center gap-2 mb-2 flex-wrap">
+                                <span class="text-[10px] font-bold uppercase tracking-widest bg-gold text-navy rounded-full px-2.5 py-0.5">Session 01</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">May 13</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest bg-purple-100 text-purple-800 border border-purple-200 rounded-full px-2 py-0.5">NotebookLM</span>
+                            </div>
+                            <h4 class="font-heading font-bold text-navy text-lg mb-1 group-hover:text-indigo-800 transition-colors">NotebookLM Interactive Podcasts</h4>
+                            <p class="text-sm text-slate-600 leading-relaxed mb-3">Live walkthrough &mdash; notebook setup, four ways to add sources, customized prompts, generation, and the interactive beta. Includes impact discussion and an FAQ.</p>
+                            <div class="flex items-center gap-3 text-[11px] text-slate-500">
+                                <span>📊 Session deck</span>
+                                <span>💬 FAQ &middot; 10 Qs</span>
+                                <span class="text-navy font-semibold">Open →</span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Placeholder for future sessions -->
+                    <div class="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-6 text-center flex flex-col items-center justify-center">
+                        <div class="text-4xl mb-2">📼</div>
+                        <p class="font-heading font-bold text-navy">More sessions coming</p>
+                        <p class="text-sm text-slate-500 mt-1 max-w-xs">Each Wednesday's deck and recap will land here within 24h of the session.</p>
+                    </div>
                 </div>
             </section>
 

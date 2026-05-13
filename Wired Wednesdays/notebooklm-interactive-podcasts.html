@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Wired Wednesdays · NotebookLM Interactive Podcasts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: {
+                            heading: ['Poppins', 'sans-serif'],
+                            mono: ['"JetBrains Mono"', 'ui-monospace', 'monospace']
+                        },
+                        colors: {
+                            navy: '#0b1533',
+                            navy2: '#13224d',
+                            gold: '#f5c542',
+                            gold2: '#d4a017',
+                            nbpurple: '#7c3aed',
+                            nbpurple2: '#a855f7'
+                        },
+                        animation: {
+                            'blob': 'blob 12s infinite',
+                            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                            'wave': 'wave 1.4s ease-in-out infinite'
+                        },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            },
+                            wave: {
+                                '0%, 100%': { transform: 'scaleY(0.35)' },
+                                '50%': { transform: 'scaleY(1)' }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #06102a 0%, #0b1533 35%, #2a1a5e 75%, #7c3aed 110%);
+        }
+        .hero-overlay {
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(245,197,66,0.18) 0, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(168,85,247,0.22) 0, transparent 45%);
+        }
+
+        /* Slide-style section cards */
+        .slide-card {
+            background: #ffffff;
+            border-radius: 1.5rem;
+            box-shadow: 0 16px 40px -16px rgba(11,21,51,0.18);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            scroll-margin-top: 6rem;
+        }
+        .slide-card .slide-head {
+            padding: 1.5rem 1.75rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .slide-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 0.85rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+        .talk-track {
+            background: linear-gradient(135deg, #fffbeb 0%, #fff7e0 100%);
+            border-left: 4px solid #f5c542;
+            border-radius: 0.75rem;
+            padding: 1rem 1.1rem;
+        }
+        .demo-block {
+            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+            border-left: 4px solid #7c3aed;
+            border-radius: 0.75rem;
+            padding: 1rem 1.1rem;
+        }
+        .discuss-block {
+            background: linear-gradient(135deg, #ecfeff 0%, #cffafe 100%);
+            border-left: 4px solid #0891b2;
+            border-radius: 0.75rem;
+            padding: 1rem 1.1rem;
+        }
+        .caution-block {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border-left: 4px solid #dc2626;
+            border-radius: 0.75rem;
+            padding: 1rem 1.1rem;
+        }
+
+        /* NotebookLM-style mock UI */
+        .nb-window {
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            background: #ffffff;
+            box-shadow: 0 12px 30px -10px rgba(15, 23, 42, 0.18);
+            overflow: hidden;
+        }
+        .nb-titlebar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 12px;
+            background: #f8fafc;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .nb-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .nb-dot.r { background: #ff5f56; }
+        .nb-dot.y { background: #ffbd2e; }
+        .nb-dot.g { background: #27c93f; }
+        .nb-url {
+            flex: 1;
+            background: #ffffff;
+            border-radius: 999px;
+            padding: 4px 12px;
+            font-size: 11px;
+            color: #64748b;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .nb-source-row {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.55rem 0.75rem;
+            border-radius: 0.6rem;
+            font-size: 0.8rem;
+            color: #1f2937;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+        }
+        .nb-source-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.65rem;
+            height: 1.65rem;
+            border-radius: 0.45rem;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .nb-source-icon.pdf { background: #fee2e2; color: #b91c1c; }
+        .nb-source-icon.youtube { background: #fee2e2; color: #b91c1c; }
+        .nb-source-icon.url { background: #dbeafe; color: #1d4ed8; }
+        .nb-source-icon.doc { background: #dbeafe; color: #1d4ed8; }
+        .nb-source-icon.paste { background: #fef3c7; color: #92400e; }
+        .nb-source-icon.audio { background: #ede9fe; color: #6d28d9; }
+
+        /* Audio host bubble */
+        .host-bubble {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.8rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        .host-bubble .host-avatar {
+            width: 2rem;
+            height: 2rem;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.75rem;
+            flex-shrink: 0;
+        }
+        .host-bubble.host-a { background: #f5f3ff; }
+        .host-bubble.host-a .host-avatar { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+        .host-bubble.host-b { background: #ecfeff; }
+        .host-bubble.host-b .host-avatar { background: linear-gradient(135deg, #0891b2, #06b6d4); }
+        .host-bubble.host-user { background: #fffbeb; border: 1px dashed #f5c542; }
+        .host-bubble.host-user .host-avatar { background: linear-gradient(135deg, #f5c542, #d4a017); color: #0b1533; }
+
+        /* Audio waveform */
+        .wave-bars {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            height: 22px;
+        }
+        .wave-bars span {
+            display: inline-block;
+            width: 3px;
+            background: currentColor;
+            border-radius: 999px;
+            height: 100%;
+            transform-origin: center;
+            animation: wave 1.4s ease-in-out infinite;
+        }
+        .wave-bars span:nth-child(2) { animation-delay: 0.15s; }
+        .wave-bars span:nth-child(3) { animation-delay: 0.30s; }
+        .wave-bars span:nth-child(4) { animation-delay: 0.45s; }
+        .wave-bars span:nth-child(5) { animation-delay: 0.60s; }
+        @keyframes wave {
+            0%, 100% { transform: scaleY(0.35); }
+            50%      { transform: scaleY(1); }
+        }
+
+        /* Pill nav */
+        .step-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.85rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+
+        /* Mini timeline rail */
+        .agenda-rail {
+            counter-reset: agenda;
+        }
+        .agenda-rail li {
+            counter-increment: agenda;
+            position: relative;
+            padding-left: 2.5rem;
+            margin-bottom: 0.6rem;
+        }
+        .agenda-rail li::before {
+            content: counter(agenda, decimal-leading-zero);
+            position: absolute;
+            left: 0;
+            top: 0.15rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #f5c542;
+            background: rgba(245,197,66,0.12);
+            border: 1px solid rgba(245,197,66,0.35);
+            border-radius: 0.5rem;
+            padding: 0.15rem 0.45rem;
+        }
+
+        .live-dot {
+            width: 0.5rem; height: 0.5rem; border-radius: 9999px;
+            background: #f5c542;
+            box-shadow: 0 0 0 0 rgba(245,197,66,0.6);
+            animation: live-pulse 1.6s infinite;
+        }
+        @keyframes live-pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(245,197,66,0.6); }
+            70%  { box-shadow: 0 0 0 10px rgba(245,197,66,0); }
+            100% { box-shadow: 0 0 0 0 rgba(245,197,66,0); }
+        }
+
+        /* Smooth in-page anchors */
+        html { scroll-behavior: smooth; }
+
+        /* FAQ */
+        details.faq-item {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 0;
+            transition: box-shadow 0.2s ease;
+        }
+        details.faq-item[open] {
+            box-shadow: 0 12px 28px -14px rgba(11,21,51,0.18);
+            border-color: #c4b5fd;
+        }
+        details.faq-item > summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+            color: #0b1533;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+        details.faq-item > summary::-webkit-details-marker { display: none; }
+        details.faq-item > summary::after {
+            content: '+';
+            color: #7c3aed;
+            font-weight: 700;
+            font-size: 1.25rem;
+            line-height: 1;
+            transition: transform 0.2s ease;
+        }
+        details.faq-item[open] > summary::after {
+            content: '−';
+        }
+        details.faq-item > div.faq-body {
+            padding: 0 1.25rem 1.1rem;
+            color: #475569;
+            line-height: 1.6;
+            font-size: 0.92rem;
+        }
+
+        /* Floating section nav */
+        .sticky-nav {
+            position: sticky;
+            top: 4.5rem;
+            z-index: 30;
+            backdrop-filter: blur(12px);
+            background: rgba(255,255,255,0.85);
+            border: 1px solid #e5e7eb;
+            border-radius: 999px;
+            box-shadow: 0 8px 20px -10px rgba(11,21,51,0.18);
+        }
+        .sticky-nav a {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #475569;
+            padding: 0.45rem 0.85rem;
+            border-radius: 999px;
+            white-space: nowrap;
+        }
+        .sticky-nav a:hover { color: #0b1533; background: #f1f5f9; }
+        .sticky-nav a.active { background: #0b1533; color: #fff; }
+
+        /* Prompt boxes */
+        .prompt-box {
+            background: #0b1533;
+            color: #e2e8f0;
+            border-radius: 0.85rem;
+            padding: 1rem 1.1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            line-height: 1.55;
+            position: relative;
+            border: 1px solid #1e293b;
+        }
+        .prompt-box .prompt-label {
+            position: absolute;
+            top: -0.55rem;
+            left: 0.85rem;
+            background: #f5c542;
+            color: #0b1533;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.6rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            padding: 0.15rem 0.55rem;
+            border-radius: 999px;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 0.6rem;
+            right: 0.6rem;
+            background: rgba(255,255,255,0.08);
+            color: #cbd5e1;
+            border: 1px solid rgba(255,255,255,0.12);
+            font-size: 0.65rem;
+            font-weight: 600;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+        .copy-btn:hover { background: rgba(245,197,66,0.18); color: #f5c542; }
+        .copy-btn.copied { background: rgba(16,185,129,0.18); color: #6ee7b7; border-color: rgba(16,185,129,0.35); }
+    </style>
+</head>
+<body class="bg-slate-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-slate-200">
+        <div class="h-1 bg-gradient-to-r from-navy via-nbpurple to-gold w-full"></div>
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="wired-wednesdays.html" class="flex items-center gap-4 group" title="Back to Wired Wednesdays">
+                <img src="../AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/0b1533/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-navy tracking-tight leading-none uppercase font-heading group-hover:text-nbpurple transition-colors">Wired Wednesdays</h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-gold2 uppercase tracking-widest mt-0.5">Session 01 &middot; May 13 &middot; NotebookLM Podcasts</span>
+                </div>
+            </a>
+            <a href="wired-wednesdays.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-navy transition-all duration-300 hover:bg-slate-100">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Back to Wired Wednesdays
+            </a>
+        </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero-gradient text-white relative overflow-hidden">
+        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
+        <div class="absolute -top-20 -left-20 w-72 h-72 bg-nbpurple/30 rounded-full blur-3xl animate-blob"></div>
+        <div class="absolute -bottom-24 -right-16 w-80 h-80 bg-gold/20 rounded-full blur-3xl animate-blob" style="animation-delay: 2s;"></div>
+        <div class="container mx-auto px-6 py-14 md:py-20 relative z-10 max-w-5xl">
+            <div class="grid md:grid-cols-3 gap-8 items-center">
+                <div class="md:col-span-2">
+                    <div class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-5">
+                        <span class="live-dot"></span>
+                        <span class="text-xs font-bold uppercase tracking-widest text-gold">Wired Wednesdays &middot; Session 01</span>
+                    </div>
+                    <h2 class="text-3xl md:text-5xl font-heading font-extrabold leading-tight mb-4 drop-shadow-lg">
+                        NotebookLM <br class="hidden md:block"/><span class="text-gold">Interactive</span> Podcasts
+                    </h2>
+                    <p class="text-base md:text-lg text-blue-100 mb-6 max-w-xl">
+                        Turn unit materials into a two-host Audio Overview students can <em class="text-white not-italic">talk back to</em>. A 30-minute live walkthrough &mdash; from notebook to interactive beta &mdash; with classroom impact baked in.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-3 text-xs font-semibold">
+                        <span class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-3 py-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            30 minutes &middot; live demo
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-3 py-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.657-1.79 3-4 3s-4-1.343-4-3 1.79-3 4-3 4 1.343 4 3zm12-3c0 1.657-1.79 3-4 3s-4-1.343-4-3 1.79-3 4-3 4 1.343 4 3zM9 10l12-3"/></svg>
+                            8 slides
+                        </span>
+                        <span class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-3 py-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>
+                            Discussion + FAQ
+                        </span>
+                    </div>
+                </div>
+                <div class="flex justify-center md:justify-end">
+                    <div class="relative">
+                        <div class="absolute inset-0 bg-gradient-to-br from-gold/40 via-nbpurple/40 to-transparent rounded-3xl blur-2xl"></div>
+                        <div class="relative bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl p-8 shadow-2xl">
+                            <img src="../notebookLM_logo.svg" alt="NotebookLM logo" class="w-32 h-32 mx-auto drop-shadow-lg" onerror="this.style.display='none'">
+                            <p class="text-center text-xs font-bold uppercase tracking-widest text-gold mt-4">Today's Tool</p>
+                            <p class="text-center text-white font-heading font-bold">NotebookLM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sticky section nav -->
+    <div class="container mx-auto px-6 -mt-7 relative z-40 max-w-5xl">
+        <nav id="section-nav" class="sticky-nav flex items-center gap-1 overflow-x-auto px-3 py-2">
+            <a href="#agenda" class="active">Agenda</a>
+            <a href="#frame">Why</a>
+            <a href="#notebook">Notebook</a>
+            <a href="#sources">Sources</a>
+            <a href="#customize">Customize</a>
+            <a href="#generate">Generate</a>
+            <a href="#interactive">Interactive</a>
+            <a href="#impact">Impact</a>
+            <a href="#faq">FAQ</a>
+        </nav>
+    </div>
+
+    <!-- Main -->
+    <main class="flex-grow">
+        <div class="container mx-auto px-6 py-14 max-w-5xl space-y-12">
+
+            <!-- AGENDA / SLIDE 0 -->
+            <section id="agenda" class="slide-card">
+                <div class="slide-head flex items-center gap-4 bg-gradient-to-r from-navy to-navy2 text-white">
+                    <span class="slide-num bg-gold text-navy">00</span>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gold">Opening &middot; 2 min</p>
+                        <h3 class="text-xl md:text-2xl font-heading font-extrabold">Welcome &amp; agenda</h3>
+                    </div>
+                </div>
+                <div class="p-6 md:p-8 grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="font-heading font-bold text-navy text-lg mb-3">What we'll do in 30 minutes</h4>
+                        <ol class="agenda-rail text-sm text-slate-700">
+                            <li><strong>Frame the why.</strong> Why audio + AI hosts now?</li>
+                            <li><strong>Create a notebook.</strong> Fresh start, named for the unit.</li>
+                            <li><strong>Add sources.</strong> Web search, YouTube, URLs, device upload.</li>
+                            <li><strong>Open the Studio.</strong> Audio Overview &amp; custom prompts.</li>
+                            <li><strong>Generate the podcast.</strong> 4&ndash;7 min Audio Overview.</li>
+                            <li><strong>Try the Interactive beta.</strong> Join the conversation live.</li>
+                            <li><strong>Discuss impact.</strong> Choice, voice, self-study, accessibility.</li>
+                            <li><strong>FAQ &amp; close.</strong> What you can do tomorrow.</li>
+                        </ol>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="talk-track">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-gold2 mb-1">Presenter note</p>
+                            <p class="text-sm text-slate-700">Open with the hook: <em>"By 3:30 today, you'll have built a podcast about your unit that your students can interrupt and ask questions to."</em> Keep it tactile &mdash; we're building one live.</p>
+                        </div>
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">What you need open</p>
+                            <ul class="text-sm text-slate-700 space-y-1">
+                                <li>• <a href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer" class="text-nbpurple font-semibold underline">notebooklm.google.com</a> &mdash; signed in with AISA account</li>
+                                <li>• 2&ndash;3 source files for the demo (PDF, slides, or web link)</li>
+                                <li>• A short YouTube URL to add as a source</li>
+                                <li>• Speakers/headphones on the presenting machine</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 1: Frame the why -->
+            <section id="frame" class="slide-card">
+                <div class="slide-head flex items-center gap-4">
+                    <span class="slide-num bg-nbpurple/10 text-nbpurple">01</span>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-nbpurple">Frame the why &middot; 3 min</p>
+                        <h3 class="text-xl md:text-2xl font-heading font-extrabold text-navy">From "AI explains it" to "AI converses with it"</h3>
+                    </div>
+                </div>
+                <div class="p-6 md:p-8 space-y-6">
+                    <p class="text-slate-700 leading-relaxed">A NotebookLM Audio Overview turns your sources &mdash; a unit plan, a chapter, a video, a research paper &mdash; into a <strong>two-host podcast</strong> that explains, banters about, and questions the material. The new <strong>Interactive beta</strong> lets a listener join the conversation: pause, ask a question, get an answer in voice, then resume.</p>
+
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="bg-gradient-to-br from-purple-50 to-white border border-purple-100 rounded-xl p-5">
+                            <div class="text-2xl mb-2">🎙️</div>
+                            <h4 class="font-bold text-navy text-sm">Two AI hosts</h4>
+                            <p class="text-xs text-slate-600 mt-1">Conversational, sometimes funny, grounded only in the sources you give them.</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-amber-50 to-white border border-amber-100 rounded-xl p-5">
+                            <div class="text-2xl mb-2">🎚️</div>
+                            <h4 class="font-bold text-navy text-sm">Steerable with prompts</h4>
+                            <p class="text-xs text-slate-600 mt-1">Focus on a chapter, set a reading level, demand UAE examples, change tone.</p>
+                        </div>
+                        <div class="bg-gradient-to-br from-cyan-50 to-white border border-cyan-100 rounded-xl p-5">
+                            <div class="text-2xl mb-2">🗣️</div>
+                            <h4 class="font-bold text-navy text-sm">Interactive (beta)</h4>
+                            <p class="text-xs text-slate-600 mt-1">A listener taps "Join", asks a question by voice, and the hosts answer in real time.</p>
+                        </div>
+                    </div>
+
+                    <div class="talk-track">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gold2 mb-1">Presenter note &middot; the one-liner</p>
+                        <p class="text-sm text-slate-700">"Think of it as a study group on tap &mdash; one your weakest reader can join without feeling exposed, and your fastest reader can push deeper than your lesson plan ever would."</p>
+                    </div>
+
+                    <div class="discuss-block">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-700 mb-1">Quick poll (30 sec)</p>
+                        <p class="text-sm text-slate-700">"In the chat &mdash; have you tried a NotebookLM Audio Overview before? Yes / No / Heard of it." Read the room before diving in.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 2: Create a notebook -->
+            <section id="notebook" class="slide-card">
+                <div class="slide-head flex items-center gap-4">
+                    <span class="slide-num bg-blue-100 text-blue-700">02</span>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-blue-700">Step 1 &middot; 2 min</p>
+                        <h3 class="text-xl md:text-2xl font-heading font-extrabold text-navy">Create a fresh notebook</h3>
+                    </div>
+                </div>
+                <div class="p-6 md:p-8 grid md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <p class="text-slate-700 leading-relaxed">Visit <a href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer" class="text-nbpurple font-semibold underline">notebooklm.google.com</a>, sign in with your AISA account, click <strong>+ Create new</strong>. Name it for the unit so you (and your students) can find it later.</p>
+
+                        <div class="demo-block">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-nbpurple mb-1">Live demo &middot; what I'm doing on screen</p>
+                            <ol class="text-sm text-slate-700 space-y-1 list-decimal pl-4">
+                                <li>Click <strong>+ Create new notebook</strong> from the home screen.</li>
+                                <li>Rename "Untitled notebook" to <span class="font-mono text-xs bg-white px-1.5 py-0.5 rounded border border-slate-200">Y9 Bio &middot; Cell Division &middot; Podcast Pack</span>.</li>
+                                <li>Notice the three panels: <em>Sources</em> (left) &middot; <em>Chat</em> (center) &middot; <em>Studio</em> (right).</li>
+                            </ol>
+                        </div>
+
+                        <div class="talk-track">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-gold2 mb-1">Naming rule of thumb</p>
+                            <p class="text-sm text-slate-700"><strong>[Year] &middot; [Subject] &middot; [Unit] &middot; [Purpose]</strong>. Future-you and your colleagues will thank you.</p>
+                        </div>
+                    </div>
+
+                    <!-- NotebookLM home mockup -->
+                    <div class="nb-window">
+                        <div class="nb-titlebar">
+                            <span class="nb-dot r"></span><span class="nb-dot y"></span><span class="nb-dot g"></span>
+                            <div class="nb-url">notebooklm.google.com</div>
+                        </div>
+                        <div class="p-5 bg-gradient-to-br from-white to-slate-50">
+                            <div class="flex items-center justify-between mb-4">
+                                <p class="font-heading font-bold text-navy text-sm">My notebooks</p>
+                                <span class="inline-flex items-center gap-1 bg-nbpurple text-white text-xs font-bold px-3 py-1.5 rounded-full">+ Create new</span>
+                            </div>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="border-2 border-nbpurple/40 bg-purple-50 rounded-lg p-3 ring-2 ring-nbpurple/20">
+                                    <div class="text-lg mb-1">🧬</div>
+                                    <p class="text-[11px] font-bold text-navy leading-tight">Y9 Bio &middot; Cell Division &middot; Podcast Pack</p>
+                                    <p class="text-[9px] text-slate-500 mt-1">Just created &middot; 0 sources</p>
+                                </div>
+                                <div class="border border-slate-200 bg-white rounded-lg p-3">
+                                    <div class="text-lg mb-1">📜</div>
+                                    <p class="text-[11px] font-bold text-slate-700 leading-tight">Y11 Hist &middot; WWI Causes</p>
+                                    <p class="text-[9px] text-slate-400 mt-1">3 days ago &middot; 7 sources</p>
+                                </div>
+                                <div class="border border-slate-200 bg-white rounded-lg p-3">
+                                    <div class="text-lg mb-1">📐</div>
+                                    <p class="text-[11px] font-bold text-slate-700 leading-tight">Y8 Math &middot; Ratios &amp; Proportion</p>
+                                    <p class="text-[9px] text-slate-400 mt-1">1 week ago &middot; 4 sources</p>
+                                </div>
+                                <div class="border border-dashed border-slate-300 bg-slate-50 rounded-lg p-3 flex items-center justify-center text-slate-400 text-xs">+ another</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 3: Find sources -->
+            <section id="sources" class="slide-card">
+                <div class="slide-head flex items-center gap-4">
+                    <span class="slide-num bg-emerald-100 text-emerald-700">03</span>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-700">Step 2 &middot; 6 min</p>
+                        <h3 class="text-xl md:text-2xl font-heading font-extrabold text-navy">Find &amp; add sources</h3>
+                    </div>
+                </div>
+                <div class="p-6 md:p-8 space-y-6">
+                    <p class="text-slate-700 leading-relaxed">NotebookLM is only as good as what you feed it. Quality, diversity, and currency of sources determine whether the podcast sounds like a study group or a guess. We'll add sources <strong>four ways</strong> in the live demo:</p>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="nb-source-icon url">🌐</span>
+                                <h4 class="font-bold text-navy">A &middot; Discover with web search</h4>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-3">Click <strong>Discover</strong> in the Sources panel. Describe the topic in plain English; NotebookLM returns a curated set of public web pages you can review and add with one click.</p>
+                            <div class="prompt-box">
+                                <span class="prompt-label">Discover prompt</span>
+                                <button class="copy-btn" data-copy="prompt-discover">Copy</button>
+                                <span id="prompt-discover">Find authoritative, student-friendly sources on the cell cycle and mitosis for Year 9 biology. Prefer sources with diagrams, real cell images, and analogies. Avoid pages aimed at university students.</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="nb-source-icon youtube">▶</span>
+                                <h4 class="font-bold text-navy">B &middot; YouTube links</h4>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-3">Paste a YouTube URL as a source. NotebookLM transcribes the audio and treats it like any other text source &mdash; the hosts can cite it, quote it, and weave it into the podcast.</p>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-700">
+                                <p class="font-bold text-slate-800 mb-1">Try these in the demo:</p>
+                                <ul class="space-y-0.5">
+                                    <li>• Amoeba Sisters &mdash; <em>Mitosis</em></li>
+                                    <li>• Crash Course Biology &mdash; <em>Mitosis: Splitting Up is Complicated</em></li>
+                                    <li>• A teacher-made screencast (your own!)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="nb-source-icon url">🔗</span>
+                                <h4 class="font-bold text-navy">C &middot; Paste a URL</h4>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-3">Any public web page &mdash; a textbook chapter on a school site, a news article, a Wikipedia entry, an exam board resource. NotebookLM ingests the readable text.</p>
+                            <div class="caution-block">
+                                <p class="text-[10px] font-bold uppercase tracking-widest text-red-700 mb-1">Watch-out</p>
+                                <p class="text-xs text-slate-700">If the page is paywalled or requires login, NotebookLM won't see what you see. Test by previewing the page in an incognito tab first.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="nb-source-icon pdf">📎</span>
+                                <h4 class="font-bold text-navy">D &middot; Upload from device</h4>
+                            </div>
+                            <p class="text-xs text-slate-600 mb-3">PDF, .docx, .txt, Google Doc/Slide/Sheet, .md, audio files. Drag-and-drop or click <strong>Upload</strong>. Most useful for your own unit plan, textbook chapter scans, lecture slides.</p>
+                            <div class="flex flex-wrap gap-1.5 text-[10px] font-bold uppercase tracking-wider">
+                                <span class="bg-red-100 text-red-700 rounded px-2 py-0.5">PDF</span>
+                                <span class="bg-blue-100 text-blue-700 rounded px-2 py-0.5">Docs</span>
+                                <span class="bg-amber-100 text-amber-700 rounded px-2 py-0.5">Slides</span>
+                                <span class="bg-emerald-100 text-emerald-700 rounded px-2 py-0.5">Sheets</span>
+                                <span class="bg-purple-100 text-purple-700 rounded px-2 py-0.5">Audio</span>
+                                <span class="bg-slate-100 text-slate-700 rounded px-2 py-0.5">.txt / .md</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sources panel mockup -->
+                    <div class="nb-window">
+                        <div class="nb-titlebar">
+                            <span class="nb-dot r"></span><span class="nb-dot y"></span><span class="nb-dot g"></span>
+                            <div class="nb-url">notebooklm.google.com/notebook/cell-division</div>
+                        </div>
+                        <div class="p-4 bg-white">
+                            <div class="flex items-center justify-between mb-3">
+                                <p class="font-heading font-bold text-navy text-sm">Sources <span class="text-slate-400 font-medium text-xs">(7)</span></p>
+                                <div class="flex gap-1.5">
+                                    <span class="bg-nbpurple text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">+ Add</span>
+                                    <span class="bg-slate-100 text-slate-700 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">Discover</span>
+                                </div>
+                            </div>
+                            <div class="grid sm:grid-cols-2 gap-2">
+                                <div class="nb-source-row"><span class="nb-source-icon pdf">📄</span><span class="truncate">Cell Cycle &mdash; Unit plan v3.pdf</span></div>
+                                <div class="nb-source-row"><span class="nb-source-icon doc">📝</span><span class="truncate">Chapter 6 &mdash; Cell Division.docx</span></div>
+                                <div class="nb-source-row"><span class="nb-source-icon youtube">▶</span><span class="truncate">Amoeba Sisters &mdash; Mitosis (YouTube)</span></div>
+                                <div class="nb-source-row"><span class="nb-source-icon youtube">▶</span><span class="truncate">Crash Course &mdash; Mitosis (YouTube)</span></div>
+                                <div class="nb-source-row"><span class="nb-source-icon url">🌐</span><span class="truncate">khanacademy.org &mdash; Phases of Mitosis</span></div>
+                                <div class="nb-source-row"><span class="nb-source-icon url">🌐</span><span class="truncate">bbc.co.uk/bitesize &mdash; Cell division</span></div>
+                                <div class="nb-source-row"><span class="nb-source-icon paste">✂️</span><span class="truncate">Pasted text &mdash; learning objectives</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="talk-track">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gold2 mb-1">Presenter rule of three</p>
+                        <p class="text-sm text-slate-700">Aim for <strong>3+ sources of 2+ formats</strong> before generating. One PDF chapter + one YouTube + one curriculum page is the minimum that gives the hosts something to argue about. One source = a monologue.</p>
+                    </div>
+
+                    <div class="caution-block">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-red-700 mb-1">Source hygiene</p>
+                        <ul class="text-sm text-slate-700 list-disc pl-5 space-y-0.5">
+                            <li><strong>No PII.</strong> Never upload sources containing student names, grades, IEP details, or parent emails &mdash; even into your private notebook.</li>
+                            <li><strong>Copyright.</strong> Treat scans of a textbook the same way you would in any other tool. Personal teaching use &mdash; yes. Redistribution &mdash; no.</li>
+                            <li><strong>Bias check.</strong> If every source comes from the same publisher, the podcast will sound like one publisher. Mix it up.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 4: Customize -->
+            <section id="customize" class="slide-card">
+                <div class="slide-head flex items-center gap-4">
+                    <span class="slide-num bg-amber-100 text-amber-700">04</span>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-700">Step 3 &middot; 4 min</p>
+                        <h3 class="text-xl md:text-2xl font-heading font-extrabold text-navy">Open the Studio &amp; customize the podcast</h3>
+                    </div>
+                </div>
+                <div class="p-6 md:p-8 space-y-6">
+                    <p class="text-slate-700 leading-relaxed">In the <strong>Studio</strong> panel on the right, find the <strong>Audio Overview</strong> card. Click <strong>Customize</strong> <em>before</em> Generate &mdash; this is where the magic is. A blank generate gives you a competent, generic podcast. A customized prompt gives you a podcast that <em>fits your class</em>.</p>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <h4 class="font-bold text-navy mb-2 text-sm">What you can steer with a prompt</h4>
+                            <ul class="text-sm text-slate-700 space-y-1.5">
+                                <li>🎯 <strong>Focus area:</strong> "Spend most of the time on prophase &amp; metaphase."</li>
+                                <li>🧠 <strong>Reading level:</strong> "Aim for a Year 9 reading level &mdash; concrete language, short analogies."</li>
+                                <li>🎭 <strong>Persona/tone:</strong> "One host plays the curious student, the other the patient teacher."</li>
+                                <li>🌍 <strong>Context:</strong> "Use UAE examples where possible; respect Islamic values."</li>
+                                <li>🚫 <strong>What to avoid:</strong> "Do not cover meiosis &mdash; we cover that next week."</li>
+                                <li>⏱️ <strong>Length cue:</strong> "Keep it under 8 minutes."</li>
+                                <li>❓ <strong>Embedded questions:</strong> "End with three questions a student should be able to answer."</li>
+                            </ul>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="prompt-box">
+                                <span class="prompt-label">Demo prompt &middot; the workhorse</span>
+                                <button class="copy-btn" data-copy="prompt-customize-1">Copy</button>
+                                <span id="prompt-customize-1">You are producing a 6-minute Audio Overview for Year 9 biology students in Abu Dhabi.
+
+Focus: the four phases of mitosis (prophase, metaphase, anaphase, telophase). Use concrete analogies a 14-year-old would understand. Reference UAE contexts where natural.
+
+One host plays a curious learner who asks the questions a Year 9 would actually ask; the other host is the patient teacher who answers without jargon.
+
+End with three retrieval questions students should be able to answer after listening.
+
+Do not cover meiosis &mdash; that's a separate lesson.</span>
+                            </div>
+                            <p class="text-xs text-slate-500 italic">Tip: paste this exact prompt during the live demo so the audience can see the impact of customization side-by-side with a blank generate.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                        <h4 class="font-heading font-bold text-navy mb-3 text-sm">Three more prompt patterns worth showing</h4>
+                        <div class="grid md:grid-cols-3 gap-3 text-xs">
+                            <div class="bg-white rounded-lg border border-slate-200 p-3">
+                                <p class="font-bold text-nbpurple text-[11px] uppercase tracking-wider mb-1">Pre-reading</p>
+                                <p class="text-slate-700">"Pre-teach the 8 key vocabulary terms before students read the chapter. Don't reveal answers to the chapter's review questions."</p>
+                            </div>
+                            <div class="bg-white rounded-lg border border-slate-200 p-3">
+                                <p class="font-bold text-emerald-700 text-[11px] uppercase tracking-wider mb-1">Revision</p>
+                                <p class="text-slate-700">"Treat this as exam revision. Quiz the audience throughout. Pause for 3 seconds after each question so the listener can answer in their head."</p>
+                            </div>
+                            <div class="bg-white rounded-lg border border-slate-200 p-3">
+                                <p class="font-bold text-amber-700 text-[11px] uppercase tracking-wider mb-1">Debate</p>
+                                <p class="text-slate-700">"The two hosts disagree. One defends Theory A from Source 1; the other defends Theory B from Source 3. Steelman both sides."</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="discuss-block">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-700 mb-1">Discuss &middot; 60 sec</p>
+                        <p class="text-sm text-slate-700">"For your next unit &mdash; would a <em>pre-reading</em>, <em>revision</em>, or <em>debate</em> framing fit best?" Park answers in the chat &mdash; we'll come back to choice in the impact section.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 5: Generate -->
+            <section id="generate" class="slide-card">
+                <div class="slide-head flex items-center gap-4">
+                    <span class="slide-num bg-rose-100 text-rose-700">05</span>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-rose-700">Step 4 &middot; 4 min</p>
+                        <h3 class="text-xl md:text-2xl font-heading font-extrabold text-navy">Generate the podcast</h3>
+                    </div>
+                </div>
+                <div class="p-6 md:p-8 grid md:grid-cols-2 gap-8">
+                    <div class="space-y-4">
+                        <p class="text-slate-700 leading-relaxed">Click <strong>Generate</strong>. It takes <strong>2&ndash;5 minutes</strong> depending on how many sources you've added. While we wait, this is the perfect window for the impact conversation &mdash; we'll come back and play 30 seconds when it lands.</p>
+
+                        <div class="demo-block">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-nbpurple mb-1">While it generates &middot; what to talk about</p>
+                            <ul class="text-sm text-slate-700 list-disc pl-5 space-y-1">
+                                <li>Show the <em>blank</em> generate vs <em>customized</em> generate from your prep (have one pre-baked).</li>
+                                <li>Show the <strong>Save / Share</strong> options &mdash; download the .mp3, share the link.</li>
+                                <li>Note: students don't need accounts to <em>listen</em> via a shared link.</li>
+                            </ul>
+                        </div>
+
+                        <div class="talk-track">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-gold2 mb-1">Backup plan</p>
+                            <p class="text-sm text-slate-700">Have a <strong>pre-generated podcast</strong> ready in a second tab. Live generation can stall on a quiet wifi day &mdash; never let a 30-min demo hinge on a 3-min wait.</p>
+                        </div>
+                    </div>
+
+                    <!-- Audio Overview mock -->
+                    <div class="nb-window">
+                        <div class="nb-titlebar">
+                            <span class="nb-dot r"></span><span class="nb-dot y"></span><span class="nb-dot g"></span>
+                            <div class="nb-url">notebooklm.google.com &middot; Studio</div>
+                        </div>
+                        <div class="p-5 bg-gradient-to-br from-purple-50/40 via-white to-amber-50/40">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-nbpurple mb-2">Audio Overview</p>
+                            <h5 class="font-heading font-bold text-navy text-lg mb-1">Cell Division &mdash; Y9 Bio Podcast</h5>
+                            <p class="text-xs text-slate-500 mb-4">6 min 12 sec &middot; Two hosts &middot; 7 sources</p>
+
+                            <div class="bg-white border border-slate-200 rounded-xl p-4 mb-3">
+                                <div class="flex items-center gap-3">
+                                    <button class="w-10 h-10 rounded-full bg-nbpurple text-white flex items-center justify-center shadow-md">
+                                        <svg class="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                    </button>
+                                    <div class="flex-1">
+                                        <div class="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                                            <div class="h-full bg-gradient-to-r from-nbpurple to-gold w-1/3"></div>
+                                        </div>
+                                        <div class="flex justify-between text-[10px] text-slate-500 mt-1 font-mono">
+                                            <span>2:04</span><span>6:12</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-nbpurple wave-bars">
+                                        <span></span><span></span><span></span><span></span><span></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap gap-2">
+                                <span class="step-pill bg-nbpurple/10 text-nbpurple border border-nbpurple/20">⬇ Download .mp3</span>
+                                <span class="step-pill bg-slate-100 text-slate-700 border border-slate-200">🔗 Share link</span>
+                                <span class="step-pill bg-gold/20 text-gold2 border border-gold/30">🎙️ Join interactive (beta)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 6: Interactive beta -->
+            <section id="interactive" class="slide-card">
+                <div class="slide-head flex items-center gap-4 bg-gradient-to-r from-gold/20 to-nbpurple/10">
+                    <span class="slide-num bg-gold text-navy">06</span>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gold2">Step 5 &middot; 5 min &middot; The headline feature</p>
+                        <h3 class="text-xl md:text-2xl font-heading font-extrabold text-navy">Test the Interactive beta</h3>
+                    </div>
+                </div>
+                <div class="p-6 md:p-8 space-y-6">
+                    <p class="text-slate-700 leading-relaxed">The interactive beta is what makes this session worth a Wednesday. Hit <strong>Join</strong> on a playing podcast: the hosts pause, the mic opens, you ask a question by voice, and they answer in voice &mdash; still grounded only in your sources &mdash; then resume the podcast. It is the most natural-feeling AI conversation Google has shipped to schools.</p>
+
+                    <div class="grid md:grid-cols-3 gap-4">
+                        <div class="bg-white border border-slate-200 rounded-xl p-4">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-nbpurple mb-1">①</p>
+                            <h4 class="font-bold text-navy text-sm mb-1">Click Join</h4>
+                            <p class="text-xs text-slate-600">A gold microphone button appears on the player. Tap it.</p>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-xl p-4">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-nbpurple mb-1">②</p>
+                            <h4 class="font-bold text-navy text-sm mb-1">Ask out loud</h4>
+                            <p class="text-xs text-slate-600">"Wait &mdash; can you give me an analogy for what happens in anaphase?"</p>
+                        </div>
+                        <div class="bg-white border border-slate-200 rounded-xl p-4">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-nbpurple mb-1">③</p>
+                            <h4 class="font-bold text-navy text-sm mb-1">Listen &amp; resume</h4>
+                            <p class="text-xs text-slate-600">The hosts answer in voice, then the podcast picks up where it left off.</p>
+                        </div>
+                    </div>
+
+                    <!-- Live conversation mockup -->
+                    <div class="nb-window">
+                        <div class="nb-titlebar">
+                            <span class="nb-dot r"></span><span class="nb-dot y"></span><span class="nb-dot g"></span>
+                            <div class="nb-url">notebooklm.google.com &middot; Interactive (beta)</div>
+                        </div>
+                        <div class="p-5 space-y-3 bg-gradient-to-b from-white to-slate-50">
+                            <div class="host-bubble host-a">
+                                <span class="host-avatar">A</span>
+                                <div><p class="font-semibold text-navy text-xs mb-0.5">Host A &middot; <span class="text-slate-500 font-normal">2:04</span></p><p>"&hellip;and that's where the chromosomes start lining up at the metaphase plate &mdash; it's like everyone finding their spot before the music stops."</p></div>
+                            </div>
+                            <div class="host-bubble host-user">
+                                <span class="host-avatar">🎤</span>
+                                <div><p class="font-semibold text-navy text-xs mb-0.5">You &middot; <span class="text-slate-500 font-normal">interrupted at 2:11</span></p><p>"Wait &mdash; can you give me an analogy for what happens in anaphase? I don't get how they actually pull apart."</p></div>
+                            </div>
+                            <div class="host-bubble host-b">
+                                <span class="host-avatar">B</span>
+                                <div><p class="font-semibold text-navy text-xs mb-0.5">Host B &middot; <span class="text-slate-500 font-normal">2:13</span></p><p>"Great question! Picture a tug-of-war &mdash; each chromosome is being grabbed by ropes from opposite sides of the cell. In anaphase, both teams pull at the same time, and the chromosome splits down the middle. The sister chromatids each get tugged to opposite poles. The unit plan calls those ropes 'spindle fibres.' Does that help?"</p></div>
+                            </div>
+                            <div class="host-bubble host-a">
+                                <span class="host-avatar">A</span>
+                                <div><p class="font-semibold text-navy text-xs mb-0.5">Host A &middot; <span class="text-slate-500 font-normal">resuming &middot; 2:25</span></p><p>"OK &mdash; back to where we were. So once the chromatids reach the poles, we transition into telophase&hellip;"</p></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="demo-block">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-nbpurple mb-1">Live demo plan &mdash; three Qs to try (audience can suggest theirs)</p>
+                        <ol class="text-sm text-slate-700 list-decimal pl-5 space-y-1">
+                            <li><strong>Clarifying:</strong> "Can you say that last bit again, simpler?" &mdash; tests rephrasing.</li>
+                            <li><strong>Analogy:</strong> "Give me a sports analogy for what just happened." &mdash; tests creativity within bounds.</li>
+                            <li><strong>Off-topic:</strong> "What's the capital of France?" &mdash; tests grounding. The hosts should politely refuse or redirect to the sources.</li>
+                        </ol>
+                    </div>
+
+                    <div class="caution-block">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-red-700 mb-1">What it isn't (yet)</p>
+                        <ul class="text-sm text-slate-700 list-disc pl-5 space-y-0.5">
+                            <li>It's <strong>beta</strong>: occasionally glitches, occasionally re-explains. Frame it that way for students.</li>
+                            <li>It's <strong>grounded in your sources</strong> &mdash; if the source doesn't cover it, the hosts shouldn't either. Verify.</li>
+                            <li>It is <strong>not</strong> a 1:1 tutor in the sense of tracking a student over time. Each interactive session is fresh.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 7: Impact -->
+            <section id="impact" class="slide-card">
+                <div class="slide-head flex items-center gap-4 bg-gradient-to-r from-navy to-nbpurple text-white">
+                    <span class="slide-num bg-gold text-navy">07</span>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gold">Discussion &middot; 4 min</p>
+                        <h3 class="text-xl md:text-2xl font-heading font-extrabold">Why it matters for students</h3>
+                    </div>
+                </div>
+                <div class="p-6 md:p-8 space-y-6">
+                    <p class="text-slate-700 leading-relaxed">Pull this section forward if generation is taking a while. The tool is the easy part &mdash; the <em>"so what for students?"</em> is the conversation worth having.</p>
+
+                    <div class="grid md:grid-cols-2 gap-5">
+                        <div class="bg-gradient-to-br from-purple-50 to-white border border-purple-100 rounded-2xl p-5">
+                            <div class="text-2xl mb-2">🎚️</div>
+                            <h4 class="font-heading font-bold text-navy mb-1">Student choice &amp; voice</h4>
+                            <p class="text-sm text-slate-700">Some students learn by reading, some by talking, some by listening on the bus. A podcast version of the unit isn't replacing the chapter &mdash; it's a <strong>parallel lane</strong>. Students choose how they engage; the goal stays the same.</p>
+                            <p class="text-xs text-slate-500 mt-2 italic">"Read the chapter <em>or</em> listen to the 6-min podcast <em>or</em> watch the YouTube playlist &mdash; come to class ready to discuss question 3."</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-amber-50 to-white border border-amber-100 rounded-2xl p-5">
+                            <div class="text-2xl mb-2">🌱</div>
+                            <h4 class="font-heading font-bold text-navy mb-1">Self-study growth</h4>
+                            <p class="text-sm text-slate-700">The interactive beta makes <strong>self-study active</strong>. A student stuck on anaphase at 9pm at home can <em>ask</em> &mdash; not search, not scroll &mdash; ask, and get an answer grounded in your unit. The reluctant question-asker in class can rehearse questions in private first.</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 rounded-2xl p-5">
+                            <div class="text-2xl mb-2">♿</div>
+                            <h4 class="font-heading font-bold text-navy mb-1">Accessibility &amp; multilingual learners</h4>
+                            <p class="text-sm text-slate-700">Audio is huge for EAL students, dyslexic readers, and learners with visual processing issues. Combined with the option to <em>prompt the hosts</em> to use simpler vocabulary, NotebookLM punches above its weight as a differentiation tool.</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-cyan-50 to-white border border-cyan-100 rounded-2xl p-5">
+                            <div class="text-2xl mb-2">🧭</div>
+                            <h4 class="font-heading font-bold text-navy mb-1">Metacognition &amp; question quality</h4>
+                            <p class="text-sm text-slate-700">When students ask the hosts a question and get an answer, they get instant feedback on whether their question was clear. Over time, that quietly trains <strong>asking good questions</strong> &mdash; the highest-value academic skill we don't usually teach.</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-rose-50 to-white border border-rose-100 rounded-2xl p-5">
+                            <div class="text-2xl mb-2">⏱️</div>
+                            <h4 class="font-heading font-bold text-navy mb-1">Time &amp; equity</h4>
+                            <p class="text-sm text-slate-700">A 6-minute podcast version of a 30-page chapter is a gift to the student who works a part-time job, supports siblings at home, or just thinks better when their hands are free. The richer student already has tutors; this is closer to giving everyone one.</p>
+                        </div>
+
+                        <div class="bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 rounded-2xl p-5">
+                            <div class="text-2xl mb-2">🧑‍🏫</div>
+                            <h4 class="font-heading font-bold text-navy mb-1">Teacher development</h4>
+                            <p class="text-sm text-slate-700">Generating a podcast forces you to <em>name your sources</em>. That alone is a quiet curriculum-audit habit &mdash; what am I actually teaching from? Is my source set diverse enough? It's PD-by-stealth.</p>
+                        </div>
+                    </div>
+
+                    <div class="discuss-block">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-700 mb-1">Open question to the room</p>
+                        <p class="text-sm text-slate-700">"If you generated one of these for next week's unit and shared it on Friday afternoon &mdash; what's the <em>worst</em> way it could play out? What's the <em>best</em>? What guardrails would you want in place?" Capture answers; these become next week's session pre-prep.</p>
+                    </div>
+
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                        <h4 class="font-heading font-bold text-navy mb-3 text-sm">Three classroom plays you could trial next week</h4>
+                        <div class="grid md:grid-cols-3 gap-3 text-sm">
+                            <div class="bg-white rounded-lg border border-slate-200 p-3">
+                                <p class="font-bold text-nbpurple text-[11px] uppercase tracking-wider mb-1">Pre-lesson</p>
+                                <p class="text-slate-700">Share the podcast 48h before class. Open the lesson with the three retrieval questions the hosts ended with.</p>
+                            </div>
+                            <div class="bg-white rounded-lg border border-slate-200 p-3">
+                                <p class="font-bold text-emerald-700 text-[11px] uppercase tracking-wider mb-1">Revision week</p>
+                                <p class="text-slate-700">Generate one per topic. Students pick three to listen to, then run the interactive Q&amp;A as guided self-study.</p>
+                            </div>
+                            <div class="bg-white rounded-lg border border-slate-200 p-3">
+                                <p class="font-bold text-amber-700 text-[11px] uppercase tracking-wider mb-1">Absent student</p>
+                                <p class="text-slate-700">A student misses Tuesday's lesson. Share the notebook; they catch up by listening + interacting on the way home.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 8: FAQ -->
+            <section id="faq" class="slide-card">
+                <div class="slide-head flex items-center gap-4">
+                    <span class="slide-num bg-slate-100 text-slate-700">08</span>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-slate-600">Q&amp;A &middot; 4 min</p>
+                        <h3 class="text-xl md:text-2xl font-heading font-extrabold text-navy">FAQ</h3>
+                    </div>
+                </div>
+                <div class="p-6 md:p-8 space-y-3">
+                    <p class="text-slate-600 text-sm mb-4">These are the questions that came up across the early pilot &mdash; have them open as the conversation moves. Take live questions first; fall back to these if there's silence.</p>
+
+                    <details class="faq-item" open>
+                        <summary>Is it free? Do students need accounts?</summary>
+                        <div class="faq-body"><strong>You</strong> need a Google account to <em>create</em> notebooks &mdash; your AISA Google account works. <strong>Students</strong> don't need an account to <em>listen</em> to a podcast you've shared as a link or download. To use the <em>interactive</em> beta themselves, they need to be signed in &mdash; with their AISA account, that's already provisioned.</div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Is what students say to the hosts logged or visible to me?</summary>
+                        <div class="faq-body">No. The interactive conversation is between the listener and the model &mdash; you don't get a transcript of what each student asked. Treat it like a study partner, not a formative assessment tool. If you want evidence of engagement, ask students to write down the question they asked and the answer they got.</div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>How accurate are the hosts? Can they hallucinate?</summary>
+                        <div class="faq-body">They're grounded in the sources you upload &mdash; they cite, they paraphrase, they shouldn't invent facts that aren't in the sources. They <em>can</em> simplify in ways that lose nuance, especially with technical sources. Spot-check the first podcast on each unit against your authoritative source. Don't ship it to students without listening end-to-end at least once.</div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>What languages are supported?</summary>
+                        <div class="faq-body">Audio Overviews are available in 50+ languages, with English the most mature. Arabic is supported. You can prompt the hosts to speak in a specific language &mdash; useful for parallel EAL versions of the same unit.</div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Can I edit the podcast after it generates?</summary>
+                        <div class="faq-body">Not directly &mdash; there's no waveform editor. But you can <strong>regenerate with a refined prompt</strong>, which is almost always faster than editing audio. If you need surgical edits, download the .mp3 and use any audio editor (Audacity, Descript, etc.).</div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>How long does generation take? And can I cap the length?</summary>
+                        <div class="faq-body">Usually 2&ndash;5 minutes for a 6&ndash;8 min podcast. Length depends on source volume and your prompt. Yes, prompt for length &mdash; <em>"Keep it under 6 minutes"</em> generally works. Audio Overviews max out around 10&ndash;12 minutes in current builds.</div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>What about student data privacy?</summary>
+                        <div class="faq-body">NotebookLM uses your sources to generate output for <em>you</em>; Google's stated policy is that your personal notebook content is not used to train models. That said: <strong>never upload anything containing student PII</strong> (names, grades, IEP notes, behavioural records) into any AI tool, including this one. Stick to curriculum and public materials.</div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>How does this compare to ChatGPT's voice mode or Gemini Live?</summary>
+                        <div class="faq-body">Voice modes in ChatGPT/Gemini are <em>general-purpose</em> conversations &mdash; the model can talk about anything. NotebookLM Interactive is <em>source-grounded</em> &mdash; the hosts will only answer from what you uploaded. For classroom use that's usually a feature, not a limitation: it keeps the conversation tethered to your curriculum.</div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>Can students upload their own sources and create their own notebooks?</summary>
+                        <div class="faq-body">Yes &mdash; with their AISA Google account, students have access. That opens a separate conversation about <em>student-led</em> use: revision packs they build for themselves, podcast-style reflections on a topic they choose. Worth a dedicated Wired Wednesday later in the term.</div>
+                    </details>
+
+                    <details class="faq-item">
+                        <summary>What if I don't have a "unit pack" ready &mdash; what's the minimum I need?</summary>
+                        <div class="faq-body">Honestly &mdash; three sources of mixed format. A textbook chapter PDF, a YouTube video, and one authoritative web link gets you a podcast worth listening to. You can always come back and add more.</div>
+                    </details>
+                </div>
+            </section>
+
+            <!-- CLOSE -->
+            <section class="bg-gradient-to-br from-navy to-navy2 text-white rounded-3xl p-8 md:p-10 shadow-xl relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-48 h-48 bg-gold/10 rounded-full blur-3xl"></div>
+                <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-nbpurple/20 rounded-full blur-3xl"></div>
+                <div class="relative z-10 grid md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gold mb-2">Close &middot; 30 sec</p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-extrabold mb-3">One thing to try tomorrow</h3>
+                        <p class="text-blue-100 mb-5">Pick one unit you'll teach in the next two weeks. Open NotebookLM. Drop in three sources. Generate a 6-minute Audio Overview. Listen once. Then decide whether you'd share it with students. That's it.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <a href="https://notebooklm.google.com" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-gold hover:bg-gold2 text-navy font-bold px-6 py-3 rounded-full shadow-lg transition-all hover:scale-105 text-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                Open NotebookLM
+                            </a>
+                            <a href="../PD%20Modules/pd.html#module-notebooklm" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-6 py-3 rounded-full transition-all text-sm">
+                                Companion PD module
+                            </a>
+                            <a href="wired-wednesdays.html#suggest" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/25 text-white font-semibold px-6 py-3 rounded-full transition-all text-sm">
+                                Suggest next week's topic
+                            </a>
+                        </div>
+                    </div>
+                    <div class="bg-white/10 border border-white/15 rounded-2xl p-5">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-gold mb-2">Next Wednesday</p>
+                        <p class="font-heading font-bold text-lg mb-1">May 20 &middot; 3:00 PM</p>
+                        <p class="text-sm text-blue-100">Topic suggested by you in chat. Same link, same time.</p>
+                        <p class="text-xs font-mono text-blue-200 mt-3 break-all">meet.google.com/yhf-vppd-hnh</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 mt-4">
+        <div class="container mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-1 text-xs text-slate-500">
+            <p>&copy; 2026 American International School in Abu Dhabi</p>
+            <p class="text-[11px]">Wired Wednesdays &middot; Session 01 &middot; May 13</p>
+        </div>
+    </footer>
+
+    <script>
+        // Sticky nav active state
+        const navLinks = document.querySelectorAll('#section-nav a');
+        const sections = Array.from(navLinks).map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+
+        function setActiveOnScroll() {
+            const y = window.scrollY + 160;
+            let current = sections[0];
+            for (const s of sections) {
+                if (s.offsetTop <= y) current = s;
+            }
+            navLinks.forEach(a => {
+                a.classList.toggle('active', a.getAttribute('href') === '#' + current.id);
+            });
+        }
+        window.addEventListener('scroll', setActiveOnScroll, { passive: true });
+        setActiveOnScroll();
+
+        // Copy buttons for prompts
+        document.querySelectorAll('.copy-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const targetId = btn.getAttribute('data-copy');
+                const target = document.getElementById(targetId);
+                if (!target) return;
+                try {
+                    await navigator.clipboard.writeText(target.textContent.trim());
+                    const original = btn.textContent;
+                    btn.textContent = 'Copied!';
+                    btn.classList.add('copied');
+                    setTimeout(() => {
+                        btn.textContent = original;
+                        btn.classList.remove('copied');
+                    }, 1600);
+                } catch (e) {
+                    btn.textContent = 'Copy failed';
+                    setTimeout(() => { btn.textContent = 'Copy'; }, 1600);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
