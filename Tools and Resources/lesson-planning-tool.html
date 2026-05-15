@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excellent Teaching & Learning - Lesson Planning Tool</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 210mm; /* A4 Width */
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border: 1px solid #ddd;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        h2 {
+            font-size: 16px;
+            background-color: #333;
+            color: white;
+            padding: 8px;
+            margin-top: 25px;
+            margin-bottom: 0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .info-field label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .info-field input {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid #333;
+            font-size: 14px;
+            padding: 5px 0;
+            outline: none;
+        }
+
+        .instructions {
+            font-style: italic;
+            margin-bottom: 20px;
+            border: 1px dashed #666;
+            padding: 10px;
+            background-color: #fffef0;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: #eee;
+            text-align: left;
+            font-size: 12px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .col-check { width: 50px; text-align: center; }
+        .col-code { width: 80px; text-align: center; font-weight: bold; }
+        .col-desc { }
+
+        /* Large checkbox for printing */
+        input[type="checkbox"] {
+            transform: scale(1.5);
+            cursor: pointer;
+        }
+
+        .textarea-container {
+            margin-top: 10px;
+        }
+
+        textarea {
+            width: 100%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .context-box {
+            background-color: #E6E6E6; /* Light Grey */
+            border: 2px solid #999;
+            padding: 15px;
+            margin-top: 10px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .context-box textarea {
+            background-color: transparent;
+            border: 1px dashed #999;
+        }
+
+        .guidance-section {
+            margin-top: 40px;
+            page-break-before: always; /* Force new page for printing if needed, or keep at bottom */
+            border-top: 2px dashed #ccc;
+            padding-top: 20px;
+        }
+
+        .guidance-section ul {
+            padding-left: 20px;
+        }
+
+        .guidance-section li {
+            margin-bottom: 8px;
+        }
+
+        /* Hub navigation bar — hidden on print */
+        .hub-nav {
+            max-width: 210mm;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .hub-nav a {
+            color: #0f766e;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .hub-nav a:hover { text-decoration: underline; }
+        .hub-nav button {
+            background: #0f766e;
+            color: white;
+            border: none;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .hub-nav button:hover { background: #115e59; }
+
+        @media print {
+            body {
+                background: none;
+                padding: 0;
+            }
+            .container {
+                box-shadow: none;
+                border: none;
+                width: 100%;
+                max-width: none;
+                padding: 0;
+                margin: 0;
+            }
+            .guidance-section {
+                page-break-before: auto;
+            }
+            .hub-nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<nav class="hub-nav" aria-label="Back to Tools and Resources">
+    <a href="tools.html">&larr; Back to Tools &amp; Resources</a>
+    <button onclick="window.print()" type="button">Print / Save as PDF</button>
+</nav>
+
+<div class="container">
+
+    <h1>Excellent Teaching & Learning – Lesson Planning Tool</h1>
+
+    <div class="info-grid">
+        <div class="info-field">
+            <label>Teacher:</label>
+            <input type="text" placeholder="Name">
+        </div>
+        <div class="info-field">
+            <label>Subject/Grade:</label>
+            <input type="text" placeholder="e.g. Science / Grade 8">
+        </div>
+        <div class="info-field">
+            <label>Date:</label>
+            <input type="text">
+        </div>
+    </div>
+
+    <div class="instructions">
+        <strong>INSTRUCTIONS:</strong> Tick the specific high-impact strategies you are targeting in this lesson. In the Implementation box below, briefly explain <u>HOW</u> (e.g., "Group work activity at 15 mins"). Focus on deep learning by selecting only the most prominent areas for this specific lesson.
+    </div>
+
+    <!-- Domain 1 -->
+    <h2>1. Developing Learning Skills</h2>
+    <table>
+        <thead>
+            <tr>
+                <th class="col-check">Check</th>
+                <th class="col-code">Ref Code</th>
+                <th class="col-desc">Teaching Focus (Expected Impact on Learning)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">1.3.1</td>
+                <td class="col-desc"><strong>Active Engagement:</strong> Students take responsibility for their own learning (active, not passive).</td>
+            </tr>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">1.3.2</td>
+                <td class="col-desc"><strong>Meaningful Collaboration:</strong> Students work together effectively & communicate learning clearly.</td>
+            </tr>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">1.3.3</td>
+                <td class="col-desc"><strong>Real-World Connections:</strong> Learning is applied to real-world contexts or other subjects.</td>
+            </tr>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">1.3.4</td>
+                <td class="col-desc"><strong>Innovation & Research:</strong> Students use technology, research, or critical thinking to solve problems.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Domain 2 -->
+    <h2>2. Fostering Personal & Social Development</h2>
+    <table>
+        <tbody>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">2.1.2</td>
+                <td class="col-desc"><strong>Positive Behavior:</strong> Promoting self-discipline, respectful interactions, and safe behavior.</td>
+            </tr>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">2.2.1</td>
+                <td class="col-desc"><strong>Values Integration:</strong> Students appreciate and model core values (honesty, respect, tolerance) in context.</td>
+            </tr>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">2.2.2</td>
+                <td class="col-desc"><strong>Cultural Connection:</strong> Lesson links deeply to UAE heritage, culture, or National Identity.</td>
+            </tr>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">2.3.2</td>
+                <td class="col-desc"><strong>Enterprise Skills:</strong> Students show initiative, a strong work ethic, or entrepreneurial thinking.</td>
+            </tr>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">2.3.3</td>
+                <td class="col-desc"><strong>Global Citizenship:</strong> Lesson touches on sustainability, conservation, or broader social responsibility.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Domain 3 -->
+    <h2>3. High-Impact Teaching & Assessment</h2>
+    <table>
+        <tbody>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">3.1.3</td>
+                <td class="col-desc"><strong>Advanced Questioning:</strong> Open-ended questioning that challenges assumptions and deepens thinking.</td>
+            </tr>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">3.1.4</td>
+                <td class="col-desc"><strong>Strategic Differentiation:</strong> Scaffolds and extensions effectively meet the needs of ALL groups (SEND, G&T, ELL).</td>
+            </tr>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">3.1.5</td>
+                <td class="col-desc"><strong>Teaching Critical Thinking:</strong> Teacher explicitly models and teaches HOW to problem-solve and innovate.</td>
+            </tr>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">3.2.2</td>
+                <td class="col-desc"><strong>High Expectations:</strong> Lesson rigor is benchmarked against challenging international standards.</td>
+            </tr>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">3.2.4</td>
+                <td class="col-desc"><strong>Data-Driven Instruction:</strong> Lesson pacing or grouping is adapted based on prior assessment data.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Domain 4 -->
+    <h2>4. Curriculum Adaptation & Enrichment</h2>
+    <table>
+        <tbody>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">4.2.1</td>
+                <td class="col-desc"><strong>Curriculum Modification:</strong> Core curriculum is purposefully modified for specific learning profiles.</td>
+            </tr>
+            <tr>
+                <td class="col-check"><input type="checkbox"></td>
+                <td class="col-code">4.2.2</td>
+                <td class="col-desc"><strong>Embedding Innovation:</strong> Authentic opportunities for creativity or social contribution are planned into the lesson.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Teacher Evidence Section -->
+    <h2>Implementation Strategy</h2>
+    <div class="textarea-container">
+        <textarea rows="6" placeholder="Write specifically HOW the selected strategies above will be executed in this lesson..."></textarea>
+    </div>
+
+    <!-- Context Box Section -->
+    <div class="context-box">
+        <h3 style="margin-top:0;">Broader Context (Behind-the-Scenes Planning)</h3>
+        <p style="font-size:12px; margin-bottom:5px;">Note for Review: Use this space to document the invisible work that informs this lesson (e.g., prior data analysis, formative marking from previous lessons, or specific follow-up interventions).</p>
+        <textarea rows="5" placeholder="e.g. Groupings for today's collaborative task were created based on yesterday's exit ticket results..."></textarea>
+    </div>
+
+    <!-- Guidance Footer -->
+    <div class="guidance-section">
+        <h3>How to use this tool effectively for Lesson Planning</h3>
+        <ul>
+            <li><strong>Focus on Depth, Not Breadth:</strong> Effective planning focuses on depth. Avoid ticking every box; instead, select only the 3-5 strategies that form the absolute core focus of this specific lesson.</li>
+            <li><strong>Align with Best Practices:</strong> The reference codes (e.g., 1.3.4) map to national educational standards, ensuring our daily classroom practices align seamlessly with top-tier teaching expectations.</li>
+            <li><strong>Prioritize the "Big Two":</strong> Differentiation (3.1.4) and Critical Thinking (3.1.5) are universally recognized as the strongest drivers of student achievement. Ensure these are planned for and evidenced frequently.</li>
+            <li><strong>Document the Invisible Work:</strong> Use the grey "Broader Context" box to record the behind-the-scenes data analysis and marking that makes your lesson successful, providing a complete picture of your pedagogical planning.</li>
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>
