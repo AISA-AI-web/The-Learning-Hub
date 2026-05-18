@@ -668,18 +668,70 @@
         </main>
     </div>
 
-    <!-- DETAIL: MAP Growth -->
+    <!-- DETAIL: MAP Growth — Training Selection -->
     <section id="map-details-section" class="hidden min-h-screen bg-gray-100 p-4 lg:p-12">
+        <div class="container mx-auto max-w-5xl">
+            <div class="mb-8 flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl lg:text-4xl font-extrabold text-teal-900 leading-tight">MAP Growth Training</h1>
+                    <p class="text-orange-600 font-medium text-lg mt-2">Choose a training to get started</p>
+                </div>
+                <button onclick="window.location.hash=''" class="hidden md:flex items-center text-gray-500 hover:text-teal-900 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to Tools
+                </button>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+                <a href="#module-map-overview" class="block group">
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-orange-100 h-full flex flex-col card-hover transition-all duration-300">
+                        <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-5">
+                            <span class="text-3xl">📈</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-teal-900 mb-3 group-hover:text-orange-600 transition-colors">MAP Growth Overview</h3>
+                        <p class="text-gray-600 text-sm mb-6 flex-grow">Understand the adaptive nature of MAP Growth testing, what RIT scores mean, and how the data supports student learning.</p>
+                        <span class="inline-flex items-center text-orange-600 font-semibold text-sm">
+                            Start training
+                            <svg class="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </span>
+                    </div>
+                </a>
+
+                <a href="#module-map-assign" class="block group">
+                    <div class="bg-white p-8 rounded-2xl shadow-lg border border-teal-100 h-full flex flex-col card-hover transition-all duration-300">
+                        <div class="w-16 h-16 bg-teal-100 rounded-full flex items-center justify-center mb-5">
+                            <span class="text-3xl">📝</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-teal-900 mb-3 group-hover:text-teal-600 transition-colors">Assigning Tests &amp; Accommodations</h3>
+                        <p class="text-gray-600 text-sm mb-6 flex-grow">A step-by-step walkthrough for teachers on how to assign MAP tests to students and configure accommodations.</p>
+                        <span class="inline-flex items-center text-teal-700 font-semibold text-sm">
+                            Start training
+                            <svg class="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        </span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="text-center">
+                <button onclick="window.location.hash=''" class="bg-teal-700 text-white py-3 px-8 rounded-full hover:bg-teal-800 transition-colors shadow-lg font-semibold">
+                    Return to Tools
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- DETAIL: MAP Growth — Overview Training -->
+    <section id="map-overview-details-section" class="hidden min-h-screen bg-gray-100 p-4 lg:p-12">
         <div class="container mx-auto max-w-5xl">
             <div class="mb-8 flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl lg:text-4xl font-extrabold text-teal-900 leading-tight">MAP Growth Testing</h1>
                     <p class="text-orange-600 font-medium text-lg mt-2">Measures of Academic Progress</p>
                 </div>
-                <button onclick="window.location.hash=''" class="hidden md:flex items-center text-gray-500 hover:text-teal-900 transition-colors">
+                <a href="#module-map" class="hidden md:flex items-center text-gray-500 hover:text-teal-900 transition-colors">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                    Back to Tools
-                </button>
+                    Back to MAP Trainings
+                </a>
             </div>
 
             <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
@@ -728,9 +780,50 @@
             </div>
 
             <div class="text-center">
-                <button onclick="window.location.hash=''" class="bg-teal-700 text-white py-3 px-8 rounded-full hover:bg-teal-800 transition-colors shadow-lg font-semibold">
-                    Return to Tools
-                </button>
+                <a href="#module-map" class="inline-block bg-teal-700 text-white py-3 px-8 rounded-full hover:bg-teal-800 transition-colors shadow-lg font-semibold">
+                    Back to MAP Trainings
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- DETAIL: MAP Growth — Assigning Tests & Accommodations -->
+    <section id="map-assign-details-section" class="hidden min-h-screen bg-gray-100 p-4 lg:p-12">
+        <div class="container mx-auto max-w-5xl">
+            <div class="mb-8 flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl lg:text-4xl font-extrabold text-teal-900 leading-tight">Assigning MAP Tests &amp; Accommodations</h1>
+                    <p class="text-teal-600 font-medium text-lg mt-2">A training for teachers</p>
+                </div>
+                <a href="#module-map" class="hidden md:flex items-center text-gray-500 hover:text-teal-900 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to MAP Trainings
+                </a>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-12">
+                <div class="aspect-video bg-black relative w-full">
+                    <iframe class="w-full h-full absolute top-0 left-0"
+                            src="https://www.youtube.com/embed/k8DBp_Ib4To"
+                            title="Assigning MAP Tests and Accommodations"
+                            frameborder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen>
+                    </iframe>
+                </div>
+                <div class="p-6 bg-teal-50 border-t border-teal-100">
+                    <h3 class="font-bold text-teal-900 flex items-center">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        About this Training
+                    </h3>
+                    <p class="text-sm text-teal-800 mt-1">A practical walkthrough for teachers showing how to assign MAP Growth tests to students and configure the right accommodations for learners who need them.</p>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <a href="#module-map" class="inline-block bg-teal-700 text-white py-3 px-8 rounded-full hover:bg-teal-800 transition-colors shadow-lg font-semibold">
+                    Back to MAP Trainings
+                </a>
             </div>
         </div>
     </section>
@@ -826,6 +919,8 @@
             // --- Router: swap between main grid and detail sections ---
             const routes = {
                 '#module-map': 'map-details-section',
+                '#module-map-overview': 'map-overview-details-section',
+                '#module-map-assign': 'map-assign-details-section',
                 '#module-twinkl': 'twinkl-details-section',
             };
             const mainView = document.getElementById('main-view');
@@ -843,13 +938,9 @@
                     const el = document.getElementById(targetId);
                     if (el) el.classList.remove('hidden');
                     window.scrollTo(0, 0);
-                    const iframe = document.querySelector('#map-details-section iframe');
-                    if (iframe && targetId !== 'map-details-section') { iframe.src = iframe.src; }
+                    document.querySelectorAll('section.hidden iframe').forEach(f => { f.src = f.src; });
                 } else {
                     mainView.classList.remove('hidden');
-                    document.querySelectorAll('iframe').forEach(f => {
-                        if (f.closest('.hidden')) return;
-                    });
                     document.querySelectorAll('section.hidden iframe').forEach(f => { f.src = f.src; });
                 }
             }
