@@ -711,16 +711,16 @@
                     </div>
                 </a>
 
-                <a href="https://docs.google.com/document/d/1he0RnwpdHQAf7tzoUty2iwTmB5UF7zisuwJU4e-NIkM/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="block group">
+                <a href="#module-map-all" class="block group">
                     <div class="bg-white p-8 rounded-2xl shadow-lg border border-blue-100 h-full flex flex-col card-hover transition-all duration-300">
                         <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-5">
                             <span class="text-3xl">📚</span>
                         </div>
                         <h3 class="text-xl font-bold text-teal-900 mb-3 group-hover:text-blue-600 transition-colors">All Things MAP</h3>
-                        <p class="text-gray-600 text-sm mb-6 flex-grow">A living Google Doc that collects every MAP reference — guides, links, FAQs and team notes — in one place.</p>
+                        <p class="text-gray-600 text-sm mb-6 flex-grow">A comprehensive guide for MAP testing 2025-2026 — schedules, prep, parent comms, session setup, and after-testing follow-ups.</p>
                         <span class="inline-flex items-center text-blue-700 font-semibold text-sm">
-                            Open the doc
-                            <svg class="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            Open the guide
+                            <svg class="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </span>
                     </div>
                 </a>
@@ -842,6 +842,419 @@
         </div>
     </section>
 
+    <!-- DETAIL: All Things MAP — comprehensive guide mirroring the live Google Doc -->
+    <section id="map-all-details-section" class="hidden min-h-screen bg-gray-100 p-4 lg:p-12">
+        <div class="container mx-auto max-w-5xl">
+            <div class="mb-8 flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl lg:text-4xl font-extrabold text-teal-900 leading-tight">All Things MAP Testing 2025-2026</h1>
+                    <p class="text-blue-700 font-medium text-lg mt-2">A comprehensive guide for proctors and teachers</p>
+                </div>
+                <a href="#module-map" class="hidden md:flex items-center text-gray-500 hover:text-teal-900 transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to MAP Trainings
+                </a>
+            </div>
+
+            <!-- Source-of-truth banner: always check the live Google Doc -->
+            <div class="bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 border-2 border-amber-400 rounded-2xl p-6 md:p-7 mb-10 shadow-md">
+                <div class="flex flex-col md:flex-row md:items-center gap-5">
+                    <div class="flex-1">
+                        <p class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-extrabold text-amber-800 bg-amber-200/70 rounded-full px-3 py-1 mb-2">
+                            <span>⚠️</span>
+                            <span>Source of truth</span>
+                        </p>
+                        <h3 class="font-heading font-extrabold text-lg md:text-xl text-amber-950 leading-tight mb-1.5">Always check the live Google Doc for the latest updates.</h3>
+                        <p class="text-sm text-amber-900/85">This page mirrors the All Things MAP Testing 2025-2026 doc, but the doc is updated regularly by the team. Open it before any testing window to confirm dates, links, and accommodation rules.</p>
+                    </div>
+                    <a href="https://docs.google.com/document/d/1he0RnwpdHQAf7tzoUty2iwTmB5UF7zisuwJU4e-NIkM/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white py-3.5 px-6 rounded-full text-base font-extrabold hover:from-amber-600 hover:to-orange-600 transition-all whitespace-nowrap shrink-0 shadow-lg">
+                        Open the live doc
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick nav -->
+            <nav class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-10">
+                <p class="text-[10px] font-extrabold uppercase tracking-widest text-gray-500 mb-3">Jump to a section</p>
+                <div class="flex flex-wrap gap-2">
+                    <a href="#map-before" class="inline-flex items-center gap-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1.5 rounded-full transition-colors"><span>📋</span> Before Testing</a>
+                    <a href="#map-day-of" class="inline-flex items-center gap-1.5 bg-purple-50 hover:bg-purple-100 text-purple-800 text-sm font-semibold px-3 py-1.5 rounded-full transition-colors"><span>🎯</span> The Day of the Test</a>
+                    <a href="#map-after" class="inline-flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-sm font-semibold px-3 py-1.5 rounded-full transition-colors"><span>📊</span> After Testing</a>
+                </div>
+            </nav>
+
+            <!-- ============ BEFORE TESTING ============ -->
+            <section id="map-before" class="mb-12 scroll-mt-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="inline-flex items-center justify-center w-10 h-10 bg-blue-600 text-white rounded-full font-extrabold">1</span>
+                    <h2 class="text-2xl lg:text-3xl font-heading font-extrabold text-blue-900">Before Testing</h2>
+                </div>
+
+                <!-- Schedule Testing -->
+                <div class="bg-white rounded-2xl shadow-sm border border-blue-100 p-6 md:p-7 mb-5">
+                    <h3 class="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2"><span>🗓️</span> Schedule Testing</h3>
+                    <p class="text-gray-700 mb-3"><strong>Sign up for a testing block.</strong> Fill in your teacher name and testing date/time on the schedule below.</p>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">→</span><a href="https://docs.google.com/document/d/1o9oH4K3-jTtfwA-h8I7CaokOeR42xLOGbqs3audWZ6E/edit?tab=t.0" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">MAP Testing Schedule</a></li>
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">→</span><a href="https://docs.google.com/document/d/148CLHB9V9mBSP3aNMNdjl4-0xfhNTPWaC6-sJ-tFAx8/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">SPRING Student Services Testing Schedule</a> <span class="text-gray-500">(teacher info)</span></li>
+                    </ul>
+                </div>
+
+                <!-- Technology Check -->
+                <div class="bg-white rounded-2xl shadow-sm border border-blue-100 p-6 md:p-7 mb-5">
+                    <h3 class="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2"><span>📱</span> Technology Check</h3>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">✓</span> Ensure all iPads have the <strong>NWEA app</strong> installed.</li>
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">✓</span> Ensure iPads have been <strong>updated and charged</strong>.</li>
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">✓</span> <strong>Check rosters</strong> — let Kashan know if anything needs to be added or removed.</li>
+                    </ul>
+                </div>
+
+                <!-- Preparing Students for MAP -->
+                <div class="bg-white rounded-2xl shadow-sm border border-blue-100 p-6 md:p-7 mb-5">
+                    <h3 class="text-lg font-bold text-blue-900 mb-4 flex items-center gap-2"><span>🎬</span> Preparing Students for MAP</h3>
+
+                    <div class="mb-5">
+                        <h4 class="font-semibold text-gray-900 mb-2">MAP Videos</h4>
+                        <p class="text-sm text-gray-600 mb-2">Show students these videos that explain the MAP Test:</p>
+                        <ul class="space-y-1.5 text-sm text-gray-700">
+                            <li class="flex items-start"><span class="text-blue-600 mr-2">→</span><a href="https://studentresources.nwea.org/app/k_two/what%27s_this_test_about.html" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">MAP Growth K-2 — What's this test about?</a></li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-2">→</span><a href="https://studentresources.nwea.org/app/gradetwoplus/what%27s_this_test_about.html" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">MAP Growth 2+ — What's this test about?</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-5">
+                        <h4 class="font-semibold text-gray-900 mb-2">MAP Practice Tests &amp; Testing Tools</h4>
+                        <p class="text-sm text-gray-600 mb-2">Complete MAP practice tests with students.</p>
+                        <ul class="space-y-2 text-sm text-gray-700">
+                            <li class="flex flex-col gap-1">
+                                <div class="flex items-start"><span class="text-blue-600 mr-2">→</span><a href="https://studentresources.nwea.org/app/k_two/k_to_two.html" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">K-2 MAP Growth Practice Materials</a></li>
+                                <div class="ml-6 text-xs text-gray-500">Username: <code class="bg-gray-100 px-1.5 py-0.5 rounded font-mono">grow</code> &middot; Password: <code class="bg-gray-100 px-1.5 py-0.5 rounded font-mono">grow</code></div>
+                            </li>
+                            <li class="flex flex-col gap-1">
+                                <div class="flex items-start"><span class="text-blue-600 mr-2">→</span><a href="https://studentresources.nwea.org/app/gradetwoplus/gradeTwoPlus.html" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">MAP Growth 2+ Practice Materials</a></li>
+                                <div class="ml-6 text-xs text-gray-500">Username: <code class="bg-gray-100 px-1.5 py-0.5 rounded font-mono">grow</code> &middot; Password: <code class="bg-gray-100 px-1.5 py-0.5 rounded font-mono">grow</code></div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Reference Decks</h4>
+                        <ul class="space-y-1.5 text-sm text-gray-700">
+                            <li class="flex items-start"><span class="text-blue-600 mr-2">→</span><a href="https://docs.google.com/presentation/d/1D-H3FqysjC5SIYJ77F0A9hgdto37wBoQx3rwXAX73pA/edit#slide=id.g1c5cae06545_3_33" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">Google Slides — video clips on all Testing Tools</a> students should be familiar with</li>
+                            <li class="flex items-start"><span class="text-blue-600 mr-2">→</span><a href="https://docs.google.com/presentation/d/1CUcncStPpJj7EJXVgYbM8Kja30YW4unTNKUMTcGiBB4/edit?slide=id.g35c4ced0b6a_0_130#slide=id.g35c4ced0b6a_0_130" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">Test Tips and Mindfulness Strategies</a> — calming activities to help students feel confident going into testing week</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Parent Communication — before testing -->
+                <div class="bg-white rounded-2xl shadow-sm border border-blue-100 p-6 md:p-7 mb-5">
+                    <h3 class="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2"><span>✉️</span> Parent Communication <span class="text-sm font-normal text-gray-500">— before testing</span></h3>
+                    <p class="text-sm text-gray-600 mb-3">Administration's letters to parents (teachers also include reminders in weekly newsletters):</p>
+                    <div class="grid sm:grid-cols-3 gap-3 mb-4">
+                        <a href="https://docs.google.com/document/d/1UwLoGQRqaBn4nVdwu_3VZfZkfwXsUp9VG-XeOJZaUTc/edit?tab=t.0" target="_blank" rel="noopener noreferrer" class="block rounded-xl border border-orange-200 bg-orange-50 hover:bg-orange-100 p-4 transition-colors">
+                            <p class="text-[10px] font-extrabold uppercase tracking-widest text-orange-700 mb-1">Fall Testing</p>
+                            <p class="font-bold text-orange-900 leading-tight">September 16, 2025</p>
+                            <p class="text-xs text-orange-800/80 mt-1">Grades 1-5</p>
+                        </a>
+                        <a href="https://docs.google.com/document/d/1oKSMDL_y0_739AtVi6t7DMVN5nC0IAPNDJrEOfqo_Cc/edit?tab=t.0" target="_blank" rel="noopener noreferrer" class="block rounded-xl border border-cyan-200 bg-cyan-50 hover:bg-cyan-100 p-4 transition-colors">
+                            <p class="text-[10px] font-extrabold uppercase tracking-widest text-cyan-700 mb-1">Winter Testing</p>
+                            <p class="font-bold text-cyan-900 leading-tight">January 23, 2026</p>
+                            <p class="text-xs text-cyan-800/80 mt-1">Grades KG2-G5</p>
+                        </a>
+                        <a href="https://docs.google.com/document/d/1AzKH4LMZVFQCv72Sq3yPe9qJkzu2EKXcjLYvTQ0uQIY/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="block rounded-xl border border-emerald-200 bg-emerald-50 hover:bg-emerald-100 p-4 transition-colors">
+                            <p class="text-[10px] font-extrabold uppercase tracking-widest text-emerald-700 mb-1">Spring Testing</p>
+                            <p class="font-bold text-emerald-900 leading-tight">May 15, 2026</p>
+                            <p class="text-xs text-emerald-800/80 mt-1">Grades KG2-G5 &middot; sent by Admin May 15</p>
+                        </a>
+                    </div>
+                    <ul class="space-y-1.5 text-sm text-gray-700">
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">✓</span> Remind parents about students bringing their <strong>own</strong> earbuds/headphones — any Bluetooth pairing should be done at home.</li>
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">→</span><a href="https://drive.google.com/file/d/1SL0eVzBmVobSxjXr_w_2V14KQKBs_1i1/view?usp=drive_link" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">A Family Guide to MAP Growth</a> <span class="text-gray-500">(download your own copy first if you choose to send this)</span></li>
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">→</span><a href="https://docs.google.com/presentation/d/1sv5StSkIa0VfuLEOea7KHYSN5mNQ0UdNPQzY_b4fvDo/edit?slide=id.g1c444049167_0_192#slide=id.g1c444049167_0_192" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">Videos in Slide Deck</a> <span class="text-gray-500">(optional)</span></li>
+                    </ul>
+                </div>
+
+                <!-- Setting Up Testing Sessions -->
+                <div class="bg-white rounded-2xl shadow-sm border border-blue-100 p-6 md:p-7 mb-5">
+                    <h3 class="text-lg font-bold text-blue-900 mb-2 flex items-center gap-2"><span>⚙️</span> Setting Up Testing Sessions</h3>
+                    <p class="text-xs text-gray-500 mb-4 italic">**Admin needs to first make sure the IT team has rosters ready and teachers are able to set up testing sessions.**</p>
+                    <ol class="space-y-3 text-sm text-gray-700 list-decimal list-inside mb-5">
+                        <li>Log in to <a href="https://auth.nwea.org/adult/login" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">NWEA Online</a>.</li>
+                        <li>Click <strong>"MAP Growth"</strong>.</li>
+                        <li>Click <strong>"Manage Testing Sessions"</strong>.</li>
+                        <li>Click <strong>"Find Students to Test"</strong> — fill in all dropdowns (do not fill in text boxes), then click <strong>"Search"</strong>.</li>
+                        <li>Uncheck students who will not be testing with you. Refer to the <a href="https://drive.google.com/file/d/1XqnGnBRpTQQXJWSb5W2aAf2NbMtZSli3/view" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">SSP student list</a> to know who needs accommodations and who will be pulled out for testing. <em>(Talk to Student Services if anything on this list needs to change.)</em></li>
+                        <li>Click <strong>"Add Students"</strong> — select all students who will be testing WITH YOU.</li>
+                        <li>Click <strong>"Assign Test"</strong> — select tests to assign (see table below).</li>
+                    </ol>
+
+                    <p class="text-xs font-extrabold uppercase tracking-widest text-blue-700 mb-2">Spring Testing (EOY) &middot; June 1-5, 2026 — Tests to Assign</p>
+                    <div class="overflow-x-auto mb-5">
+                        <table class="min-w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                            <thead class="bg-blue-50">
+                                <tr>
+                                    <th class="text-left px-3 py-2 font-bold text-blue-900 border-b border-gray-200">Subject</th>
+                                    <th class="text-left px-3 py-2 font-bold text-blue-900 border-b border-gray-200">KG2-G1</th>
+                                    <th class="text-left px-3 py-2 font-bold text-blue-900 border-b border-gray-200">G2-G5</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white">
+                                <tr><td class="px-3 py-2 font-semibold border-b border-gray-100">Math</td><td class="px-3 py-2 border-b border-gray-100">Growth: Math K-2 AERO</td><td class="px-3 py-2 border-b border-gray-100">Growth: Math 2-5 AERO</td></tr>
+                                <tr><td class="px-3 py-2 font-semibold border-b border-gray-100">Reading</td><td class="px-3 py-2 border-b border-gray-100">Growth: Reading K-2 AERO</td><td class="px-3 py-2 border-b border-gray-100">Growth: Reading 2-5 AERO</td></tr>
+                                <tr><td class="px-3 py-2 font-semibold border-b border-gray-100">Language</td><td class="px-3 py-2 border-b border-gray-100 text-gray-400">—</td><td class="px-3 py-2 border-b border-gray-100">Growth: Language 2+ AERO</td></tr>
+                                <tr><td class="px-3 py-2 font-semibold">Science</td><td class="px-3 py-2 text-gray-400">—</td><td class="px-3 py-2">Growth: Science 2-5 for use with NGSS <span class="text-xs text-gray-500">(G3-G5)</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <ol class="space-y-3 text-sm text-gray-700 list-decimal list-inside mb-5" start="8">
+                        <li>Select all students, then click <strong>"Assign Accommodations"</strong>. Under "DESIGNATED FEATURES FOR SOME STUDENTS," find <strong>TEXT-TO-SPEECH</strong> and follow the steps based on your assigned test (table below).</li>
+                    </ol>
+
+                    <p class="text-xs font-extrabold uppercase tracking-widest text-blue-700 mb-2">Text-to-Speech Setup by Test</p>
+                    <div class="overflow-x-auto mb-5">
+                        <table class="min-w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+                            <thead class="bg-blue-50">
+                                <tr>
+                                    <th class="text-left px-3 py-2 font-bold text-blue-900 border-b border-gray-200">Test</th>
+                                    <th class="text-left px-3 py-2 font-bold text-blue-900 border-b border-gray-200">What to do</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white">
+                                <tr><td class="px-3 py-2 font-semibold border-b border-gray-100">Math K-2 AERO</td><td class="px-3 py-2 border-b border-gray-100 italic text-gray-600">Already embedded for all students.</td></tr>
+                                <tr><td class="px-3 py-2 font-semibold border-b border-gray-100">Math 2-5 AERO</td><td class="px-3 py-2 border-b border-gray-100"><strong class="text-red-700">*Teachers enable for all students.*</strong> Select all 4 boxes: answer choices, reading passages, question directions, questions/prompts.</td></tr>
+                                <tr><td class="px-3 py-2 font-semibold border-b border-gray-100">Reading K-2 AERO</td><td class="px-3 py-2 border-b border-gray-100 italic text-gray-600">Already embedded for all students.</td></tr>
+                                <tr><td class="px-3 py-2 font-semibold border-b border-gray-100">Reading 2-5 AERO</td><td class="px-3 py-2 border-b border-gray-100"><strong class="text-red-700">*Teachers enable for all students.*</strong> Select ONLY: question directions AND questions/prompts. <em>(ELL ONLY: also add answer choices.)</em></td></tr>
+                                <tr><td class="px-3 py-2 font-semibold border-b border-gray-100">Language 2+ AERO</td><td class="px-3 py-2 border-b border-gray-100"><strong class="text-red-700">*Teachers enable for all students.*</strong> Select ONLY: question directions AND questions/prompts. <em>(ELL ONLY: also add answer choices.)</em></td></tr>
+                                <tr><td class="px-3 py-2 font-semibold">Science 2-5 NGSS</td><td class="px-3 py-2"><strong class="text-red-700">*Teachers enable for all students.*</strong> Select all 4 boxes: answer choices, reading passages, question directions, questions/prompts.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="bg-amber-50 border-l-4 border-amber-400 rounded-r-lg p-4 mb-5">
+                        <p class="text-sm text-amber-900"><strong>SSP students:</strong> the teacher proctoring the test session must also assign the specific accommodations listed for each test on the <a href="https://drive.google.com/file/d/1XL3jz7UQDBe3LseUx9HT1fGOLawyCUSI/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="text-amber-900 underline font-semibold">SSP student list</a>. Talk to Student Services if anything on the list needs to change.</p>
+                    </div>
+
+                    <ol class="space-y-3 text-sm text-gray-700 list-decimal list-inside" start="9">
+                        <li>Select <strong>"Save Session"</strong>.</li>
+                        <li>Name the session: <strong>subject area + room number</strong> — something easy for students to type on their iPads on test day.
+                            <div class="mt-1 ml-6 text-xs text-gray-500">Examples: <code class="bg-gray-100 px-1.5 py-0.5 rounded font-mono">math101</code>, <code class="bg-gray-100 px-1.5 py-0.5 rounded font-mono">reading101</code>, <code class="bg-gray-100 px-1.5 py-0.5 rounded font-mono">science101</code></div>
+                        </li>
+                        <li>Click <strong>"Save and Exit"</strong>.</li>
+                        <li>Repeat these steps for all tests you need to schedule.</li>
+                    </ol>
+                </div>
+
+                <!-- Goal Setting -->
+                <div class="bg-white rounded-2xl shadow-sm border border-blue-100 p-6 md:p-7">
+                    <h3 class="text-lg font-bold text-blue-900 mb-3 flex items-center gap-2"><span>🎯</span> Goal Setting</h3>
+                    <p class="text-sm text-gray-700 mb-3">Setting goals with students before benchmark testing helps them take ownership of their learning, focus on specific areas of growth, and approach the assessment with a clear purpose. It builds motivation, reduces anxiety, and gives students a sense of direction — transforming the test from just a measure of performance into an opportunity for progress and reflection.</p>
+                    <ul class="space-y-2 text-sm text-gray-700 mb-4">
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">→</span><a href="https://docs.google.com/document/d/1u2IkBYAga9-oc57ay5U4JFCiMyd--pnZUWta4E7Ab_4/edit?tab=t.0" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">Steps to Setting Goals in MAP</a></li>
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">→</span>Watch <a href="https://vimeo.com/183407417" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">Math</a> and <a href="https://vimeo.com/183407416" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">Reading</a> examples of a teacher setting individual goals with students based on their MAP® Growth™ data.</li>
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">→</span>Easy <a href="https://docs.google.com/document/d/1MUKj8Xwj4HEmjKwAp--6J1idRNuHE25f1N2B7AKFwBY/edit?tab=t.0" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">Student-Friendly Explanation</a> of MAP scores.</li>
+                    </ul>
+                    <p class="text-sm font-semibold text-gray-900 mb-2">Goal Setting Sheets for Students</p>
+                    <ul class="space-y-1.5 text-sm text-gray-700">
+                        <li class="flex items-start"><span class="text-blue-600 mr-2">→</span><a href="https://drive.google.com/drive/folders/1Eo2p9u7IvEKpVxoKnZf3jbdG2ykosFWu" target="_blank" rel="noopener noreferrer" class="text-blue-700 underline hover:text-blue-900 font-semibold">Grade 1 - Grade 5 Goal Setting Sheets</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ============ THE DAY OF THE TEST ============ -->
+            <section id="map-day-of" class="mb-12 scroll-mt-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="inline-flex items-center justify-center w-10 h-10 bg-purple-600 text-white rounded-full font-extrabold">2</span>
+                    <h2 class="text-2xl lg:text-3xl font-heading font-extrabold text-purple-900">The Day of the Test</h2>
+                </div>
+
+                <!-- Testing Environment -->
+                <div class="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 md:p-7 mb-5">
+                    <h3 class="text-lg font-bold text-purple-900 mb-3 flex items-center gap-2"><span>🪑</span> Testing Environment</h3>
+                    <p class="text-sm text-gray-700 mb-3">Ensure the testing environment is appropriate.</p>
+                    <ul class="space-y-1.5 text-sm text-gray-700">
+                        <li class="flex items-start"><span class="text-purple-600 mr-2">✓</span> <em>Spread out desks, remove or cover any materials that might aid students during the test, etc.</em></li>
+                    </ul>
+                </div>
+
+                <!-- MAP Protocol for Missing Supplies -->
+                <div class="bg-red-50 border-l-4 border-red-500 rounded-r-2xl p-6 md:p-7 mb-5">
+                    <h3 class="text-lg font-bold text-red-900 mb-3 flex items-center gap-2"><span>⚠️</span> MAP Protocol for Missing Supplies <span class="text-sm font-normal text-red-700/80">(headphones, updated iPad)</span></h3>
+                    <ul class="space-y-2 text-sm text-red-900/90">
+                        <li class="flex items-start"><span class="text-red-600 mr-2">•</span> Students may <strong>NOT</strong> take the MAP test if they don't have the proper materials. They should have separate work to complete independently and without distracting others.</li>
+                        <li class="flex items-start"><span class="text-red-600 mr-2">•</span> Teachers should message individual families reminding them of the expectations.</li>
+                    </ul>
+                </div>
+
+                <!-- Before Testing Begins -->
+                <div class="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 md:p-7 mb-5">
+                    <h3 class="text-lg font-bold text-purple-900 mb-3 flex items-center gap-2"><span>🚦</span> Before Testing Begins</h3>
+                    <ul class="space-y-2 text-sm text-gray-700 mb-4">
+                        <li class="flex items-start"><span class="text-purple-600 mr-2">✓</span> Post the <a href="https://docs.google.com/document/d/1iU0sp6VQ4IVJ8FPJbkBe8kMZX7nUErL1iItAWIQlzAI/edit?usp=drive_link" target="_blank" rel="noopener noreferrer" class="text-purple-700 underline hover:text-purple-900 font-semibold">"Shh We are Testing"</a> sign on your door.</li>
+                        <li class="flex items-start"><span class="text-purple-600 mr-2">✓</span> Have <strong>non-tech tasks</strong> ready for students to work on quietly when they finish their test.</li>
+                    </ul>
+                    <ol class="space-y-2 text-sm text-gray-700 list-decimal list-inside">
+                        <li>Log in to <a href="https://auth.nwea.org/adult/login" target="_blank" rel="noopener noreferrer" class="text-purple-700 underline hover:text-purple-900 font-semibold">NWEA Online</a>.</li>
+                        <li>Click <strong>"MAP Growth"</strong>.</li>
+                        <li>Click <strong>"Manage Testing Sessions"</strong>.</li>
+                        <li>Under "Saved Testing Sessions" you will find your test sessions. Click <strong>"Test Now"</strong>.</li>
+                        <li>Write your <strong>session name and password</strong> on the board for students — then students wait.</li>
+                        <li>Read the script from page 10 of the <a href="https://drive.google.com/file/d/1qkpTH7lFQ_XubgUOEWvsjPeRDYq7GMYD/view?usp=share_link" target="_blank" rel="noopener noreferrer" class="text-purple-700 underline hover:text-purple-900 font-semibold">Proctor Manual</a>.</li>
+                        <li>Once all students are logged in and ready, click <strong>"Confirm"</strong> to start testing.</li>
+                    </ol>
+                </div>
+
+                <!-- During Testing -->
+                <div class="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 md:p-7 mb-5">
+                    <h3 class="text-lg font-bold text-purple-900 mb-3 flex items-center gap-2"><span>👀</span> During Testing</h3>
+                    <ul class="space-y-1.5 text-sm text-gray-700">
+                        <li class="flex items-start"><span class="text-purple-600 mr-2">✓</span> <strong>Actively proctor</strong> the entire testing session — teachers should not be sitting behind their desks while students are testing.</li>
+                        <li class="flex items-start"><span class="text-purple-600 mr-2">✓</span> Ensure and facilitate a quiet, focused, and encouraging testing environment.</li>
+                    </ul>
+                </div>
+
+                <!-- After Testing -->
+                <div class="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 md:p-7 mb-5">
+                    <h3 class="text-lg font-bold text-purple-900 mb-3 flex items-center gap-2"><span>📚</span> After Testing</h3>
+                    <ul class="space-y-1.5 text-sm text-gray-700">
+                        <li class="flex items-start"><span class="text-purple-600 mr-2">✓</span> Students work quietly on <strong>non-tech tasks</strong> at their desks — no iPads can be used during this time, outside of taking the MAP test.</li>
+                    </ul>
+                </div>
+
+                <!-- Important to Know -->
+                <div class="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 md:p-7 mb-5">
+                    <h3 class="text-lg font-bold text-purple-900 mb-3 flex items-center gap-2"><span>💡</span> Important to Know</h3>
+                    <ul class="space-y-3 text-sm text-gray-700">
+                        <li class="flex items-start"><span class="text-purple-600 mr-2">•</span>If students are guessing or answering rapidly, the system will alert you and you'll need to type the <strong>proctor PIN</strong> on the student's iPad.</li>
+                        <li>
+                            <p class="mb-1.5">Under "Select Action," you have the following options:</p>
+                            <ul class="ml-6 space-y-1.5">
+                                <li><strong>PAUSE &amp; RESUME</strong> — use this if a student needs to leave the classroom for a short time (bathroom, nurse, etc.).</li>
+                                <li><strong>SUSPEND</strong> — use this if the entire class needs to leave the classroom and resume testing later (fire drill, block is ending, etc.).</li>
+                                <li><strong>TERMINATE &amp; TEST AGAIN</strong> — <span class="text-red-700 font-semibold">do not ever use these!</span></li>
+                            </ul>
+                        </li>
+                        <li class="flex items-start"><span class="text-purple-600 mr-2">•</span>If the app freezes, exit the app and restart. If pressing the Home button fails to exit, press the Home and Power buttons at the same time until the iPad restarts. On your <strong>proctor computer</strong>, let the student back into the test. Restart the app and ask the student to sign in again.</li>
+                    </ul>
+                </div>
+
+                <!-- Make-Up Testing -->
+                <div class="bg-white rounded-2xl shadow-sm border border-purple-100 p-6 md:p-7">
+                    <h3 class="text-lg font-bold text-purple-900 mb-3 flex items-center gap-2"><span>🔁</span> Make-Up Testing</h3>
+
+                    <div class="mb-5">
+                        <h4 class="font-semibold text-gray-900 mb-2">Absent students</h4>
+                        <p class="text-sm text-gray-700">Fill out the <a href="https://docs.google.com/spreadsheets/d/1NIk7Ps-3XweAtf1Ede4fmgYbOQz2r-DPrXni9_KZCFU/edit?gid=70606615#gid=70606615" target="_blank" rel="noopener noreferrer" class="text-purple-700 underline hover:text-purple-900 font-semibold">MAP Makeups spreadsheet</a> <strong>every day</strong> with any students who missed a testing session.</p>
+                    </div>
+
+                    <div>
+                        <h4 class="font-semibold text-gray-900 mb-2">Students who do not finish within the testing time</h4>
+                        <ol class="space-y-2 text-sm text-gray-700 list-decimal list-inside">
+                            <li><strong>SUSPEND</strong> the testing session for all students still testing.</li>
+                            <li>Fill out the <a href="https://docs.google.com/spreadsheets/d/1NIk7Ps-3XweAtf1Ede4fmgYbOQz2r-DPrXni9_KZCFU/edit?gid=930223826#gid=930223826" target="_blank" rel="noopener noreferrer" class="text-purple-700 underline hover:text-purple-900 font-semibold">MAP Makeups 25-26 spreadsheet</a> and include in the notes what <strong>#</strong> the student was on.</li>
+                        </ol>
+                        <p class="text-xs text-gray-500 mt-3 italic">The Leadership Team and Student Services Team will communicate with a follow-up plan on how and when these students will make up their missed sessions.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ AFTER TESTING ============ -->
+            <section id="map-after" class="mb-12 scroll-mt-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="inline-flex items-center justify-center w-10 h-10 bg-emerald-600 text-white rounded-full font-extrabold">3</span>
+                    <h2 class="text-2xl lg:text-3xl font-heading font-extrabold text-emerald-900">After Testing</h2>
+                </div>
+
+                <!-- Review Goals & Discuss Results -->
+                <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-6 md:p-7 mb-5">
+                    <h3 class="text-lg font-bold text-emerald-900 mb-3 flex items-center gap-2"><span>📊</span> Review Goals &amp; Discuss Results</h3>
+                    <ul class="space-y-2 text-sm text-gray-700 mb-3">
+                        <li class="flex items-start"><span class="text-emerald-600 mr-2">✓</span>Teachers meet individually with students to record their MAP results on goal sheets <em>(we will refer back to these scores before our next testing window).</em></li>
+                    </ul>
+                    <p class="text-sm font-semibold text-gray-900 mb-2">Resource for teacher reference</p>
+                    <ul class="space-y-1.5 text-sm text-gray-700">
+                        <li class="flex items-start"><span class="text-emerald-600 mr-2">→</span><a href="https://drive.google.com/file/d/1m_FxcLCLGK7OQ6XuoxUxTx8EW_j-RRol/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="text-emerald-700 underline hover:text-emerald-900 font-semibold">2025 Normative Data</a></li>
+                    </ul>
+                </div>
+
+                <!-- IXL Skill Plans -->
+                <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-6 md:p-7 mb-5">
+                    <h3 class="text-lg font-bold text-emerald-900 mb-3 flex items-center gap-2"><span>🧮</span> IXL Skill Plans</h3>
+                    <ul class="space-y-2 text-sm text-gray-700">
+                        <li class="flex items-start"><span class="text-emerald-600 mr-2">✓</span>All IXL skill plans should be updated with new MAP scores.</li>
+                        <li class="flex items-start"><span class="text-emerald-600 mr-2">→</span><a href="https://docs.google.com/presentation/d/1fgpBB_iskVk0PemKvkl0cHjr-X_bBWdCLsmdm1fc2cY/edit#slide=id.g11d858ae680_0_674" target="_blank" rel="noopener noreferrer" class="text-emerald-700 underline hover:text-emerald-900 font-semibold">Google Slide — how to input MAP scores into IXL</a></li>
+                    </ul>
+                </div>
+
+                <!-- Parent Communication — after -->
+                <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-6 md:p-7 mb-5">
+                    <h3 class="text-lg font-bold text-emerald-900 mb-3 flex items-center gap-2"><span>✉️</span> Parent Communication <span class="text-sm font-normal text-gray-500">— after testing</span></h3>
+
+                    <div class="mb-4">
+                        <p class="text-xs font-extrabold uppercase tracking-widest text-orange-700 mb-1.5">Fall</p>
+                        <ul class="space-y-1.5 text-sm text-gray-700">
+                            <li class="flex items-start"><span class="text-emerald-600 mr-2">→</span><a href="https://docs.google.com/document/d/1YSKImzv9TE5g6iXqz7WqNP6EVfo8bos7XMIG0HZSN44/edit?tab=t.0" target="_blank" rel="noopener noreferrer" class="text-emerald-700 underline hover:text-emerald-900 font-semibold">After Fall Testing letter from Admin</a> <span class="text-gray-500">(with IXL information)</span></li>
+                        </ul>
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="text-xs font-extrabold uppercase tracking-widest text-cyan-700 mb-1.5">Winter</p>
+                        <p class="text-sm text-gray-700 mb-1.5">After Winter Testing letter from Admin:</p>
+                        <ul class="space-y-1.5 text-sm text-gray-700">
+                            <li class="flex items-start"><span class="text-emerald-600 mr-2">→</span><a href="https://docs.google.com/document/d/1bHm1J86JwqdP7G8zUmaSnhfE36aBBAkQC8ktDOGm524/edit?tab=t.0" target="_blank" rel="noopener noreferrer" class="text-emerald-700 underline hover:text-emerald-900 font-semibold">KG2 — without IXL information</a></li>
+                            <li class="flex items-start"><span class="text-emerald-600 mr-2">→</span><a href="https://drive.google.com/file/d/1f1M2lrn0jjiLamxaNbHXNexgaRn0uBL5/view?usp=sharing" target="_blank" rel="noopener noreferrer" class="text-emerald-700 underline hover:text-emerald-900 font-semibold">G1-G5 — with IXL information</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <p class="text-xs font-extrabold uppercase tracking-widest text-emerald-700 mb-1.5">Spring</p>
+                        <p class="text-sm text-gray-500 italic">Letter to be added — check the <a href="https://docs.google.com/document/d/1he0RnwpdHQAf7tzoUty2iwTmB5UF7zisuwJU4e-NIkM/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="underline">live doc</a> for the latest version.</p>
+                    </div>
+                </div>
+
+                <!-- Retaking MAP Testing -->
+                <div class="bg-white rounded-2xl shadow-sm border border-emerald-100 p-6 md:p-7">
+                    <h3 class="text-lg font-bold text-emerald-900 mb-3 flex items-center gap-2"><span>🔄</span> Retaking MAP Testing</h3>
+                    <p class="text-sm text-gray-700 mb-3">The Leadership Team will pull a report after the first week of testing is complete, and share this with your entire team.</p>
+                    <ul class="space-y-1.5 text-sm text-gray-700 mb-5">
+                        <li class="flex items-start"><span class="text-emerald-600 mr-2">✓</span>Teachers should review students who have <strong>dropped 10 or more RIT points</strong>, and/or whose <strong>rapid guessing may have significantly impacted their score (by 10% or more)</strong>, and have those students retake that assessment.</li>
+                    </ul>
+
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                        <p class="text-xs font-extrabold uppercase tracking-widest text-gray-700 mb-2">Admin To-Do</p>
+                        <p class="text-sm text-gray-700 mb-2">After students have done a retake, both scores will be registered in MAP. We need to go in and <strong>hide the lower test score</strong> from showing up on reports:</p>
+                        <ol class="space-y-1 text-sm text-gray-700 list-decimal list-inside">
+                            <li>Rostering</li>
+                            <li>Manage Students</li>
+                            <li>Search the student name</li>
+                            <li>View/Update Test Events</li>
+                            <li>Sort by "Start date"</li>
+                            <li>Select the lower test score on the duplicate test and click <strong>"Exclude from Reports"</strong></li>
+                        </ol>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Closing CTA: open the live doc again -->
+            <div class="bg-gradient-to-br from-blue-900 to-teal-800 text-white rounded-2xl shadow-xl p-8 md:p-10 text-center mb-10">
+                <p class="text-[10px] font-extrabold uppercase tracking-widest text-amber-300 mb-2">Source of truth</p>
+                <h3 class="text-2xl md:text-3xl font-heading font-extrabold mb-3">Found a gap or something out of date?</h3>
+                <p class="text-blue-100 max-w-2xl mx-auto mb-6">The live Google Doc is updated regularly by the team. Always check it before any testing window to confirm dates, links, and accommodation rules.</p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <a href="https://docs.google.com/document/d/1he0RnwpdHQAf7tzoUty2iwTmB5UF7zisuwJU4e-NIkM/edit?usp=sharing" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 bg-amber-400 text-blue-950 py-3 px-6 rounded-full font-bold hover:bg-amber-300 transition-colors shadow-lg">
+                        Open the live doc
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+                    <a href="#module-map" class="inline-flex items-center gap-2 bg-white/15 border border-white/30 text-white py-3 px-6 rounded-full font-bold hover:bg-white/25 transition-colors">
+                        Back to MAP Trainings
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- DETAIL: Twinkl -->
     <section id="twinkl-details-section" class="hidden min-h-screen bg-pink-50 p-4 lg:p-12">
         <div class="container mx-auto max-w-4xl">
@@ -935,6 +1348,7 @@
                 '#module-map': 'map-details-section',
                 '#module-map-overview': 'map-overview-details-section',
                 '#module-map-assign': 'map-assign-details-section',
+                '#module-map-all': 'map-all-details-section',
                 '#module-twinkl': 'twinkl-details-section',
             };
             const mainView = document.getElementById('main-view');
