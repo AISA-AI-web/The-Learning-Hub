@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Digital Lion Newsletter — May 18</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: { primary: '#0b2545', secondary: '#0891b2', accent: '#f59e0b' },
+                        animation: { 'blob': 'blob 7s infinite' },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(8, 47, 73, 0.25); }
+        .hero-gradient { background: linear-gradient(135deg, #0a1929 0%, #0b3559 35%, #0e6e91 75%, #0891b2 100%); }
+        .hero-overlay {
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(34, 211, 238, 0.18) 0, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(251, 191, 36, 0.15) 0, transparent 45%);
+        }
+
+        /* --- Snapshot CTA: pulsing violet glow --- */
+        .snapshot-cta {
+            animation: snapshotPulse 2.4s ease-in-out infinite;
+        }
+        @keyframes snapshotPulse {
+            0%, 100% { box-shadow: 0 6px 18px 0 rgba(124, 58, 237, 0.45), 0 0 0 0 rgba(124, 58, 237, 0.4); }
+            50%      { box-shadow: 0 10px 26px 0 rgba(124, 58, 237, 0.55), 0 0 0 12px rgba(124, 58, 237, 0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .snapshot-cta { animation: none; }
+        }
+
+        /* --- Bilingual toggle: show only the active language --- */
+        html[lang="en"] .lang-ar { display: none !important; }
+        html[lang="ar"] .lang-en { display: none !important; }
+
+        /* Arabic typography */
+        html[lang="ar"] body,
+        html[lang="ar"] .font-heading { font-family: 'Cairo', 'Inter', sans-serif; }
+        html[lang="ar"] .uppercase { text-transform: none; letter-spacing: normal; }
+        html[lang="ar"] .tracking-widest,
+        html[lang="ar"] .tracking-wider { letter-spacing: normal; }
+
+        /* RTL flow: flip directional margins and arrow icons */
+        html[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+        html[dir="rtl"] .mr-1\.5 { margin-right: 0; margin-left: 0.375rem; }
+        html[dir="rtl"] .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+        html[dir="rtl"] .mr-3 { margin-right: 0; margin-left: 0.75rem; }
+        html[dir="rtl"] .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+        html[dir="rtl"] .text-left { text-align: right; }
+
+        /* Language toggle pill */
+        .lang-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #7e22ce, #ec4899);
+            color: #fff;
+            box-shadow: 0 4px 14px -4px rgba(126, 34, 206, 0.45);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .lang-toggle:hover { transform: translateY(-1px); box-shadow: 0 6px 18px -4px rgba(126, 34, 206, 0.55); }
+    </style>
+</head>
+<body class="bg-slate-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white/85 backdrop-blur-lg shadow-sm sticky top-0 z-50 border-b border-slate-200">
+        <div class="h-1 bg-gradient-to-r from-blue-950 via-cyan-500 to-amber-400 w-full"></div>
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center gap-3">
+            <a href="../index.html" class="flex items-center gap-4 group" title="Back to Learning Hub">
+                <img src="../AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/0b2545/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-blue-950 tracking-tight leading-none uppercase font-heading group-hover:text-cyan-700 transition-colors">
+                        <span class="lang-en">Digital Lion</span>
+                        <span class="lang-ar">ديجيتال لايون</span>
+                    </h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-cyan-700/90 uppercase tracking-widest mt-0.5">
+                        <span class="lang-en">May 18 &middot; Learning Team</span>
+                        <span class="lang-ar">١٨ مايو · فريق التعلم</span>
+                    </span>
+                </div>
+            </a>
+            <div class="flex items-center gap-2">
+                <button id="lang-toggle" type="button" class="lang-toggle" aria-label="Toggle language">
+                    <span aria-hidden="true">🌐</span>
+                    <span class="lang-en">العربية</span>
+                    <span class="lang-ar">English</span>
+                </button>
+                <div class="hidden md:flex items-center gap-2">
+                    <a href="media.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-blue-900 transition-all duration-300 hover:bg-cyan-50">
+                        <svg class="w-4 h-4 mr-1.5 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                        <span class="lang-en">Media Hub</span>
+                        <span class="lang-ar">مركز الإعلام</span>
+                    </a>
+                    <a href="../index.html" class="flex items-center px-4 py-2 rounded-full text-sm font-semibold text-blue-900 transition-all duration-300 hover:bg-cyan-50">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        <span class="lang-en">Learning Hub</span>
+                        <span class="lang-ar">مركز التعلم</span>
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero-gradient text-white relative overflow-hidden">
+        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
+        <div class="absolute -top-20 -left-20 w-72 h-72 bg-cyan-400/25 rounded-full blur-3xl animate-blob"></div>
+        <div class="absolute -bottom-24 -right-16 w-80 h-80 bg-amber-300/25 rounded-full blur-3xl animate-blob" style="animation-delay: 2s;"></div>
+        <div class="container mx-auto px-6 py-12 md:py-16 relative z-10 max-w-4xl">
+            <figure class="mb-8 flex justify-center">
+                <img src="the_digital_lion_logo.png" alt="Digital Lion — AISA's Teaching &amp; Learning newsletter" class="w-full max-w-2xl rounded-2xl shadow-2xl border border-white/20">
+            </figure>
+            <p class="text-xs font-bold uppercase tracking-widest text-amber-300 text-center mb-4">
+                <span class="lang-en">Issue No. 3 &middot; May 18</span>
+                <span class="lang-ar">العدد الثالث · ١٨ مايو</span>
+            </p>
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-5 drop-shadow-lg text-center">
+                <span class="lang-en">Class visits this week — here's the plan</span>
+                <span class="lang-ar">الزيارات الصفّيّة هذا الأسبوع — إليكم الخطّة</span>
+            </h2>
+            <p class="text-lg md:text-xl max-w-3xl mx-auto text-cyan-50 drop-shadow text-center">
+                <span class="lang-en">The schedule, the exact form I'll be using, and what I'm (and am not) looking at — shared in full so everyone knows what to expect.</span>
+                <span class="lang-ar">الجدول، والاستمارة نفسها التي سأستخدمها، وما الذي أرصده (وما لا أرصده) — مشاركة كاملة حتى يعرف الجميع ما الذي يتوقّعه.</span>
+            </p>
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm">
+                <span class="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3 py-1 font-semibold">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span class="lang-en">May 18</span>
+                    <span class="lang-ar">١٨ مايو</span>
+                </span>
+                <span class="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3 py-1 font-semibold">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-5.13a4 4 0 11-8 0 4 4 0 018 0zm6 3a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span class="lang-en">For Teaching Staff</span>
+                    <span class="lang-ar">لطاقم التدريس</span>
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main -->
+    <main class="flex-grow">
+        <div class="container mx-auto px-6 py-14 max-w-4xl">
+
+            <!-- Section: Note from the Head of AI & Innovation -->
+            <section class="bg-gradient-to-br from-blue-50 via-white to-cyan-50 rounded-2xl shadow-lg border-t-8 border-blue-900 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-100 via-cyan-100 to-amber-100 flex items-center justify-center">
+                            <span class="text-3xl">✍️</span>
+                        </div>
+                        <span class="inline-block bg-blue-100 text-blue-900 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">Note from the Team</span>
+                            <span class="lang-ar">رسالة من الفريق</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-heading font-bold text-blue-950 mb-2">
+                            <span class="lang-en">A note from the Head of AI &amp; Innovation</span>
+                            <span class="lang-ar">رسالة من رئيس قسم الذكاء الاصطناعي والابتكار</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-3">
+                            <span class="lang-en">Quick follow-up on last week's note. The class visits I mentioned <strong>kick off this Monday</strong>, and I want to be as upfront as possible about how they'll run — same energy as last week: no surprises, no judgement, no theatre. The most useful thing I can do is share the <strong>exact form I'll be filling in</strong>, the <strong>days I'll be visiting which grades</strong>, and the <strong>reason I'm doing this at all</strong>. So this issue is short and almost entirely about that.</span>
+                            <span class="lang-ar">متابعة سريعة لرسالة الأسبوع الماضي. <strong>تبدأ الزيارات الصفّيّة هذا الإثنين</strong>، وأودّ أن أكون شفافاً قدر الإمكان حول كيفية إجرائها — بالروح ذاتها التي تحدّثت عنها سابقاً: لا مفاجآت، ولا أحكام، ولا استعراض. أفضل ما يمكنني فعله هو مشاركة <strong>الاستمارة الفعلية التي سأملؤها</strong>، و<strong>الأيام التي سأزور فيها كلّ مرحلة</strong>، و<strong>سبب القيام بهذا أصلاً</strong>. لذا هذا العدد قصير، وأغلبه مخصّص لهذا الموضوع.</span>
+                        </p>
+                        <p class="text-gray-700 leading-relaxed mb-3">
+                            <span class="lang-en">To repeat what I said last week: <strong>these visits are not evaluative</strong>. The form below has no place for a teacher name, no rating of your teaching, and no narrative section — it's a handful of structured checkboxes about <em>what AI looks like in the room</em>, not about <em>you</em>. The data is aggregate. It feeds the AI &amp; Innovation integration plan for next year. That's the whole story.</span>
+                            <span class="lang-ar">تأكيداً لما ذكرته سابقاً: <strong>هذه الزيارات ليست تقييمية</strong>. لا تتضمّن الاستمارة أدناه خانة لاسم المعلم، ولا تقييماً لتدريسكم، ولا حقلاً سرديّاً — هي مجموعة محدودة من الخانات المنظَّمة حول <em>كيف يبدو الذكاء الاصطناعي داخل الصف</em>، لا حول <em>شخصكم</em>. البيانات مُجمَّعة. تُغذّي خطّة دمج الذكاء الاصطناعي والابتكار للعام القادم. هذه هي القصّة كاملة.</span>
+                        </p>
+                        <p class="text-gray-700 leading-relaxed">
+                            <span class="lang-en">And to say it one more time, because it matters: <strong>please don't prepare anything for me</strong>. Don't change the lesson, don't queue up an AI demo, don't shuffle activities. I want to see what a <em>normal</em> Monday/Tuesday/Wednesday looks like in your classroom. That's the data that's actually useful.</span>
+                            <span class="lang-ar">ولأكرّر مرّة أخرى لأهمّيّتها: <strong>لا تُحضّروا شيئاً من أجلي</strong>. لا تغيّروا الدرس، ولا تُجهّزوا عرضاً للذكاء الاصطناعي، ولا تُعيدوا ترتيب الأنشطة. أريد أن أرى كيف يبدو يوم إثنين/ثلاثاء/أربعاء <em>عاديّ</em> في صفّكم. هذه هي البيانات التي تنفع فعلاً.</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Visit Schedule -->
+            <section class="bg-white rounded-2xl shadow-lg border-t-8 border-cyan-600 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-cyan-50 flex items-center justify-center">
+                            <span class="text-3xl">📅</span>
+                        </div>
+                        <span class="inline-block bg-cyan-100 text-cyan-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">This Week</span>
+                            <span class="lang-ar">هذا الأسبوع</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-heading font-bold text-cyan-900 mb-2">
+                            <span class="lang-en">Which day to expect a visit</span>
+                            <span class="lang-ar">متى تتوقّعون الزيارة</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-5">
+                            <span class="lang-en">Visits are split by grade band so you know which day to expect me, and so I'm not bouncing between divisions in the same session. I'll move quietly through classrooms across the day — usually 5–10 minutes per room.</span>
+                            <span class="lang-ar">قسّمت الزيارات حسب المرحلة كي تعرفوا متى تتوقّعون مروري، ولكي لا أتنقّل بين المراحل في الجلسة نفسها. سأتنقّل بين الصفوف بهدوء خلال اليوم — عادةً ٥–١٠ دقائق في كلّ غرفة.</span>
+                        </p>
+                        <div class="grid sm:grid-cols-3 gap-4 mb-5">
+                            <div class="rounded-2xl bg-gradient-to-br from-cyan-50 via-white to-cyan-50 border border-cyan-200 p-5">
+                                <p class="text-[10px] font-extrabold uppercase tracking-widest text-cyan-700 mb-1">
+                                    <span class="lang-en">Monday &middot; May 18</span>
+                                    <span class="lang-ar">الإثنين · ١٨ مايو</span>
+                                </p>
+                                <p class="font-heading font-extrabold text-3xl text-cyan-900 leading-none mb-2">
+                                    <span class="lang-en">Grades 3–5</span>
+                                    <span class="lang-ar">الصفوف ٣–٥</span>
+                                </p>
+                                <p class="text-sm text-cyan-900/80">
+                                    <span class="lang-en">Elementary classrooms.</span>
+                                    <span class="lang-ar">الصفوف الابتدائية.</span>
+                                </p>
+                            </div>
+                            <div class="rounded-2xl bg-gradient-to-br from-blue-50 via-white to-blue-50 border border-blue-200 p-5">
+                                <p class="text-[10px] font-extrabold uppercase tracking-widest text-blue-700 mb-1">
+                                    <span class="lang-en">Tuesday &middot; May 19</span>
+                                    <span class="lang-ar">الثلاثاء · ١٩ مايو</span>
+                                </p>
+                                <p class="font-heading font-extrabold text-3xl text-blue-900 leading-none mb-2">
+                                    <span class="lang-en">Grades 6–8</span>
+                                    <span class="lang-ar">الصفوف ٦–٨</span>
+                                </p>
+                                <p class="text-sm text-blue-900/80">
+                                    <span class="lang-en">Middle school classrooms.</span>
+                                    <span class="lang-ar">صفوف المرحلة المتوسطة.</span>
+                                </p>
+                            </div>
+                            <div class="rounded-2xl bg-gradient-to-br from-indigo-50 via-white to-indigo-50 border border-indigo-200 p-5">
+                                <p class="text-[10px] font-extrabold uppercase tracking-widest text-indigo-700 mb-1">
+                                    <span class="lang-en">Wednesday &middot; May 20</span>
+                                    <span class="lang-ar">الأربعاء · ٢٠ مايو</span>
+                                </p>
+                                <p class="font-heading font-extrabold text-3xl text-indigo-900 leading-none mb-2">
+                                    <span class="lang-en">Grades 9–11</span>
+                                    <span class="lang-ar">الصفوف ٩–١١</span>
+                                </p>
+                                <p class="text-sm text-indigo-900/80">
+                                    <span class="lang-en">High school classrooms.</span>
+                                    <span class="lang-ar">صفوف المرحلة الثانوية.</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="bg-cyan-50 border border-cyan-100 rounded-xl p-4">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-700 mb-2 flex items-center gap-1.5"><span>🤝</span>
+                                <span class="lang-en">What I need from you</span>
+                                <span class="lang-ar">ما الذي أحتاجه منكم</span>
+                            </p>
+                            <p class="text-sm text-gray-700">
+                                <span class="lang-en"><strong>Nothing extra.</strong> Teach the lesson you were already planning to teach. I'm collecting baseline data on what daily lessons look like — so anything "performed" for the visit would actually make the data less useful, not more.</span>
+                                <span class="lang-ar"><strong>لا شيء إضافيّ.</strong> قدّموا الدرس الذي كنتم ستقدّمونه أصلاً. أنا أجمع بيانات مرجعيّة حول كيف تبدو الدروس اليوميّة — لذا فإنّ أيّ شيء "مُعَدّ" خصّيصاً للزيارة سيُضعف البيانات لا يقوّيها.</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Classroom AI Integration Snapshot -->
+            <section id="snapshot" class="bg-white rounded-2xl shadow-lg border-t-8 border-violet-500 card-hover p-7 md:p-9 mb-8 scroll-mt-24">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-violet-50 flex items-center justify-center">
+                            <span class="text-3xl">📋</span>
+                        </div>
+                        <span class="inline-block bg-violet-100 text-violet-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">The Form Itself</span>
+                            <span class="lang-ar">الاستمارة نفسها</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-heading font-bold text-violet-900 mb-2">
+                            <span class="lang-en">Classroom AI Integration Snapshot — shared for full transparency</span>
+                            <span class="lang-ar">استمارة لمحة دمج الذكاء الاصطناعي في الصفّ — مشتركة بشفافية كاملة</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-3">
+                            <span class="lang-en">This is the <strong>exact form</strong> I'll be filling in during each visit. I'm sharing it openly because the easiest way to make a classroom visit comfortable is to remove the mystery: <em>this is what's checked, this is all that's checked, your name is not on it.</em></span>
+                            <span class="lang-ar">هذه هي <strong>الاستمارة نفسها</strong> التي سأملؤها خلال كلّ زيارة. أشاركها علناً لأن أسهل طريقة لجعل الزيارة مريحة هي إزالة الغموض: <em>هذا ما يُرصد، وهذا كلّ ما يُرصد، واسمكم ليس عليها.</em></span>
+                        </p>
+                        <ul class="text-sm text-gray-700 space-y-1.5 mb-5">
+                            <li class="flex items-start"><span class="text-violet-600 mr-2">✓</span>
+                                <span class="lang-en"><strong>No teacher name.</strong> The form doesn't ask for it and I'm not adding it.</span>
+                                <span class="lang-ar"><strong>لا يُسأل عن اسم المعلّم.</strong> الاستمارة لا تتضمّن هذه الخانة ولن أُضيفها.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-violet-600 mr-2">✓</span>
+                                <span class="lang-en"><strong>Non-evaluative.</strong> There is no "rate the teacher" question — only structured prompts about the AI activity in the room.</span>
+                                <span class="lang-ar"><strong>غير تقييميّة.</strong> لا يوجد سؤال "قيّموا المعلّم" — فقط أسئلة منظّمة حول نشاط الذكاء الاصطناعي داخل الغرفة.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-violet-600 mr-2">✓</span>
+                                <span class="lang-en"><strong>What it captures:</strong> grade level, subject area, type of AI integration observed (if any), student engagement level, and the AI tool used (if known).</span>
+                                <span class="lang-ar"><strong>ما الذي ترصده:</strong> المرحلة، والمادّة، ونوع دمج الذكاء الاصطناعي الملاحَظ (إن وُجد)، ومستوى انخراط الطلاب، والأداة المستخدمة (إن عُرفت).</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-violet-600 mr-2">✓</span>
+                                <span class="lang-en"><strong>"No observable AI integration" is a perfectly valid answer</strong> — and one I genuinely expect to record often. We're at the start of a multi-phase plan; the goal is a true picture, not a rosy one.</span>
+                                <span class="lang-ar"><strong>خيار "لا يوجد دمج ملاحَظ للذكاء الاصطناعي" إجابة مقبولة تماماً</strong> — وأتوقّع تسجيلها فعلاً بشكل متكرّر. نحن في بداية خطّة متعدّدة المراحل؛ والهدف صورة صادقة لا صورة مُجمَّلة.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-violet-600 mr-2">✓</span>
+                                <span class="lang-en"><strong>This is phase one.</strong> Future phases will look at different things — this form is calibrated only for where we are right now.</span>
+                                <span class="lang-ar"><strong>هذه المرحلة الأولى.</strong> ستركّز المراحل القادمة على جوانب مختلفة — هذه الاستمارة معايَرة فقط لما نحن فيه الآن.</span>
+                            </li>
+                        </ul>
+                        <!-- Download CTA -->
+                        <div class="rounded-2xl bg-gradient-to-br from-violet-50 via-fuchsia-50 to-violet-100 border-2 border-violet-300 p-5 md:p-6 shadow-md">
+                            <div class="flex flex-col md:flex-row md:items-center gap-5">
+                                <div class="flex-1">
+                                    <p class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-extrabold text-violet-800 bg-violet-200/70 rounded-full px-3 py-1 mb-2">
+                                        <span>📄</span>
+                                        <span class="lang-en">PDF &middot; 1 page</span>
+                                        <span class="lang-ar">PDF · صفحة واحدة</span>
+                                    </p>
+                                    <p class="font-heading font-extrabold text-lg md:text-xl text-violet-950 leading-tight">
+                                        <span class="lang-en">Download the Classroom AI Integration Snapshot</span>
+                                        <span class="lang-ar">حمّلوا استمارة لمحة دمج الذكاء الاصطناعي في الصفّ</span>
+                                    </p>
+                                    <p class="text-xs md:text-sm text-violet-900/80 mt-1.5">
+                                        <span class="lang-en">See every question and option before Monday — that's the whole point.</span>
+                                        <span class="lang-ar">اطّلعوا على كلّ سؤال وخيار قبل يوم الإثنين — هذا هو الهدف بأكمله.</span>
+                                    </p>
+                                </div>
+                                <a href="Classroom%20AI%20Integration%20Snapshot.pdf" target="_blank" rel="noopener noreferrer" download class="snapshot-cta inline-flex items-center justify-center gap-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white py-4 px-7 rounded-full text-base md:text-lg font-extrabold hover:from-violet-700 hover:to-fuchsia-700 transition-all whitespace-nowrap shrink-0">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+                                    <span class="lang-en">Download PDF</span>
+                                    <span class="lang-ar">حمّلوا الـ PDF</span>
+                                </a>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-3">
+                            <span class="lang-en">Also linked from the PD Modules page so it stays easy to find as we move through phases.</span>
+                            <span class="lang-ar">مربوطة أيضاً من صفحة وحدات التطوير المهني ليسهل الوصول إليها مع تقدّمنا في المراحل.</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Wired Wednesdays this week -->
+            <section class="bg-white rounded-2xl shadow-lg border-t-8 border-indigo-700 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-indigo-50 flex items-center justify-center">
+                            <img src="../wired-wednesdays-logo.png" alt="Wired Wednesdays logo" class="h-12 w-12 object-contain rounded-xl" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                            <span style="display:none;" class="text-3xl">⚡</span>
+                        </div>
+                        <span class="inline-block bg-indigo-100 text-indigo-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">This Wednesday</span>
+                            <span class="lang-ar">هذا الأربعاء</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-heading font-bold text-indigo-900 mb-2">
+                            <span class="lang-en">Wired Wednesdays — Workspace Studio Flows, hands-on</span>
+                            <span class="lang-ar">Wired Wednesdays — تدفّقات Workspace Studio عمليًا</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-3">
+                            <span class="lang-en">Back to the standard <strong>3:00–3:30 PM</strong> slot this week. We'll build a no-code <strong>Workspace Studio Flow</strong> live — a daily inbox briefing or a meeting prep brief, your pick — straight from the new PD module. Same recurring Meet link, recorded as always.</span>
+                            <span class="lang-ar">نعود هذا الأسبوع إلى الموعد المعتاد <strong>٣:٠٠–٣:٣٠ مساءً</strong>. سنبني سويّاً <strong>تدفّق Workspace Studio</strong> بلا برمجة بشكل مباشر — ملخّص يومي للبريد أو موجز تحضير اجتماع، تختارونه — استناداً مباشرة إلى وحدة التطوير المهني الجديدة. الرابط نفسه، وسيُسجَّل كالعادة.</span>
+                        </p>
+                        <div class="flex flex-wrap gap-3">
+                            <a href="../Wired%20Wednesdays/wired-wednesdays.html" class="inline-flex items-center gap-2 bg-indigo-700 text-white py-2.5 px-5 rounded-full text-sm font-semibold hover:bg-indigo-800 transition-colors shadow-md">
+                                <span class="lang-en">See the schedule</span>
+                                <span class="lang-ar">عرض الجدول</span>
+                                <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </a>
+                            <a href="https://meet.google.com/yhf-vppd-hnh" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-amber-400 text-indigo-900 py-2.5 px-5 rounded-full text-sm font-semibold hover:bg-amber-500 transition-colors shadow-md">
+                                <span class="lang-en">Join this Wednesday</span>
+                                <span class="lang-ar">انضموا هذا الأربعاء</span>
+                                <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Questions / contact -->
+            <section class="bg-gradient-to-br from-blue-950 via-blue-900 to-cyan-800 rounded-2xl shadow-xl p-8 md:p-10 text-white text-center mb-8">
+                <h3 class="text-2xl md:text-3xl font-heading font-extrabold mb-3">
+                    <span class="lang-en">Still got a question about the visits?</span>
+                    <span class="lang-ar">هل لديكم استفسار آخر حول الزيارات؟</span>
+                </h3>
+                <p class="text-cyan-50 max-w-2xl mx-auto mb-6">
+                    <span class="lang-en">If anything about Monday–Wednesday is still unclear — what I'll be doing, what I won't be doing, what's on the form — please ask. I'd rather answer ten questions ahead of the visit than have any teacher feeling caught off guard.</span>
+                    <span class="lang-ar">إن بقي شيء غامض حول الإثنين والثلاثاء والأربعاء — ما سأفعله، وما لن أفعله، وما الموجود في الاستمارة — فلا تتردّدوا في السؤال. أُفضّل الإجابة عن عشرة أسئلة قبل الزيارة على أن يشعر أيّ معلم بأنّه فوجئ بشيء.</span>
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <button type="button" class="copy-email inline-flex items-center gap-2 bg-amber-400 text-blue-950 py-3 px-6 rounded-full font-bold hover:bg-amber-300 transition-colors shadow-lg" data-email="bbaki@aisa.sch.ae" data-toast-en="Email copied to clipboard: bbaki@aisa.sch.ae" data-toast-ar="تم نسخ البريد الإلكتروني: bbaki@aisa.sch.ae">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <span class="lang-en">Email me — bbaki@aisa.sch.ae</span>
+                        <span class="lang-ar">راسلوني — bbaki@aisa.sch.ae</span>
+                    </button>
+                    <a href="Classroom%20AI%20Integration%20Snapshot.pdf" target="_blank" rel="noopener noreferrer" download class="inline-flex items-center gap-2 bg-white/15 border border-white/30 text-white py-3 px-6 rounded-full font-bold hover:bg-white/25 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+                        <span class="lang-en">Download the Snapshot</span>
+                        <span class="lang-ar">حمّلوا الاستمارة</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Previous issue -->
+            <section class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 mb-8">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-700 mb-1">
+                            <span class="lang-en">Previous Issue</span>
+                            <span class="lang-ar">العدد السابق</span>
+                        </p>
+                        <p class="font-heading font-bold text-blue-950">
+                            <span class="lang-en">May 11 — Issue No. 2: Head of AI note, Wired Wednesdays launch, Workspace Studio module, Gemini in Gmail &amp; Drive</span>
+                            <span class="lang-ar">١١ مايو — العدد الثاني: رسالة رئيس قسم الذكاء الاصطناعي، إطلاق Wired Wednesdays، وحدة Workspace Studio، Gemini في Gmail و Drive</span>
+                        </p>
+                    </div>
+                    <a href="may11.html" class="inline-flex items-center gap-2 text-cyan-700 font-semibold hover:text-blue-950 text-sm">
+                        <span class="lang-en">Read May 11</span>
+                        <span class="lang-ar">قراءة عدد ١١ مايو</span>
+                        <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                </div>
+            </section>
+
+            <p class="text-center text-xs text-gray-500">
+                <span class="lang-en">Digital Lion Newsletter &middot; Issue No. 3 &middot; May 18 &middot; AISA Teaching &amp; Learning Department</span>
+                <span class="lang-ar">نشرة ديجيتال لايون · العدد الثالث · ١٨ مايو · قسم التعليم والتعلم في AISA</span>
+            </p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-950 text-cyan-100 mt-auto">
+        <div class="h-1 bg-gradient-to-r from-blue-950 via-cyan-500 to-amber-400 w-full"></div>
+        <div class="container mx-auto px-6 py-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <img src="../AISA_logo.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
+                <span class="font-heading font-bold text-lg tracking-wide">
+                    <span class="lang-en">AISA Media Hub</span>
+                    <span class="lang-ar">مركز الإعلام في AISA</span>
+                </span>
+            </div>
+            <p class="text-xs text-cyan-200/80">
+                <span class="lang-en">American International School in Abu Dhabi &middot; Teaching &amp; Learning Department</span>
+                <span class="lang-ar">المدرسة الأمريكية الدولية في أبوظبي · قسم التعليم والتعلم</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Copy-to-clipboard toast -->
+    <div id="copy-toast" role="status" aria-live="polite" class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 pointer-events-none z-[100] flex items-center gap-3 bg-slate-900 text-white text-sm font-medium px-5 py-3 rounded-full shadow-xl border border-white/10 transition-all duration-300">
+        <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        <span id="copy-toast-msg">Copied!</span>
+    </div>
+
+    <script>
+        // --- Copy email to clipboard with toast ---
+        (function () {
+            const toast = document.getElementById('copy-toast');
+            const msg = document.getElementById('copy-toast-msg');
+            let hideTimer = null;
+
+            function showToast(text) {
+                if (!toast || !msg) return;
+                msg.textContent = text;
+                clearTimeout(hideTimer);
+                toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                hideTimer = setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                }, 2400);
+            }
+
+            async function copyText(text) {
+                if (navigator.clipboard && window.isSecureContext) {
+                    try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+                }
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                let ok = false;
+                try { ok = document.execCommand('copy'); } catch (e) {}
+                document.body.removeChild(ta);
+                return ok;
+            }
+
+            document.addEventListener('click', async (event) => {
+                const btn = event.target.closest('.copy-email');
+                if (!btn) return;
+                event.preventDefault();
+                const email = btn.getAttribute('data-email') || '';
+                const isArabic = document.documentElement.getAttribute('lang') === 'ar';
+                const successText = isArabic
+                    ? (btn.getAttribute('data-toast-ar') || 'تم نسخ البريد الإلكتروني')
+                    : (btn.getAttribute('data-toast-en') || 'Email copied to clipboard');
+                const failureText = isArabic ? 'تعذّر النسخ — البريد: ' + email : "Couldn't copy — email: " + email;
+                const ok = await copyText(email);
+                showToast(ok ? successText : failureText);
+            });
+        })();
+    </script>
+
+    <script>
+        (function () {
+            const STORAGE_KEY = 'aisa-newsletter-lang';
+            const html = document.documentElement;
+            const toggleBtn = document.getElementById('lang-toggle');
+
+            function applyLang(lang) {
+                const next = lang === 'ar' ? 'ar' : 'en';
+                html.setAttribute('lang', next);
+                html.setAttribute('dir', next === 'ar' ? 'rtl' : 'ltr');
+                try { localStorage.setItem(STORAGE_KEY, next); } catch (e) { /* ignore */ }
+            }
+
+            let saved = 'en';
+            try { saved = localStorage.getItem(STORAGE_KEY) || 'en'; } catch (e) { /* ignore */ }
+            applyLang(saved);
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    const current = html.getAttribute('lang') === 'ar' ? 'ar' : 'en';
+                    applyLang(current === 'ar' ? 'en' : 'ar');
+                });
+            }
+        })();
+    </script>
+
+</body>
+</html>
