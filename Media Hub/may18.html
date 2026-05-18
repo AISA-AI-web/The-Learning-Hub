@@ -53,6 +53,25 @@
             .snapshot-cta { animation: none; }
         }
 
+        /* --- Survey CTA: pulsing gold glow to maximise response rate --- */
+        .survey-cta {
+            animation: surveyPulse 2.4s ease-in-out infinite;
+        }
+        @keyframes surveyPulse {
+            0%, 100% { box-shadow: 0 6px 18px 0 rgba(245, 158, 11, 0.55), 0 0 0 0 rgba(245, 158, 11, 0.5); }
+            50%      { box-shadow: 0 12px 30px 0 rgba(245, 158, 11, 0.65), 0 0 0 14px rgba(245, 158, 11, 0); }
+        }
+        .survey-section {
+            animation: surveySectionGlow 3.2s ease-in-out infinite;
+        }
+        @keyframes surveySectionGlow {
+            0%, 100% { box-shadow: 0 10px 30px -8px rgba(245, 158, 11, 0.35); }
+            50%      { box-shadow: 0 18px 40px -6px rgba(245, 158, 11, 0.55); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .survey-cta, .survey-section { animation: none; }
+        }
+
         /* --- Bilingual toggle: show only the active language --- */
         html[lang="en"] .lang-ar { display: none !important; }
         html[lang="ar"] .lang-en { display: none !important; }
@@ -199,6 +218,52 @@
                             <span class="lang-en">And to say it one more time, because it matters: <strong>please don't prepare anything for me</strong>. Don't change the lesson, don't queue up an AI demo, don't shuffle activities. I want to see what a <em>normal</em> Monday/Tuesday/Wednesday looks like in your classroom. That's the data that's actually useful.</span>
                             <span class="lang-ar">ولأكرّر مرّة أخرى لأهمّيّتها: <strong>لا تُحضّروا شيئاً من أجلي</strong>. لا تغيّروا الدرس، ولا تُجهّزوا عرضاً للذكاء الاصطناعي، ولا تُعيدوا ترتيب الأنشطة. أريد أن أرى كيف يبدو يوم إثنين/ثلاثاء/أربعاء <em>عاديّ</em> في صفّكم. هذه هي البيانات التي تنفع فعلاً.</span>
                         </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: AI & Innovation Survey — second call to boost response rate -->
+            <section class="survey-section bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 rounded-2xl border-4 border-amber-400 p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-300 to-orange-400 flex items-center justify-center shadow-lg">
+                            <span class="text-3xl">📋</span>
+                        </div>
+                        <span class="inline-block bg-amber-200 text-amber-900 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">Still Open</span>
+                            <span class="lang-ar">لا يزال مفتوحاً</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <p class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-extrabold text-amber-800 bg-amber-200/70 rounded-full px-3 py-1 mb-3">
+                            <span>⚡</span>
+                            <span class="lang-en">2 minutes &middot; anonymous</span>
+                            <span class="lang-ar">دقيقتان · مجهول الهوية</span>
+                        </p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-extrabold text-amber-950 mb-3 leading-tight">
+                            <span class="lang-en">Haven't taken the AI &amp; Innovation survey yet? It's still open.</span>
+                            <span class="lang-ar">لم تشاركوا بعد في استبيان الذكاء الاصطناعي والابتكار؟ لا يزال مفتوحاً.</span>
+                        </h3>
+                        <p class="text-amber-950/90 leading-relaxed mb-2">
+                            <span class="lang-en">The class visits give me one slice of the picture. <strong>The survey gives me the other</strong> — the things I can't see from the doorway: what you'd actually want a PD module on, which tools are missing, where the policy still gets in the way.</span>
+                            <span class="lang-ar">تمنحني الزيارات الصفّيّة جانباً واحداً من الصورة. <strong>الاستبيان يمنحني الجانب الآخر</strong> — ما لا أراه من باب الصفّ: ما الذي تودّون فعلاً وحدة تطوير مهني عنه، وما الأدوات الناقصة، وأين تظلّ السياسة عائقاً.</span>
+                        </p>
+                        <p class="text-amber-950/90 leading-relaxed mb-5">
+                            <span class="lang-en">If you can spare two minutes, please do. Every answer changes what gets prioritised next.</span>
+                            <span class="lang-ar">إن كان بإمكانكم تخصيص دقيقتين، فأرجو ذلك. كلّ إجابة تُعيد ترتيب الأولويات القادمة.</span>
+                        </p>
+                        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                            <a href="https://docs.google.com/forms/d/e/1FAIpQLScMbNJ1xK6-63sCTpkAN8C6cXKirHGsXwj5furPuzTqS9j7Fw/viewform?usp=header" target="_blank" rel="noopener noreferrer" class="survey-cta inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white py-4 px-8 rounded-full text-base md:text-lg font-extrabold hover:from-amber-600 hover:to-orange-600 transition-all whitespace-nowrap">
+                                <span>⚡</span>
+                                <span class="lang-en">Take the 2-minute survey</span>
+                                <span class="lang-ar">شاركوا في الاستبيان · دقيقتان</span>
+                                <svg class="w-5 h-5 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </a>
+                            <span class="text-xs text-amber-900/70 sm:ml-1">
+                                <span class="lang-en">Already done it? Thank you — feel free to share the link with a colleague.</span>
+                                <span class="lang-ar">شاركتم بالفعل؟ شكراً جزيلاً — لا تتردّدوا في مشاركة الرابط مع زميل.</span>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </section>
