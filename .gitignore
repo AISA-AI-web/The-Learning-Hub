@@ -1,0 +1,13 @@
+# OAuth / Google Cloud secrets — never commit these
+client_secret*.json
+*credentials*.json
+.env
+.env.*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/
+.idea/
