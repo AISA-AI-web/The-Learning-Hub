@@ -91,9 +91,47 @@
         return JSON.parse(json);
     }
 
+    /* One-time setup that should run as soon as aisaAuth is available,
+     * whether the user had an existing session or just signed in:
+     *   - Fire one pageview to the backend.
+     *   - Delegate clicks on [data-track="..."] elements so tagged
+     *     interactions land in the clicks sheet automatically.
+     * Idempotent — guarded by a flag so we don't double-wire after
+     * re-auth or programmatic sign-ins. */
+    var autoTrackingWired = false;
+    function wireAutoTracking() {
+        if (autoTrackingWired) return;
+        if (!window.aisaAuth) return;
+        autoTrackingWired = true;
+
+        try { window.aisaAuth.trackPageView(); } catch (e) {}
+
+        document.addEventListener('click', function (e) {
+            var el = e.target;
+            for (var depth = 0; el && el !== document && depth < 12; depth++) {
+                if (el.dataset) {
+                    /* Explicit tag wins. */
+                    if (el.dataset.track) {
+                        try { window.aisaAuth.trackClick(el.dataset.track); } catch (_) {}
+                        return;
+                    }
+                    /* Implicit: PD module cards already carry data-module-id
+                     * for the completion machinery, so we reuse that as a
+                     * click label without having to tag them twice. */
+                    if (el.dataset.moduleId) {
+                        try { window.aisaAuth.trackClick('module-card:' + el.dataset.moduleId); } catch (_) {}
+                        return;
+                    }
+                }
+                el = el.parentNode;
+            }
+        });
+    }
+
     var existing = readSession();
     if (existing) {
         window.aisaAuth = buildPublicApi();
+        wireAutoTracking();
         return;
     }
 
@@ -231,6 +269,7 @@
             window.aisaAuth = buildPublicApi();
             unlock();
             drainReAuthResolvers();
+            wireAutoTracking();
             return;
         }
 
@@ -257,6 +296,7 @@
             window.aisaAuth = buildPublicApi();
             unlock();
             drainReAuthResolvers();
+            wireAutoTracking();
         }).catch(function (err) {
             console.warn('AISA: create_session failed', err);
             showError('Could not start your session. Please try signing in again.');
@@ -547,6 +587,35 @@
              * the current ID token and returns the email it sees. */
             whoami: function () {
                 return apiCall('whoami');
+            },
+
+            /* Fire-and-forget: log one page view to the backend's
+             * `pageviews` tab. Failures are swallowed so analytics never
+             * interferes with the user-facing flow. */
+            trackPageView: function () {
+                if (!API_URL) return Promise.resolve();
+                return apiCall('record_pageview', {
+                    page_path:  location.pathname + location.search + location.hash,
+                    page_title: document.title || '',
+                    referrer:   document.referrer || '',
+                    user_agent: (typeof navigator !== 'undefined' && navigator.userAgent) || ''
+                }).catch(function (err) {
+                    console.warn('AISA: pageview failed', err);
+                });
+            },
+
+            /* Fire-and-forget: log one named click to the backend's
+             * `clicks` tab. Called automatically when any element with
+             * a data-track="..." attribute is clicked. */
+            trackClick: function (label) {
+                if (!API_URL || !label) return Promise.resolve();
+                return apiCall('record_click', {
+                    label:      String(label).slice(0, 200),
+                    page_path:  location.pathname + location.search + location.hash,
+                    user_agent: (typeof navigator !== 'undefined' && navigator.userAgent) || ''
+                }).catch(function (err) {
+                    console.warn('AISA: click failed', err);
+                });
             },
 
             /* One-call hook for PD module pages.
