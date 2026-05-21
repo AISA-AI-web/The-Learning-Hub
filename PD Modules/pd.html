@@ -199,7 +199,7 @@
             margin-top: 28px;
         }
     </style>
-    <script src="../auth/gate.js?v=2"></script>
+    <script src="../auth/gate.js?v=3"></script>
 </head>
 <body class="bg-pd-pattern text-gray-800 min-h-screen flex flex-col">
 
@@ -1107,7 +1107,9 @@
 
         // --- Completion sync: marks cards completed based on backend data ---
         (function() {
-            if (!window.aisaAuth || !window.aisaAuth.isConfigured()) return;
+            // The completion sync needs to handle both signed-in-but-aisaAuth-
+            // not-yet-ready and the normal case. We use aisaReady so we still
+            // get the synchronous cached read once aisaAuth becomes available.
 
             function recomputeFilterCounts() {
                 const allCards = document.querySelectorAll('.pd-module');
@@ -1133,27 +1135,59 @@
                 let count = 0;
                 document.querySelectorAll('.pd-module[data-module-id]').forEach(card => {
                     const id = card.getAttribute('data-module-id');
-                    if (completedSet.has(id)) {
+                    const wasCompleted = card.dataset.completed === 'true';
+                    const shouldBeCompleted = completedSet.has(id);
+
+                    if (shouldBeCompleted) {
                         card.setAttribute('data-completed', 'true');
                         count++;
-                        // Swap "Start module →" CTA text with "Review →"
+                        if (!wasCompleted) {
+                            // Swap "Start module →" CTA text with "Review →"
+                            card.querySelectorAll('span').forEach(span => {
+                                if ((span.textContent || '').trim() === 'Start module →') {
+                                    span.textContent = 'Review →';
+                                }
+                            });
+                        }
+                    } else if (wasCompleted) {
+                        card.removeAttribute('data-completed');
                         card.querySelectorAll('span').forEach(span => {
-                            const txt = (span.textContent || '').trim();
-                            if (txt === 'Start module →') span.textContent = 'Review →';
+                            if ((span.textContent || '').trim() === 'Review →') {
+                                span.textContent = 'Start module →';
+                            }
                         });
                     }
                 });
                 const filterBtn = document.getElementById('pd-filter-completed');
-                if (filterBtn && count > 0) filterBtn.classList.remove('hidden');
+                if (filterBtn) filterBtn.classList.toggle('hidden', count === 0);
                 recomputeFilterCounts();
                 if (typeof window.__pdReapplyFilter === 'function') window.__pdReapplyFilter();
             }
 
-            window.aisaAuth.getCompletions().then(items => {
-                applyCompletions((items || []).map(i => i.module_id));
-            }).catch(err => {
-                console.warn('AISA: could not load completions for PD overview', err);
-            });
+            function runSync(auth) {
+                if (!auth.isConfigured()) return;
+
+                // 1. Synchronously apply the cached state so the page
+                //    starts in the correct shape with no flash.
+                const cached = auth.getCompletionsCached();
+                if (cached) {
+                    applyCompletions(cached.map(i => i.module_id));
+                }
+
+                // 2. Refresh from the server in the background; re-apply
+                //    if anything changed.
+                auth.getCompletions().then(items => {
+                    applyCompletions((items || []).map(i => i.module_id));
+                }).catch(err => {
+                    console.warn('AISA: could not load completions for PD overview', err);
+                });
+            }
+
+            if (window.aisaReady) {
+                window.aisaReady(runSync);
+            } else if (window.aisaAuth) {
+                runSync(window.aisaAuth);
+            }
         })();
     </script>
 

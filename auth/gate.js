@@ -404,6 +404,68 @@
         });
     }
 
+    /* ------------------------------------------------------------------
+     * Completions cache.
+     *
+     * Stale-while-revalidate: every successful getCompletions call
+     * writes the result to localStorage. Pages can synchronously read
+     * the cached value at load time so the UI starts in the correct
+     * state instead of flashing through "nothing completed" first.
+     * ------------------------------------------------------------------ */
+    var COMPLETIONS_CACHE_KEY = 'aisa_completions_v1';
+
+    function readCachedCompletions() {
+        try {
+            var session = readSession();
+            if (!session) return null;
+            var raw = localStorage.getItem(COMPLETIONS_CACHE_KEY);
+            if (!raw) return null;
+            var parsed = JSON.parse(raw);
+            if (!parsed || parsed.email !== session.email) return null;
+            return Array.isArray(parsed.completions) ? parsed.completions : null;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function writeCachedCompletions(items) {
+        try {
+            var session = readSession();
+            if (!session) return;
+            localStorage.setItem(COMPLETIONS_CACHE_KEY, JSON.stringify({
+                email:       session.email,
+                completions: items || [],
+                cachedAt:    Date.now()
+            }));
+        } catch (e) {}
+    }
+
+    function clearCachedCompletions() {
+        try { localStorage.removeItem(COMPLETIONS_CACHE_KEY); } catch (e) {}
+    }
+
+    function addCompletionToCache(moduleId, version) {
+        try {
+            var session = readSession();
+            if (!session) return;
+            var raw = localStorage.getItem(COMPLETIONS_CACHE_KEY);
+            var cache = raw ? JSON.parse(raw) : null;
+            if (!cache || cache.email !== session.email) {
+                cache = { email: session.email, completions: [], cachedAt: Date.now() };
+            }
+            var exists = cache.completions.some(function (c) { return c.module_id === moduleId; });
+            if (!exists) {
+                cache.completions.push({
+                    module_id:    moduleId,
+                    completed_at: new Date().toISOString(),
+                    version:      version || 'v1'
+                });
+                cache.cachedAt = Date.now();
+                localStorage.setItem(COMPLETIONS_CACHE_KEY, JSON.stringify(cache));
+            }
+        } catch (e) {}
+    }
+
     function buildPublicApi() {
         return {
             signOut: function () {
@@ -425,6 +487,7 @@
                     } catch (e) {}
                 }
                 clearSession();
+                clearCachedCompletions();
                 try {
                     if (window.google && window.google.accounts && window.google.accounts.id) {
                         window.google.accounts.id.disableAutoSelect();
@@ -449,16 +512,35 @@
                     progress_pct: typeof progressPct === 'number' ? progressPct : 0,
                     version:      version || 'v1',
                     user_agent:   (typeof navigator !== 'undefined' && navigator.userAgent) || ''
+                }).then(function (r) {
+                    /* Mirror the new completion into the local cache so
+                     * the next page load reflects it immediately, without
+                     * waiting on the server roundtrip. */
+                    if (event === 'completed') addCompletionToCache(moduleId, version);
+                    return r;
                 });
             },
 
             /* Returns a promise resolving to an array of
              *   { module_id, completed_at, version }
-             * for every module this user has completed at least once. */
+             * for every module this user has completed at least once.
+             * Also refreshes the local cache for instant rendering on
+             * the next page load. */
             getCompletions: function () {
                 return apiCall('get_completions').then(function (r) {
-                    return r.completions || [];
+                    var items = r.completions || [];
+                    writeCachedCompletions(items);
+                    return items;
                 });
+            },
+
+            /* Synchronous read of the most recent completions known to
+             * this device. Returns null if there's no cached data for
+             * the current user. Pages use this to render the correct
+             * state before paint, then call getCompletions() to refresh
+             * the cache in the background. */
+            getCompletionsCached: function () {
+                return readCachedCompletions();
             },
 
             /* Round-trip health check: confirms the server can verify
@@ -517,22 +599,33 @@
                     });
                 }
 
+                function applyDone() {
+                    recorded = true;
+                    var boxes = document.querySelectorAll(selector);
+                    for (var i = 0; i < boxes.length; i++) boxes[i].checked = true;
+                    if (!refresh) return;
+                    /* Silence confetti for the silent rehydration so
+                     * returning visitors don't get a celebration animation
+                     * every time they revisit a completed module. */
+                    var origConfetti = window.confetti;
+                    window.confetti = function () {};
+                    try { refresh(); } finally { window.confetti = origConfetti; }
+                }
+
                 function hydrate() {
                     if (!api.isConfigured()) return;
+
+                    /* Step 1: synchronously apply the cached state so the
+                     * page never flashes through the un-checked version. */
+                    var cached = api.getCompletionsCached();
+                    if (cached && cached.some(function (c) { return c.module_id === moduleId; })) {
+                        applyDone();
+                    }
+
+                    /* Step 2: refresh from the server in the background. */
                     api.getCompletions().then(function (items) {
                         var done = (items || []).some(function (c) { return c.module_id === moduleId; });
-                        if (!done) return;
-                        recorded = true;
-                        var boxes = document.querySelectorAll(selector);
-                        for (var i = 0; i < boxes.length; i++) boxes[i].checked = true;
-                        if (!refresh) return;
-                        /* Silence confetti for the silent rehydration so
-                         * returning visitors don't get a celebration
-                         * animation every time they revisit a completed
-                         * module. */
-                        var origConfetti = window.confetti;
-                        window.confetti = function () {};
-                        try { refresh(); } finally { window.confetti = origConfetti; }
+                        if (done && !recorded) applyDone();
                     }).catch(function (err) {
                         console.warn('AISA: could not load completion status for ' + moduleId, err);
                     });
