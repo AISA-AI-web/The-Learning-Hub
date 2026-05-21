@@ -119,48 +119,56 @@
             'display:flex;flex-direction:column;align-items:center;justify-content:center;',
             'padding:2.5rem 1.5rem;overflow:auto;}',
 
-            '#aisa-auth-gate .aisa-shell{width:100%;max-width:380px;display:flex;',
+            '#aisa-auth-gate .aisa-shell{width:100%;max-width:520px;display:flex;',
             'flex-direction:column;align-items:center;text-align:center;}',
 
-            '#aisa-auth-gate .aisa-logo{width:56px;height:56px;object-fit:contain;',
-            'margin-bottom:1.75rem;}',
+            '#aisa-auth-gate .aisa-logo{width:96px;height:96px;object-fit:contain;',
+            'margin-bottom:2rem;}',
 
-            '#aisa-auth-gate h1{margin:0 0 .5rem;font-size:1.5rem;font-weight:600;',
-            'letter-spacing:-.015em;color:#0f172a;line-height:1.25;}',
-            '#aisa-auth-gate .aisa-sub{margin:0 0 2rem;color:#475569;font-size:.9375rem;',
-            'line-height:1.5;max-width:320px;}',
+            '#aisa-auth-gate h1{margin:0 0 .75rem;font-size:2.25rem;font-weight:700;',
+            'letter-spacing:-.02em;color:#0f172a;line-height:1.15;}',
+            '#aisa-auth-gate .aisa-sub{margin:0 0 2.5rem;color:#475569;font-size:1.0625rem;',
+            'line-height:1.55;max-width:440px;}',
 
             '#aisa-auth-gate .aisa-btn-wrap{display:flex;justify-content:center;',
-            'min-height:44px;width:100%;}',
+            'min-height:48px;width:100%;}',
+            /* Scale up the Google button itself — GIS caps width at 400px,
+             * so we use CSS transform to enlarge it without going outside spec. */
+            '#aisa-auth-gate .aisa-btn-wrap > div{transform:scale(1.15);',
+            'transform-origin:center;}',
 
-            '#aisa-auth-gate .aisa-error{margin-top:1rem;font-size:.875rem;color:#b91c1c;',
-            'line-height:1.4;display:none;max-width:320px;}',
+            '#aisa-auth-gate .aisa-error{margin-top:1.25rem;font-size:.9375rem;color:#b91c1c;',
+            'line-height:1.45;display:none;max-width:400px;}',
             '#aisa-auth-gate .aisa-error.show{display:block;}',
 
-            '#aisa-auth-gate .aisa-divider{width:100%;max-width:280px;height:1px;',
-            'background:#e2e8f0;margin:2.5rem 0 1.5rem;}',
+            '#aisa-auth-gate .aisa-divider{width:100%;max-width:320px;height:1px;',
+            'background:#e2e8f0;margin:3rem 0 1.75rem;}',
 
-            '#aisa-auth-gate .aisa-strip-label{font-size:.6875rem;font-weight:600;',
-            'letter-spacing:.12em;text-transform:uppercase;color:#94a3b8;',
-            'margin:0 0 1rem;}',
+            '#aisa-auth-gate .aisa-strip-label{font-size:.75rem;font-weight:600;',
+            'letter-spacing:.14em;text-transform:uppercase;color:#94a3b8;',
+            'margin:0 0 1.25rem;}',
             '#aisa-auth-gate .aisa-strip{display:flex;align-items:center;justify-content:center;',
-            'gap:1.75rem;flex-wrap:wrap;}',
-            '#aisa-auth-gate .aisa-strip img{height:28px;width:auto;max-width:90px;',
+            'gap:2.25rem;flex-wrap:wrap;}',
+            '#aisa-auth-gate .aisa-strip img{height:32px;width:auto;max-width:110px;',
             'object-fit:contain;opacity:.55;filter:grayscale(100%);',
             'transition:opacity .2s ease,filter .2s ease;}',
             '#aisa-auth-gate .aisa-strip img:hover{opacity:1;filter:grayscale(0);}',
 
-            '#aisa-auth-gate .aisa-foot{margin-top:2.5rem;font-size:.75rem;color:#94a3b8;}',
+            '#aisa-auth-gate .aisa-foot{margin-top:2.75rem;font-size:.8125rem;color:#94a3b8;}',
 
-            '#aisa-auth-gate .aisa-spinner{display:inline-block;width:18px;height:18px;',
+            '#aisa-auth-gate .aisa-spinner{display:inline-block;width:22px;height:22px;',
             'border:2px solid #e2e8f0;border-top-color:#64748b;border-radius:50%;',
             'animation:aisa-spin .8s linear infinite;}',
             '@keyframes aisa-spin{to{transform:rotate(360deg)}}',
 
-            '@media (max-width:420px){',
+            '@media (max-width:480px){',
             '#aisa-auth-gate{padding:2rem 1.25rem;}',
-            '#aisa-auth-gate .aisa-strip{gap:1.25rem;}',
-            '#aisa-auth-gate .aisa-strip img{height:24px;}',
+            '#aisa-auth-gate .aisa-logo{width:80px;height:80px;margin-bottom:1.5rem;}',
+            '#aisa-auth-gate h1{font-size:1.75rem;}',
+            '#aisa-auth-gate .aisa-sub{font-size:1rem;margin-bottom:2rem;}',
+            '#aisa-auth-gate .aisa-btn-wrap > div{transform:scale(1);}',
+            '#aisa-auth-gate .aisa-strip{gap:1.5rem;}',
+            '#aisa-auth-gate .aisa-strip img{height:26px;}',
             '}'
         ].join('');
         document.head.appendChild(style);
@@ -250,7 +258,7 @@
                 text: 'signin_with',
                 shape: 'rectangular',
                 logo_alignment: 'left',
-                width: 320
+                width: 400
             });
         } catch (e) {
             showError('Could not load Google sign-in. Check your connection and reload.');
