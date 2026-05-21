@@ -97,7 +97,7 @@
         '#aisa-auth-gate,#aisa-auth-gate *{visibility:visible!important}';
     (document.head || document.documentElement).appendChild(preLockStyle);
 
-    function buildGate() {
+    function buildGate(isReAuth) {
         var style = document.createElement('style');
         style.id = 'aisa-gate-style';
         style.textContent = [
@@ -136,13 +136,18 @@
         gate.setAttribute('role', 'dialog');
         gate.setAttribute('aria-modal', 'true');
         gate.setAttribute('aria-label', 'Sign in required');
+        var heading  = isReAuth ? 'Sign in to save your progress' : 'The Learning Hub';
+        var subBody  = isReAuth
+            ? 'Your session has expired. Sign back in with your ' +
+              '<span class="aisa-domain">@' + ALLOWED_DOMAIN + '</span> account to keep going.'
+            : 'Sign in with your ' +
+              '<span class="aisa-domain">@' + ALLOWED_DOMAIN + '</span> ' +
+              'Google account to continue.';
         gate.innerHTML =
             '<div class="aisa-card">' +
                 '<div class="aisa-logo" aria-hidden="true">&#129409;</div>' +
-                '<h1>The Learning Hub</h1>' +
-                '<p class="aisa-sub">Sign in with your ' +
-                    '<span class="aisa-domain">@' + ALLOWED_DOMAIN + '</span> ' +
-                    'Google account to continue.</p>' +
+                '<h1>' + heading + '</h1>' +
+                '<p class="aisa-sub">' + subBody + '</p>' +
                 '<div class="aisa-btn-wrap" id="aisa-gsi-button">' +
                     '<span class="aisa-spinner" aria-label="Loading sign-in"></span>' +
                 '</div>' +
@@ -168,6 +173,31 @@
         if (style) style.remove();
     }
 
+    /* Queue of resolvers waiting for a successful (re-)sign-in. Each entry
+     * is a function that gets called once handleCredential completes. */
+    var pendingReAuthResolvers = [];
+
+    /* Re-show the gate UI in "session expired" mode and return a promise
+     * that resolves once the user signs back in successfully. If the gate
+     * is already on screen for any reason, just queue up to wait. */
+    function triggerReAuth() {
+        return new Promise(function (resolve) {
+            pendingReAuthResolvers.push(resolve);
+            if (document.getElementById('aisa-auth-gate')) return;
+
+            if (!document.getElementById('aisa-prelock')) {
+                var preLockStyle = document.createElement('style');
+                preLockStyle.id = 'aisa-prelock';
+                preLockStyle.textContent =
+                    'body{visibility:hidden!important}' +
+                    '#aisa-auth-gate,#aisa-auth-gate *{visibility:visible!important}';
+                (document.head || document.documentElement).appendChild(preLockStyle);
+            }
+            buildGate(true);
+            loadGsi();
+        });
+    }
+
     function handleCredential(response) {
         try {
             var payload = decodeJwt(response.credential);
@@ -183,6 +213,13 @@
             writeSession(payload, response.credential);
             window.aisaAuth = buildPublicApi();
             unlock();
+            /* Resolve any pending API callers that were waiting on this
+             * re-sign-in so their retries can fire. */
+            var resolvers = pendingReAuthResolvers;
+            pendingReAuthResolvers = [];
+            for (var i = 0; i < resolvers.length; i++) {
+                try { resolvers[i](); } catch (e) {}
+            }
         } catch (e) {
             showError('Sign-in failed. Please try again.');
         }
@@ -250,45 +287,84 @@
      * simple. The server parses the body as JSON itself.
      * ------------------------------------------------------------------ */
 
+    /* Tiny floating toast for transient save feedback. Fire-and-forget;
+     * stacks multiple messages and auto-dismisses each. */
+    function ensureToastHost() {
+        var host = document.getElementById('aisa-toast-host');
+        if (host) return host;
+        host = document.createElement('div');
+        host.id = 'aisa-toast-host';
+        host.setAttribute('aria-live', 'polite');
+        host.style.cssText = 'position:fixed;bottom:1.25rem;right:1.25rem;z-index:2147483646;' +
+            'display:flex;flex-direction:column;gap:.5rem;pointer-events:none;' +
+            'font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;';
+        document.body.appendChild(host);
+        return host;
+    }
+    function showToast(message, kind) {
+        var host = ensureToastHost();
+        var bg = kind === 'error' ? '#b91c1c' : '#065f46';
+        var t = document.createElement('div');
+        t.style.cssText = 'background:' + bg + ';color:#fff;padding:.7rem 1rem;border-radius:.6rem;' +
+            'box-shadow:0 10px 25px -5px rgba(0,0,0,.3);font-size:.875rem;font-weight:600;' +
+            'max-width:320px;opacity:0;transform:translateY(8px);transition:opacity .25s,transform .25s;';
+        t.textContent = message;
+        host.appendChild(t);
+        requestAnimationFrame(function () {
+            t.style.opacity = '1';
+            t.style.transform = 'translateY(0)';
+        });
+        setTimeout(function () {
+            t.style.opacity = '0';
+            t.style.transform = 'translateY(8px)';
+            setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 300);
+        }, kind === 'error' ? 5000 : 2600);
+    }
+
     function apiCall(action, extra) {
-        return new Promise(function (resolve, reject) {
-            if (!API_URL) {
-                reject(new Error('aisa_api_not_configured'));
-                return;
-            }
-            var session = readSession();
-            if (!session || !session.idToken) {
-                reject(new Error('not_signed_in'));
-                return;
-            }
-            if (session.idTokenExpiresAt && Date.now() > session.idTokenExpiresAt) {
-                /* Google ID tokens expire ~1 hour after sign-in. The gate
-                 * session can be longer, so we need the user to re-sign-in
-                 * before we can talk to the backend again. */
-                try { sessionStorage.removeItem(STORAGE_KEY); } catch (e) {}
-                reject(new Error('id_token_expired'));
-                return;
-            }
+        if (!API_URL) {
+            return Promise.reject(new Error('aisa_api_not_configured'));
+        }
 
-            var body = { action: action, id_token: session.idToken };
-            if (extra) {
-                for (var k in extra) {
-                    if (Object.prototype.hasOwnProperty.call(extra, k)) body[k] = extra[k];
-                }
-            }
+        var session = readSession();
+        var needsReAuth = !session || !session.idToken ||
+            (session.idTokenExpiresAt && Date.now() > session.idTokenExpiresAt);
 
-            fetch(API_URL, {
-                method: 'POST',
-                mode: 'cors',
-                redirect: 'follow',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(body)
-            }).then(function (r) {
-                return r.json();
-            }).then(function (json) {
-                if (json && json.ok) resolve(json);
-                else reject(new Error((json && json.error) || 'api_error'));
-            }).catch(reject);
+        if (needsReAuth) {
+            /* Google ID tokens expire ~1 hour after sign-in. Rather than
+             * fail the call silently, we re-show the gate, wait for the
+             * user to sign back in, and then retry the request with the
+             * fresh token. */
+            return triggerReAuth().then(function () {
+                return apiCall(action, extra);
+            });
+        }
+
+        var body = { action: action, id_token: session.idToken };
+        if (extra) {
+            for (var k in extra) {
+                if (Object.prototype.hasOwnProperty.call(extra, k)) body[k] = extra[k];
+            }
+        }
+
+        return fetch(API_URL, {
+            method: 'POST',
+            mode: 'cors',
+            redirect: 'follow',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(body)
+        }).then(function (r) {
+            return r.json();
+        }).then(function (json) {
+            if (json && json.ok) return json;
+            /* The server itself rejected the token (e.g. someone tampered
+             * with sessionStorage). Treat as expired, re-auth, and retry. */
+            if (json && json.error === 'invalid_token') {
+                return triggerReAuth().then(function () {
+                    return apiCall(action, extra);
+                });
+            }
+            throw new Error((json && json.error) || 'api_error');
         });
     }
 
@@ -379,9 +455,12 @@
                     if (currentPct() !== 100) return;
                     if (!api.isConfigured()) return;
                     recorded = true;
-                    api.recordEvent(moduleId, 'completed', 100, version).catch(function (err) {
+                    api.recordEvent(moduleId, 'completed', 100, version).then(function () {
+                        showToast('Completion saved');
+                    }).catch(function (err) {
                         recorded = false;
                         console.warn('AISA: could not record completion for ' + moduleId, err);
+                        showToast("Couldn't save your completion. Tick a box to retry.", 'error');
                     });
                 }
 
