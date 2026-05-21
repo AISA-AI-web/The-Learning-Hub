@@ -2140,6 +2140,17 @@
             }
             updateArButtonLabel();
         });
+
+        // --- AISA backend: record completion + rehydrate on revisit ---
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                auth.wireModule({
+                    moduleId: 'return-to-school',
+                    checkboxSelector: '.checkbox-custom',
+                    refreshUI: updateProgress
+                });
+            });
+        }
     </script>
 
     <!-- Local Arabic dictionary + translation engine -->

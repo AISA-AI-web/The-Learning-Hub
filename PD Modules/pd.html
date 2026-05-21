@@ -1201,6 +1201,17 @@
             }
         }
 
+        // --- AISA backend: record NotebookLM completion + rehydrate ---
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                auth.wireModule({
+                    moduleId: 'notebooklm',
+                    checkboxSelector: '.nb-module-checkbox',
+                    refreshUI: nbUpdateProgress
+                });
+            });
+        }
+
         function nbFillSandbox(role, audience, topic, curriculum, context) {
             document.getElementById('nb-role').value = role;
             document.getElementById('nb-audience').value = audience;
