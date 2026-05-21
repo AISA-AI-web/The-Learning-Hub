@@ -170,6 +170,34 @@
         @media (prefers-reduced-motion: reduce) {
             .required-dot::after, .pd-module:hover .module-icon { animation: none; transform: none; }
         }
+
+        /* --- Completion state --- */
+        .pd-module { position: relative; }
+        .pd-module[data-completed="true"] {
+            border-color: #10b981;
+            box-shadow: 0 4px 12px -2px rgba(16, 185, 129, 0.15);
+        }
+        .pd-module[data-completed="true"]::after {
+            content: '✓ Completed';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 5;
+            background: #10b981;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 4px 9px;
+            border-radius: 9999px;
+            box-shadow: 0 2px 6px -1px rgba(16, 185, 129, 0.45);
+            pointer-events: none;
+        }
+        /* Push the existing top-right badge out of the way so they don't collide */
+        .pd-module[data-completed="true"] .flex.items-start.justify-between > div.items-end {
+            margin-top: 28px;
+        }
     </style>
     <script src="../auth/gate.js"></script>
 </head>
@@ -241,6 +269,11 @@
                     <span>📋 Reference</span>
                     <span class="pd-filter-count" data-count-for="reference">1</span>
                 </button>
+                <button type="button" id="pd-filter-completed" class="pd-filter hidden" data-filter="completed" role="tab" aria-selected="false">
+                    <span class="text-emerald-600">✓</span>
+                    <span>Completed</span>
+                    <span class="pd-filter-count" data-count-for="completed">0</span>
+                </button>
             </div>
 
             <!-- Modules Grid -->
@@ -271,7 +304,7 @@
                     </a>
 
                     <!-- Module: AI Vision & Ethical Framework — REQUIRED -->
-                    <a href="ai-ethics-module.html" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="required" data-keywords="ai artificial intelligence ethics policy governance principles data protection academic integrity scaffolding approved tools vision framework required">
+                    <a href="ai-ethics-module.html" data-module-id="ai-ethics" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="required" data-keywords="ai artificial intelligence ethics policy governance principles data protection academic integrity scaffolding approved tools vision framework required">
                         <div class="h-1.5 bg-gradient-to-r from-emerald-500 to-emerald-700"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -300,7 +333,7 @@
                     </a>
 
                     <!-- Module: Return to School Emergency Protocol — REQUIRED -->
-                    <a href="return-to-school.html" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="required" data-keywords="return to school emergency protocol safety adek shelter drill safe zone reopening mandatory training wellbeing risk">
+                    <a href="return-to-school.html" data-module-id="return-to-school" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="required" data-keywords="return to school emergency protocol safety adek shelter drill safe zone reopening mandatory training wellbeing risk">
                         <div class="h-1.5 bg-gradient-to-r from-red-500 to-red-700"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -335,7 +368,7 @@
                     </a>
 
                     <!-- Module: Google Workspace Studio — AI TOOLS -->
-                    <a href="workspace-studio-module.html" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-tools" data-keywords="google workspace studio flows skills starter steps no code automation ai agent gemini 3 trigger inbox briefing meeting prep brief permission slip filer attachment chat templates studio workspace google com new">
+                    <a href="workspace-studio-module.html" data-module-id="workspace-studio" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-tools" data-keywords="google workspace studio flows skills starter steps no code automation ai agent gemini 3 trigger inbox briefing meeting prep brief permission slip filer attachment chat templates studio workspace google com new">
                         <div class="h-1.5 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -362,7 +395,7 @@
                     </a>
 
                     <!-- Module: NotebookLM for Presentations — AI TOOLS -->
-                    <a href="#module-notebooklm" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-tools" data-keywords="notebooklm ai presentations powerpoint slides deck masterclass gemini lesson planning sandbox">
+                    <a href="#module-notebooklm" data-module-id="notebooklm" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-tools" data-keywords="notebooklm ai presentations powerpoint slides deck masterclass gemini lesson planning sandbox">
                         <div class="h-1.5 bg-gradient-to-r from-purple-500 to-fuchsia-500"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -387,7 +420,7 @@
                     </a>
 
                     <!-- Module: Chalkie.ai Training — AI TOOLS -->
-                    <a href="chalkie-module.html" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-tools" data-keywords="chalkie ai teaching assistant lesson planning slides worksheets dok depth of knowledge differentiation success criteria magicschool gemini accountability tool training">
+                    <a href="chalkie-module.html" data-module-id="chalkie" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-tools" data-keywords="chalkie ai teaching assistant lesson planning slides worksheets dok depth of knowledge differentiation success criteria magicschool gemini accountability tool training">
                         <div class="h-1.5 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -436,7 +469,7 @@
                     </a>
 
                     <!-- Module: AI & Assessment Design — PEDAGOGY -->
-                    <a href="ai-and-assessment.html" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="pedagogy" data-keywords="ai assessment design academic integrity viva voce oral defense rubric aias scale perkins furze traffic light citation reflection prompting plagiarism cheat hallucination red team masterclass">
+                    <a href="ai-and-assessment.html" data-module-id="ai-and-assessment" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="pedagogy" data-keywords="ai assessment design academic integrity viva voce oral defense rubric aias scale perkins furze traffic light citation reflection prompting plagiarism cheat hallucination red team masterclass">
                         <div class="h-1.5 bg-gradient-to-r from-fuchsia-500 to-pink-500"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -1010,15 +1043,30 @@
                     const text = card.innerText.toLowerCase();
                     const cat = (card.getAttribute('data-category') || '').toLowerCase();
                     const textMatch = !q || text.includes(q) || keywords.includes(q);
-                    const catMatch = activeFilter === 'all' || cat === activeFilter;
+                    let catMatch;
+                    if (activeFilter === 'all') {
+                        catMatch = true;
+                    } else if (activeFilter === 'completed') {
+                        catMatch = card.dataset.completed === 'true';
+                    } else {
+                        catMatch = cat === activeFilter;
+                    }
                     const show = textMatch && catMatch;
                     card.style.display = show ? '' : 'none';
                     if (show) visible++;
                 });
                 emptyMsg.classList.toggle('hidden', visible !== 0);
+                if (activeFilter === 'completed' && visible === 0) {
+                    emptyMsg.textContent = "You haven't completed any modules yet. Pick one and dive in!";
+                } else {
+                    emptyMsg.textContent = 'No modules match your search. Try a different keyword.';
+                }
                 clearBtn.classList.toggle('hidden', q.length === 0);
                 clearBtn.classList.toggle('flex', q.length > 0);
             }
+
+            // Expose so the completion loader (below) can re-run after marking cards
+            window.__pdReapplyFilter = applyFilter;
 
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -1050,6 +1098,39 @@
                     input.value = '';
                     applyFilter();
                 }
+            });
+        })();
+
+        // --- Completion sync: marks cards completed based on backend data ---
+        (function() {
+            if (!window.aisaAuth || !window.aisaAuth.isConfigured()) return;
+
+            function applyCompletions(completedIds) {
+                const completedSet = new Set(completedIds);
+                let count = 0;
+                document.querySelectorAll('.pd-module[data-module-id]').forEach(card => {
+                    const id = card.getAttribute('data-module-id');
+                    if (completedSet.has(id)) {
+                        card.setAttribute('data-completed', 'true');
+                        count++;
+                        // Swap "Start module →" CTA text with "Review →"
+                        card.querySelectorAll('span').forEach(span => {
+                            const txt = (span.textContent || '').trim();
+                            if (txt === 'Start module →') span.textContent = 'Review →';
+                        });
+                    }
+                });
+                const countPill = document.querySelector('[data-count-for="completed"]');
+                if (countPill) countPill.textContent = String(count);
+                const filterBtn = document.getElementById('pd-filter-completed');
+                if (filterBtn && count > 0) filterBtn.classList.remove('hidden');
+                if (typeof window.__pdReapplyFilter === 'function') window.__pdReapplyFilter();
+            }
+
+            window.aisaAuth.getCompletions().then(items => {
+                applyCompletions((items || []).map(i => i.module_id));
+            }).catch(err => {
+                console.warn('AISA: could not load completions for PD overview', err);
             });
         })();
     </script>
