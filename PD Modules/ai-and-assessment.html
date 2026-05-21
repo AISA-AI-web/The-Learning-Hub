@@ -1338,6 +1338,17 @@
             s.innerHTML = msg;
             setTimeout(() => { s.innerHTML = ''; }, 2500);
         }
+
+        // --- AISA backend: record completion + rehydrate on revisit ---
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                auth.wireModule({
+                    moduleId: 'ai-and-assessment',
+                    checkboxSelector: '.module-checkbox',
+                    refreshUI: updateProgress
+                });
+            });
+        }
     </script>
 </body>
 </html>

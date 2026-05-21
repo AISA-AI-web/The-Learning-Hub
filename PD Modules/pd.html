@@ -1042,12 +1042,16 @@
                     const keywords = (card.getAttribute('data-keywords') || '').toLowerCase();
                     const text = card.innerText.toLowerCase();
                     const cat = (card.getAttribute('data-category') || '').toLowerCase();
+                    const isCompleted = card.dataset.completed === 'true';
                     const textMatch = !q || text.includes(q) || keywords.includes(q);
                     let catMatch;
-                    if (activeFilter === 'all') {
+                    if (activeFilter === 'completed') {
+                        catMatch = isCompleted;
+                    } else if (isCompleted) {
+                        // Completed cards only appear under the Completed tab
+                        catMatch = false;
+                    } else if (activeFilter === 'all') {
                         catMatch = true;
-                    } else if (activeFilter === 'completed') {
-                        catMatch = card.dataset.completed === 'true';
                     } else {
                         catMatch = cat === activeFilter;
                     }
@@ -1105,6 +1109,25 @@
         (function() {
             if (!window.aisaAuth || !window.aisaAuth.isConfigured()) return;
 
+            function recomputeFilterCounts() {
+                const allCards = document.querySelectorAll('.pd-module');
+                const counts = { all: 0, completed: 0 };
+                allCards.forEach(card => {
+                    const cat = (card.getAttribute('data-category') || '').toLowerCase();
+                    const done = card.dataset.completed === 'true';
+                    if (done) {
+                        counts.completed++;
+                    } else {
+                        counts.all++;
+                        counts[cat] = (counts[cat] || 0) + 1;
+                    }
+                });
+                document.querySelectorAll('.pd-filter-count').forEach(el => {
+                    const key = el.getAttribute('data-count-for');
+                    el.textContent = String(counts[key] || 0);
+                });
+            }
+
             function applyCompletions(completedIds) {
                 const completedSet = new Set(completedIds);
                 let count = 0;
@@ -1120,10 +1143,9 @@
                         });
                     }
                 });
-                const countPill = document.querySelector('[data-count-for="completed"]');
-                if (countPill) countPill.textContent = String(count);
                 const filterBtn = document.getElementById('pd-filter-completed');
                 if (filterBtn && count > 0) filterBtn.classList.remove('hidden');
+                recomputeFilterCounts();
                 if (typeof window.__pdReapplyFilter === 'function') window.__pdReapplyFilter();
             }
 
@@ -1199,6 +1221,17 @@
                 txt.classList.remove('text-emerald-600');
                 txt.classList.add('text-slate-500');
             }
+        }
+
+        // --- AISA backend: record NotebookLM completion + rehydrate ---
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                auth.wireModule({
+                    moduleId: 'notebooklm',
+                    checkboxSelector: '.nb-module-checkbox',
+                    refreshUI: nbUpdateProgress
+                });
+            });
         }
 
         function nbFillSandbox(role, audience, topic, curriculum, context) {

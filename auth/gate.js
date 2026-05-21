@@ -8,6 +8,27 @@
 (function () {
     'use strict';
 
+    /* Expose a helper that runs a callback once window.aisaAuth is
+     * ready (i.e. after sign-in). If the user already has a session
+     * this fires immediately; otherwise it polls until sign-in
+     * completes. Module pages use this to wire completion tracking
+     * without worrying about race conditions with the gate. */
+    window.aisaReady = function (cb) {
+        if (typeof cb !== 'function') return;
+        if (window.aisaAuth) { cb(window.aisaAuth); return; }
+        var attempts = 0;
+        var timer = setInterval(function () {
+            attempts++;
+            if (window.aisaAuth) {
+                clearInterval(timer);
+                cb(window.aisaAuth);
+            } else if (attempts > 600) {
+                clearInterval(timer);
+                console.warn('AISA: aisaAuth never became available');
+            }
+        }, 100);
+    };
+
     var CLIENT_ID = '719019551782-h9pdg57s6oq4jpo884a53o0d1pgel1u6.apps.googleusercontent.com';
     var ALLOWED_DOMAIN = 'aisa.sch.ae';
     var STORAGE_KEY = 'aisa_auth_v1';
@@ -315,6 +336,88 @@
              * the current ID token and returns the email it sees. */
             whoami: function () {
                 return apiCall('whoami');
+            },
+
+            /* One-call hook for PD module pages.
+             *
+             * Watches the page's progress checkboxes; when 100% are
+             * checked, records a 'completed' event to the backend
+             * exactly once. On load, if the backend already has a
+             * completion for this user × module, all the checkboxes
+             * get ticked silently so the page shows the completed
+             * state without re-firing confetti.
+             *
+             * config = {
+             *   moduleId: 'ai-ethics',
+             *   checkboxSelector: '.module-checkbox',
+             *   refreshUI: function() {...},   // the module's own progress fn
+             *   version: 'v1'                  // optional, defaults to v1
+             * }
+             */
+            wireModule: function (config) {
+                if (!config || !config.moduleId) {
+                    console.warn('AISA: wireModule called without moduleId');
+                    return;
+                }
+                var api = this;
+                var moduleId = config.moduleId;
+                var version  = config.version || 'v1';
+                var selector = config.checkboxSelector || '.module-checkbox';
+                var refresh  = typeof config.refreshUI === 'function' ? config.refreshUI : null;
+                var recorded = false;
+
+                function currentPct() {
+                    var boxes = document.querySelectorAll(selector);
+                    if (!boxes.length) return 0;
+                    var checked = 0;
+                    for (var i = 0; i < boxes.length; i++) if (boxes[i].checked) checked++;
+                    return Math.round((checked / boxes.length) * 100);
+                }
+
+                function maybeRecord() {
+                    if (recorded) return;
+                    if (currentPct() !== 100) return;
+                    if (!api.isConfigured()) return;
+                    recorded = true;
+                    api.recordEvent(moduleId, 'completed', 100, version).catch(function (err) {
+                        recorded = false;
+                        console.warn('AISA: could not record completion for ' + moduleId, err);
+                    });
+                }
+
+                function hydrate() {
+                    if (!api.isConfigured()) return;
+                    api.getCompletions().then(function (items) {
+                        var done = (items || []).some(function (c) { return c.module_id === moduleId; });
+                        if (!done) return;
+                        recorded = true;
+                        var boxes = document.querySelectorAll(selector);
+                        for (var i = 0; i < boxes.length; i++) boxes[i].checked = true;
+                        if (!refresh) return;
+                        /* Silence confetti for the silent rehydration so
+                         * returning visitors don't get a celebration
+                         * animation every time they revisit a completed
+                         * module. */
+                        var origConfetti = window.confetti;
+                        window.confetti = function () {};
+                        try { refresh(); } finally { window.confetti = origConfetti; }
+                    }).catch(function (err) {
+                        console.warn('AISA: could not load completion status for ' + moduleId, err);
+                    });
+                }
+
+                document.addEventListener('change', function (e) {
+                    var t = e.target;
+                    if (t && typeof t.matches === 'function' && t.matches(selector)) {
+                        maybeRecord();
+                    }
+                });
+
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', hydrate);
+                } else {
+                    hydrate();
+                }
             }
         };
     }
