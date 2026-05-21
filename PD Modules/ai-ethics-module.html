@@ -757,8 +757,44 @@
     </footer>
 
     <script>
+        // --- AISA backend wiring ---
+        const AISA_MODULE_ID = 'ai-ethics';
+        const AISA_MODULE_VERSION = 'v1';
+        let aisaCompletionRecorded = false;
+
+        function recordCompletionOnce() {
+            if (aisaCompletionRecorded) return;
+            if (!window.aisaAuth || !window.aisaAuth.isConfigured()) return;
+            aisaCompletionRecorded = true;
+            window.aisaAuth
+                .recordEvent(AISA_MODULE_ID, 'completed', 100, AISA_MODULE_VERSION)
+                .catch(err => {
+                    aisaCompletionRecorded = false;
+                    console.warn('AISA: could not record completion', err);
+                });
+        }
+
+        function markAllChecked() {
+            document.querySelectorAll('.module-checkbox').forEach(cb => { cb.checked = true; });
+            updateProgress({ skipServerRecord: true, skipConfetti: true });
+        }
+
+        async function hydrateFromServer() {
+            if (!window.aisaAuth || !window.aisaAuth.isConfigured()) return;
+            try {
+                const completions = await window.aisaAuth.getCompletions();
+                if (completions.some(c => c.module_id === AISA_MODULE_ID)) {
+                    aisaCompletionRecorded = true; // already on file, don't re-record
+                    markAllChecked();
+                }
+            } catch (err) {
+                console.warn('AISA: could not load completion status', err);
+            }
+        }
+
         // --- Progress Tracking ---
-        function updateProgress() {
+        function updateProgress(opts) {
+            opts = opts || {};
             const checkboxes = document.querySelectorAll('.module-checkbox');
             const total = checkboxes.length;
             const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
@@ -769,13 +805,16 @@
 
             if (pct === 100) {
                 document.getElementById('completion-banner').classList.remove('hidden');
-                if (typeof confetti === 'function') {
+                if (!opts.skipConfetti && typeof confetti === 'function') {
                     confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
                 }
+                if (!opts.skipServerRecord) recordCompletionOnce();
             } else {
                 document.getElementById('completion-banner').classList.add('hidden');
             }
         }
+
+        window.addEventListener('load', hydrateFromServer);
 
         // --- Quiz Logic ---
         const quizAnswered = {};
