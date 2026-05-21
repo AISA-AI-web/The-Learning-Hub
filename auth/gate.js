@@ -13,27 +13,6 @@
     var STORAGE_KEY = 'aisa_auth_v1';
     var SESSION_HOURS = 8;
 
-    function computeSiteRoot() {
-        var thisScript = document.currentScript ||
-            (function () {
-                var scripts = document.getElementsByTagName('script');
-                for (var i = scripts.length - 1; i >= 0; i--) {
-                    if (scripts[i].src && /auth\/gate\.js/.test(scripts[i].src)) return scripts[i];
-                }
-                return null;
-            })();
-        if (!thisScript || !thisScript.src) return '';
-        return thisScript.src.replace(/\/auth\/gate\.js.*$/, '/');
-    }
-    var SITE_ROOT = computeSiteRoot();
-
-    var LOGOS = {
-        aisa:     SITE_ROOT + 'AISA_logo.png',
-        lion:     SITE_ROOT + 'Media%20Hub/the_digital_lion_logo.png',
-        wired:    SITE_ROOT + 'wired-wednesdays-logo.png',
-        notebook: SITE_ROOT + 'notebookLM_logo.svg'
-    };
-
     function readSession() {
         try {
             var raw = sessionStorage.getItem(STORAGE_KEY);
@@ -87,89 +66,37 @@
         '#aisa-auth-gate,#aisa-auth-gate *{visibility:visible!important}';
     (document.head || document.documentElement).appendChild(preLockStyle);
 
-    if (!document.querySelector('link[data-aisa-fonts]')) {
-        var preconn1 = document.createElement('link');
-        preconn1.rel = 'preconnect';
-        preconn1.href = 'https://fonts.googleapis.com';
-        preconn1.setAttribute('data-aisa-fonts', '1');
-        document.head.appendChild(preconn1);
-
-        var preconn2 = document.createElement('link');
-        preconn2.rel = 'preconnect';
-        preconn2.href = 'https://fonts.gstatic.com';
-        preconn2.crossOrigin = '';
-        preconn2.setAttribute('data-aisa-fonts', '1');
-        document.head.appendChild(preconn2);
-
-        var fontLink = document.createElement('link');
-        fontLink.rel = 'stylesheet';
-        fontLink.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
-        fontLink.setAttribute('data-aisa-fonts', '1');
-        document.head.appendChild(fontLink);
-    }
-
     function buildGate() {
         var style = document.createElement('style');
         style.id = 'aisa-gate-style';
         style.textContent = [
             '#aisa-auth-gate{position:fixed;inset:0;z-index:2147483647;',
-            'background:#ffffff;color:#0f172a;',
-            'font-family:Inter,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;',
-            '-webkit-font-smoothing:antialiased;',
-            'display:flex;flex-direction:column;align-items:center;justify-content:center;',
-            'padding:2.5rem 1.5rem;overflow:auto;}',
-
-            '#aisa-auth-gate .aisa-shell{width:100%;max-width:520px;display:flex;',
-            'flex-direction:column;align-items:center;text-align:center;}',
-
-            '#aisa-auth-gate .aisa-logo{width:96px;height:96px;object-fit:contain;',
-            'margin-bottom:2rem;}',
-
-            '#aisa-auth-gate h1{margin:0 0 .75rem;font-size:2.25rem;font-weight:700;',
-            'letter-spacing:-.02em;color:#0f172a;line-height:1.15;}',
-            '#aisa-auth-gate .aisa-sub{margin:0 0 2.5rem;color:#475569;font-size:1.0625rem;',
-            'line-height:1.55;max-width:440px;}',
-
+            'background:linear-gradient(135deg,#0c4a6e 0%,#1e3a8a 50%,#312e81 100%);',
+            'display:flex;align-items:center;justify-content:center;',
+            'font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;',
+            'color:#f8fafc;padding:1rem;}',
+            '#aisa-auth-gate .aisa-card{background:#fff;color:#0f172a;max-width:440px;',
+            'width:100%;padding:2.5rem 2rem;border-radius:1.25rem;',
+            'box-shadow:0 25px 50px -12px rgba(0,0,0,.5);text-align:center;}',
+            '#aisa-auth-gate .aisa-logo{font-size:2.5rem;margin-bottom:.5rem;line-height:1;}',
+            '#aisa-auth-gate h1{margin:.25rem 0 .5rem;font-size:1.5rem;font-weight:800;',
+            'letter-spacing:-.01em;color:#0f172a;}',
+            '#aisa-auth-gate .aisa-sub{margin:0 0 1.5rem;color:#475569;font-size:.95rem;',
+            'line-height:1.5;}',
+            '#aisa-auth-gate .aisa-domain{display:inline-block;background:#f1f5f9;',
+            'color:#0f172a;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;',
+            'font-size:.85rem;padding:2px 8px;border-radius:6px;}',
             '#aisa-auth-gate .aisa-btn-wrap{display:flex;justify-content:center;',
-            'min-height:48px;width:100%;}',
-            /* Scale up the Google button itself — GIS caps width at 400px,
-             * so we use CSS transform to enlarge it without going outside spec. */
-            '#aisa-auth-gate .aisa-btn-wrap > div{transform:scale(1.15);',
-            'transform-origin:center;}',
-
-            '#aisa-auth-gate .aisa-error{margin-top:1.25rem;font-size:.9375rem;color:#b91c1c;',
-            'line-height:1.45;display:none;max-width:400px;}',
+            'min-height:44px;margin-top:.5rem;}',
+            '#aisa-auth-gate .aisa-error{margin-top:1.25rem;padding:.75rem 1rem;',
+            'border-radius:.5rem;background:#fef2f2;color:#991b1b;font-size:.85rem;',
+            'border:1px solid #fecaca;display:none;text-align:left;}',
             '#aisa-auth-gate .aisa-error.show{display:block;}',
-
-            '#aisa-auth-gate .aisa-divider{width:100%;max-width:320px;height:1px;',
-            'background:#e2e8f0;margin:3rem 0 1.75rem;}',
-
-            '#aisa-auth-gate .aisa-strip-label{font-size:.75rem;font-weight:600;',
-            'letter-spacing:.14em;text-transform:uppercase;color:#94a3b8;',
-            'margin:0 0 1.25rem;}',
-            '#aisa-auth-gate .aisa-strip{display:flex;align-items:center;justify-content:center;',
-            'gap:2.25rem;flex-wrap:wrap;}',
-            '#aisa-auth-gate .aisa-strip img{height:32px;width:auto;max-width:110px;',
-            'object-fit:contain;opacity:.55;filter:grayscale(100%);',
-            'transition:opacity .2s ease,filter .2s ease;}',
-            '#aisa-auth-gate .aisa-strip img:hover{opacity:1;filter:grayscale(0);}',
-
-            '#aisa-auth-gate .aisa-foot{margin-top:2.75rem;font-size:.8125rem;color:#94a3b8;}',
-
-            '#aisa-auth-gate .aisa-spinner{display:inline-block;width:22px;height:22px;',
-            'border:2px solid #e2e8f0;border-top-color:#64748b;border-radius:50%;',
+            '#aisa-auth-gate .aisa-foot{margin-top:1.5rem;font-size:.75rem;color:#94a3b8;}',
+            '#aisa-auth-gate .aisa-spinner{display:inline-block;width:18px;height:18px;',
+            'border:2px solid #cbd5e1;border-top-color:#0f172a;border-radius:50%;',
             'animation:aisa-spin .8s linear infinite;}',
-            '@keyframes aisa-spin{to{transform:rotate(360deg)}}',
-
-            '@media (max-width:480px){',
-            '#aisa-auth-gate{padding:2rem 1.25rem;}',
-            '#aisa-auth-gate .aisa-logo{width:80px;height:80px;margin-bottom:1.5rem;}',
-            '#aisa-auth-gate h1{font-size:1.75rem;}',
-            '#aisa-auth-gate .aisa-sub{font-size:1rem;margin-bottom:2rem;}',
-            '#aisa-auth-gate .aisa-btn-wrap > div{transform:scale(1);}',
-            '#aisa-auth-gate .aisa-strip{gap:1.5rem;}',
-            '#aisa-auth-gate .aisa-strip img{height:26px;}',
-            '}'
+            '@keyframes aisa-spin{to{transform:rotate(360deg)}}'
         ].join('');
         document.head.appendChild(style);
 
@@ -179,27 +106,17 @@
         gate.setAttribute('aria-modal', 'true');
         gate.setAttribute('aria-label', 'Sign in required');
         gate.innerHTML =
-            '<div class="aisa-shell">' +
-                '<img class="aisa-logo" src="' + LOGOS.aisa + '" alt="AISA" ' +
-                    'onerror="this.style.display=\'none\'">' +
-                '<h1>Sign in to the Learning Hub</h1>' +
-                '<p class="aisa-sub">Use your AISA Google account ' +
-                    '(<strong style="color:#0f172a;font-weight:600">@' + ALLOWED_DOMAIN + '</strong>) to continue.</p>' +
+            '<div class="aisa-card">' +
+                '<div class="aisa-logo" aria-hidden="true">&#129409;</div>' +
+                '<h1>The Learning Hub</h1>' +
+                '<p class="aisa-sub">Sign in with your ' +
+                    '<span class="aisa-domain">@' + ALLOWED_DOMAIN + '</span> ' +
+                    'Google account to continue.</p>' +
                 '<div class="aisa-btn-wrap" id="aisa-gsi-button">' +
                     '<span class="aisa-spinner" aria-label="Loading sign-in"></span>' +
                 '</div>' +
                 '<div class="aisa-error" id="aisa-error" role="alert"></div>' +
-                '<div class="aisa-divider" aria-hidden="true"></div>' +
-                '<p class="aisa-strip-label">Inside</p>' +
-                '<div class="aisa-strip">' +
-                    '<img src="' + LOGOS.lion + '" alt="The Digital Lion" ' +
-                        'onerror="this.style.display=\'none\'">' +
-                    '<img src="' + LOGOS.wired + '" alt="Wired Wednesdays" ' +
-                        'onerror="this.style.display=\'none\'">' +
-                    '<img src="' + LOGOS.notebook + '" alt="NotebookLM" ' +
-                        'onerror="this.style.display=\'none\'">' +
-                '</div>' +
-                '<p class="aisa-foot">AISA staff &amp; faculty access only</p>' +
+                '<div class="aisa-foot">AISA staff &amp; faculty access only.</div>' +
             '</div>';
         document.body.appendChild(gate);
     }
@@ -253,12 +170,11 @@
                 cancel_on_tap_outside: false
             });
             window.google.accounts.id.renderButton(slot, {
-                theme: 'outline',
+                theme: 'filled_blue',
                 size: 'large',
                 text: 'signin_with',
-                shape: 'rectangular',
-                logo_alignment: 'left',
-                width: 400
+                shape: 'pill',
+                width: 280
             });
         } catch (e) {
             showError('Could not load Google sign-in. Check your connection and reload.');
