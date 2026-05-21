@@ -19,7 +19,7 @@
      * still works — record/getCompletions just resolve to no-ops so
      * pages don't break.
      * ------------------------------------------------------------------ */
-    var API_URL = '';
+    var API_URL = 'https://script.google.com/macros/s/AKfycbwVifM6VRrov0jR5p0sQ27WcMd4-uZvUDdMkf4j7sieJmo88BMj7xMLx4R3Tpk9iuTa/exec';
 
     function readSession() {
         try {
