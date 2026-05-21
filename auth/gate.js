@@ -13,6 +13,14 @@
     var STORAGE_KEY = 'aisa_auth_v1';
     var SESSION_HOURS = 8;
 
+    /* ------------------------------------------------------------------
+     * AISA backend URL. Paste the Apps Script Web App URL here after
+     * deploying auth/apps-script.gs. While this is blank, the gate
+     * still works — record/getCompletions just resolve to no-ops so
+     * pages don't break.
+     * ------------------------------------------------------------------ */
+    var API_URL = '';
+
     function readSession() {
         try {
             var raw = sessionStorage.getItem(STORAGE_KEY);
@@ -29,12 +37,14 @@
         }
     }
 
-    function writeSession(payload) {
+    function writeSession(payload, rawIdToken) {
         sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
             email: payload.email,
             name: payload.name || '',
             picture: payload.picture || '',
             domain: payload.hd || '',
+            idToken: rawIdToken || '',
+            idTokenExpiresAt: Number(payload.exp || 0) * 1000,
             expiresAt: Date.now() + SESSION_HOURS * 60 * 60 * 1000
         }));
     }
@@ -149,7 +159,7 @@
                 try { window.google.accounts.id.disableAutoSelect(); } catch (e) {}
                 return;
             }
-            writeSession(payload);
+            writeSession(payload, response.credential);
             window.aisaAuth = buildPublicApi();
             unlock();
         } catch (e) {
@@ -211,6 +221,56 @@
         document.head.appendChild(script);
     }
 
+    /* ------------------------------------------------------------------
+     * Backend API helpers — talk to the Apps Script web app.
+     *
+     * The Apps Script endpoint can't respond to CORS preflight, so we
+     * deliberately send `Content-Type: text/plain` to keep the request
+     * simple. The server parses the body as JSON itself.
+     * ------------------------------------------------------------------ */
+
+    function apiCall(action, extra) {
+        return new Promise(function (resolve, reject) {
+            if (!API_URL) {
+                reject(new Error('aisa_api_not_configured'));
+                return;
+            }
+            var session = readSession();
+            if (!session || !session.idToken) {
+                reject(new Error('not_signed_in'));
+                return;
+            }
+            if (session.idTokenExpiresAt && Date.now() > session.idTokenExpiresAt) {
+                /* Google ID tokens expire ~1 hour after sign-in. The gate
+                 * session can be longer, so we need the user to re-sign-in
+                 * before we can talk to the backend again. */
+                try { sessionStorage.removeItem(STORAGE_KEY); } catch (e) {}
+                reject(new Error('id_token_expired'));
+                return;
+            }
+
+            var body = { action: action, id_token: session.idToken };
+            if (extra) {
+                for (var k in extra) {
+                    if (Object.prototype.hasOwnProperty.call(extra, k)) body[k] = extra[k];
+                }
+            }
+
+            fetch(API_URL, {
+                method: 'POST',
+                mode: 'cors',
+                redirect: 'follow',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(body)
+            }).then(function (r) {
+                return r.json();
+            }).then(function (json) {
+                if (json && json.ok) resolve(json);
+                else reject(new Error((json && json.error) || 'api_error'));
+            }).catch(reject);
+        });
+    }
+
     function buildPublicApi() {
         return {
             signOut: function () {
@@ -224,6 +284,37 @@
             },
             getUser: function () {
                 return readSession();
+            },
+            isConfigured: function () {
+                return !!API_URL;
+            },
+
+            /* Record a single event for a module. The `event` is a
+             * free-form string — common values are 'started', 'progress',
+             * and 'completed'. progressPct is optional (defaults to 0). */
+            recordEvent: function (moduleId, event, progressPct, version) {
+                return apiCall('record_event', {
+                    module_id:    moduleId,
+                    event:        event || 'progress',
+                    progress_pct: typeof progressPct === 'number' ? progressPct : 0,
+                    version:      version || 'v1',
+                    user_agent:   (typeof navigator !== 'undefined' && navigator.userAgent) || ''
+                });
+            },
+
+            /* Returns a promise resolving to an array of
+             *   { module_id, completed_at, version }
+             * for every module this user has completed at least once. */
+            getCompletions: function () {
+                return apiCall('get_completions').then(function (r) {
+                    return r.completions || [];
+                });
+            },
+
+            /* Round-trip health check: confirms the server can verify
+             * the current ID token and returns the email it sees. */
+            whoami: function () {
+                return apiCall('whoami');
             }
         };
     }
