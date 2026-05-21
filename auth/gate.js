@@ -31,8 +31,7 @@
 
     var CLIENT_ID = '719019551782-h9pdg57s6oq4jpo884a53o0d1pgel1u6.apps.googleusercontent.com';
     var ALLOWED_DOMAIN = 'aisa.sch.ae';
-    var STORAGE_KEY = 'aisa_auth_v1';
-    var SESSION_HOURS = 8;
+    var STORAGE_KEY = 'aisa_auth_v2';
 
     /* ------------------------------------------------------------------
      * AISA backend URL. Paste the Apps Script Web App URL here after
@@ -44,12 +43,12 @@
 
     function readSession() {
         try {
-            var raw = sessionStorage.getItem(STORAGE_KEY);
+            var raw = localStorage.getItem(STORAGE_KEY);
             if (!raw) return null;
             var s = JSON.parse(raw);
-            if (!s || !s.email || !s.expiresAt) return null;
+            if (!s || !s.email || !s.sessionToken || !s.expiresAt) return null;
             if (Date.now() > s.expiresAt) {
-                sessionStorage.removeItem(STORAGE_KEY);
+                localStorage.removeItem(STORAGE_KEY);
                 return null;
             }
             return s;
@@ -58,16 +57,24 @@
         }
     }
 
-    function writeSession(payload, rawIdToken) {
-        sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
-            email: payload.email,
-            name: payload.name || '',
-            picture: payload.picture || '',
-            domain: payload.hd || '',
-            idToken: rawIdToken || '',
-            idTokenExpiresAt: Number(payload.exp || 0) * 1000,
-            expiresAt: Date.now() + SESSION_HOURS * 60 * 60 * 1000
+    function writeSession(payload, sessionToken, expiresAtIso) {
+        var expiresAtMs = expiresAtIso ? new Date(expiresAtIso).getTime() : 0;
+        if (!expiresAtMs || isNaN(expiresAtMs)) {
+            /* Server didn't give us an explicit expiry; default to 1 year. */
+            expiresAtMs = Date.now() + 365 * 24 * 60 * 60 * 1000;
+        }
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            email:        payload.email,
+            name:         payload.name || '',
+            picture:      payload.picture || '',
+            domain:       payload.hd || '',
+            sessionToken: sessionToken,
+            expiresAt:    expiresAtMs
         }));
+    }
+
+    function clearSession() {
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
     }
 
     function decodeJwt(token) {
@@ -199,29 +206,68 @@
     }
 
     function handleCredential(response) {
+        var payload;
         try {
-            var payload = decodeJwt(response.credential);
-            if (!payload.email_verified) {
-                showError('Your Google account email is not verified.');
-                return;
-            }
-            if (payload.hd !== ALLOWED_DOMAIN) {
-                showError('Please sign in with your @' + ALLOWED_DOMAIN + ' account, not a personal Google account.');
-                try { window.google.accounts.id.disableAutoSelect(); } catch (e) {}
-                return;
-            }
-            writeSession(payload, response.credential);
-            window.aisaAuth = buildPublicApi();
-            unlock();
-            /* Resolve any pending API callers that were waiting on this
-             * re-sign-in so their retries can fire. */
-            var resolvers = pendingReAuthResolvers;
-            pendingReAuthResolvers = [];
-            for (var i = 0; i < resolvers.length; i++) {
-                try { resolvers[i](); } catch (e) {}
-            }
+            payload = decodeJwt(response.credential);
         } catch (e) {
             showError('Sign-in failed. Please try again.');
+            return;
+        }
+        if (!payload.email_verified) {
+            showError('Your Google account email is not verified.');
+            return;
+        }
+        if (payload.hd !== ALLOWED_DOMAIN) {
+            showError('Please sign in with your @' + ALLOWED_DOMAIN + ' account, not a personal Google account.');
+            try { window.google.accounts.id.disableAutoSelect(); } catch (e) {}
+            return;
+        }
+
+        if (!API_URL) {
+            /* No backend configured — keep the gate working in standalone
+             * mode by treating the Google token as a short-lived local
+             * session. Backend-dependent calls will simply no-op. */
+            writeSession(payload, '', null);
+            window.aisaAuth = buildPublicApi();
+            unlock();
+            drainReAuthResolvers();
+            return;
+        }
+
+        /* Exchange the freshly-minted Google ID token for a long-lived
+         * session token. After this, the Google token is discarded — we
+         * use the session token for every subsequent request. */
+        fetch(API_URL, {
+            method: 'POST',
+            mode: 'cors',
+            redirect: 'follow',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({
+                action: 'create_session',
+                id_token: response.credential,
+                user_agent: (typeof navigator !== 'undefined' && navigator.userAgent) || ''
+            })
+        }).then(function (r) {
+            return r.json();
+        }).then(function (json) {
+            if (!json || !json.ok || !json.session_token) {
+                throw new Error((json && json.error) || 'session_create_failed');
+            }
+            writeSession(payload, json.session_token, json.expires_at);
+            window.aisaAuth = buildPublicApi();
+            unlock();
+            drainReAuthResolvers();
+        }).catch(function (err) {
+            console.warn('AISA: create_session failed', err);
+            showError('Could not start your session. Please try signing in again.');
+        });
+    }
+
+    function drainReAuthResolvers() {
+        var resolvers = pendingReAuthResolvers;
+        pendingReAuthResolvers = [];
+        for (var i = 0; i < resolvers.length; i++) {
+            try { resolvers[i](); } catch (e) {}
         }
     }
 
@@ -327,20 +373,11 @@
         }
 
         var session = readSession();
-        var needsReAuth = !session || !session.idToken ||
-            (session.idTokenExpiresAt && Date.now() > session.idTokenExpiresAt);
-
-        if (needsReAuth) {
-            /* Google ID tokens expire ~1 hour after sign-in. Rather than
-             * fail the call silently, we re-show the gate, wait for the
-             * user to sign back in, and then retry the request with the
-             * fresh token. */
-            return triggerReAuth().then(function () {
-                return apiCall(action, extra);
-            });
+        if (!session || !session.sessionToken) {
+            return triggerReAuth().then(function () { return apiCall(action, extra); });
         }
 
-        var body = { action: action, id_token: session.idToken };
+        var body = { action: action, session_token: session.sessionToken };
         if (extra) {
             for (var k in extra) {
                 if (Object.prototype.hasOwnProperty.call(extra, k)) body[k] = extra[k];
@@ -357,12 +394,11 @@
             return r.json();
         }).then(function (json) {
             if (json && json.ok) return json;
-            /* The server itself rejected the token (e.g. someone tampered
-             * with sessionStorage). Treat as expired, re-auth, and retry. */
-            if (json && json.error === 'invalid_token') {
-                return triggerReAuth().then(function () {
-                    return apiCall(action, extra);
-                });
+            /* Server rejected our session (revoked, expired on its end,
+             * or someone tampered with localStorage). Wipe and re-auth. */
+            if (json && (json.error === 'invalid_session' || json.error === 'invalid_token')) {
+                clearSession();
+                return triggerReAuth().then(function () { return apiCall(action, extra); });
             }
             throw new Error((json && json.error) || 'api_error');
         });
@@ -371,7 +407,24 @@
     function buildPublicApi() {
         return {
             signOut: function () {
-                try { sessionStorage.removeItem(STORAGE_KEY); } catch (e) {}
+                var session = readSession();
+                /* Best-effort revocation on the server. We don't wait for
+                 * the response — local cleanup happens regardless. */
+                if (session && session.sessionToken && API_URL) {
+                    try {
+                        fetch(API_URL, {
+                            method: 'POST',
+                            mode: 'cors',
+                            redirect: 'follow',
+                            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                            body: JSON.stringify({
+                                action: 'sign_out',
+                                session_token: session.sessionToken
+                            })
+                        }).catch(function () {});
+                    } catch (e) {}
+                }
+                clearSession();
                 try {
                     if (window.google && window.google.accounts && window.google.accounts.id) {
                         window.google.accounts.id.disableAutoSelect();
