@@ -638,16 +638,13 @@
                     }
                 });
 
-                /* Keyboard shortcut: Cmd/Ctrl + Alt + Shift + C marks
-                 * the current module complete. Useful for admins or for
-                 * testing the recording pipeline without clicking through
-                 * every section. Heads-up: on Chrome/Mac the same combo
-                 * opens the DevTools element picker, so close DevTools
-                 * if the shortcut isn't reaching the page. */
+                /* Keyboard shortcut: Cmd/Ctrl + Shift + Enter marks
+                 * the current module complete. Useful for admins or
+                 * for quickly testing the recording pipeline. */
                 document.addEventListener('keydown', function (e) {
-                    var modOk = (e.metaKey || e.ctrlKey) && e.altKey && e.shiftKey;
+                    var modOk = (e.metaKey || e.ctrlKey) && e.shiftKey && !e.altKey;
                     if (!modOk) return;
-                    if ((e.key || '').toLowerCase() !== 'c') return;
+                    if (e.key !== 'Enter') return;
                     e.preventDefault();
                     var boxes = document.querySelectorAll(selector);
                     if (!boxes.length) return;
