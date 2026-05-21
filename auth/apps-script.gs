@@ -30,6 +30,8 @@ const OAUTH_CLIENT_ID        = '719019551782-h9pdg57s6oq4jpo884a53o0d1pgel1u6.ap
 const ALLOWED_DOMAIN         = 'aisa.sch.ae';
 const EVENTS_SHEET           = 'events';
 const SESSIONS_SHEET         = 'sessions';
+const PAGEVIEWS_SHEET        = 'pageviews';
+const CLICKS_SHEET           = 'clicks';
 const SESSION_DURATION_DAYS  = 365;
 
 const EVENT_HEADERS = [
@@ -40,6 +42,16 @@ const EVENT_HEADERS = [
 const SESSION_HEADERS = [
   'session_token', 'email', 'name', 'created_at_iso',
   'expires_at_iso', 'last_used_iso', 'user_agent'
+];
+
+const PAGEVIEW_HEADERS = [
+  'timestamp_iso', 'email', 'name', 'page_path',
+  'page_title', 'referrer', 'user_agent'
+];
+
+const CLICK_HEADERS = [
+  'timestamp_iso', 'email', 'name', 'label',
+  'page_path', 'user_agent'
 ];
 
 // ---------- HTTP entry points ----------
@@ -82,6 +94,10 @@ function doPost(e) {
         return jsonOut(recordEvent(claims, body));
       case 'get_completions':
         return jsonOut({ ok: true, completions: getCompletionsFor(claims.email) });
+      case 'record_pageview':
+        return jsonOut(recordPageview(claims, body));
+      case 'record_click':
+        return jsonOut(recordClick(claims, body));
       case 'whoami':
         return jsonOut({
           ok: true,
@@ -239,6 +255,72 @@ function recordEvent(claims, body) {
   ]);
   return { ok: true };
 }
+
+// ---------- Page views & tagged clicks ----------
+
+function getPageviewsSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(PAGEVIEWS_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(PAGEVIEWS_SHEET);
+    sheet.appendRow(PAGEVIEW_HEADERS);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, PAGEVIEW_HEADERS.length).setFontWeight('bold');
+  }
+  return sheet;
+}
+
+function getClicksSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(CLICKS_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(CLICKS_SHEET);
+    sheet.appendRow(CLICK_HEADERS);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, CLICK_HEADERS.length).setFontWeight('bold');
+  }
+  return sheet;
+}
+
+function recordPageview(claims, body) {
+  const pagePath  = String(body.page_path  || '').slice(0, 300);
+  const pageTitle = String(body.page_title || '').slice(0, 200);
+  const referrer  = String(body.referrer   || '').slice(0, 300);
+  const userAgent = String(body.user_agent || '').slice(0, 300);
+
+  if (!pagePath) return { ok: false, error: 'missing_page_path' };
+
+  getPageviewsSheet().appendRow([
+    new Date().toISOString(),
+    claims.email,
+    claims.name || '',
+    pagePath,
+    pageTitle,
+    referrer,
+    userAgent
+  ]);
+  return { ok: true };
+}
+
+function recordClick(claims, body) {
+  const label     = String(body.label     || '').slice(0, 200);
+  const pagePath  = String(body.page_path || '').slice(0, 300);
+  const userAgent = String(body.user_agent || '').slice(0, 300);
+
+  if (!label) return { ok: false, error: 'missing_label' };
+
+  getClicksSheet().appendRow([
+    new Date().toISOString(),
+    claims.email,
+    claims.name || '',
+    label,
+    pagePath,
+    userAgent
+  ]);
+  return { ok: true };
+}
+
+// ---------- Completions ----------
 
 function getCompletionsFor(email) {
   const sheet = getEventsSheet();
