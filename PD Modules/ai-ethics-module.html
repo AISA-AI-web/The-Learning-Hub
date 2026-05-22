@@ -66,7 +66,9 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
+    <link rel="stylesheet" href="../auth/training.css?v=1">
     <script src="../auth/gate.js?v=6"></script>
+    <script src="../auth/training.js?v=1"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
@@ -147,7 +149,7 @@
         <div class="timeline-container">
 
             <!-- Step 1 -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="1" data-chapter-title="The Case for AI Governance">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -192,7 +194,7 @@
             </div>
 
             <!-- Step 2: The Six Guiding Principles -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="2" data-chapter-title="The Six Guiding Principles">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -279,11 +281,11 @@
             </div>
 
             <!-- Knowledge Check 1 -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="3" data-chapter-title="Knowledge Check 1">
                 <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
                     <span class="text-white font-bold text-sm">?</span>
                 </div>
-                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden" id="quiz-1">
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden aisa-quiz" id="quiz-1">
                     <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
                         <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 1</span>
                         <h3 class="text-lg font-heading font-bold mt-1">Test Your Understanding</h3>
@@ -291,30 +293,30 @@
                     <div class="p-6">
                         <p class="font-semibold text-gray-800 mb-4">Which of the following best describes AISA's position on AI in education?</p>
                         <div class="space-y-3" id="quiz-1-options">
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
                                 <span class="text-sm text-gray-700">AI should be banned from schools to protect academic integrity.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
                                 <span class="text-sm text-gray-700">AI use should be unrestricted so students learn naturally.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, true)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
                                 <span class="text-sm text-gray-700">AI adoption should be deliberate, safe, and educationally valuable, with governance that balances protection and preparation.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
                                 <span class="text-sm text-gray-700">Only the IT department should interact with AI tools.</span>
                             </div>
                         </div>
-                        <div id="quiz-1-feedback" class="hidden mt-4 p-4 rounded-xl text-sm fade-in"></div>
+                        <div id="quiz-1-feedback" class="aisa-quiz-feedback mt-4"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Step 3: Staff Expectations & Data Protection -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="4" data-chapter-title="Staff Expectations and Data Protection">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -413,11 +415,11 @@
             </div>
 
             <!-- Knowledge Check 2: Scenario -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="5" data-chapter-title="Knowledge Check 2">
                 <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
                     <span class="text-white font-bold text-sm">?</span>
                 </div>
-                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden" id="quiz-2">
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden aisa-quiz" id="quiz-2">
                     <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
                         <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 2</span>
                         <h3 class="text-lg font-heading font-bold mt-1">Real-World Scenario</h3>
@@ -427,30 +429,30 @@
                             <p class="text-sm text-gray-700 italic">A teacher wants to paste their class's MAP scores into ChatGPT to look for patterns and group students for intervention. The scores include student names. ChatGPT is on the Approved Tools Register but is NOT approved for processing student assessment data. What should the teacher do?</p>
                         </div>
                         <div class="space-y-3" id="quiz-2-options">
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
                                 <span class="text-sm text-gray-700">Go ahead since ChatGPT is an approved tool.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, true)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
                                 <span class="text-sm text-gray-700">Remove all student names and identifiers, then use an approved tool that IS approved for assessment data. If in doubt, consult the IT / Data Protection Lead.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
                                 <span class="text-sm text-gray-700">Just remove student names but keep all other data and use ChatGPT.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
                                 <span class="text-sm text-gray-700">Avoid using AI for data analysis entirely.</span>
                             </div>
                         </div>
-                        <div id="quiz-2-feedback" class="hidden mt-4 p-4 rounded-xl text-sm fade-in"></div>
+                        <div id="quiz-2-feedback" class="aisa-quiz-feedback mt-4"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Step 4: Academic Integrity & the 5-Step Scaffolding Scale -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="6" data-chapter-title="Academic Integrity &amp; the AIAS">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -543,7 +545,7 @@
             </div>
 
             <!-- Step 5: Approved Tools & the Approval Process -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="7" data-chapter-title="Approved Tools &amp; Requests">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -622,11 +624,11 @@
             </div>
 
             <!-- Knowledge Check 3 -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="8" data-chapter-title="Knowledge Check 3">
                 <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
                     <span class="text-white font-bold text-sm">?</span>
                 </div>
-                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden" id="quiz-3">
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden aisa-quiz" id="quiz-3">
                     <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
                         <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 3</span>
                         <h3 class="text-lg font-heading font-bold mt-1">Assignment Scaffolding</h3>
@@ -634,30 +636,30 @@
                     <div class="p-6">
                         <p class="font-semibold text-gray-800 mb-4">A Grade 7 teacher assigns a research essay and tells students: "You may use AI to help generate initial ideas and topic explorations, but all final content must be created by you. Cite any AI assistance." What level on the Scaffolding Scale is this?</p>
                         <div class="space-y-3" id="quiz-3-options">
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(3, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
                                 <span class="text-sm text-gray-700">Level 1 - No AI Assistance</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(3, this, true)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
                                 <span class="text-sm text-gray-700">Level 2 - AI-Assisted Brainstorming</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(3, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
                                 <span class="text-sm text-gray-700">Level 3 - AI-Supported Drafting</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(3, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
                                 <span class="text-sm text-gray-700">Level 5 - AI as Co-Creator</span>
                             </div>
                         </div>
-                        <div id="quiz-3-feedback" class="hidden mt-4 p-4 rounded-xl text-sm fade-in"></div>
+                        <div id="quiz-3-feedback" class="aisa-quiz-feedback mt-4"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Step 6: Key Takeaways & Reflection -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="9" data-chapter-title="Key Takeaways &amp; Reflection">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -785,6 +787,13 @@
                     checkboxSelector: '.module-checkbox',
                     refreshUI: updateProgress
                 });
+            });
+        }
+
+        // --- Training framework: convert to chapter-by-chapter wizard ---
+        if (window.AisaTraining) {
+            document.addEventListener('DOMContentLoaded', function () {
+                window.AisaTraining.init({ moduleId: 'ai-ethics' });
             });
         }
 
