@@ -1,0 +1,324 @@
+/*
+ * AISA Training framework — UI styling.
+ *
+ * Loaded alongside auth/gate.js on PD module pages that opt into the
+ * step-by-step training experience. Designed to overlay any module's
+ * existing styling rather than replace it.
+ */
+
+/* ------------ Layout ------------ */
+.aisa-train-layout {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+    max-width: 1180px;
+    margin: 0 auto;
+}
+@media (max-width: 900px) {
+    .aisa-train-layout {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+}
+
+/* ------------ Top progress bar ------------ */
+.aisa-train-topbar {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.aisa-train-topbar-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #64748b;
+    flex-shrink: 0;
+}
+.aisa-train-topbar-bar {
+    flex: 1;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 9999px;
+    overflow: hidden;
+    min-width: 120px;
+}
+.aisa-train-topbar-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #06b6d4);
+    border-radius: 9999px;
+    width: 0%;
+    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.aisa-train-topbar-text {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #0f172a;
+    flex-shrink: 0;
+    min-width: 4.5rem;
+    text-align: right;
+}
+
+/* ------------ Sidebar ------------ */
+.aisa-train-sidebar {
+    position: sticky;
+    top: 1rem;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    padding: 1rem 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+.aisa-train-sidebar-heading {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    padding: 0 0.75rem 0.5rem;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 0.5rem;
+}
+.aisa-train-chapter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.aisa-train-chapter-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.6rem 0.75rem;
+    border-radius: 0.625rem;
+    cursor: pointer;
+    margin-bottom: 2px;
+    transition: background-color 0.15s;
+}
+.aisa-train-chapter-item.locked {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+.aisa-train-chapter-item:hover:not(.locked) {
+    background: #f8fafc;
+}
+.aisa-train-chapter-item.current {
+    background: #0f172a;
+    color: #ffffff;
+}
+.aisa-train-chapter-item.current .aisa-train-chapter-num,
+.aisa-train-chapter-item.current .aisa-train-chapter-title {
+    color: #ffffff;
+}
+.aisa-train-chapter-item.done .aisa-train-chapter-num {
+    background: #10b981;
+    color: #ffffff;
+    border-color: #10b981;
+}
+.aisa-train-chapter-num {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: #f1f5f9;
+    border: 1.5px solid #cbd5e1;
+    color: #475569;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.aisa-train-chapter-item.current .aisa-train-chapter-num {
+    background: #ffffff;
+    color: #0f172a;
+    border-color: #ffffff;
+}
+.aisa-train-chapter-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #0f172a;
+    line-height: 1.35;
+}
+
+@media (max-width: 900px) {
+    .aisa-train-sidebar {
+        position: static;
+        margin-bottom: 1rem;
+    }
+}
+
+/* ------------ Chapter visibility ------------ */
+.aisa-train-managed [data-chapter] {
+    display: none;
+}
+.aisa-train-managed [data-chapter].aisa-current {
+    display: block;
+    animation: aisa-train-fade-in 0.4s ease-out;
+}
+@keyframes aisa-train-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ------------ Bottom navigation ------------ */
+.aisa-train-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+}
+.aisa-train-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border-radius: 0.75rem;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    color: #0f172a;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.aisa-train-btn:hover:not(:disabled) {
+    background: #f8fafc;
+    transform: translateY(-1px);
+}
+.aisa-train-btn.primary {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+}
+.aisa-train-btn.primary:hover:not(:disabled) {
+    background: #1e293b;
+}
+.aisa-train-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+.aisa-train-nav-hint {
+    flex: 1;
+    text-align: center;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+/* ------------ Quiz styling ------------ */
+.aisa-quiz {
+    background: #ffffff;
+    border: 2px solid #fbbf24;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin: 2rem 0 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+.aisa-quiz-tag {
+    display: inline-block;
+    background: #fef3c7;
+    color: #92400e;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.625rem;
+    border-radius: 9999px;
+    margin-bottom: 0.75rem;
+}
+.aisa-quiz-prompt {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.4;
+    margin: 0 0 1rem;
+}
+.aisa-quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.aisa-quiz-option {
+    text-align: left;
+    padding: 0.875rem 1rem;
+    border-radius: 0.625rem;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    color: #0f172a;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: inherit;
+    line-height: 1.4;
+}
+.aisa-quiz-option:hover:not(:disabled) {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+.aisa-quiz-option.is-correct {
+    background: #d1fae5;
+    border-color: #10b981;
+    color: #065f46;
+    font-weight: 700;
+}
+.aisa-quiz-option.is-incorrect {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+.aisa-quiz-option:disabled,
+.aisa-quiz-option.aisa-quiz-locked {
+    cursor: default;
+    pointer-events: none;
+}
+.aisa-quiz-feedback {
+    display: none;
+    margin-top: 1rem;
+    padding: 0.875rem 1rem;
+    border-radius: 0.625rem;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+.aisa-quiz-feedback.show {
+    display: block;
+}
+.aisa-quiz-feedback.correct {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+.aisa-quiz-feedback.wrong {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+/* Hide the original "Module Progress" card so it doesn't duplicate
+ * the training top bar. The original card always contains #progress-bar. */
+.aisa-train-managed div:has(> #progress-bar),
+.aisa-train-managed div:has(> div > #progress-bar),
+.aisa-train-managed div:has(> div > div > #progress-bar) {
+    display: none !important;
+}
+
+/* Hide the per-section round checkbox circles that the original module
+ * shows next to each step — the training framework's sidebar already
+ * shows chapter progress, and the checkboxes get auto-ticked behind
+ * the scenes for the completion-tracking pipeline. */
+.aisa-train-managed label:has(.module-checkbox) {
+    display: none !important;
+}

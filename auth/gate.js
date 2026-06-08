@@ -98,6 +98,32 @@
      *     interactions land in the clicks sheet automatically.
      * Idempotent — guarded by a flag so we don't double-wire after
      * re-auth or programmatic sign-ins. */
+    /* The first-login tutorial + survey gate live in auth/onboarding.js.
+     * We auto-load that file here so individual pages don't each need
+     * a second <script> tag. The URL is derived from gate.js's own
+     * <script> src, which works regardless of how the page included
+     * it ('auth/gate.js', '../auth/gate.js', etc.).
+     *
+     * Capture the script src now, at parse time, because
+     * document.currentScript becomes null once we're inside async
+     * callbacks like fetch().then(). */
+    var GATE_SCRIPT_SRC = (document.currentScript && document.currentScript.src) || (function () {
+        var s = document.querySelector('script[src*="auth/gate.js"]');
+        return s ? s.src : '';
+    })();
+    var onboardingLoaded = false;
+    function loadOnboarding() {
+        if (onboardingLoaded) return;
+        onboardingLoaded = true;
+        if (!GATE_SCRIPT_SRC) return;
+        var url = GATE_SCRIPT_SRC.replace(/gate\.js(\?.*)?$/, 'onboarding.js?v=1');
+        if (url === GATE_SCRIPT_SRC) return;  // pattern didn't match — abort safely
+        var s = document.createElement('script');
+        s.src   = url;
+        s.async = true;
+        document.head.appendChild(s);
+    }
+
     var autoTrackingWired = false;
     function wireAutoTracking() {
         if (autoTrackingWired) return;
@@ -132,6 +158,7 @@
     if (existing) {
         window.aisaAuth = buildPublicApi();
         wireAutoTracking();
+        loadOnboarding();
         return;
     }
 
@@ -270,6 +297,7 @@
             unlock();
             drainReAuthResolvers();
             wireAutoTracking();
+            loadOnboarding();
             return;
         }
 
@@ -297,6 +325,7 @@
             unlock();
             drainReAuthResolvers();
             wireAutoTracking();
+            loadOnboarding();
         }).catch(function (err) {
             console.warn('AISA: create_session failed', err);
             showError('Could not start your session. Please try signing in again.');
