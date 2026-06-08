@@ -665,7 +665,9 @@
     </style>
     <!-- Arabic web font for the language button -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../auth/training.css?v=4">
     <script src="../auth/gate.js?v=8"></script>
+    <script src="../auth/training.js?v=4"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen">
 
@@ -781,7 +783,8 @@
         </section>
 
         <!-- Module 1: Context -->
-        <section id="mod-context" class="mb-8 fade-in">
+        <div class="timeline-container">
+        <section id="mod-context" data-chapter="1" data-chapter-title="Context &amp; Why This Matters" class="mb-8 fade-in">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-slate-700 to-slate-900 px-8 py-6 flex items-start gap-4">
                     <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">1</div>
@@ -808,7 +811,7 @@
                     </div>
                     <p class="text-gray-600 text-sm mb-4">Key points: Bus services remain suspended (MOE directive). Parents are arranging private transport. Remote learning will be provided for students unable to attend — no hybrid classes. Parents must sign an undertaking to return students to in-person education.</p>
                     <label class="flex items-center gap-3 cursor-pointer select-none">
-                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="1">
+                        <input type="checkbox" class="checkbox-custom module-checkbox hidden peer" data-module="1">
                         <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
                             <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
@@ -819,7 +822,7 @@
         </section>
 
         <!-- Module 2: 12 Core Principles -->
-        <section id="mod-principles" class="mb-8 fade-in">
+        <section id="mod-principles" data-chapter="2" data-chapter-title="Core Principles" class="mb-8 fade-in">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-blue-700 to-blue-900 px-8 py-6 flex items-start gap-4">
                     <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">2</div>
@@ -844,7 +847,7 @@
                         <div class="flex items-start gap-3 bg-blue-50 rounded-xl p-4"><span class="flex-shrink-0 w-7 h-7 bg-blue-700 text-white rounded-full flex items-center justify-center text-xs font-bold">12</span><p class="text-sm text-gray-700">Maintain readiness to <strong>suspend in-person learning</strong></p></div>
                     </div>
                     <label class="flex items-center gap-3 cursor-pointer select-none">
-                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="2">
+                        <input type="checkbox" class="checkbox-custom module-checkbox hidden peer" data-module="2">
                         <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
                             <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
@@ -855,7 +858,7 @@
         </section>
 
         <!-- Module 3: Operational Risk Levels -->
-        <section id="mod-risk" class="mb-8 fade-in">
+        <section id="mod-risk" data-chapter="3" data-chapter-title="Risk &amp; Threat Levels" class="mb-8 fade-in">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-emerald-700 to-teal-800 px-8 py-6 flex items-start gap-4">
                     <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">3</div>
@@ -889,7 +892,7 @@
                         <strong>Key point:</strong> Even GREEN is not business as usual. No outdoor activities, no assemblies, indoor only. Authorities determine risk levels based on location and proximity to critical infrastructure.
                     </div>
                     <label class="flex items-center gap-3 cursor-pointer select-none">
-                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="3">
+                        <input type="checkbox" class="checkbox-custom module-checkbox hidden peer" data-module="3">
                         <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
                             <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
@@ -900,7 +903,7 @@
         </section>
 
         <!-- Module 4: Stage Protocols -->
-        <section id="mod-stages" class="mb-8 fade-in">
+        <section id="mod-stages" data-chapter="4" data-chapter-title="Stages of an Alert" class="mb-8 fade-in">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-purple-700 to-indigo-800 px-8 py-6 flex items-start gap-4">
                     <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">4</div>
@@ -948,7 +951,7 @@
                         </div>
                     </div>
                     <label class="flex items-center gap-3 cursor-pointer select-none">
-                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="4">
+                        <input type="checkbox" class="checkbox-custom module-checkbox hidden peer" data-module="4">
                         <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
                             <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
@@ -959,7 +962,7 @@
         </section>
 
         <!-- Module 5: Your Role -->
-        <section id="mod-role" class="mb-8 fade-in">
+        <section id="mod-role" data-chapter="5" data-chapter-title="Your Role as Staff" class="mb-8 fade-in">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-red-700 to-rose-800 px-8 py-6 flex items-start gap-4">
                     <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">5</div>
@@ -998,7 +1001,7 @@
                         <strong>Critical distinction:</strong> This is SHELTER IN PLACE, not evacuate. Fire = move OUT. This protocol = move INWARD to interior spaces away from windows. Make sure you understand the difference.
                     </div>
                     <label class="flex items-center gap-3 cursor-pointer select-none">
-                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="5">
+                        <input type="checkbox" class="checkbox-custom module-checkbox hidden peer" data-module="5">
                         <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
                             <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
@@ -1009,7 +1012,7 @@
         </section>
 
         <!-- Module 6: Safe Zones -->
-        <section id="mod-safezones" class="mb-8 fade-in">
+        <section id="mod-safezones" data-chapter="6" data-chapter-title="Safe Zones" class="mb-8 fade-in">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-teal-700 to-cyan-800 px-8 py-6 flex items-start gap-4">
                     <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">6</div>
@@ -1059,7 +1062,7 @@
                         <strong>Action required:</strong> Your division leader will confirm your specific safe zone after this session. During the drill, you will physically walk the route and confirm the 1-minute access time. In the first week, walk your students through the safe zone route.
                     </div>
                     <label class="flex items-center gap-3 cursor-pointer select-none">
-                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="6">
+                        <input type="checkbox" class="checkbox-custom module-checkbox hidden peer" data-module="6">
                         <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
                             <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
@@ -1070,7 +1073,7 @@
         </section>
 
         <!-- Module 7: Student Wellbeing -->
-        <section id="mod-wellbeing" class="mb-8 fade-in">
+        <section id="mod-wellbeing" data-chapter="7" data-chapter-title="Student Wellbeing" class="mb-8 fade-in">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-pink-700 to-rose-800 px-8 py-6 flex items-start gap-4">
                     <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">7</div>
@@ -1101,7 +1104,7 @@
                         <strong>Signs needing counselor referral:</strong> excessive fear/crying, withdrawal, difficulty concentrating, physical complaints (headache, nausea). Counselors should be prepared for increased referrals in the first week.
                     </div>
                     <label class="flex items-center gap-3 cursor-pointer select-none">
-                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="7">
+                        <input type="checkbox" class="checkbox-custom module-checkbox hidden peer" data-module="7">
                         <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
                             <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
@@ -1112,7 +1115,7 @@
         </section>
 
         <!-- Module 8: Remote Learning & Monday Logistics -->
-        <section id="mod-remote" class="mb-8 fade-in">
+        <section id="mod-remote" data-chapter="8" data-chapter-title="Remote Learning Continuity" class="mb-8 fade-in">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-amber-600 to-orange-700 px-8 py-6 flex items-start gap-4">
                     <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">8</div>
@@ -1141,7 +1144,7 @@
                     </div>
                     <p class="text-sm text-gray-600 mb-6">The school will confirm the model and share details before Monday. ADEK PASS substitute pool available at pass@adek.gov.ae for staffing challenges.</p>
                     <label class="flex items-center gap-3 cursor-pointer select-none">
-                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="8">
+                        <input type="checkbox" class="checkbox-custom module-checkbox hidden peer" data-module="8">
                         <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
                             <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
@@ -1152,7 +1155,7 @@
         </section>
 
         <!-- Module 9: Physical Drill & Acknowledgment -->
-        <section id="mod-drill" class="mb-8 fade-in">
+        <section id="mod-drill" data-chapter="9" data-chapter-title="Drill Acknowledgment" class="mb-8 fade-in">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-gray-800 to-gray-900 px-8 py-6 flex items-start gap-4">
                     <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">9</div>
@@ -1192,7 +1195,7 @@
                         <strong>Treat this drill as real.</strong> ADEK validation visit may happen today. Attendance records and signed acknowledgments will be submitted to ADEK as part of the reopening validation.
                     </div>
                     <label class="flex items-center gap-3 cursor-pointer select-none">
-                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="9">
+                        <input type="checkbox" class="checkbox-custom module-checkbox hidden peer" data-module="9">
                         <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
                             <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
@@ -1203,7 +1206,7 @@
         </section>
 
         <!-- Module 10: Parent Acknowledgment -->
-        <section id="mod-parent-ack" class="mb-8 fade-in">
+        <section id="mod-parent-ack" data-chapter="10" data-chapter-title="Parent Acknowledgment" class="mb-8 fade-in">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-red-700 to-rose-800 px-8 py-6 flex items-start gap-4">
                     <div class="flex-shrink-0 w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-white font-black text-xl font-heading">10</div>
@@ -1234,7 +1237,7 @@
                         <strong>Staff action:</strong> Remind families of this requirement. Front gate staff will collect signed forms. Keep blank copies on hand for parents who arrive without one.
                     </div>
                     <label class="flex items-center gap-3 cursor-pointer select-none">
-                        <input type="checkbox" class="checkbox-custom hidden peer" data-module="10">
+                        <input type="checkbox" class="checkbox-custom module-checkbox hidden peer" data-module="10">
                         <div class="w-6 h-6 border-2 border-gray-300 rounded-md flex items-center justify-center transition-all peer-checked:bg-emerald-500 peer-checked:border-emerald-500">
                             <svg class="w-4 h-4 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
@@ -1245,7 +1248,7 @@
         </section>
 
         <!-- Knowledge Check -->
-        <section id="knowledge-check" class="mb-8">
+        <section id="knowledge-check" data-chapter="11" data-chapter-title="Knowledge Check" class="mb-8">
             <div class="bg-white rounded-2xl shadow-lg border-2 border-red-200 overflow-hidden">
                 <div class="bg-gradient-to-r from-red-800 to-red-900 px-8 py-6">
                     <h3 class="text-xl font-bold text-white font-heading">Knowledge Check</h3>
@@ -1253,41 +1256,41 @@
                 </div>
                 <div class="p-8 space-y-8">
                     <!-- Q1 -->
-                    <div id="quiz-1" class="quiz-block">
+                    <div id="quiz-1" class="quiz-block aisa-quiz">
                         <p class="font-semibold text-gray-800 mb-3">1. During an alert, should you evacuate students from the building?</p>
                         <div class="space-y-2">
-                            <button onclick="checkAnswer(1, this, false)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">A. Yes, evacuate to the soccer field assembly points like a fire drill</button>
-                            <button onclick="checkAnswer(1, this, true)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">B. No. Shelter in place — move students inward, away from windows</button>
-                            <button onclick="checkAnswer(1, this, false)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">C. It depends on the type of alert</button>
+                            <button class="quiz-option aisa-quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm" data-correct="false">A. Yes, evacuate to the soccer field assembly points like a fire drill</button>
+                            <button class="quiz-option aisa-quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm" data-correct="true">B. No. Shelter in place — move students inward, away from windows</button>
+                            <button class="quiz-option aisa-quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm" data-correct="false">C. It depends on the type of alert</button>
                         </div>
-                        <div class="quiz-feedback mt-3 hidden"></div>
+                        <div class="quiz-feedback aisa-quiz-feedback mt-3"></div>
                     </div>
                     <!-- Q2 -->
-                    <div id="quiz-2" class="quiz-block">
+                    <div id="quiz-2" class="quiz-block aisa-quiz">
                         <p class="font-semibold text-gray-800 mb-3">2. During an alert, can you contact parents to let them know their child is safe?</p>
                         <div class="space-y-2">
-                            <button onclick="checkAnswer(2, this, false)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">A. Yes, a quick WhatsApp message is fine</button>
-                            <button onclick="checkAnswer(2, this, true)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">B. No. All communication goes through the school officially</button>
-                            <button onclick="checkAnswer(2, this, false)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">C. Only if parents message you first</button>
+                            <button class="quiz-option aisa-quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm" data-correct="false">A. Yes, a quick WhatsApp message is fine</button>
+                            <button class="quiz-option aisa-quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm" data-correct="true">B. No. All communication goes through the school officially</button>
+                            <button class="quiz-option aisa-quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm" data-correct="false">C. Only if parents message you first</button>
                         </div>
-                        <div class="quiz-feedback mt-3 hidden"></div>
+                        <div class="quiz-feedback aisa-quiz-feedback mt-3"></div>
                     </div>
                     <!-- Q3 -->
-                    <div id="quiz-3" class="quiz-block">
+                    <div id="quiz-3" class="quiz-block aisa-quiz">
                         <p class="font-semibold text-gray-800 mb-3">3. In GREEN operational level, which of the following is TRUE?</p>
                         <div class="space-y-2">
-                            <button onclick="checkAnswer(3, this, false)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">A. School operates exactly as it did before — normal schedule</button>
-                            <button onclick="checkAnswer(3, this, true)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">B. Classes are indoors, no morning assembly, no outdoor activities</button>
-                            <button onclick="checkAnswer(3, this, false)" class="quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm">C. Students learn remotely from home</button>
+                            <button class="quiz-option aisa-quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm" data-correct="false">A. School operates exactly as it did before — normal schedule</button>
+                            <button class="quiz-option aisa-quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm" data-correct="true">B. Classes are indoors, no morning assembly, no outdoor activities</button>
+                            <button class="quiz-option aisa-quiz-option w-full text-left px-4 py-3 rounded-xl border border-gray-200 hover:border-red-300 hover:bg-red-50 transition-all text-sm" data-correct="false">C. Students learn remotely from home</button>
                         </div>
-                        <div class="quiz-feedback mt-3 hidden"></div>
+                        <div class="quiz-feedback aisa-quiz-feedback mt-3"></div>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- ADEK Reference Documents -->
-        <section id="adek-docs" class="mb-8">
+        <section id="adek-docs" data-chapter="12" data-chapter-title="ADEK References" class="mb-8">
             <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-slate-600 to-slate-800 px-8 py-6">
                     <h3 class="text-xl font-bold text-white font-heading">ADEK Reference Documents</h3>
@@ -1325,7 +1328,7 @@
         </section>
 
         <!-- Training Acknowledgment Google Form -->
-        <section id="acknowledgment-form" class="mb-8">
+        <section id="acknowledgment-form" data-chapter="13" data-chapter-title="Sign-Off" class="mb-8">
             <div class="bg-white rounded-2xl shadow-lg border-2 border-indigo-200 overflow-hidden">
                 <div class="bg-gradient-to-r from-indigo-700 to-blue-800 px-8 py-6 text-center">
                     <h3 class="text-2xl font-bold text-white font-heading mb-2">Training Acknowledgment Form</h3>
@@ -1353,9 +1356,10 @@
                 </div>
             </div>
         </section>
+        </div>
 
         <!-- Completion Banner -->
-        <section id="completion-banner" class="mb-12 hidden">
+        <section id="completion-banner" data-cert-title="Return to School — Emergency Protocol Training" class="mb-12 hidden">
             <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl shadow-2xl p-8 text-center text-white">
                 <div class="text-5xl mb-4">&#127942;</div>
                 <h3 class="text-2xl font-black font-heading mb-3">Training Complete!</h3>
@@ -2149,6 +2153,13 @@
                     checkboxSelector: '.checkbox-custom',
                     refreshUI: updateProgress
                 });
+            });
+        }
+
+        // --- Training framework: convert to chapter-by-chapter wizard ---
+        if (window.AisaTraining) {
+            document.addEventListener('DOMContentLoaded', function () {
+                window.AisaTraining.init({ moduleId: 'return-to-school' });
             });
         }
     </script>

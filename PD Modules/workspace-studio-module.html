@@ -272,7 +272,9 @@
         }
         .mock-wrapper { position: relative; }
     </style>
+    <link rel="stylesheet" href="../auth/training.css?v=4">
     <script src="../auth/gate.js?v=8"></script>
+    <script src="../auth/training.js?v=4"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
@@ -320,39 +322,6 @@
             </div>
         </div>
 
-        <!-- Hero Section -->
-        <header class="relative py-12 lg:py-16 overflow-hidden rounded-[2rem] bg-white/70 mb-16 border border-white shadow-sm">
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-full pointer-events-none opacity-60">
-                <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-400/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob"></div>
-                <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-purple-400/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" style="animation-delay:2s"></div>
-                <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-amber-400/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" style="animation-delay:4s"></div>
-            </div>
-            <div class="relative z-10 text-center px-6">
-                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-amber-500 shadow-lg mb-6">
-                    <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM14 13l3 3 3-3-3-3z"/></svg>
-                </div>
-                <h2 class="font-heading text-3xl lg:text-4xl font-black text-slate-900 mb-4">Build it once. Let it run forever.</h2>
-                <p class="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">Workspace Studio is Google's no-code builder for <strong>AI flows</strong> — Gemini-powered agents that watch your Gmail, Calendar, Drive and Chat for a trigger, then act for you. This module walks you through building five flows you can deploy this week.</p>
-                <div class="flex flex-wrap justify-center gap-4 mt-8 text-sm font-semibold">
-                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
-                        <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        ~25 min read
-                    </div>
-                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
-                        <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        5 Worked Flows
-                    </div>
-                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
-                        <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        2 Knowledge Checks
-                    </div>
-                </div>
-                <a href="https://studio.workspace.google.com" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 mt-8 bg-blue-600 text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:bg-blue-700 transition-colors">
-                    Open Workspace Studio
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                </a>
-            </div>
-        </header>
 
         <!-- Note about visuals -->
         <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-12 flex gap-3 items-start">
@@ -364,7 +333,7 @@
         <div class="timeline-container">
 
             <!-- Section 1: What is Workspace Studio? -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="1" data-chapter-title="What Workspace Studio Is">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -414,7 +383,7 @@
             </div>
 
             <!-- Section 2: Anatomy of a flow -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="2" data-chapter-title="Anatomy of a Flow">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -479,7 +448,7 @@
             </div>
 
             <!-- Section 3: Three ways to build -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="3" data-chapter-title="Three Ways to Build">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -526,7 +495,7 @@
             </div>
 
             <!-- Section 4: Flow 1 — Daily inbox briefing -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="4" data-chapter-title="Flow 1: Daily Inbox Briefing">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -575,7 +544,7 @@
             </div>
 
             <!-- Section 5: Flow 2 — Meeting prep brief -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="5" data-chapter-title="Flow 2: Meeting Prep Brief">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -668,11 +637,11 @@
             </div>
 
             <!-- Knowledge Check 1 -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="6" data-chapter-title="Knowledge Check 1">
                 <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
                     <span class="text-white font-bold text-sm">?</span>
                 </div>
-                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden" id="quiz-1">
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden aisa-quiz" id="quiz-1">
                     <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
                         <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 1</span>
                         <h3 class="text-lg font-heading font-bold mt-1">Naming the parts of a Flow</h3>
@@ -680,30 +649,30 @@
                     <div class="p-6">
                         <p class="font-semibold text-gray-800 mb-4">In the Meeting prep brief Flow above, what part is "2 hours before any meeting I'm attending"?</p>
                         <div class="space-y-3" id="quiz-1-options">
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
                                 <span class="text-sm text-gray-700">A Step.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, true)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
                                 <span class="text-sm text-gray-700">The Starter — the trigger that wakes the Flow up.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
                                 <span class="text-sm text-gray-700">A Variable.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
                                 <span class="text-sm text-gray-700">A Skill.</span>
                             </div>
                         </div>
-                        <div id="quiz-1-feedback" class="hidden mt-4 p-4 rounded-xl text-sm fade-in"></div>
+                        <div id="quiz-1-feedback" class="aisa-quiz-feedback mt-4"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Section 6: Flow 3 — Action item dispatcher -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="7" data-chapter-title="Flow 3: Action Item Dispatcher">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -768,7 +737,7 @@
             </div>
 
             <!-- Section 7: Flow 4 — Permission slip filer -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="8" data-chapter-title="Flow 4: Permission Slip Filer">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -822,7 +791,7 @@
             </div>
 
             <!-- Section 8: Flow 5 — Skills -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="9" data-chapter-title="Flow 5: Turn a Flow into a Skill">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -875,11 +844,11 @@
             </div>
 
             <!-- Knowledge Check 2 -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="10" data-chapter-title="Knowledge Check 2">
                 <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
                     <span class="text-white font-bold text-sm">?</span>
                 </div>
-                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden" id="quiz-2">
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden aisa-quiz" id="quiz-2">
                     <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
                         <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 2</span>
                         <h3 class="text-lg font-heading font-bold mt-1">Flow or Skill?</h3>
@@ -887,30 +856,30 @@
                     <div class="p-6">
                         <p class="font-semibold text-gray-800 mb-4">You want a way to <em>summon</em> the Parent Email Translator <strong>only when you actually need it</strong> — say, when you're typing a reply to a specific parent. Should you build it as a Flow or publish it as a Skill?</p>
                         <div class="space-y-3" id="quiz-2-options">
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
                                 <span class="text-sm text-gray-700">A Flow with a "every new parent email" Starter — let it run automatically.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, true)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
                                 <span class="text-sm text-gray-700">A Skill — so you can invoke it with <code class="text-xs bg-gray-100 rounded px-1">@parent-translator</code> from inside Gemini in Gmail when you choose to.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
                                 <span class="text-sm text-gray-700">Neither — Workspace Studio can't translate.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
                                 <span class="text-sm text-gray-700">A Flow with a Calendar Starter.</span>
                             </div>
                         </div>
-                        <div id="quiz-2-feedback" class="hidden mt-4 p-4 rounded-xl text-sm fade-in"></div>
+                        <div id="quiz-2-feedback" class="aisa-quiz-feedback mt-4"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Section 9: Cautions -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="11" data-chapter-title="Safety Rules">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -953,7 +922,7 @@
             </div>
 
             <!-- Section 10: Quick reference -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="12" data-chapter-title="Quick Reference">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-blue-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -1027,7 +996,7 @@
         </div><!-- end timeline -->
 
         <!-- Completion Banner -->
-        <div id="completion-banner" class="hidden bg-gradient-to-r from-blue-600 via-purple-600 to-amber-500 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
+        <div id="completion-banner" data-cert-title="Google Workspace Studio — Build AI Flows" class="hidden bg-gradient-to-r from-blue-600 via-purple-600 to-amber-500 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
             <span class="text-5xl mb-4 block">🎉</span>
             <h3 class="text-2xl font-heading font-black mb-2">Module Complete!</h3>
             <p class="text-blue-100 max-w-lg mx-auto">You know the parts of a Flow, you've seen five worked examples, and you can publish a Skill. Pick one Flow and build it this week — start with the Daily inbox briefing if you're not sure.</p>
@@ -1132,6 +1101,13 @@
                     checkboxSelector: '.module-checkbox',
                     refreshUI: updateProgress
                 });
+            });
+        }
+
+        // --- Training framework: convert to chapter-by-chapter wizard ---
+        if (window.AisaTraining) {
+            document.addEventListener('DOMContentLoaded', function () {
+                window.AisaTraining.init({ moduleId: 'workspace-studio' });
             });
         }
     </script>

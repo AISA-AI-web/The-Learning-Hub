@@ -69,7 +69,9 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
+    <link rel="stylesheet" href="../auth/training.css?v=4">
     <script src="../auth/gate.js?v=8"></script>
+    <script src="../auth/training.js?v=4"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
@@ -116,41 +118,12 @@
             </div>
         </div>
 
-        <!-- Hero Section -->
-        <header class="relative py-12 lg:py-16 overflow-hidden rounded-[2rem] bg-white/70 mb-16 border border-white shadow-sm">
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-full pointer-events-none opacity-60">
-                <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-teal-400/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob"></div>
-                <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-cyan-400/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" style="animation-delay:2s"></div>
-                <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-emerald-500/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" style="animation-delay:4s"></div>
-            </div>
-            <div class="relative z-10 text-center px-6">
-                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-500 to-cyan-600 shadow-lg mb-6">
-                    <span class="text-4xl">🧠</span>
-                </div>
-                <h2 class="font-heading text-3xl lg:text-4xl font-black text-slate-900 mb-4">Chalkie is a Drafting Partner — Not a Lesson Designer</h2>
-                <p class="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">This module walks through what Chalkie.ai does well, where it falls short, and a planning workflow that keeps the teaching expertise where it belongs: with the teacher.</p>
-                <div class="flex flex-wrap justify-center gap-4 mt-8 text-sm font-semibold">
-                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
-                        <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        ~20 min read
-                    </div>
-                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
-                        <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        2 Knowledge Checks
-                    </div>
-                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
-                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        Plan-then-Prompt Workflow
-                    </div>
-                </div>
-            </div>
-        </header>
 
         <!-- Timeline -->
         <div class="timeline-container">
 
             <!-- Section 1: What Chalkie is for -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="1" data-chapter-title="What Chalkie Is &amp; Isn't">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-teal-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -202,7 +175,7 @@
             </div>
 
             <!-- Section 2: Getting Started -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="2" data-chapter-title="Getting Started">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-teal-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -243,7 +216,7 @@
             </div>
 
             <!-- Section 3: DOK Caution (KEY SECTION) -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="3" data-chapter-title="DOK 1 Watch-out">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-teal-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -309,11 +282,11 @@
             </div>
 
             <!-- Knowledge Check 1 -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="4" data-chapter-title="Knowledge Check 1">
                 <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
                     <span class="text-white font-bold text-sm">?</span>
                 </div>
-                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden" id="quiz-1">
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden aisa-quiz" id="quiz-1">
                     <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
                         <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 1</span>
                         <h3 class="text-lg font-heading font-bold mt-1">DOK &amp; the Plan-then-Prompt Workflow</h3>
@@ -321,30 +294,30 @@
                     <div class="p-6">
                         <p class="font-semibold text-gray-800 mb-4">A teacher generates a Chalkie slide deck on photosynthesis. Every question on the deck is "define / list / identify". What is the recommended next step?</p>
                         <div class="space-y-3" id="quiz-1-options">
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
                                 <span class="text-sm text-gray-700">Use the deck as-is — Chalkie has produced a finished resource.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
                                 <span class="text-sm text-gray-700">Re-prompt Chalkie until it stops producing DOK 1 content.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, true)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
                                 <span class="text-sm text-gray-700">Plan a DOK-graduated slide outline in MagicSchool or Gemini, edit it yourself, then hand the finished plan to Chalkie to render.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(1, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
                                 <span class="text-sm text-gray-700">Stop using Chalkie altogether — it cannot support good teaching.</span>
                             </div>
                         </div>
-                        <div id="quiz-1-feedback" class="hidden mt-4 p-4 rounded-xl text-sm fade-in"></div>
+                        <div id="quiz-1-feedback" class="aisa-quiz-feedback mt-4"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Section 4: Differentiated Worksheets Caution -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="5" data-chapter-title="Differentiated Worksheets">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-teal-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -377,7 +350,7 @@
             </div>
 
             <!-- Section 5: Plan-then-Prompt Workflow -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="6" data-chapter-title="Plan-then-Prompt Workflow">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-teal-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -438,7 +411,7 @@
             </div>
 
             <!-- Section 6: Professional Accountability -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="7" data-chapter-title="Professional Accountability">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-teal-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -484,11 +457,11 @@
             </div>
 
             <!-- Knowledge Check 2 -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="8" data-chapter-title="Knowledge Check 2">
                 <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
                     <span class="text-white font-bold text-sm">?</span>
                 </div>
-                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden" id="quiz-2">
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden aisa-quiz" id="quiz-2">
                     <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
                         <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 2</span>
                         <h3 class="text-lg font-heading font-bold mt-1">Accountability &amp; Differentiated Worksheets</h3>
@@ -496,30 +469,30 @@
                     <div class="p-6">
                         <p class="font-semibold text-gray-800 mb-4">A Chalkie-generated differentiated worksheet has three tiers, but the "support" tier removes most of the thinking and the "stretch" tier asks a different question entirely. The lesson is in 30 minutes. What is the most professionally appropriate response?</p>
                         <div class="space-y-3" id="quiz-2-options">
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
                                 <span class="text-sm text-gray-700">Print all three tiers — Chalkie generated them, so they must be correctly differentiated.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, true)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
                                 <span class="text-sm text-gray-700">Treat the output as a draft — rewrite the support and stretch tiers so all three assess the same outcome, or fall back to a single trusted worksheet and differentiate it manually.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
                                 <span class="text-sm text-gray-700">Use the worksheet anyway — if it doesn't work, blame the tool in the lesson reflection.</span>
                             </div>
-                            <div class="quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" onclick="checkAnswer(2, this, false)">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
                                 <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
                                 <span class="text-sm text-gray-700">Cancel the lesson and reschedule.</span>
                             </div>
                         </div>
-                        <div id="quiz-2-feedback" class="hidden mt-4 p-4 rounded-xl text-sm fade-in"></div>
+                        <div id="quiz-2-feedback" class="aisa-quiz-feedback mt-4"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Section 7: Quick Reference -->
-            <div class="relative pl-12 mb-16">
+            <div class="relative pl-12 mb-16" data-chapter="9" data-chapter-title="Quick Reference">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-teal-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -587,7 +560,7 @@
         </div><!-- end timeline -->
 
         <!-- Completion Banner -->
-        <div id="completion-banner" class="hidden bg-gradient-to-r from-teal-600 via-cyan-600 to-emerald-600 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
+        <div id="completion-banner" data-cert-title="Chalkie.ai — Drafting Partner Training" class="hidden bg-gradient-to-r from-teal-600 via-cyan-600 to-emerald-600 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
             <span class="text-5xl mb-4 block">🎉</span>
             <h3 class="text-2xl font-heading font-black mb-2">Module Complete!</h3>
             <p class="text-teal-100 max-w-lg mx-auto">You've completed the Chalkie.ai training module. Use what you've learned to draft faster and review more rigorously — your students will get the better resource for it.</p>
@@ -682,6 +655,13 @@
                     checkboxSelector: '.module-checkbox',
                     refreshUI: updateProgress
                 });
+            });
+        }
+
+        // --- Training framework: convert to chapter-by-chapter wizard ---
+        if (window.AisaTraining) {
+            document.addEventListener('DOMContentLoaded', function () {
+                window.AisaTraining.init({ moduleId: 'chalkie' });
             });
         }
     </script>
