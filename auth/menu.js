@@ -5,7 +5,7 @@
  * top app-bar that becomes the navigation surface for the whole Hub:
  *
  *   ┌───────────────────────────────────────────────────────────────┐
- *   │  [←] [⌂] [☰] [🔔] [🔍]                       AISA Learning Hub │
+ *   │  [←] [⌂] [☰]                  [🔔] [🔍]   AISA Learning Hub │
  *   └───────────────────────────────────────────────────────────────┘
  *
  * - Back:        history.back() (disabled if there's nothing to go to)
@@ -14,8 +14,9 @@
  * - Bell:        unread badge + dropdown of recent notifications →
  *                clicking a notification opens a full-view modal with
  *                rich-text links rendered (window.AisaRichText.render)
- * - Search:      full-screen overlay over an in-memory index of all
- *                Hub pages and PD modules; ⌘K / Ctrl-K opens it too
+ * - Search:      full-screen overlay over the shared Hub directory
+ *                (window.AISA_HUB_INDEX from auth/search-index.js).
+ *                ⌘K / Ctrl-K opens it from anywhere.
  * - Brand:       AISA logo + wordmark, links to the Learning Hub home
  *
  * Per-page sticky headers (the ones with the duplicated AISA logo)
@@ -46,10 +47,11 @@
         { label: 'Committees',        icon: '\u{1F91D}', href: 'Committees/committees.html' }
     ];
 
-    /* Searchable destinations — hand-curated so search isn't dependent
-     * on crawling page content. Add to this list whenever a new
-     * destination is created. Entries marked adminOnly are only shown
-     * in search results once we know the signed-in user is an admin. */
+    /* Fallback search index. The canonical directory lives in
+     * auth/search-index.js (window.AISA_HUB_INDEX) so the global
+     * search and the home-page hero search stay in sync. We keep
+     * this short list only as a safety net for the rare case where
+     * search-index.js hasn't loaded yet. */
     var SEARCH_INDEX = [
         /* Hub home + personal */
         { title: 'Learning Hub',                       desc: 'AISA hub home page',                                           href: 'index.html',                                                                       icon: '\u{1F3E0}', tag: 'Hub' },
@@ -210,6 +212,7 @@
             '.aisa-topbar-inner{height:100%;max-width:none;margin:0 auto;padding:0 1rem;',
                 'display:flex;align-items:center;justify-content:space-between;gap:.5rem;}',
             '.aisa-topbar-actions{display:flex;align-items:center;gap:.25rem;}',
+            '.aisa-topbar-right{display:flex;align-items:center;gap:.25rem;}',
 
             /* Action buttons (bigger than before for the "professional" feel) */
             '.aisa-tb-btn{position:relative;width:2.6rem;height:2.6rem;display:inline-flex;align-items:center;justify-content:center;',
@@ -383,20 +386,24 @@
 
         bar.innerHTML =
             '<div class="aisa-topbar-inner">' +
-                '<div class="aisa-topbar-actions">' +
+                '<div class="aisa-topbar-actions aisa-topbar-actions-left">' +
                     '<button class="aisa-tb-btn aisa-tb-back" type="button" aria-label="Back">' + ICONS.back + '</button>' +
                     '<button class="aisa-tb-btn aisa-tb-home" type="button" aria-label="Home">' + ICONS.home + '</button>' +
                     '<button class="aisa-tb-btn aisa-tb-menu" type="button" aria-label="Open menu">' + ICONS.menu + '</button>' +
-                    '<button class="aisa-tb-btn aisa-tb-bell" type="button" aria-label="Notifications">' +
-                        ICONS.bell + '<b class="aisa-tb-badge" aria-hidden="true"></b>' +
-                    '</button>' +
-                    '<button class="aisa-tb-btn aisa-tb-search" type="button" aria-label="Search">' + ICONS.search + '</button>' +
                 '</div>' +
-                '<a class="aisa-topbar-brand" href="' + rootUrl('index.html') + '" aria-label="AISA Learning Hub home">' +
-                    '<img src="' + rootUrl('AISA_logo.png') + '" alt="AISA" ' +
-                        'onerror="this.style.display=\'none\';">' +
-                    '<span class="wm">AISA<small>Learning Hub</small></span>' +
-                '</a>' +
+                '<div class="aisa-topbar-right">' +
+                    '<div class="aisa-topbar-actions aisa-topbar-actions-right">' +
+                        '<button class="aisa-tb-btn aisa-tb-bell" type="button" aria-label="Notifications">' +
+                            ICONS.bell + '<b class="aisa-tb-badge" aria-hidden="true"></b>' +
+                        '</button>' +
+                        '<button class="aisa-tb-btn aisa-tb-search" type="button" aria-label="Search">' + ICONS.search + '</button>' +
+                    '</div>' +
+                    '<a class="aisa-topbar-brand" href="' + rootUrl('index.html') + '" aria-label="AISA Learning Hub home">' +
+                        '<img src="' + rootUrl('AISA_logo.png') + '" alt="AISA" ' +
+                            'onerror="this.style.display=\'none\';">' +
+                        '<span class="wm">AISA<small>Learning Hub</small></span>' +
+                    '</a>' +
+                '</div>' +
             '</div>';
 
         document.body.appendChild(bar);
@@ -514,9 +521,20 @@
         /* --- Bell panel --- */
         function openPanel() {
             drawerClose(); closeSearch();
-            /* Position the panel under the bell button. */
+            /* Anchor the panel to the bell button. Now that the bell
+             * sits on the right side, prefer right-edge alignment so
+             * the panel stays on screen; left-edge is the fallback for
+             * narrow viewports where the panel goes full-width anyway. */
             var rect = refs.btnBell.getBoundingClientRect();
-            panel.style.left = Math.max(8, rect.left) + 'px';
+            panel.style.left  = '';
+            panel.style.right = '';
+            var vw = window.innerWidth || document.documentElement.clientWidth || 0;
+            if (vw > 480) {
+                /* Distance from the right edge of the viewport to the
+                 * right edge of the bell button — keeps the panel
+                 * tucked under the bell without overflowing. */
+                panel.style.right = Math.max(8, vw - rect.right) + 'px';
+            }
             panel.classList.add('open');
             refs.btnBell.setAttribute('aria-label', 'Close notifications');
         }
@@ -612,25 +630,59 @@
 
     /* -------- search -------- */
 
+    /* Normalize a directory entry from either the canonical shared
+     * index (window.AISA_HUB_INDEX, `url`/`type`/`keywords`) or the
+     * fallback inline list (`href`/`tag`). Returns a uniform shape so
+     * the rest of the search code doesn't care which source it came
+     * from. */
+    function normalizeSearchItem(it) {
+        var rawUrl = it.url || it.href || '';
+        var isExternal = /^https?:\/\//i.test(rawUrl);
+        return {
+            title:     it.title || '',
+            desc:      it.desc || '',
+            href:      isExternal ? rawUrl : rootUrl(rawUrl),
+            external:  isExternal,
+            type:      it.type || it.tag || '',
+            icon:      it.icon || '\u{2728}',
+            keywords:  it.keywords || '',
+            adminOnly: !!it.adminOnly
+        };
+    }
+
+    function getSearchSource() {
+        return (window.AISA_HUB_INDEX && window.AISA_HUB_INDEX.length)
+            ? window.AISA_HUB_INDEX
+            : SEARCH_INDEX;
+    }
+
     function renderSearchResults(query) {
         var q = (query || '').trim().toLowerCase();
-        /* Hide admin-only destinations from non-admins. */
-        var visible = SEARCH_INDEX.filter(function (it) { return isAdminUser || !it.adminOnly; });
+        var source = getSearchSource().map(normalizeSearchItem);
+        var visible = source.filter(function (it) { return isAdminUser || !it.adminOnly; });
         var items;
         if (!q) {
-            /* Empty query: show top destinations as a quick-launcher. */
+            /* Empty query: show a curated quick-launcher of top destinations. */
             items = visible.slice(0, 8);
         } else {
             items = visible
                 .map(function (it) {
-                    var hay = (it.title + ' ' + (it.desc || '') + ' ' + (it.tag || '')).toLowerCase();
-                    if (hay.indexOf(q) === -1) return null;
-                    /* Score: title match beats desc match. */
-                    var score = it.title.toLowerCase().indexOf(q);
-                    return { it: it, score: score === -1 ? 1000 : score };
+                    var title    = it.title.toLowerCase();
+                    var desc     = it.desc.toLowerCase();
+                    var keywords = it.keywords.toLowerCase();
+                    var type     = it.type.toLowerCase();
+                    var score;
+                    if (title.indexOf(q) === 0)          score = 0;          // prefix in title
+                    else if (title.indexOf(q) !== -1)    score = 10;         // anywhere in title
+                    else if (keywords.indexOf(q) !== -1) score = 25;         // keyword hit
+                    else if (type.indexOf(q) !== -1)     score = 35;         // type chip
+                    else if (desc.indexOf(q) !== -1)     score = 50;         // description hit
+                    else                                  score = -1;
+                    return score === -1 ? null : { it: it, score: score };
                 })
                 .filter(Boolean)
                 .sort(function (a, b) { return a.score - b.score; })
+                .slice(0, 20)
                 .map(function (x) { return x.it; });
         }
         if (!items.length) {
@@ -638,18 +690,27 @@
             return;
         }
         refs.searchResults.innerHTML = items.map(function (it, ix) {
-            return '<button class="aisa-search-result' + (ix === 0 ? ' active' : '') + '" type="button" data-href="' + escapeHtml(rootUrl(it.href)) + '">' +
-                '<span class="ic">' + (it.icon || '\u{2728}') + '</span>' +
+            return '<button class="aisa-search-result' + (ix === 0 ? ' active' : '') + '" type="button" ' +
+                'data-href="' + escapeHtml(it.href) + '" ' +
+                'data-external="' + (it.external ? '1' : '0') + '">' +
+                '<span class="ic">' + it.icon + '</span>' +
                 '<span class="body">' +
                     '<span class="tt">' + escapeHtml(it.title) + '</span>' +
-                    '<span class="dd">' + escapeHtml(it.desc || '') + '</span>' +
+                    '<span class="dd">' + escapeHtml(it.desc) + '</span>' +
                 '</span>' +
-                '<span class="tag">' + escapeHtml(it.tag || '') + '</span>' +
+                '<span class="tag">' + escapeHtml(it.type) + '</span>' +
             '</button>';
         }).join('');
 
         refs.searchResults.querySelectorAll('.aisa-search-result').forEach(function (el) {
-            el.addEventListener('click', function () { window.location.href = el.getAttribute('data-href'); });
+            el.addEventListener('click', function () {
+                var href = el.getAttribute('data-href');
+                if (el.getAttribute('data-external') === '1') {
+                    window.open(href, '_blank', 'noopener');
+                } else {
+                    window.location.href = href;
+                }
+            });
             el.addEventListener('mouseenter', function () {
                 refs.searchResults.querySelectorAll('.aisa-search-result.active').forEach(function (a) { a.classList.remove('active'); });
                 el.classList.add('active');
