@@ -157,6 +157,24 @@
             .module-tab { width: auto; }
         }
 
+        /* Floating sticky nav bar so "Next" is always in view, not
+         * stranded at the bottom of a long module. */
+        .aia-nav-bar {
+            position: sticky;
+            bottom: 1rem;
+            z-index: 30;
+            margin-top: 2.5rem;
+            padding: 0.7rem 0.9rem;
+            background: rgba(255, 255, 255, 0.92);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid #e2e8f0;
+            border-radius: 1rem;
+            box-shadow: 0 14px 32px -12px rgba(15, 23, 42, 0.30),
+                        0 2px 6px rgba(15, 23, 42, 0.05);
+        }
+        #next-module { font-size: 0.95rem; padding-top: 0.8rem; padding-bottom: 0.8rem; }
+
         .light-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
         .light-card:hover { transform: translateY(-4px); }
 
@@ -1202,8 +1220,8 @@
             <p class="text-emerald-50 font-medium">You're ready to redesign your next assessment. Print the cheat sheet and keep it above your desk.</p>
         </div>
 
-        <!-- Prev / Next module navigation -->
-        <div class="mt-10 flex justify-between items-center gap-4 no-print">
+        <!-- Prev / Next module navigation (floating sticky bar) -->
+        <div class="aia-nav-bar mt-10 flex justify-between items-center gap-4 no-print">
             <button id="prev-module" onclick="prevModule()" class="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-slate-700 bg-white border border-slate-200 rounded-2xl hover:border-fuchsia-300 hover:text-fuchsia-700 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Previous

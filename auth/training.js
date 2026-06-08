@@ -61,10 +61,32 @@
         buildSidebar();
         buildNav();
         wireQuizzes();
+        wireKeyboard();
 
         document.body.classList.add('aisa-train-managed');
         initialized = true;
         render();
+    }
+
+    /* Power-user navigation: Left/Right arrows move between chapters,
+     * respecting the same quiz gate as the Next button. Ignored while
+     * typing in a field so it never fights form input. */
+    function wireKeyboard() {
+        document.addEventListener('keydown', function (e) {
+            if (e.metaKey || e.ctrlKey || e.altKey) return;
+            var t = e.target;
+            if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' ||
+                      t.tagName === 'SELECT' || t.isContentEditable)) return;
+            if (e.key === 'ArrowRight') {
+                if (!refs.btnNext || refs.btnNext.disabled) return;
+                e.preventDefault();
+                goNext();
+            } else if (e.key === 'ArrowLeft') {
+                if (!refs.btnPrev || refs.btnPrev.disabled) return;
+                e.preventDefault();
+                goPrev();
+            }
+        });
     }
 
     /* -------- state -------- */
@@ -195,14 +217,17 @@
         var nav = document.createElement('div');
         nav.className = 'aisa-train-nav';
         nav.innerHTML =
-            '<button type="button" class="aisa-train-btn" data-action="prev">' +
+            '<button type="button" class="aisa-train-btn aisa-train-btn-prev" data-action="prev">' +
                 '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>' +
-                'Previous' +
+                '<span class="aisa-train-btn-prev-label">Previous</span>' +
             '</button>' +
-            '<span class="aisa-train-nav-hint"></span>' +
-            '<button type="button" class="aisa-train-btn primary" data-action="next">' +
+            '<div class="aisa-train-nav-center">' +
+                '<span class="aisa-train-nav-counter"></span>' +
+                '<span class="aisa-train-nav-hint"></span>' +
+            '</div>' +
+            '<button type="button" class="aisa-train-btn primary aisa-train-btn-next" data-action="next">' +
                 '<span class="aisa-train-nav-next-label">Next chapter</span>' +
-                '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>' +
+                '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>' +
             '</button>';
 
         if (banner && banner.parentNode) {
@@ -211,9 +236,11 @@
             refs.main.appendChild(nav);
         }
 
+        refs.nav        = nav;
         refs.btnPrev    = nav.querySelector('[data-action="prev"]');
         refs.btnNext    = nav.querySelector('[data-action="next"]');
         refs.navHint    = nav.querySelector('.aisa-train-nav-hint');
+        refs.navCounter = nav.querySelector('.aisa-train-nav-counter');
         refs.nextLabel  = nav.querySelector('.aisa-train-nav-next-label');
 
         refs.btnPrev.addEventListener('click', goPrev);
@@ -324,13 +351,28 @@
         refs.btnNext.disabled  = !canAdvance;
         refs.nextLabel.textContent = isLast ? 'Finish training' : 'Next chapter';
 
-        if (!canAdvance) {
-            refs.navHint.textContent = chap.quizzes.length
-                ? 'Answer the knowledge check correctly to continue.'
-                : '';
-        } else {
-            refs.navHint.textContent = '';
+        /* Center area shows the locator by default, and swaps to the
+         * gate reason (in amber) when Next is blocked by a quiz. */
+        if (refs.navCounter) {
+            refs.navCounter.textContent = 'Chapter ' + (currentIndex + 1) + ' of ' + chapters.length;
         }
+        var gated = !canAdvance && chap.quizzes.length;
+        if (refs.navHint) {
+            refs.navHint.textContent = gated ? 'Answer the knowledge check to continue' : '';
+        }
+        if (refs.nav) {
+            refs.nav.classList.toggle('is-gated', !!gated);
+        }
+
+        /* When Next flips from blocked to available (e.g. the user just
+         * answered the quiz correctly), pulse it once to pull the eye. */
+        if (canAdvance && refs.btnNext.dataset.wasBlocked === '1') {
+            refs.btnNext.classList.remove('aisa-train-pulse');
+            /* reflow so the animation can re-trigger */
+            void refs.btnNext.offsetWidth;
+            refs.btnNext.classList.add('aisa-train-pulse');
+        }
+        refs.btnNext.dataset.wasBlocked = canAdvance ? '0' : '1';
     }
 
     function tryGoTo(id) {
