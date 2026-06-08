@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Admin · Notifications</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = { theme: { extend: { fontFamily: { heading: ['Poppins', 'sans-serif'] } } } };
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .bg-dot-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+    </style>
+    <script src="auth/gate.js?v=11"></script>
+</head>
+<body class="bg-dot-pattern text-gray-800 min-h-screen">
+
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-40 border-b border-gray-100">
+        <div class="h-1 bg-gradient-to-r from-slate-800 via-indigo-700 to-blue-600 w-full"></div>
+        <nav class="container mx-auto pl-16 pr-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-4 group" title="Back to Learning Hub">
+                <img src="AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/003366/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-slate-900 tracking-tight leading-none uppercase font-heading">AISA</h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-gray-500 uppercase tracking-widest mt-0.5">Admin · Notifications</span>
+                </div>
+            </a>
+            <a href="admin-dashboard.html" class="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 16l4-4 3 3 5-6"/></svg>
+                Compliance
+            </a>
+        </nav>
+    </header>
+
+    <main class="max-w-3xl mx-auto px-4 lg:px-6 pt-8 pb-20">
+
+        <div id="state-loading" class="text-center py-24">
+            <div class="inline-block w-8 h-8 rounded-full animate-spin" style="border:3px solid #e2e8f0;border-top-color:#0f172a;"></div>
+            <p class="text-slate-500 mt-4 font-medium">Loading…</p>
+        </div>
+
+        <div id="state-denied" class="hidden max-w-md mx-auto text-center py-20">
+            <div class="text-5xl mb-4">🔒</div>
+            <h2 class="text-xl font-heading font-black text-slate-900 mb-2">Admin access required</h2>
+            <p class="text-slate-500">Only PD leads and SLT can send notifications.</p>
+            <a href="index.html" class="inline-block mt-6 text-indigo-700 font-bold hover:text-indigo-900">← Back to the Learning Hub</a>
+        </div>
+
+        <div id="state-ready" class="hidden">
+            <div class="mb-6">
+                <h2 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">Send a Notification</h2>
+                <p class="text-slate-500 font-medium mt-1">All staff will see this in their menu, with an unread badge until they open it.</p>
+            </div>
+
+            <!-- Compose -->
+            <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6 mb-10">
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5" for="notif-title">Title</label>
+                <input id="notif-title" type="text" maxlength="200" placeholder="e.g. Reminder: complete the AI Ethics module by Friday"
+                       class="w-full border border-slate-200 rounded-xl px-4 py-2.5 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5" for="notif-body">Message</label>
+                <textarea id="notif-body" rows="4" maxlength="4000" placeholder="Add any details staff need to know…"
+                          class="w-full border border-slate-200 rounded-xl px-4 py-2.5 mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-300 resize-y"></textarea>
+
+                <div class="flex items-center justify-between gap-4">
+                    <span id="notif-status" class="text-sm font-semibold"></span>
+                    <button id="notif-send" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-5 py-2.5 rounded-xl transition-colors">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                        Send to all staff
+                    </button>
+                </div>
+            </section>
+
+            <!-- Sent list -->
+            <div class="flex items-center justify-between mb-3 px-1">
+                <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">Sent notifications</h3>
+                <span id="sent-count" class="text-xs font-semibold text-slate-400"></span>
+            </div>
+            <section id="sent-list" class="grid gap-3"></section>
+            <p id="sent-empty" class="hidden text-center text-slate-400 py-8">No notifications sent yet.</p>
+        </div>
+    </main>
+
+    <script>
+        function showState(id) {
+            ['state-loading', 'state-denied', 'state-ready'].forEach(function (s) {
+                document.getElementById(s).classList.toggle('hidden', s !== id);
+            });
+        }
+
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+            });
+        }
+
+        function fmt(iso) {
+            if (!iso) return '';
+            try { return new Date(iso).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+            catch (e) { return ''; }
+        }
+
+        function notifCard(n) {
+            return '<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">' +
+                '<div class="flex items-start justify-between gap-3">' +
+                    '<div class="min-w-0">' +
+                        '<p class="font-bold text-slate-900 leading-tight">' + esc(n.title || 'Notification') + '</p>' +
+                        (n.body ? '<p class="text-sm text-slate-600 mt-1 whitespace-pre-wrap break-words">' + esc(n.body) + '</p>' : '') +
+                        '<p class="text-xs text-slate-400 mt-2">' + esc(n.author_name || 'AISA') + ' · ' + fmt(n.created_at) + '</p>' +
+                    '</div>' +
+                    '<div class="flex flex-col items-end gap-2 flex-shrink-0">' +
+                        '<span class="inline-flex items-center gap-1 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-full whitespace-nowrap">' +
+                            '👁 ' + (n.read_count || 0) + ' read</span>' +
+                        '<button data-del="' + esc(n.id) + '" class="del-btn text-xs font-bold text-rose-600 hover:text-rose-800 transition-colors">Delete</button>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        }
+
+        function renderSent(items) {
+            var wrap = document.getElementById('sent-list');
+            var empty = document.getElementById('sent-empty');
+            document.getElementById('sent-count').textContent = items.length ? (items.length + ' active') : '';
+            if (!items.length) {
+                wrap.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+            wrap.innerHTML = items.map(notifCard).join('');
+            wrap.querySelectorAll('.del-btn').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (!confirm('Delete this notification for everyone?')) return;
+                    var id = btn.getAttribute('data-del');
+                    btn.disabled = true; btn.textContent = 'Deleting…';
+                    window.aisaAuth.deleteNotification(id).then(loadSent).catch(function () {
+                        btn.disabled = false; btn.textContent = 'Delete';
+                    });
+                });
+            });
+        }
+
+        function loadSent() {
+            return window.aisaAuth.adminNotificationStats().then(function (r) {
+                renderSent((r && r.notifications) || []);
+            });
+        }
+
+        function setStatus(msg, kind) {
+            var el = document.getElementById('notif-status');
+            el.textContent = msg || '';
+            el.className = 'text-sm font-semibold ' + (kind === 'error' ? 'text-rose-600' : kind === 'ok' ? 'text-emerald-600' : 'text-slate-400');
+        }
+
+        function send() {
+            var title = document.getElementById('notif-title').value.trim();
+            var body  = document.getElementById('notif-body').value.trim();
+            if (!title && !body) { setStatus('Add a title or message first.', 'error'); return; }
+            var btn = document.getElementById('notif-send');
+            btn.disabled = true;
+            setStatus('Sending…');
+            window.aisaAuth.postNotification(title, body).then(function () {
+                document.getElementById('notif-title').value = '';
+                document.getElementById('notif-body').value = '';
+                setStatus('Sent to all staff.', 'ok');
+                setTimeout(function () { setStatus(''); }, 4000);
+                return loadSent();
+            }).catch(function (err) {
+                console.warn('AISA: post notification failed', err);
+                setStatus('Could not send. Please try again.', 'error');
+            }).then(function () { btn.disabled = false; });
+        }
+
+        document.getElementById('notif-send').addEventListener('click', send);
+
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                if (!auth.isConfigured()) { showState('state-denied'); return; }
+                // adminNotificationStats is admin-gated; use it as the access check.
+                auth.adminNotificationStats().then(function (r) {
+                    renderSent((r && r.notifications) || []);
+                    showState('state-ready');
+                }).catch(function (err) {
+                    console.warn('AISA: notifications admin check failed', err);
+                    showState('state-denied');
+                });
+            });
+        } else {
+            showState('state-denied');
+        }
+    </script>
+</body>
+</html>

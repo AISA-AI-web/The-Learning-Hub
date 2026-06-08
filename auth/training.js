@@ -398,7 +398,7 @@
         var chap = chapters[currentIndex];
         if (!isChapterReady(chap)) return;
 
-        var wasCompleted = completedSet.has(chap.id);
+        var isLast = currentIndex === chapters.length - 1;
         completedSet.add(chap.id);
 
         /* Auto-tick the section's hidden checkbox so the existing
@@ -410,12 +410,21 @@
             chap.checkbox.dispatchEvent(new Event('change', { bubbles: true }));
         }
 
-        if (currentIndex < chapters.length - 1) {
+        if (!isLast) {
             currentIndex++;
             unlockedSet.add(chapters[currentIndex].id);
         }
         saveState();
         render(true);
+
+        /* "Finish training" on the last chapter: always surface the
+         * certificate + path back to the module list, even on a revisit
+         * where the backend completion event won't re-fire. (On a fresh
+         * completion, gate.js also fires the event, but the modal guards
+         * against showing twice.) */
+        if (isLast && window.AisaCertificate && typeof window.AisaCertificate.celebrate === 'function') {
+            window.AisaCertificate.celebrate();
+        }
     }
 
     /* -------- utilities -------- */

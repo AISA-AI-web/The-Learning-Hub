@@ -60,7 +60,7 @@
             btn.style.transform = 'translateY(0)';
             btn.style.boxShadow = '0 10px 25px -8px rgba(0,0,0,.35)';
         });
-        btn.addEventListener('click', openCertificate);
+        btn.addEventListener('click', function () { openCertificate(); });
 
         wrap.appendChild(btn);
         banner.appendChild(wrap);
@@ -94,6 +94,16 @@
         return t.replace(/^\s*AISA\s*[|\-–—:]\s*/i, '').trim() || 'Professional Development Module';
     }
 
+    /* Where "Back to Modules" should go from the completion modal.
+     * All PD modules live alongside pd.html, so a relative link works;
+     * overridable per page. */
+    function getModulesUrl() {
+        var banner = document.getElementById('completion-banner');
+        if (banner && banner.dataset && banner.dataset.modulesUrl) return banner.dataset.modulesUrl;
+        if (window.AISA_MODULES_URL) return window.AISA_MODULES_URL;
+        return 'pd.html';
+    }
+
     function getLogoUrl() {
         var img = document.querySelector('img[src*="AISA_logo"]') ||
                   document.querySelector('img[alt*="AISA" i]');
@@ -116,8 +126,11 @@
 
     /* -------- certificate window -------- */
 
-    function openCertificate() {
-        var html = buildCertHtml(getUserName(), getModuleTitle(), todayString(), getLogoUrl());
+    function openCertificate(opts) {
+        opts = (opts && typeof opts === 'object' && opts.nodeType === undefined) ? opts : {};
+        var name  = opts.name  || getUserName();
+        var title = opts.title || getModuleTitle();
+        var html = buildCertHtml(name, title, todayString(), getLogoUrl());
         var w = window.open('', '_blank');
         if (!w) {
             alert('Please allow pop-ups for this site to download your certificate.');
@@ -269,10 +282,15 @@
         document.head.appendChild(s);
     }
 
-    function showCertificateModal() {
-        if (modalShown) return;
+    function showCertificateModal(force) {
+        /* Never stack two; and only auto-show once per session unless
+         * explicitly forced (e.g. the "Finish training" button). */
+        if (document.querySelector('.aisa-cert-modal-overlay')) return;
+        if (modalShown && !force) return;
         modalShown = true;
         injectModalStyles();
+
+        var modulesUrl = getModulesUrl();
 
         var overlay = document.createElement('div');
         overlay.className = 'aisa-cert-modal-overlay';
@@ -286,11 +304,11 @@
                 '<div class="aisa-cert-modal-badge">Module Complete</div>' +
                 '<h2 class="aisa-cert-modal-title">Congratulations!</h2>' +
                 '<p class="aisa-cert-modal-text">You’ve completed <b>' + esc(getModuleTitle()) + '</b>.<br>' +
-                    'Your certificate of completion is ready to download.</p>' +
+                    'Download your certificate, then head back to choose your next module.</p>' +
                 '<div class="aisa-cert-modal-actions">' +
                     '<button class="aisa-cert-modal-btn primary" type="button" data-action="download">' +
                         '\u{1F393} Download Certificate</button>' +
-                    '<button class="aisa-cert-modal-btn ghost" type="button" data-action="later">Maybe later</button>' +
+                    '<a class="aisa-cert-modal-btn ghost" data-action="back" href="' + esc(modulesUrl) + '">Back to Modules</a>' +
                 '</div>' +
             '</div>';
         document.body.appendChild(overlay);
@@ -298,14 +316,29 @@
         function close() {
             if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
         }
+        function goBack() { window.location.href = modulesUrl; }
+
         overlay.querySelector('.aisa-cert-modal-close').addEventListener('click', close);
-        overlay.querySelector('[data-action="later"]').addEventListener('click', close);
-        overlay.querySelector('[data-action="download"]').addEventListener('click', function () {
-            openCertificate();
-            close();
-        });
         overlay.addEventListener('click', function (e) {
             if (e.target === overlay) close();  // click backdrop to dismiss
+        });
+        overlay.querySelector('[data-action="back"]').addEventListener('click', function (e) {
+            e.preventDefault(); goBack();
+        });
+        overlay.querySelector('[data-action="download"]').addEventListener('click', function () {
+            openCertificate();
+            /* After the cert opens in its own tab, make returning to the
+             * module list the clear, prominent next step. */
+            var actions = overlay.querySelector('.aisa-cert-modal-actions');
+            var text = overlay.querySelector('.aisa-cert-modal-text');
+            if (text) text.innerHTML = 'Your certificate opened in a new tab — use ' +
+                '<b>Print → Save as PDF</b> there to keep it.';
+            actions.innerHTML =
+                '<button class="aisa-cert-modal-btn primary" type="button" data-action="back2">' +
+                    '← Back to Modules</button>' +
+                '<button class="aisa-cert-modal-btn ghost" type="button" data-action="stay">Stay on this page</button>';
+            actions.querySelector('[data-action="back2"]').addEventListener('click', goBack);
+            actions.querySelector('[data-action="stay"]').addEventListener('click', close);
         });
     }
 
@@ -315,8 +348,19 @@
      * module. Deferred slightly so the module's own completion banner
      * and confetti land first, then the modal rises over them. */
     document.addEventListener('aisa:module-completed', function () {
-        setTimeout(showCertificateModal, 350);
+        setTimeout(function () { showCertificateModal(false); }, 350);
     });
+
+    /* Public API:
+     *   open(opts)   — open the print certificate directly (opts.title to
+     *                  override the module name; used by dashboards).
+     *   celebrate()  — force the completion modal (used by "Finish
+     *                  training" so it always does something, even on a
+     *                  revisit where the backend event won't re-fire). */
+    window.AisaCertificate = {
+        open:      openCertificate,
+        celebrate: function () { showCertificateModal(true); }
+    };
 
     /* Wait for auth, then wire up the banner button once the DOM is ready. */
     if (typeof window.aisaReady === 'function') {
