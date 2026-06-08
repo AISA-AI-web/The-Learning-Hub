@@ -128,7 +128,22 @@
 
                 <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5" for="notif-body">Message</label>
                 <textarea id="notif-body" rows="4" maxlength="4000" placeholder="Add any details staff need to know…"
-                          class="w-full border border-slate-200 rounded-xl px-4 py-2.5 mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-300 resize-y"></textarea>
+                          class="w-full border border-slate-200 rounded-xl px-4 py-2.5 mb-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300 resize-y"></textarea>
+                <p class="text-xs text-slate-500 mb-2">
+                    Tip: paste a URL and it'll become a clickable link automatically.
+                    To embed a link inside words, use <code class="bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded">[click here](https://example.com)</code>.
+                </p>
+
+                <!-- Live preview of how staff will see it -->
+                <details class="mb-2 group" id="notif-preview-wrap">
+                    <summary class="text-xs font-bold uppercase tracking-widest text-slate-500 cursor-pointer select-none">
+                        Preview <span class="text-slate-400 font-normal normal-case tracking-normal group-open:hidden">— click to expand</span>
+                    </summary>
+                    <div class="mt-2 bg-slate-50 border border-slate-200 rounded-xl p-4">
+                        <p class="font-bold text-slate-900 leading-tight" id="notif-preview-title">(title appears here)</p>
+                        <div class="text-sm text-slate-700 mt-2 leading-relaxed" id="notif-preview-body">(message appears here)</div>
+                    </div>
+                </details>
 
                 <div class="flex items-center justify-between gap-4 mt-2">
                     <span id="notif-status" class="text-sm font-semibold"></span>
@@ -161,6 +176,27 @@
                 return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
             });
         }
+
+        /* Render the message body the same way staff will see it. Falls
+         * back to plain-text escaping if menu.js hasn't loaded yet. */
+        function renderBody(text) {
+            if (window.AisaRichText && window.AisaRichText.render) {
+                return window.AisaRichText.render(text);
+            }
+            return esc(text).replace(/\n/g, '<br>');
+        }
+
+        /* Live preview while typing. */
+        function updatePreview() {
+            var title = document.getElementById('notif-title').value.trim() || '(title appears here)';
+            var body  = document.getElementById('notif-body').value;
+            document.getElementById('notif-preview-title').textContent = title;
+            document.getElementById('notif-preview-body').innerHTML = body
+                ? renderBody(body)
+                : '<span class="text-slate-400">(message appears here)</span>';
+        }
+        document.getElementById('notif-title').addEventListener('input', updatePreview);
+        document.getElementById('notif-body').addEventListener('input', updatePreview);
 
         function fmt(iso) {
             if (!iso) return '';
@@ -281,7 +317,7 @@
                 '<div class="flex items-start justify-between gap-3">' +
                     '<div class="min-w-0">' +
                         '<p class="font-bold text-slate-900 leading-tight">' + esc(n.title || 'Notification') + '</p>' +
-                        (n.body ? '<p class="text-sm text-slate-600 mt-1 whitespace-pre-wrap break-words">' + esc(n.body) + '</p>' : '') +
+                        (n.body ? '<p class="text-sm text-slate-600 mt-1 break-words">' + renderBody(n.body) + '</p>' : '') +
                         '<div class="flex flex-wrap items-center gap-1.5 mt-2">' + targetChips(n) + '</div>' +
                         '<p class="text-xs text-slate-400 mt-2">' + esc(n.author_name || 'AISA') + ' · ' + fmt(n.created_at) + '</p>' +
                     '</div>' +
