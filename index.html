@@ -72,48 +72,6 @@
         .leo-bubble { animation: leo-bubble-pop 0.5s ease-out 0.4s both; }
         .leo-mascot:hover .leo-bob  { animation-duration: 1.6s; }
 
-        /* Hub search */
-        .hub-result {
-            display: flex;
-            align-items: center;
-            gap: 0.85rem;
-            padding: 0.7rem 1rem;
-            color: #e2e8f0;
-            cursor: pointer;
-            transition: background-color 0.15s ease;
-        }
-        .hub-result:hover,
-        .hub-result.is-active {
-            background-color: rgba(255,255,255,0.07);
-        }
-        .hub-result .hub-result-icon {
-            flex-shrink: 0;
-            width: 2.25rem;
-            height: 2.25rem;
-            border-radius: 0.7rem;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.12);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.1rem;
-        }
-        .hub-result .hub-result-title { font-weight: 700; color: #ffffff; font-size: 0.95rem; line-height: 1.2; }
-        .hub-result .hub-result-desc  { color: rgba(226,232,240,0.7); font-size: 0.78rem; line-height: 1.3; margin-top: 0.1rem; }
-        .hub-result .hub-result-type  {
-            flex-shrink: 0;
-            font-size: 0.62rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
-            color: rgba(191,219,254,0.85);
-            background: rgba(59,130,246,0.15);
-            border: 1px solid rgba(96,165,250,0.25);
-            border-radius: 0.5rem;
-            padding: 0.2rem 0.55rem;
-        }
-        .hub-result mark {
-            background: rgba(250,204,21,0.3);
-            color: #fde68a;
-            padding: 0 2px;
-            border-radius: 3px;
-        }
-
         /* --- Inline Survey banner: subtle gold glow, no overlap with cards --- */
         .survey-banner {
             box-shadow: 0 8px 22px -8px rgba(245, 158, 11, 0.55), 0 0 0 0 rgba(251, 191, 36, 0.5);
@@ -143,33 +101,10 @@
         html[lang="ar"] .tracking-widest,
         html[lang="ar"] .tracking-wider { letter-spacing: normal; }
 
-        /* RTL flow: flip directional arrows and reverse search-bar children */
+        /* RTL flow: flip directional arrows on hub cards. */
         html[dir="rtl"] .rtl-flip,
         html[dir="rtl"] .hub-card .arrow { transform: scaleX(-1); }
         html[dir="rtl"] .hub-card:hover .arrow { transform: scaleX(-1) translateX(4px); }
-
-        /* Language toggle pill (matches the Digital Lion newsletter) */
-        .lang-toggle {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            font-weight: 700;
-            font-size: 0.8rem;
-            padding: 0.55rem 0.65rem;
-            border-radius: 9999px;
-            background: linear-gradient(135deg, #7e22ce, #ec4899);
-            color: #fff;
-            box-shadow: 0 6px 18px -6px rgba(126, 34, 206, 0.55), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-        @media (min-width: 640px) {
-            .lang-toggle { padding: 0.55rem 1rem; }
-        }
-        .lang-toggle:hover { transform: translateY(-1px); box-shadow: 0 10px 22px -6px rgba(126, 34, 206, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.12) inset; }
-        .lang-toggle:active { transform: translateY(0); }
-        .lang-toggle .globe { font-size: 1rem; line-height: 1; }
     </style>
     <script src="auth/gate.js?v=12"></script>
 </head>
@@ -186,66 +121,10 @@
     <main class="relative z-10 flex-grow flex flex-col px-4 md:px-8 lg:px-12 py-3 md:py-4">
         <div class="w-full max-w-[1800px] mx-auto flex-1 flex flex-col gap-3 min-h-0">
 
-            <!-- Hub search + language toggle -->
-            <div class="flex justify-center items-start shrink-0 gap-2 sm:gap-3">
-                <div class="relative w-full max-w-2xl">
-                    <label for="hub-search" class="sr-only">
-                        <span class="lang-en">Search the Learning Hub</span>
-                        <span class="lang-ar">ابحث في مركز التعلم</span>
-                    </label>
-                    <div class="flex items-center bg-white/10 hover:bg-white/15 focus-within:bg-white/15 border border-white/20 focus-within:border-white/40 rounded-2xl shadow-xl backdrop-blur-md transition-all px-4 py-3">
-                        <svg class="w-5 h-5 text-blue-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input id="hub-search" type="text" autocomplete="off" spellcheck="false"
-                               placeholder="Search modules, tools, committees, and more&hellip;"
-                               data-placeholder-en="Search modules, tools, committees, and more…"
-                               data-placeholder-ar="ابحث في الوحدات والأدوات واللجان والمزيد…"
-                               aria-expanded="false" aria-controls="hub-search-results" aria-autocomplete="list"
-                               class="flex-grow bg-transparent outline-none px-3 py-1 text-white placeholder:text-blue-200/60 text-base md:text-lg font-medium">
-                        <kbd id="hub-search-kbd" class="hidden md:inline-flex items-center gap-1 text-[10px] font-bold text-blue-200/80 bg-white/10 border border-white/15 rounded-md px-1.5 py-0.5 uppercase tracking-widest">&#8984; K</kbd>
-                        <button id="hub-search-clear" type="button"
-                                aria-label="Clear search"
-                                data-aria-label-en="Clear search"
-                                data-aria-label-ar="مسح البحث"
-                                class="hidden ml-1 w-7 h-7 rounded-lg text-blue-200/80 hover:text-white hover:bg-white/10 transition-colors items-center justify-center">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
-                        </button>
-                    </div>
+            <!-- Hub search and language toggle now live in the global
+                 app-bar (auth/menu.js). ⌘K / Ctrl-K opens search from
+                 anywhere; the globe button on the bar flips language. -->
 
-                    <!-- Results dropdown -->
-                    <div id="hub-search-results" role="listbox"
-                         class="hidden absolute left-0 right-0 top-full mt-3 bg-slate-900/95 border border-white/15 rounded-2xl shadow-2xl backdrop-blur-xl overflow-hidden z-40">
-                        <div id="hub-search-empty" class="hidden px-5 py-8 text-center">
-                            <div class="text-3xl mb-2" aria-hidden="true">&#128269;</div>
-                            <p class="text-white font-semibold">
-                                <span class="lang-en">No matches found.</span>
-                                <span class="lang-ar">لا توجد نتائج مطابقة.</span>
-                            </p>
-                            <p class="text-blue-200/70 text-sm mt-1">
-                                <span class="lang-en">Try "AI", "committee", "MAP", or "orientation".</span>
-                                <span class="lang-ar">جرّبوا «AI» أو «لجنة» أو «MAP» أو «التهيئة».</span>
-                            </p>
-                        </div>
-                        <ul id="hub-search-list" class="max-h-[28rem] overflow-y-auto py-2 divide-y divide-white/5"></ul>
-                        <div class="flex items-center justify-between gap-2 px-4 py-2 border-t border-white/10 bg-white/[0.03] text-[10px] text-blue-200/70 uppercase tracking-widest font-bold">
-                            <span class="hidden md:flex items-center gap-3">
-                                <span class="flex items-center gap-1"><kbd class="bg-white/10 border border-white/15 rounded px-1 py-0.5 normal-case text-[10px]">&#8593;</kbd><kbd class="bg-white/10 border border-white/15 rounded px-1 py-0.5 normal-case text-[10px]">&#8595;</kbd> <span class="lang-en">Navigate</span><span class="lang-ar">التنقّل</span></span>
-                                <span class="flex items-center gap-1"><kbd class="bg-white/10 border border-white/15 rounded px-1 py-0.5 normal-case text-[10px]">Enter</kbd> <span class="lang-en">Open</span><span class="lang-ar">فتح</span></span>
-                                <span class="flex items-center gap-1"><kbd class="bg-white/10 border border-white/15 rounded px-1 py-0.5 normal-case text-[10px]">Esc</kbd> <span class="lang-en">Close</span><span class="lang-ar">إغلاق</span></span>
-                            </span>
-                            <span id="hub-search-count" class="ml-auto"></span>
-                        </div>
-                    </div>
-                </div>
-                <button id="lang-toggle" type="button"
-                        class="lang-toggle mt-1"
-                        aria-label="Toggle language"
-                        data-aria-label-en="Switch to Arabic"
-                        data-aria-label-ar="Switch to English">
-                    <span class="globe" aria-hidden="true">🌐</span>
-                    <span class="hidden sm:inline lang-en">العربية</span>
-                    <span class="hidden sm:inline lang-ar">English</span>
-                </button>
-            </div>
 
             <!-- Survey banner — inline, full-width minus Leo's reserved corner -->
             <a href="https://docs.google.com/forms/d/e/1FAIpQLScMbNJ1xK6-63sCTpkAN8C6cXKirHGsXwj5furPuzTqS9j7Fw/viewform?usp=header"
@@ -508,216 +387,32 @@
         </div>
     </footer>
 
-    <!-- Hub search directory — shared with the global app-bar search.
-         Edit auth/search-index.js to add or change entries. -->
-    <script src="auth/search-index.js?v=1"></script>
-    <script>
-        const HUB_INDEX = window.AISA_HUB_INDEX || [];
-    </script>
-
+    <!-- Bilingual title: kept in sync with the global app-bar language
+         toggle. The toggle lives in auth/menu.js, which applies html[lang]
+         and rewrites data-placeholder-* / data-aria-label-* across the
+         page; this script only handles the page-specific document.title. -->
     <script>
         (function () {
-            const input = document.getElementById('hub-search');
-            const resultsBox = document.getElementById('hub-search-results');
-            const list = document.getElementById('hub-search-list');
-            const emptyMsg = document.getElementById('hub-search-empty');
-            const countEl = document.getElementById('hub-search-count');
-            const clearBtn = document.getElementById('hub-search-clear');
-            const kbd = document.getElementById('hub-search-kbd');
-            if (!input || !resultsBox || !list) return;
-
-            const MAX_RESULTS = 8;
-            let activeIndex = -1;
-            let currentResults = [];
-
-            function escapeHtml(s) {
-                return String(s).replace(/[&<>"']/g, c => ({
-                    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-                }[c]));
-            }
-
-            function highlight(text, q) {
-                const safe = escapeHtml(text);
-                if (!q) return safe;
-                const rx = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
-                return safe.replace(rx, '<mark>$1</mark>');
-            }
-
-            function score(item, q) {
-                const title = item.title.toLowerCase();
-                const desc = (item.desc || '').toLowerCase();
-                const keywords = (item.keywords || '').toLowerCase();
-                const type = (item.type || '').toLowerCase();
-                if (title.startsWith(q)) return 100;
-                if (title.includes(q))   return 80;
-                if (keywords.includes(q)) return 60;
-                if (type.includes(q))     return 40;
-                if (desc.includes(q))     return 20;
-                return 0;
-            }
-
-            function renderResults(q) {
-                list.innerHTML = '';
-                currentResults = [];
-                activeIndex = -1;
-
-                if (!q) {
-                    resultsBox.classList.add('hidden');
-                    input.setAttribute('aria-expanded', 'false');
-                    return;
-                }
-
-                const scored = HUB_INDEX
-                    .map(item => ({ item, s: score(item, q) }))
-                    .filter(r => r.s > 0)
-                    .sort((a, b) => b.s - a.s)
-                    .slice(0, MAX_RESULTS)
-                    .map(r => r.item);
-
-                currentResults = scored;
-                resultsBox.classList.remove('hidden');
-                input.setAttribute('aria-expanded', 'true');
-
-                if (scored.length === 0) {
-                    emptyMsg.classList.remove('hidden');
-                    countEl.textContent = '';
-                    return;
-                }
-                emptyMsg.classList.add('hidden');
-                countEl.textContent = scored.length + (scored.length === 1 ? ' result' : ' results');
-
-                scored.forEach((item, i) => {
-                    const li = document.createElement('li');
-                    li.className = 'hub-result';
-                    li.setAttribute('role', 'option');
-                    li.setAttribute('data-index', i);
-                    li.innerHTML =
-                        '<span class="hub-result-icon" aria-hidden="true">' + escapeHtml(item.icon || '•') + '</span>' +
-                        '<span class="flex-grow min-w-0">' +
-                            '<span class="hub-result-title block truncate">' + highlight(item.title, q) + '</span>' +
-                            '<span class="hub-result-desc block truncate">' + highlight(item.desc || '', q) + '</span>' +
-                        '</span>' +
-                        '<span class="hub-result-type">' + escapeHtml(item.type || '') + '</span>';
-                    li.addEventListener('click', () => openResult(item));
-                    li.addEventListener('mouseenter', () => setActive(i));
-                    list.appendChild(li);
-                });
-                setActive(0);
-            }
-
-            function setActive(i) {
-                activeIndex = i;
-                const items = list.querySelectorAll('.hub-result');
-                items.forEach((el, idx) => el.classList.toggle('is-active', idx === i));
-                const el = items[i];
-                if (el) el.scrollIntoView({ block: 'nearest' });
-            }
-
-            function openResult(item) {
-                if (!item) return;
-                const external = /^https?:\/\//.test(item.url);
-                if (external) {
-                    window.open(item.url, '_blank', 'noopener');
-                } else {
-                    window.location.href = item.url;
-                }
-            }
-
-            input.addEventListener('input', e => {
-                const q = e.target.value.trim().toLowerCase();
-                clearBtn.classList.toggle('hidden', q.length === 0);
-                clearBtn.classList.toggle('flex', q.length > 0);
-                if (kbd) kbd.classList.toggle('hidden', q.length > 0 || window.innerWidth < 768);
-                renderResults(q);
-            });
-
-            input.addEventListener('keydown', e => {
-                if (!currentResults.length && e.key !== 'Escape') return;
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    setActive((activeIndex + 1) % currentResults.length);
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    setActive((activeIndex - 1 + currentResults.length) % currentResults.length);
-                } else if (e.key === 'Enter') {
-                    e.preventDefault();
-                    openResult(currentResults[activeIndex] || currentResults[0]);
-                } else if (e.key === 'Escape') {
-                    input.value = '';
-                    renderResults('');
-                    clearBtn.classList.add('hidden');
-                    clearBtn.classList.remove('flex');
-                    input.blur();
-                }
-            });
-
-            clearBtn.addEventListener('click', () => {
-                input.value = '';
-                renderResults('');
-                clearBtn.classList.add('hidden');
-                clearBtn.classList.remove('flex');
-                input.focus();
-            });
-
-            // Close dropdown when clicking outside
-            document.addEventListener('click', e => {
-                if (!resultsBox.contains(e.target) && e.target !== input) {
-                    resultsBox.classList.add('hidden');
-                    input.setAttribute('aria-expanded', 'false');
-                }
-            });
-
-            // Global shortcut: ⌘K / Ctrl+K
-            document.addEventListener('keydown', e => {
-                if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-                    e.preventDefault();
-                    input.focus();
-                    input.select();
-                }
-            });
-        })();
-    </script>
-
-    <script>
-        // --- Arabic / English language toggle (shared storage key with the newsletter) ---
-        (function () {
-            const STORAGE_KEY = 'aisa-newsletter-lang';
-            const html = document.documentElement;
-            const toggleBtn = document.getElementById('lang-toggle');
             const TITLES = {
                 en: 'AISA | Teaching & Learning Hub',
                 ar: 'AISA | مركز التعليم والتعلم'
             };
-
-            function applyLang(lang) {
-                const next = lang === 'ar' ? 'ar' : 'en';
-                html.setAttribute('lang', next);
-                html.setAttribute('dir', next === 'ar' ? 'rtl' : 'ltr');
-                document.title = TITLES[next];
-
-                // Update any element with data-placeholder-en/-ar or data-aria-label-en/-ar.
-                document.querySelectorAll('[data-placeholder-en]').forEach(el => {
-                    const v = el.getAttribute('data-placeholder-' + next);
-                    if (v != null) el.setAttribute('placeholder', v);
-                });
-                document.querySelectorAll('[data-aria-label-en]').forEach(el => {
-                    const v = el.getAttribute('data-aria-label-' + next);
-                    if (v != null) el.setAttribute('aria-label', v);
-                });
-
-                try { localStorage.setItem(STORAGE_KEY, next); } catch (e) { /* ignore */ }
+            function syncTitle() {
+                const lang = document.documentElement.getAttribute('lang') === 'ar' ? 'ar' : 'en';
+                document.title = TITLES[lang];
             }
-
-            let saved = 'en';
-            try { saved = localStorage.getItem(STORAGE_KEY) || 'en'; } catch (e) { /* ignore */ }
-            applyLang(saved);
-
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', () => {
-                    const current = html.getAttribute('lang') === 'ar' ? 'ar' : 'en';
-                    applyLang(current === 'ar' ? 'en' : 'ar');
-                });
-            }
+            /* Initial paint: pick up the language menu.js has already set
+             * (or fall back to the saved preference if menu.js hasn't run
+             * yet on this load). */
+            try {
+                const saved = localStorage.getItem('aisa-newsletter-lang') === 'ar' ? 'ar' : 'en';
+                if (!document.documentElement.getAttribute('lang')) {
+                    document.documentElement.setAttribute('lang', saved);
+                    document.documentElement.setAttribute('dir', saved === 'ar' ? 'rtl' : 'ltr');
+                }
+            } catch (e) {}
+            syncTitle();
+            document.addEventListener('aisa:lang-change', syncTitle);
         })();
     </script>
 
