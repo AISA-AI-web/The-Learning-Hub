@@ -159,9 +159,21 @@
             var li = document.createElement('li');
             li.className = 'aisa-train-chapter-item';
             li.setAttribute('data-chapter-id', c.id);
+            /* Two visuals live in the same slot — the chapter number
+             * (default) and a checkmark SVG (revealed when the item
+             * gains the .done class). CSS handles the swap so we
+             * don't need to re-render the DOM on completion. */
             li.innerHTML =
-                '<span class="aisa-train-chapter-num">' + (i + 1) + '</span>' +
-                '<span class="aisa-train-chapter-title">' + escapeHtml(c.title) + '</span>';
+                '<span class="aisa-train-chapter-marker" aria-hidden="true">' +
+                    '<span class="aisa-train-chapter-num">' + (i + 1) + '</span>' +
+                    '<svg class="aisa-train-chapter-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">' +
+                        '<polyline points="20 6 9 17 4 12"/>' +
+                    '</svg>' +
+                '</span>' +
+                '<span class="aisa-train-chapter-text">' +
+                    '<span class="aisa-train-chapter-kicker">Chapter ' + (i + 1) + '</span>' +
+                    '<span class="aisa-train-chapter-title">' + escapeHtml(c.title) + '</span>' +
+                '</span>';
             li.addEventListener('click', function () { tryGoTo(c.id); });
             refs.sidebarList.appendChild(li);
         });
