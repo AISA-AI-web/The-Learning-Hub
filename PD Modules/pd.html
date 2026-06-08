@@ -446,7 +446,7 @@
                     </a>
 
                     <!-- Module: Success Criteria — PEDAGOGY -->
-                    <a href="#module-objectives" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="pedagogy" data-keywords="objectives success criteria lesson planning goals cognitive tiered differentiation must watch">
+                    <a href="#module-objectives" data-module-id="success-criteria" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="pedagogy" data-keywords="objectives success criteria lesson planning goals cognitive tiered differentiation must watch">
                         <div class="h-1.5 bg-gradient-to-r from-indigo-500 to-blue-600"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -613,7 +613,7 @@
             <div class="bg-gradient-to-r from-indigo-600 to-blue-700 rounded-xl p-8 text-center text-white shadow-xl">
                 <h3 class="text-2xl font-bold mb-4">🚀 This Week's Challenge: Extreme Makeover</h3>
                 <p class="max-w-2xl mx-auto text-lg text-indigo-100 mb-8">Take one of your lesson plans this week and give one objective an "Extreme Makeover." Ensure it focuses on cognitive skills and includes tiered success criteria.</p>
-                <button onclick="window.location.hash=''" class="bg-white text-indigo-700 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition-colors shadow-lg">
+                <button id="sc-finish-btn" class="bg-white text-indigo-700 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition-colors shadow-lg">
                     I'm Ready! Return to Modules
                 </button>
             </div>
@@ -1265,6 +1265,61 @@
                     checkboxSelector: '.nb-module-checkbox',
                     refreshUI: nbUpdateProgress
                 });
+            });
+        }
+
+        // --- AISA backend: record Success Criteria completion ---
+        // This "module" is the inline #module-objectives section (video +
+        // resources + an "I'm Ready!" CTA). No checkboxes, so we don't use
+        // wireModule — we fire recordEvent directly when the user clicks
+        // the existing CTA, with video-ended as a backup trigger. Guarded
+        // by a per-session flag plus a check against the completions cache
+        // so it only records once.
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                if (!auth.isConfigured()) return;
+                var SC_ID = 'success-criteria';
+                var fired = false;
+
+                function alreadyDone() {
+                    var c = auth.getCompletionsCached && auth.getCompletionsCached();
+                    return !!(c && c.some(function (i) { return i.module_id === SC_ID; }));
+                }
+                if (alreadyDone()) fired = true;
+
+                function recordIfNew(extra) {
+                    if (fired) return;
+                    fired = true;
+                    auth.recordEvent(SC_ID, 'completed', 100, 'v1').catch(function (err) {
+                        fired = false;
+                        console.warn('AISA: could not record success-criteria completion', err);
+                    });
+                    /* Flip the card to its completed state right away so
+                     * the user sees the change when they navigate back to
+                     * the grid. The full sync (filter counts, completed
+                     * filter button visibility) resolves on next pageload. */
+                    var card = document.querySelector('.pd-module[data-module-id="' + SC_ID + '"]');
+                    if (card && card.dataset.completed !== 'true') {
+                        card.setAttribute('data-completed', 'true');
+                        card.querySelectorAll('span').forEach(function (span) {
+                            if ((span.textContent || '').trim() === 'Start module →') {
+                                span.textContent = 'Review →';
+                            }
+                        });
+                    }
+                }
+
+                /* The existing CTA: "I'm Ready! Return to Modules". */
+                var btn = document.getElementById('sc-finish-btn');
+                if (btn) {
+                    btn.addEventListener('click', function () {
+                        recordIfNew('cta');
+                        window.location.hash = '';
+                    });
+                }
+                /* Backup trigger: video ends. */
+                var vid = document.querySelector('#objectives-details-section video');
+                if (vid) vid.addEventListener('ended', function () { recordIfNew('video-ended'); });
             });
         }
 
