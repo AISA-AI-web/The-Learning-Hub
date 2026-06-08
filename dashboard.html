@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | My Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = { theme: { extend: { fontFamily: { heading: ['Poppins', 'sans-serif'] } } } };
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .bg-dot-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+    <script src="auth/gate.js?v=10"></script>
+</head>
+<body class="bg-dot-pattern text-gray-800 min-h-screen">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-40 border-b border-gray-100">
+        <div class="h-1 bg-gradient-to-r from-indigo-600 via-blue-500 to-cyan-500 w-full"></div>
+        <nav class="container mx-auto pl-16 pr-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-4 group" title="Back to Learning Hub">
+                <img src="AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/003366/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-indigo-900 tracking-tight leading-none uppercase font-heading">AISA</h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-gray-500 uppercase tracking-widest mt-0.5">My Dashboard</span>
+                </div>
+            </a>
+            <a href="PD%20Modules/pd.html" class="flex items-center text-gray-500 hover:text-indigo-800 transition-colors font-medium text-sm">
+                <span class="hidden sm:inline">All PD Modules</span>
+                <span class="sm:hidden">Modules</span>
+                <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+            </a>
+        </nav>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-4 lg:px-6 pt-8 pb-20">
+
+        <!-- Greeting -->
+        <div class="mb-8">
+            <h2 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">
+                Welcome back<span id="dash-firstname"></span>.
+            </h2>
+            <p class="text-slate-500 font-medium mt-1">Here's where you stand with your professional development.</p>
+        </div>
+
+        <!-- Overall progress card -->
+        <section class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 lg:p-8 mb-8 fade-in">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-6">
+                <div class="relative flex-shrink-0 mx-auto sm:mx-0" style="width:120px;height:120px;">
+                    <svg viewBox="0 0 120 120" class="w-full h-full -rotate-90">
+                        <circle cx="60" cy="60" r="52" fill="none" stroke="#e2e8f0" stroke-width="12"></circle>
+                        <circle id="dash-ring" cx="60" cy="60" r="52" fill="none" stroke="url(#dashGrad)" stroke-width="12"
+                                stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"
+                                style="transition:stroke-dashoffset .8s cubic-bezier(.22,1,.36,1);"></circle>
+                        <defs>
+                            <linearGradient id="dashGrad" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#4f46e5"></stop>
+                                <stop offset="100%" stop-color="#06b6d4"></stop>
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center">
+                        <span id="dash-pct" class="text-2xl font-black text-slate-900">0%</span>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Complete</span>
+                    </div>
+                </div>
+                <div class="flex-1 text-center sm:text-left">
+                    <p class="text-slate-500 text-sm font-semibold uppercase tracking-widest mb-1">Required &amp; recommended PD</p>
+                    <p class="text-slate-900"><span id="dash-done" class="text-4xl font-black">0</span>
+                        <span class="text-xl font-bold text-slate-400">/ <span id="dash-total">0</span> modules complete</span></p>
+                    <p id="dash-remaining" class="text-slate-500 mt-2 text-sm"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Modules list -->
+        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">Training Modules</h3>
+        <section id="dash-modules" class="grid gap-3 mb-10"></section>
+
+        <!-- System items -->
+        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">Onboarding</h3>
+        <section id="dash-system" class="grid sm:grid-cols-2 gap-3"></section>
+
+        <p class="text-center text-xs text-slate-400 mt-10">
+            Status syncs from your AISA account. Completions are recorded automatically as you finish each module.
+        </p>
+    </main>
+
+    <script>
+        // --- Registry of trackable items ---------------------------------
+        const MODULES = [
+            { id: 'ai-ethics',         emoji: '🤖', tag: 'Required',  title: 'AI Vision & Ethical Framework',          cert: 'AI Vision & Ethical Framework',            file: 'PD%20Modules/ai-ethics-module.html' },
+            { id: 'return-to-school',  emoji: '🚨', tag: 'Required',  title: 'Return to School — Emergency Protocol',  cert: 'Return to School — Emergency Protocol Training', file: 'PD%20Modules/return-to-school.html' },
+            { id: 'ai-and-assessment', emoji: '📝', tag: 'Pedagogy',  title: 'Assessment Design in the Age of AI',     cert: 'Assessment Design in the Age of AI',        file: 'PD%20Modules/ai-and-assessment.html' },
+            { id: 'chalkie',           emoji: '🧑‍🏫', tag: 'AI Tool',  title: 'Chalkie.ai Training',                    cert: 'Chalkie.ai — Drafting Partner Training',    file: 'PD%20Modules/chalkie-module.html' },
+            { id: 'workspace-studio',  emoji: '⚙️', tag: 'AI Tool',   title: 'Google Workspace Studio',                cert: 'Google Workspace Studio — Build AI Flows',  file: 'PD%20Modules/workspace-studio-module.html' }
+        ];
+        const SYSTEM = [
+            { id: 'tutorial', emoji: '👋', title: 'Welcome Tutorial' },
+            { id: 'survey',   emoji: '📋', title: 'AI & Innovation Survey' }
+        ];
+        const TOTAL = MODULES.length;
+        const RING_CIRCUMFERENCE = 326.7; // 2πr, r=52
+
+        function fmtDate(iso) {
+            if (!iso) return '';
+            try {
+                return new Date(iso).toLocaleDateString('en-GB', { year: 'numeric', month: 'short', day: 'numeric' });
+            } catch (e) { return ''; }
+        }
+
+        function moduleCard(m, completedAt) {
+            const done = !!completedAt;
+            const statusBadge = done
+                ? '<span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">' +
+                      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' +
+                      'Completed ' + fmtDate(completedAt) + '</span>'
+                : '<span class="inline-flex items-center text-xs font-bold text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full">Not started</span>';
+
+            const certBtn = done
+                ? '<button type="button" data-cert="' + encodeURIComponent(m.cert) + '" class="dash-cert-btn inline-flex items-center gap-1.5 text-sm font-bold text-indigo-700 hover:text-indigo-900 transition-colors">' +
+                      '🎓 Certificate</button>'
+                : '';
+            const openBtn = '<a href="' + m.file + '" class="inline-flex items-center gap-1.5 text-sm font-bold ' +
+                (done ? 'text-slate-500 hover:text-slate-800' : 'text-indigo-700 hover:text-indigo-900') + ' transition-colors">' +
+                (done ? 'Review' : 'Start') +
+                ' <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>';
+
+            return '<div class="bg-white rounded-xl border ' + (done ? 'border-emerald-200' : 'border-gray-100') +
+                ' shadow-sm p-4 flex items-center gap-4 fade-in">' +
+                    '<div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0 ' +
+                        (done ? 'bg-emerald-50' : 'bg-slate-50') + '">' + m.emoji + '</div>' +
+                    '<div class="flex-1 min-w-0">' +
+                        '<div class="flex items-center gap-2 flex-wrap">' +
+                            '<span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">' + m.tag + '</span>' +
+                            statusBadge +
+                        '</div>' +
+                        '<p class="font-bold text-slate-900 leading-tight mt-0.5 truncate">' + m.title + '</p>' +
+                    '</div>' +
+                    '<div class="flex flex-col items-end gap-1.5 flex-shrink-0">' + openBtn + certBtn + '</div>' +
+                '</div>';
+        }
+
+        function systemCard(s, completedAt) {
+            const done = !!completedAt;
+            return '<div class="bg-white rounded-xl border ' + (done ? 'border-emerald-200' : 'border-gray-100') +
+                ' shadow-sm p-4 flex items-center gap-3">' +
+                    '<div class="w-9 h-9 rounded-lg flex items-center justify-center text-lg flex-shrink-0 ' +
+                        (done ? 'bg-emerald-50' : 'bg-amber-50') + '">' + s.emoji + '</div>' +
+                    '<div class="flex-1 min-w-0">' +
+                        '<p class="font-bold text-slate-900 text-sm leading-tight truncate">' + s.title + '</p>' +
+                        (done
+                            ? '<p class="text-xs text-emerald-700 font-semibold mt-0.5">Done ' + fmtDate(completedAt) + '</p>'
+                            : '<p class="text-xs text-amber-700 font-semibold mt-0.5">Outstanding</p>') +
+                    '</div>' +
+                    (done
+                        ? '<svg width="18" height="18" class="text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+                        : '') +
+                '</div>';
+        }
+
+        function render(map) {
+            // Modules
+            const modWrap = document.getElementById('dash-modules');
+            modWrap.innerHTML = MODULES.map(m => moduleCard(m, map[m.id])).join('');
+            modWrap.querySelectorAll('.dash-cert-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const title = decodeURIComponent(btn.getAttribute('data-cert'));
+                    if (window.AisaCertificate && window.AisaCertificate.open) {
+                        window.AisaCertificate.open({ title: title });
+                    }
+                });
+            });
+
+            // System items
+            document.getElementById('dash-system').innerHTML =
+                SYSTEM.map(s => systemCard(s, map[s.id])).join('');
+
+            // Overall ring + counts
+            const done = MODULES.filter(m => map[m.id]).length;
+            const pct = TOTAL ? Math.round((done / TOTAL) * 100) : 0;
+            document.getElementById('dash-done').textContent = done;
+            document.getElementById('dash-total').textContent = TOTAL;
+            document.getElementById('dash-pct').textContent = pct + '%';
+            document.getElementById('dash-ring').style.strokeDashoffset =
+                String(RING_CIRCUMFERENCE * (1 - pct / 100));
+            const remaining = TOTAL - done;
+            document.getElementById('dash-remaining').textContent = remaining === 0
+                ? '🎉 All modules complete — nice work!'
+                : remaining + ' module' + (remaining === 1 ? '' : 's') + ' remaining.';
+        }
+
+        function buildMap(items) {
+            const map = {};
+            (items || []).forEach(i => {
+                // keep the most recent completion timestamp per id
+                if (!map[i.module_id] || i.completed_at > map[i.module_id]) {
+                    map[i.module_id] = i.completed_at;
+                }
+            });
+            return map;
+        }
+
+        // Render an empty state immediately, then hydrate.
+        render({});
+
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                const user = auth.getUser && auth.getUser();
+                if (user && user.name) {
+                    const first = String(user.name).trim().split(/\s+/)[0];
+                    document.getElementById('dash-firstname').textContent = ', ' + first;
+                }
+
+                if (!auth.isConfigured()) return;
+
+                const cached = auth.getCompletionsCached && auth.getCompletionsCached();
+                if (cached) render(buildMap(cached));
+
+                auth.getCompletions().then(items => {
+                    render(buildMap(items));
+                }).catch(err => {
+                    console.warn('AISA: dashboard could not load completions', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
