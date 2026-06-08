@@ -32,6 +32,8 @@ const EVENTS_SHEET           = 'events';
 const SESSIONS_SHEET         = 'sessions';
 const PAGEVIEWS_SHEET        = 'pageviews';
 const CLICKS_SHEET           = 'clicks';
+const ADMINS_SHEET           = 'admins';   // who can see the admin dashboard
+const ROSTER_SHEET           = 'roster';   // optional: full expected staff list
 const SESSION_DURATION_DAYS  = 365;
 
 const EVENT_HEADERS = [
@@ -101,10 +103,14 @@ function doPost(e) {
       case 'whoami':
         return jsonOut({
           ok: true,
-          email: claims.email,
-          name:  claims.name || '',
-          hd:    ALLOWED_DOMAIN
+          email:    claims.email,
+          name:     claims.name || '',
+          hd:       ALLOWED_DOMAIN,
+          is_admin: isAdmin(claims.email)
         });
+      case 'admin_overview':
+        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
+        return jsonOut(adminOverview());
       case 'sign_out':
         revokeSession(body.session_token);
         return jsonOut({ ok: true });
@@ -352,6 +358,125 @@ function getCompletionsFor(email) {
     }
   }
   return Object.keys(seen).map(function (k) { return seen[k]; });
+}
+
+// ---------- Admin allowlist ----------
+
+/**
+ * The `admins` tab lists who may view the admin dashboard. Column A is
+ * the email; add/remove rows to manage access without touching code.
+ */
+function getAdminsSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(ADMINS_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(ADMINS_SHEET);
+    sheet.appendRow(['email', 'name', 'role']);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, 3).setFontWeight('bold');
+  }
+  return sheet;
+}
+
+function getAdminEmailSet() {
+  const sheet = getAdminsSheet();
+  const last = sheet.getLastRow();
+  const set = {};
+  if (last < 2) return set;
+  const emails = sheet.getRange(2, 1, last - 1, 1).getValues();
+  for (let i = 0; i < emails.length; i++) {
+    const e = String(emails[i][0] || '').trim().toLowerCase();
+    if (e) set[e] = true;
+  }
+  return set;
+}
+
+function isAdmin(email) {
+  if (!email) return false;
+  return !!getAdminEmailSet()[String(email).trim().toLowerCase()];
+}
+
+// ---------- Admin overview (compliance) ----------
+
+/**
+ * Aggregates everything the admin dashboard needs in one payload:
+ *   - people: every known staff member (union of the optional `roster`
+ *     tab and everyone who has ever signed in), with their latest
+ *     activity timestamp.
+ *   - completions: the latest 'completed' event per person × module.
+ * The frontend cross-references these against its own module registry.
+ */
+function adminOverview() {
+  const people = {};  // emailLower -> { email, name, last_seen }
+
+  function touch(email, name, ts) {
+    const key = String(email || '').trim().toLowerCase();
+    if (!key) return;
+    if (!people[key]) people[key] = { email: key, name: name || '', last_seen: ts || '' };
+    else {
+      if (name && !people[key].name) people[key].name = name;
+      if (ts && ts > people[key].last_seen) people[key].last_seen = ts;
+    }
+  }
+
+  // Everyone who has signed in (sessions tab).
+  const sess = getSessionsSheet();
+  const sLast = sess.getLastRow();
+  if (sLast >= 2) {
+    const rows = sess.getRange(2, 1, sLast - 1, SESSION_HEADERS.length).getValues();
+    // SESSION_HEADERS: token, email, name, created, expires, last_used, ua
+    for (let i = 0; i < rows.length; i++) {
+      touch(rows[i][1], rows[i][2], String(rows[i][5] || rows[i][3] || ''));
+    }
+  }
+
+  // Optional roster tab (email, name) so staff who never signed in
+  // still show up as outstanding.
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const roster = ss.getSheetByName(ROSTER_SHEET);
+  if (roster) {
+    const rLast = roster.getLastRow();
+    if (rLast >= 2) {
+      const rows = roster.getRange(2, 1, rLast - 1, 2).getValues();
+      for (let i = 0; i < rows.length; i++) touch(rows[i][0], rows[i][1], '');
+    }
+  }
+
+  // Latest 'completed' per person × module.
+  const ev = getEventsSheet();
+  const eLast = ev.getLastRow();
+  const completions = [];
+  if (eLast >= 2) {
+    const rows = ev.getRange(2, 1, eLast - 1, EVENT_HEADERS.length).getValues();
+    const idx = {
+      ts:     EVENT_HEADERS.indexOf('timestamp_iso'),
+      email:  EVENT_HEADERS.indexOf('email'),
+      name:   EVENT_HEADERS.indexOf('name'),
+      module: EVENT_HEADERS.indexOf('module_id'),
+      event:  EVENT_HEADERS.indexOf('event')
+    };
+    const seen = {};  // emailLower|module -> { email, module_id, completed_at }
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      if (row[idx.event] !== 'completed') continue;
+      const email = String(row[idx.email] || '').trim().toLowerCase();
+      const moduleId = String(row[idx.module] || '');
+      const ts = String(row[idx.ts] || '');
+      touch(email, row[idx.name], ts);  // ensure the person exists
+      const key = email + '|' + moduleId;
+      if (!seen[key] || ts > seen[key].completed_at) {
+        seen[key] = { email: email, module_id: moduleId, completed_at: ts };
+      }
+    }
+    Object.keys(seen).forEach(function (k) { completions.push(seen[k]); });
+  }
+
+  return {
+    ok: true,
+    generated_at: new Date().toISOString(),
+    people: Object.keys(people).map(function (k) { return people[k]; }),
+    completions: completions
+  };
 }
 
 // ---------- Output ----------

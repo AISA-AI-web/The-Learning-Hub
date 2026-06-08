@@ -110,6 +110,12 @@
                 '<span>' + l.label + '</span></a></li>';
         }).join('');
 
+        /* Admin link is hidden until we confirm the user is an admin. */
+        var adminHtml = '<li class="aisa-menu-admin-item" style="display:none;">' +
+            '<a href="' + rootUrl('admin-dashboard.html') + '">' +
+                '<span class="ico" aria-hidden="true">\u{1F6E1}️</span>' +
+                '<span>Admin Dashboard</span></a></li>';
+
         drawer.innerHTML =
             '<div class="aisa-menu-head">' +
                 '<div class="logo"><img src="' + rootUrl('AISA_logo.png') + '" alt="AISA" ' +
@@ -119,7 +125,7 @@
                     '<div class="email"></div>' +
                 '</div>' +
             '</div>' +
-            '<ul class="aisa-menu-list">' + linksHtml + '</ul>' +
+            '<ul class="aisa-menu-list">' + linksHtml + adminHtml + '</ul>' +
             '<div class="aisa-menu-foot">' +
                 '<button type="button" class="aisa-menu-signout">' +
                     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>' +
@@ -162,6 +168,18 @@
                 if (u.name)  refs.name.textContent  = u.name;
                 if (u.email && refs.email) refs.email.textContent = u.email;
             }
+        } catch (e) {}
+        revealAdminIfAllowed();
+    }
+
+    function revealAdminIfAllowed() {
+        try {
+            if (!window.aisaAuth || typeof window.aisaAuth.isAdmin !== 'function') return;
+            window.aisaAuth.isAdmin().then(function (yes) {
+                if (!yes) return;
+                var item = refs.drawer && refs.drawer.querySelector('.aisa-menu-admin-item');
+                if (item) item.style.display = '';
+            }).catch(function () {});
         } catch (e) {}
     }
 

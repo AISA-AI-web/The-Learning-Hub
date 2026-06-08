@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = { theme: { extend: { fontFamily: { heading: ['Poppins', 'sans-serif'] } } } };
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .bg-dot-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .matrix th.rot { height: 130px; white-space: nowrap; }
+        .matrix th.rot > div { transform: translate(8px, 48px) rotate(-55deg); width: 30px; }
+        .matrix th.rot > div > span { border-bottom: 1px solid #e2e8f0; padding: 0 .25rem; }
+        .matrix td, .matrix th { border-bottom: 1px solid #f1f5f9; }
+        .sticky-col { position: sticky; left: 0; background: #fff; z-index: 1; }
+        .matrix thead .sticky-col { z-index: 2; background:#fff; }
+    </style>
+    <script src="auth/gate.js?v=10"></script>
+</head>
+<body class="bg-dot-pattern text-gray-800 min-h-screen">
+
+    <!-- Top Navigation Bar -->
+    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-40 border-b border-gray-100">
+        <div class="h-1 bg-gradient-to-r from-slate-800 via-indigo-700 to-blue-600 w-full"></div>
+        <nav class="container mx-auto pl-16 pr-6 py-3 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-4 group" title="Back to Learning Hub">
+                <img src="AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/003366/FFFFFF?text=AISA'">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg md:text-xl font-black text-slate-900 tracking-tight leading-none uppercase font-heading">AISA</h1>
+                    <span class="text-[9px] md:text-[10px] font-semibold text-gray-500 uppercase tracking-widest mt-0.5">Admin Dashboard</span>
+                </div>
+            </a>
+            <button id="export-btn" class="hidden items-center gap-2 text-sm font-bold text-white bg-slate-900 hover:bg-slate-700 transition-colors px-4 py-2 rounded-xl">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                Export CSV
+            </button>
+        </nav>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 lg:px-6 pt-8 pb-20">
+
+        <!-- Loading -->
+        <div id="state-loading" class="text-center py-24">
+            <div class="inline-block w-8 h-8 border-3 border-slate-200 border-t-slate-800 rounded-full animate-spin" style="border-width:3px;"></div>
+            <p class="text-slate-500 mt-4 font-medium">Loading compliance data…</p>
+        </div>
+
+        <!-- Access denied -->
+        <div id="state-denied" class="hidden max-w-md mx-auto text-center py-20">
+            <div class="text-5xl mb-4">🔒</div>
+            <h2 class="text-xl font-heading font-black text-slate-900 mb-2">Admin access required</h2>
+            <p class="text-slate-500">This dashboard is limited to PD leads and SLT. If you should have access, ask for your email to be added to the admin list.</p>
+            <a href="index.html" class="inline-block mt-6 text-indigo-700 font-bold hover:text-indigo-900">← Back to the Learning Hub</a>
+        </div>
+
+        <!-- Dashboard -->
+        <div id="state-ready" class="hidden">
+            <div class="mb-8">
+                <h2 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">PD Compliance Overview</h2>
+                <p class="text-slate-500 font-medium mt-1">Completion status across all staff. <span id="generated-at"></span></p>
+            </div>
+
+            <!-- Summary cards -->
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                    <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Staff tracked</p>
+                    <p id="stat-people" class="text-3xl font-black text-slate-900 mt-1">0</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                    <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Fully complete</p>
+                    <p id="stat-full" class="text-3xl font-black text-emerald-600 mt-1">0</p>
+                    <p id="stat-full-pct" class="text-xs text-slate-400 font-semibold mt-0.5"></p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                    <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Avg modules done</p>
+                    <p id="stat-avg" class="text-3xl font-black text-slate-900 mt-1">0</p>
+                    <p class="text-xs text-slate-400 font-semibold mt-0.5">of <span id="stat-avg-total">5</span></p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                    <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Required done</p>
+                    <p id="stat-required" class="text-3xl font-black text-slate-900 mt-1">0</p>
+                    <p class="text-xs text-slate-400 font-semibold mt-0.5">completed all required</p>
+                </div>
+            </section>
+
+            <!-- Per-module compliance -->
+            <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">By module</h3>
+            <section id="module-bars" class="grid sm:grid-cols-2 gap-3 mb-10"></section>
+
+            <!-- People matrix -->
+            <div class="flex items-center justify-between gap-4 mb-3 px-1 flex-wrap">
+                <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">By person</h3>
+                <div class="flex items-center gap-3">
+                    <label class="flex items-center gap-2 text-sm font-semibold text-slate-600 cursor-pointer">
+                        <input type="checkbox" id="filter-incomplete" class="rounded"> Only incomplete
+                    </label>
+                    <input id="filter-text" type="search" placeholder="Search name or email…"
+                           class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
+                <table class="matrix w-full text-sm">
+                    <thead><tr id="matrix-head"></tr></thead>
+                    <tbody id="matrix-body"></tbody>
+                </table>
+            </div>
+            <p id="matrix-empty" class="hidden text-center text-slate-400 py-8">No staff match your filter.</p>
+        </div>
+    </main>
+
+    <script>
+        // Module registry — keep in sync with dashboard.html.
+        const MODULES = [
+            { id: 'ai-ethics',         short: 'AI Ethics',        title: 'AI Vision & Ethical Framework',         required: true },
+            { id: 'return-to-school',  short: 'Return to School', title: 'Return to School — Emergency Protocol', required: true },
+            { id: 'ai-and-assessment', short: 'Assessment',       title: 'Assessment Design in the Age of AI',    required: false },
+            { id: 'chalkie',           short: 'Chalkie',          title: 'Chalkie.ai Training',                   required: false },
+            { id: 'workspace-studio',  short: 'Workspace Studio', title: 'Google Workspace Studio',               required: false }
+        ];
+        // Extra compliance columns tracked the same way.
+        const EXTRA = [
+            { id: 'survey',   short: 'Survey' },
+            { id: 'tutorial', short: 'Tutorial' }
+        ];
+        const COLUMNS = MODULES.concat(EXTRA);
+        const REQUIRED = MODULES.filter(m => m.required);
+
+        let DATA = null;       // { people, completions, byEmail }
+        let rendered = false;
+
+        function fmtDate(iso) {
+            if (!iso) return '';
+            try { return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
+            catch (e) { return ''; }
+        }
+
+        function buildIndex(payload) {
+            const byEmail = {};
+            (payload.people || []).forEach(p => {
+                byEmail[p.email] = { email: p.email, name: p.name || '', last_seen: p.last_seen || '', done: {} };
+            });
+            (payload.completions || []).forEach(c => {
+                if (!byEmail[c.email]) byEmail[c.email] = { email: c.email, name: '', last_seen: '', done: {} };
+                byEmail[c.email].done[c.module_id] = c.completed_at;
+            });
+            return byEmail;
+        }
+
+        function moduleBar(m, count, total) {
+            const pct = total ? Math.round((count / total) * 100) : 0;
+            return '<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">' +
+                '<div class="flex items-center justify-between mb-2">' +
+                    '<div class="min-w-0"><p class="font-bold text-slate-900 text-sm truncate">' + m.title + '</p>' +
+                    (m.required ? '<span class="text-[10px] font-bold uppercase tracking-widest text-rose-500">Required</span>' : '<span class="text-[10px] font-bold uppercase tracking-widest text-slate-400">Recommended</span>') +
+                    '</div>' +
+                    '<span class="text-sm font-black text-slate-900 flex-shrink-0 ml-3">' + pct + '%</span>' +
+                '</div>' +
+                '<div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">' +
+                    '<div class="h-full rounded-full ' + (m.required ? 'bg-gradient-to-r from-rose-500 to-orange-500' : 'bg-gradient-to-r from-indigo-500 to-cyan-500') + '" style="width:' + pct + '%"></div>' +
+                '</div>' +
+                '<p class="text-xs text-slate-400 font-semibold mt-1.5">' + count + ' of ' + total + ' staff</p>' +
+            '</div>';
+        }
+
+        function check(on) {
+            return on
+                ? '<svg width="16" height="16" class="inline text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+                : '<span class="text-slate-300">—</span>';
+        }
+
+        function renderSummary(people) {
+            const total = people.length;
+            let full = 0, sumMods = 0, reqDone = 0;
+            people.forEach(p => {
+                const n = MODULES.filter(m => p.done[m.id]).length;
+                sumMods += n;
+                if (n === MODULES.length) full++;
+                if (REQUIRED.every(m => p.done[m.id])) reqDone++;
+            });
+            document.getElementById('stat-people').textContent = total;
+            document.getElementById('stat-full').textContent = full;
+            document.getElementById('stat-full-pct').textContent = total ? Math.round(full / total * 100) + '% of staff' : '';
+            document.getElementById('stat-avg').textContent = total ? (sumMods / total).toFixed(1) : '0';
+            document.getElementById('stat-avg-total').textContent = MODULES.length;
+            document.getElementById('stat-required').textContent = reqDone;
+        }
+
+        function renderModuleBars(people) {
+            const total = people.length;
+            const html = MODULES.map(m => {
+                const count = people.filter(p => p.done[m.id]).length;
+                return moduleBar(m, count, total);
+            }).join('');
+            document.getElementById('module-bars').innerHTML = html;
+        }
+
+        function renderMatrix() {
+            const filterText = (document.getElementById('filter-text').value || '').toLowerCase().trim();
+            const onlyIncomplete = document.getElementById('filter-incomplete').checked;
+
+            // Header
+            let head = '<th class="sticky-col text-left font-bold text-slate-500 px-4 py-3">Staff member</th>';
+            COLUMNS.forEach(c => {
+                head += '<th class="rot text-center text-xs font-bold text-slate-500"><div><span>' + c.short + '</span></div></th>';
+            });
+            head += '<th class="text-center font-bold text-slate-500 px-3">Done</th>';
+            head += '<th class="text-right font-bold text-slate-500 px-4">Last seen</th>';
+            document.getElementById('matrix-head').innerHTML = head;
+
+            // Rows
+            let people = DATA.list.slice();
+            people.sort((a, b) => {
+                const na = MODULES.filter(m => a.done[m.id]).length;
+                const nb = MODULES.filter(m => b.done[m.id]).length;
+                if (nb !== na) return nb - na;
+                return (a.name || a.email).localeCompare(b.name || b.email);
+            });
+
+            let shown = 0;
+            const body = people.map(p => {
+                const modsDone = MODULES.filter(m => p.done[m.id]).length;
+                if (onlyIncomplete && modsDone === MODULES.length) return '';
+                const hay = (p.name + ' ' + p.email).toLowerCase();
+                if (filterText && hay.indexOf(filterText) === -1) return '';
+                shown++;
+                const cells = COLUMNS.map(c => '<td class="text-center py-2.5">' + check(!!p.done[c.id]) + '</td>').join('');
+                const nameCell = '<td class="sticky-col px-4 py-2.5">' +
+                    '<div class="font-semibold text-slate-900 leading-tight">' + (p.name || '—') + '</div>' +
+                    '<div class="text-xs text-slate-400">' + p.email + '</div></td>';
+                const doneCell = '<td class="text-center px-3 font-bold ' + (modsDone === MODULES.length ? 'text-emerald-600' : 'text-slate-700') + '">' + modsDone + '/' + MODULES.length + '</td>';
+                const seenCell = '<td class="text-right px-4 text-xs text-slate-400 whitespace-nowrap">' + (fmtDate(p.last_seen) || '—') + '</td>';
+                return '<tr class="hover:bg-slate-50">' + nameCell + cells + doneCell + seenCell + '</tr>';
+            }).join('');
+
+            document.getElementById('matrix-body').innerHTML = body;
+            document.getElementById('matrix-empty').classList.toggle('hidden', shown > 0);
+        }
+
+        function exportCsv() {
+            const cols = COLUMNS.map(c => c.short);
+            const header = ['Name', 'Email', 'Last seen'].concat(cols).concat(['Modules done']);
+            const lines = [header.join(',')];
+            DATA.list.forEach(p => {
+                const modsDone = MODULES.filter(m => p.done[m.id]).length;
+                const row = [
+                    '"' + (p.name || '').replace(/"/g, '""') + '"',
+                    p.email,
+                    fmtDate(p.last_seen)
+                ].concat(COLUMNS.map(c => p.done[c.id] ? 'Yes' : 'No'))
+                 .concat([modsDone + '/' + MODULES.length]);
+                lines.push(row.join(','));
+            });
+            const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'aisa-pd-compliance-' + new Date().toISOString().slice(0, 10) + '.csv';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        function showState(id) {
+            ['state-loading', 'state-denied', 'state-ready'].forEach(s => {
+                document.getElementById(s).classList.toggle('hidden', s !== id);
+            });
+        }
+
+        function render(payload) {
+            const byEmail = buildIndex(payload);
+            DATA = { byEmail: byEmail, list: Object.keys(byEmail).map(k => byEmail[k]) };
+            renderSummary(DATA.list);
+            renderModuleBars(DATA.list);
+            renderMatrix();
+            if (payload.generated_at) {
+                document.getElementById('generated-at').textContent =
+                    'Updated ' + new Date(payload.generated_at).toLocaleString('en-GB');
+            }
+            const ex = document.getElementById('export-btn');
+            ex.classList.remove('hidden'); ex.classList.add('flex');
+            showState('state-ready');
+            rendered = true;
+        }
+
+        document.getElementById('filter-text').addEventListener('input', function () { if (rendered) renderMatrix(); });
+        document.getElementById('filter-incomplete').addEventListener('change', function () { if (rendered) renderMatrix(); });
+        document.getElementById('export-btn').addEventListener('click', exportCsv);
+
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                if (!auth.isConfigured()) { showState('state-denied'); return; }
+                auth.adminOverview().then(function (payload) {
+                    render(payload);
+                }).catch(function (err) {
+                    console.warn('AISA: admin overview failed', err);
+                    showState('state-denied');
+                });
+            });
+        } else {
+            showState('state-denied');
+        }
+    </script>
+</body>
+</html>
