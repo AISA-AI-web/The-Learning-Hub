@@ -639,14 +639,22 @@
             markAllNotificationsRead: function () {
                 return apiCall('mark_all_notifications_read');
             },
-            postNotification: function (title, body) {
-                return apiCall('post_notification', { title: title || '', body: body || '' });
+            postNotification: function (title, body, targetTags, targetEmails) {
+                return apiCall('post_notification', {
+                    title:         title || '',
+                    body:          body  || '',
+                    target_tags:   Array.isArray(targetTags)   ? targetTags.join(',')   : (targetTags   || ''),
+                    target_emails: Array.isArray(targetEmails) ? targetEmails.join(',') : (targetEmails || '')
+                });
             },
             deleteNotification: function (id) {
                 return apiCall('delete_notification', { notification_id: id });
             },
             adminNotificationStats: function () {
                 return apiCall('admin_notification_stats');
+            },
+            adminListTags: function () {
+                return apiCall('admin_list_tags');
             },
 
             /* Resolve to true/false for whether the current user is an

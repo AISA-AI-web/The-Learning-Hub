@@ -64,6 +64,7 @@
         .type-badge-web { background: #f0fdfa; color: #0f766e; border-color: #99f6e4; }
         .type-badge-module { background: #eef2ff; color: #4338ca; border-color: #c7d2fe; }
         .type-badge-login { background: #fdf2f8; color: #be185d; border-color: #fbcfe8; }
+        .type-badge-form  { background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe; }
         /* Scroll offset so sticky header + quick-jump don't cover the section heading */
         .tool-category { scroll-margin-top: 140px; }
         /* Gemini Gems showcase section accent */
@@ -556,7 +557,7 @@
             font-weight: 600;
         }
     </style>
-    <script src="../auth/gate.js?v=11"></script>
+    <script src="../auth/gate.js?v=12"></script>
 </head>
 <body class="bg-teal-50 text-gray-800 min-h-screen flex flex-col">
 
@@ -618,6 +619,7 @@
                         <button type="button" class="filter-chip" data-type-filter="web" aria-pressed="false"><span aria-hidden="true">🌐</span> Web Tools <span class="chip-count" data-count="web">0</span></button>
                         <button type="button" class="filter-chip" data-type-filter="module" aria-pressed="false"><span aria-hidden="true">📦</span> Modules <span class="chip-count" data-count="module">0</span></button>
                         <button type="button" class="filter-chip" data-type-filter="login" aria-pressed="false"><span aria-hidden="true">🔐</span> Login Required <span class="chip-count" data-count="login">0</span></button>
+                        <button type="button" class="filter-chip" data-type-filter="form" aria-pressed="false"><span aria-hidden="true">📋</span> Forms &amp; Documents <span class="chip-count" data-count="form">0</span></button>
                     </div>
 
                     <div id="active-filter-strip" class="active-filter-strip hidden" role="status" aria-live="polite">
@@ -648,6 +650,7 @@
                         <a href="#cat-interactive" class="quickjump-pill"><span aria-hidden="true">🤖</span> Interactive Learning</a>
                         <a href="#cat-assessment" class="quickjump-pill"><span aria-hidden="true">📊</span> Assessment</a>
                         <a href="#cat-curriculum" class="quickjump-pill"><span aria-hidden="true">📚</span> Curriculum</a>
+                        <a href="#cat-forms" class="quickjump-pill"><span aria-hidden="true">📋</span> Forms &amp; Documents</a>
                     </nav>
                 </div>
 
@@ -888,6 +891,28 @@
                                     <div class="text-4xl mb-3">📝</div>
                                     <h4 class="text-lg font-semibold mb-2">Lesson Planning Tool</h4>
                                     <p class="text-sm text-gray-600">A printable planning template aligned to high-impact teaching strategies — tick your focus areas, document implementation, and capture the behind-the-scenes planning.</p>
+                                </div>
+                            </a>
+
+                        </div>
+                    </section>
+
+                    <!-- Category: Forms & Documents -->
+                    <section id="cat-forms" class="tool-category mb-12">
+                        <div class="category-header flex items-center gap-3 mb-5">
+                            <span class="text-2xl">📋</span>
+                            <h3 class="text-2xl font-heading font-bold text-violet-900">Forms &amp; Documents</h3>
+                            <div class="flex-grow h-px bg-gradient-to-r from-violet-200 to-transparent"></div>
+                        </div>
+                        <p class="text-sm text-violet-900/70 mb-5 -mt-2 max-w-3xl">Staff-facing forms and reference documents — the actual instruments behind AISA's AI, assessment, and protocol work. Open or download as needed.</p>
+                        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                            <a href="../Media%20Hub/Classroom%20AI%20Integration%20Snapshot.pdf" target="_blank" rel="noopener noreferrer" download class="block tool-item" data-type="form" data-keywords="classroom ai integration snapshot observation form pdf class visit anonymous violet adek aias non evaluative phase one">
+                                <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-violet-100 flex flex-col items-center justify-start">
+                                    <span class="type-badge type-badge-form">PDF Form</span>
+                                    <div class="text-4xl mb-3">📋</div>
+                                    <h4 class="text-lg font-semibold mb-2">Classroom AI Integration Snapshot</h4>
+                                    <p class="text-sm text-gray-600">The exact 1-page form used during class visits — anonymous, non-evaluative, focused on what AI looks like in the room. Shared in full so there's no mystery.</p>
                                 </div>
                             </a>
 
@@ -1883,8 +1908,8 @@
             items.forEach(card => { card._homeParent = card.parentElement; });
 
             // Compute canonical counts (skip duplicates flagged data-canonical="false").
-            const TYPE_LABELS = { gem: '✨ Gems', web: '🌐 Web Tools', module: '📦 Modules', login: '🔐 Login Required' };
-            const counts = { all: 0, gem: 0, web: 0, module: 0, login: 0 };
+            const TYPE_LABELS = { gem: '✨ Gems', web: '🌐 Web Tools', module: '📦 Modules', login: '🔐 Login Required', form: '📋 Forms & Documents' };
+            const counts = { all: 0, gem: 0, web: 0, module: 0, login: 0, form: 0 };
             items.forEach(card => {
                 if (card.getAttribute('data-canonical') === 'false') return;
                 counts.all++;

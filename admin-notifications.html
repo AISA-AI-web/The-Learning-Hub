@@ -21,8 +21,36 @@
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
             background-size: 24px 24px;
         }
+
+        /* Audience mode toggles */
+        .aud-mode { background:#fff; color:#475569; border-color:#e2e8f0; }
+        .aud-mode:hover { background:#f8fafc; }
+        .aud-mode.is-active { background:#0f172a; color:#fff; border-color:#0f172a; }
+
+        /* Tag chips inside the compose box */
+        .tag-chip {
+            display:inline-flex; align-items:center; gap:.3rem;
+            padding:.3rem .65rem; border-radius:9999px;
+            font-size:.78rem; font-weight:700;
+            background:#fff; color:#475569; border:1px solid #cbd5e1;
+            cursor:pointer; transition:all .15s; font-family:inherit;
+        }
+        .tag-chip:hover { background:#f1f5f9; }
+        .tag-chip.is-selected { background:#312e81; color:#fff; border-color:#312e81; }
+        .tag-chip.is-selected:hover { background:#3730a3; }
+
+        /* Targeting summary chip used in the sent-list cards */
+        .target-chip {
+            display:inline-flex; align-items:center; gap:.25rem;
+            padding:.15rem .55rem; border-radius:9999px;
+            font-size:.7rem; font-weight:700;
+            background:#f1f5f9; color:#334155; border:1px solid #e2e8f0;
+        }
+        .target-chip.all   { background:#ecfeff; color:#155e75; border-color:#a5f3fc; }
+        .target-chip.tag   { background:#eef2ff; color:#3730a3; border-color:#c7d2fe; }
+        .target-chip.email { background:#fef3c7; color:#854d0e; border-color:#fde68a; }
     </style>
-    <script src="auth/gate.js?v=11"></script>
+    <script src="auth/gate.js?v=12"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
@@ -60,11 +88,40 @@
         <div id="state-ready" class="hidden">
             <div class="mb-6">
                 <h2 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">Send a Notification</h2>
-                <p class="text-slate-500 font-medium mt-1">All staff will see this in their menu, with an unread badge until they open it.</p>
+                <p class="text-slate-500 font-medium mt-1">Pick an audience, write a message — recipients see it in their menu with an unread badge until they open it.</p>
             </div>
 
             <!-- Compose -->
             <section class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 lg:p-6 mb-10">
+
+                <!-- Audience targeting -->
+                <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Send to</label>
+                <div class="flex flex-wrap items-center gap-2 mb-3" role="radiogroup" aria-label="Audience">
+                    <button type="button" data-mode="all"    class="aud-mode is-active px-3 py-1.5 rounded-full text-sm font-bold border transition-colors">🌐 All staff</button>
+                    <button type="button" data-mode="tags"   class="aud-mode px-3 py-1.5 rounded-full text-sm font-bold border transition-colors">🏷 Tags (section / grade / dept)</button>
+                    <button type="button" data-mode="emails" class="aud-mode px-3 py-1.5 rounded-full text-sm font-bold border transition-colors">✉ Specific emails</button>
+                    <span class="ml-auto text-xs text-slate-400 hidden sm:inline">You can combine tags and emails.</span>
+                </div>
+
+                <!-- Tag picker (shown when mode includes 'tags') -->
+                <div id="aud-tags-wrap" class="hidden mb-3">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="text-xs font-bold uppercase tracking-widest text-slate-500">Tags</label>
+                        <span id="aud-tags-empty" class="hidden text-xs text-slate-400">No tags in the roster yet — add a <code>tags</code> column in the <code>roster</code> Sheet tab.</span>
+                    </div>
+                    <div id="aud-tags-chips" class="flex flex-wrap gap-1.5 bg-slate-50 border border-slate-200 rounded-xl p-3 min-h-[3rem]"></div>
+                </div>
+
+                <!-- Email entry (shown when mode includes 'emails') -->
+                <div id="aud-emails-wrap" class="hidden mb-3">
+                    <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5" for="aud-emails">Specific emails</label>
+                    <input id="aud-emails" type="text" placeholder="firstname.lastname@aisa.sch.ae, another@aisa.sch.ae"
+                           class="w-full border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                    <p class="text-xs text-slate-400 mt-1">Comma-separated. They'll receive it even if no tags are selected.</p>
+                </div>
+
+                <hr class="my-4 border-slate-100">
+
                 <label class="block text-xs font-bold uppercase tracking-widest text-slate-500 mb-1.5" for="notif-title">Title</label>
                 <input id="notif-title" type="text" maxlength="200" placeholder="e.g. Reminder: complete the AI Ethics module by Friday"
                        class="w-full border border-slate-200 rounded-xl px-4 py-2.5 mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-300">
@@ -73,11 +130,11 @@
                 <textarea id="notif-body" rows="4" maxlength="4000" placeholder="Add any details staff need to know…"
                           class="w-full border border-slate-200 rounded-xl px-4 py-2.5 mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-300 resize-y"></textarea>
 
-                <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center justify-between gap-4 mt-2">
                     <span id="notif-status" class="text-sm font-semibold"></span>
                     <button id="notif-send" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold px-5 py-2.5 rounded-xl transition-colors">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-                        Send to all staff
+                        <span id="notif-send-label">Send to all staff</span>
                     </button>
                 </div>
             </section>
@@ -111,17 +168,126 @@
             catch (e) { return ''; }
         }
 
+        // ---- Audience mode state ----
+        // The two modes are independent and combinable:
+        //   useTags   → render the chip picker; selected tags go on the post
+        //   useEmails → render the email field; entered emails go on the post
+        // "All staff" = neither toggle on (no targeting fields sent).
+        var mode = { tags: false, emails: false };
+        var availableTags = [];
+        var selectedTags = {};  // tag → true
+
+        function setMode(which) {
+            // The 3 mode buttons are mutually exclusive entry points, but
+            // staying in 'tags' or 'emails' implicitly allows mixing — the
+            // 'all' button explicitly clears both.
+            if (which === 'all') {
+                mode.tags = false; mode.emails = false; selectedTags = {};
+                document.getElementById('aud-emails').value = '';
+            } else if (which === 'tags') {
+                mode.tags = true;
+            } else if (which === 'emails') {
+                mode.emails = true;
+            }
+            document.querySelectorAll('.aud-mode').forEach(function (b) {
+                var m = b.getAttribute('data-mode');
+                var active =
+                    (m === 'all'    && !mode.tags && !mode.emails) ||
+                    (m === 'tags'   && mode.tags) ||
+                    (m === 'emails' && mode.emails);
+                b.classList.toggle('is-active', active);
+            });
+            document.getElementById('aud-tags-wrap').classList.toggle('hidden', !mode.tags);
+            document.getElementById('aud-emails-wrap').classList.toggle('hidden', !mode.emails);
+            renderTagChips();
+            updateSendLabel();
+        }
+
+        function renderTagChips() {
+            var wrap = document.getElementById('aud-tags-chips');
+            var empty = document.getElementById('aud-tags-empty');
+            if (!availableTags.length) {
+                wrap.innerHTML = '<span class="text-xs text-slate-400">(no tags yet)</span>';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+            wrap.innerHTML = availableTags.map(function (t) {
+                var sel = selectedTags[t] ? ' is-selected' : '';
+                return '<button type="button" class="tag-chip' + sel + '" data-tag="' + esc(t) + '">' +
+                    (selectedTags[t] ? '✓ ' : '') + esc(t) + '</button>';
+            }).join('');
+            wrap.querySelectorAll('.tag-chip').forEach(function (chip) {
+                chip.addEventListener('click', function () {
+                    var t = chip.getAttribute('data-tag');
+                    if (selectedTags[t]) delete selectedTags[t];
+                    else selectedTags[t] = true;
+                    renderTagChips();
+                    updateSendLabel();
+                });
+            });
+        }
+
+        function parseEmails() {
+            return (document.getElementById('aud-emails').value || '')
+                .split(',').map(function (s) { return s.trim().toLowerCase(); })
+                .filter(function (s) { return !!s; });
+        }
+
+        function audienceSummary() {
+            var tags = Object.keys(selectedTags);
+            var emails = parseEmails();
+            if (!mode.tags && !mode.emails) return { label: 'all staff', tags: [], emails: [] };
+            if (mode.tags && tags.length === 0 && (!mode.emails || emails.length === 0)) {
+                return { label: '— pick at least one tag —', tags: [], emails: [], empty: true };
+            }
+            var parts = [];
+            if (tags.length) parts.push(tags.length + (tags.length === 1 ? ' tag' : ' tags'));
+            if (emails.length) parts.push(emails.length + (emails.length === 1 ? ' email' : ' emails'));
+            return { label: parts.join(' + ') || '— add recipients —', tags: tags, emails: emails, empty: !tags.length && !emails.length };
+        }
+
+        function updateSendLabel() {
+            var s = audienceSummary();
+            document.getElementById('notif-send-label').textContent = 'Send to ' + s.label;
+        }
+
+        // Wire mode buttons up front.
+        document.querySelectorAll('.aud-mode').forEach(function (b) {
+            b.addEventListener('click', function () { setMode(b.getAttribute('data-mode')); });
+        });
+        document.getElementById('aud-emails').addEventListener('input', updateSendLabel);
+
+        // ---- Sent-list rendering ----
+
+        function targetChips(n) {
+            var tags   = Array.isArray(n.target_tags)   ? n.target_tags   : [];
+            var emails = Array.isArray(n.target_emails) ? n.target_emails : [];
+            if (!tags.length && !emails.length) {
+                return '<span class="target-chip all">🌐 All staff</span>';
+            }
+            var chips = tags.map(function (t) { return '<span class="target-chip tag">🏷 ' + esc(t) + '</span>'; });
+            emails.forEach(function (e) { chips.push('<span class="target-chip email">✉ ' + esc(e) + '</span>'); });
+            return chips.join(' ');
+        }
+
         function notifCard(n) {
+            var read = n.read_count || 0;
+            var total = (typeof n.recipient_count === 'number') ? n.recipient_count : null;
+            var readBadge = total !== null
+                ? '👁 ' + read + ' / ' + total + ' read'
+                : '👁 ' + read + ' read';
             return '<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">' +
                 '<div class="flex items-start justify-between gap-3">' +
                     '<div class="min-w-0">' +
                         '<p class="font-bold text-slate-900 leading-tight">' + esc(n.title || 'Notification') + '</p>' +
                         (n.body ? '<p class="text-sm text-slate-600 mt-1 whitespace-pre-wrap break-words">' + esc(n.body) + '</p>' : '') +
+                        '<div class="flex flex-wrap items-center gap-1.5 mt-2">' + targetChips(n) + '</div>' +
                         '<p class="text-xs text-slate-400 mt-2">' + esc(n.author_name || 'AISA') + ' · ' + fmt(n.created_at) + '</p>' +
                     '</div>' +
                     '<div class="flex flex-col items-end gap-2 flex-shrink-0">' +
                         '<span class="inline-flex items-center gap-1 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-full whitespace-nowrap">' +
-                            '👁 ' + (n.read_count || 0) + ' read</span>' +
+                            readBadge + '</span>' +
                         '<button data-del="' + esc(n.id) + '" class="del-btn text-xs font-bold text-rose-600 hover:text-rose-800 transition-colors">Delete</button>' +
                     '</div>' +
                 '</div>' +
@@ -157,6 +323,14 @@
             });
         }
 
+        function loadTags() {
+            if (!window.aisaAuth.adminListTags) return;
+            window.aisaAuth.adminListTags().then(function (r) {
+                availableTags = (r && r.tags) || [];
+                renderTagChips();
+            }).catch(function () { /* tags optional; ignore */ });
+        }
+
         function setStatus(msg, kind) {
             var el = document.getElementById('notif-status');
             el.textContent = msg || '';
@@ -167,13 +341,23 @@
             var title = document.getElementById('notif-title').value.trim();
             var body  = document.getElementById('notif-body').value.trim();
             if (!title && !body) { setStatus('Add a title or message first.', 'error'); return; }
+            var aud = audienceSummary();
+            if (aud.empty && (mode.tags || mode.emails)) {
+                setStatus('Pick at least one tag or enter an email — or switch to "All staff".', 'error');
+                return;
+            }
             var btn = document.getElementById('notif-send');
             btn.disabled = true;
             setStatus('Sending…');
-            window.aisaAuth.postNotification(title, body).then(function () {
+            window.aisaAuth.postNotification(title, body, aud.tags, aud.emails).then(function () {
                 document.getElementById('notif-title').value = '';
                 document.getElementById('notif-body').value = '';
-                setStatus('Sent to all staff.', 'ok');
+                document.getElementById('aud-emails').value = '';
+                selectedTags = {};
+                setMode('all');  // reset to default
+                setStatus(aud.tags.length || aud.emails.length
+                    ? 'Sent to selected recipients.'
+                    : 'Sent to all staff.', 'ok');
                 setTimeout(function () { setStatus(''); }, 4000);
                 return loadSent();
             }).catch(function (err) {
@@ -191,6 +375,8 @@
                 auth.adminNotificationStats().then(function (r) {
                     renderSent((r && r.notifications) || []);
                     showState('state-ready');
+                    loadTags();
+                    setMode('all');
                 }).catch(function (err) {
                     console.warn('AISA: notifications admin check failed', err);
                     showState('state-denied');
