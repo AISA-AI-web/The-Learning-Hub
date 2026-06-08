@@ -4,19 +4,25 @@
  * Auto-loaded by auth/gate.js on every page. Injects a single fixed
  * top app-bar that becomes the navigation surface for the whole Hub:
  *
- *   ┌───────────────────────────────────────────────────────────────┐
- *   │  [←] [⌂] [☰]                  [🔔] [🔍]   AISA Learning Hub │
- *   └───────────────────────────────────────────────────────────────┘
+ *   ┌─────────────────────────────────────────────────────────────────┐
+ *   │  [←][⌂][☰]  [🔍 Search… ⌘K]  [🌐 AR][🛡️][🔔]  AISA Learning Hub │
+ *   └─────────────────────────────────────────────────────────────────┘
  *
  * - Back:        history.back() (disabled if there's nothing to go to)
  * - Home:        navigates to index.html
  * - Menu (☰):    slide-in drawer with every section + Sign out
+ * - Search pill: full-screen overlay over the shared Hub directory
+ *                (window.AISA_HUB_INDEX from auth/search-index.js).
+ *                ⌘K / Ctrl-K opens it from anywhere.
+ * - Language:    flips html[lang]/[dir] between English and Arabic and
+ *                rewrites data-placeholder-* / data-aria-label-* across
+ *                the page. Choice is persisted in localStorage so the
+ *                whole Hub respects it.
+ * - Admin (🛡️): shown only once isAdmin() resolves true; dropdown
+ *                shortcuts to Admin Dashboard and Send Notifications.
  * - Bell:        unread badge + dropdown of recent notifications →
  *                clicking a notification opens a full-view modal with
  *                rich-text links rendered (window.AisaRichText.render)
- * - Search:      full-screen overlay over the shared Hub directory
- *                (window.AISA_HUB_INDEX from auth/search-index.js).
- *                ⌘K / Ctrl-K opens it from anywhere.
  * - Brand:       AISA logo + wordmark, links to the Learning Hub home
  *
  * Per-page sticky headers (the ones with the duplicated AISA logo)
@@ -110,6 +116,55 @@
     var notifications = [];
     var isAdminUser = false;  // flipped to true once isAdmin() resolves yes
 
+    /* Bilingual support — Arabic <-> English. The localStorage key is
+     * shared with the legacy per-page toggle so the global toggle and
+     * any older inline toggles stay in sync. */
+    var LANG_KEY = 'aisa-newsletter-lang';
+    function readLang() {
+        try { return localStorage.getItem(LANG_KEY) === 'ar' ? 'ar' : 'en'; }
+        catch (e) { return 'en'; }
+    }
+    function writeLang(lang) {
+        try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
+    }
+
+    /* Switch the whole page to the requested language. This is the
+     * canonical applier for the entire Hub: it sets html[lang]/[dir],
+     * rewrites every data-placeholder-* / data-aria-label-* attribute,
+     * persists the choice, refreshes our own button label, and fires
+     * an 'aisa:lang-change' event so per-page code (e.g. document.title
+     * swaps) can react without duplicating this logic. */
+    function applyLang(lang, opts) {
+        var next = lang === 'ar' ? 'ar' : 'en';
+        var html = document.documentElement;
+        html.setAttribute('lang', next);
+        html.setAttribute('dir', next === 'ar' ? 'rtl' : 'ltr');
+
+        document.querySelectorAll('[data-placeholder-en]').forEach(function (el) {
+            var v = el.getAttribute('data-placeholder-' + next);
+            if (v != null) el.setAttribute('placeholder', v);
+        });
+        document.querySelectorAll('[data-aria-label-en]').forEach(function (el) {
+            var v = el.getAttribute('data-aria-label-' + next);
+            if (v != null) el.setAttribute('aria-label', v);
+        });
+
+        writeLang(next);
+        if (refs.btnLangLabel) {
+            /* Show the *target* language — what you'll switch TO. */
+            refs.btnLangLabel.textContent = next === 'ar' ? 'EN' : 'العربية';
+        }
+        if (refs.btnLang) {
+            refs.btnLang.setAttribute('aria-label',
+                next === 'ar' ? 'Switch to English' : 'Switch to Arabic');
+        }
+        if (opts && opts.announce) {
+            try {
+                document.dispatchEvent(new CustomEvent('aisa:lang-change', { detail: { lang: next } }));
+            } catch (e) {}
+        }
+    }
+
     /* -------- shared rich-text helpers (exposed via window.AisaRichText) -------- */
 
     function escapeHtml(s) {
@@ -185,6 +240,8 @@
         menu:   icon('<path d="M4 7h16M4 12h16M4 17h16"/>'),
         bell:   icon('<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M13.73 21a2 2 0 0 1-3.46 0"/>'),
         search: icon('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>'),
+        admin:  icon('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>'),
+        globe:  icon('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'),
         close:  icon('<path d="M18 6L6 18M6 6l12 12"/>'),
         signout: icon('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>')
     };
@@ -227,6 +284,35 @@
             /* Hamburger animation: rotate ☰ → ✕ via CSS when drawer is open. */
             '.aisa-tb-btn.aisa-tb-menu svg path{transition:transform .2s,opacity .2s;transform-origin:center;}',
             '.aisa-tb-btn.aisa-tb-menu.open svg{transform:rotate(90deg);transition:transform .2s;}',
+
+            /* Admin shield button — hidden until isAdmin() resolves true. */
+            '.aisa-tb-btn.aisa-tb-admin{color:#0f766e;}',
+            '.aisa-tb-btn.aisa-tb-admin:hover{background:#ccfbf1;}',
+
+            /* Language toggle — pill with globe icon + the target language. */
+            '.aisa-tb-lang{display:inline-flex;align-items:center;gap:.4rem;height:2.4rem;padding:0 .8rem;',
+                'background:transparent;border:1px solid #e2e8f0;border-radius:9999px;color:#0f172a;',
+                'font:inherit;font-weight:700;font-size:.82rem;cursor:pointer;',
+                'transition:background .15s,border-color .15s,color .15s;-webkit-tap-highlight-color:transparent;}',
+            '.aisa-tb-lang:hover{background:#f1f5f9;border-color:#cbd5e1;}',
+            '.aisa-tb-lang:focus-visible{outline:2px solid #4f46e5;outline-offset:2px;}',
+            '.aisa-tb-lang svg{width:1.05rem;height:1.05rem;color:#4f46e5;flex-shrink:0;}',
+            '.aisa-tb-lang-label{white-space:nowrap;}',
+
+            /* === Search pill (center of the bar — the primary action) === */
+            '.aisa-tb-searchpill{flex:1 1 auto;min-width:0;max-width:36rem;margin:0 1rem;height:2.6rem;',
+                'display:inline-flex;align-items:center;gap:.65rem;padding:0 .85rem;',
+                'background:#f1f5f9;border:1px solid transparent;border-radius:.85rem;',
+                'color:#64748b;font:inherit;cursor:text;',
+                'transition:background .15s,border-color .15s,box-shadow .15s;}',
+            '.aisa-tb-searchpill:hover{background:#e2e8f0;border-color:#cbd5e1;}',
+            '.aisa-tb-searchpill:focus-visible{outline:none;border-color:#4f46e5;box-shadow:0 0 0 3px rgba(79,70,229,.18);}',
+            '.aisa-tb-searchpill svg{width:1.15rem;height:1.15rem;flex-shrink:0;color:#475569;}',
+            '.aisa-tb-searchpill .ph{flex:1;min-width:0;text-align:left;font-size:.92rem;font-weight:500;',
+                'white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+            '.aisa-tb-searchpill .kbd{flex-shrink:0;font-size:.7rem;font-weight:700;color:#64748b;',
+                'background:#fff;border:1px solid #e2e8f0;border-radius:.35rem;padding:.15rem .4rem;',
+                'letter-spacing:.02em;}',
 
             /* Brand on the right */
             '.aisa-topbar-brand{display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;',
@@ -301,6 +387,23 @@
             '.aisa-bell-item .nm{font-size:.7rem;color:#94a3b8;margin-top:5px;}',
             '.aisa-bell-item .dot{position:absolute;top:.95rem;right:.85rem;width:8px;height:8px;border-radius:50%;background:#4f46e5;}',
 
+            /* === Admin dropdown panel === */
+            '.aisa-admin-panel{position:fixed;top:calc(' + BAR_HEIGHT + ' + .25rem);z-index:2147483005;width:300px;max-width:calc(100vw - 1.2rem);',
+                'background:#fff;border:1px solid #e2e8f0;border-radius:1rem;box-shadow:0 25px 50px -12px rgba(15,23,42,.35);',
+                'font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#0f172a;',
+                'opacity:0;visibility:hidden;transform:translateY(-6px);',
+                'transition:opacity .15s,transform .15s,visibility .15s;padding:.4rem;}',
+            '.aisa-admin-panel.open{opacity:1;visibility:visible;transform:translateY(0);}',
+            '.aisa-admin-head{padding:.5rem .75rem .25rem;display:flex;align-items:center;justify-content:space-between;}',
+            '.aisa-admin-head .t{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#64748b;}',
+            '.aisa-admin-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:.6rem;',
+                'text-decoration:none;color:#0f172a;transition:background .12s;}',
+            '.aisa-admin-item:hover{background:#f1f5f9;}',
+            '.aisa-admin-item .ic{width:2.1rem;height:2.1rem;border-radius:.55rem;background:#f1f5f9;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0;}',
+            '.aisa-admin-item .body{min-width:0;flex:1;}',
+            '.aisa-admin-item .tt{display:block;font-weight:700;font-size:.9rem;line-height:1.25;}',
+            '.aisa-admin-item .dd{display:block;font-size:.75rem;color:#64748b;margin-top:1px;}',
+
             /* === Search overlay === */
             '.aisa-search-overlay{position:fixed;inset:0;z-index:2147483006;display:flex;align-items:flex-start;justify-content:center;',
                 'padding:5rem 1rem 1rem;background:rgba(15,23,42,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);',
@@ -357,18 +460,29 @@
                 '.aisa-tb-btn svg{width:1.2rem;height:1.2rem;}',
                 '.aisa-topbar-brand .wm{display:none;}',
                 '.aisa-topbar-brand img{width:1.85rem;height:1.85rem;}',
+                /* Hide ⌘K hint on small screens — keyboard shortcut hint is desktop-only. */
+                '.aisa-tb-searchpill .kbd{display:none;}',
+                '.aisa-tb-searchpill{margin:0 .5rem;}',
+                /* Language pill loses its text label on small screens, becomes icon-only. */
+                '.aisa-tb-lang{width:2.4rem;padding:0;justify-content:center;border-radius:.6rem;}',
+                '.aisa-tb-lang-label{display:none;}',
+            '}',
+            '@media (max-width:480px){',
+                '.aisa-bell-panel,.aisa-admin-panel{left:.5rem!important;right:.5rem!important;width:auto;max-width:none;}',
+                '.aisa-notif-card{max-height:90vh;border-radius:1rem;}',
+                '.aisa-search-overlay{padding:1rem 0.5rem 0.5rem;align-items:flex-start;}',
+                /* Search pill collapses to icon-only — placeholder takes too much width. */
+                '.aisa-tb-searchpill{width:2.4rem;max-width:2.4rem;min-width:2.4rem;padding:0;justify-content:center;flex:0 0 auto;margin:0 .35rem;}',
+                '.aisa-tb-searchpill .ph{display:none;}',
             '}',
             '@media (max-width:380px){',
                 '.aisa-topbar-actions{gap:0;}',
                 '.aisa-tb-btn{width:2.15rem;height:2.15rem;}',
-            '}',
-            '@media (max-width:480px){',
-                '.aisa-bell-panel{left:.5rem!important;right:.5rem;width:auto;max-width:none;}',
-                '.aisa-notif-card{max-height:90vh;border-radius:1rem;}',
-                '.aisa-search-overlay{padding:1rem 0.5rem 0.5rem;align-items:flex-start;}',
+                '.aisa-tb-lang{width:2.15rem;}',
+                '.aisa-tb-searchpill{width:2.15rem;max-width:2.15rem;min-width:2.15rem;}',
             '}',
 
-            '@media print{.aisa-topbar,.aisa-menu-backdrop,.aisa-menu-drawer,.aisa-bell-panel,.aisa-notif-modal,.aisa-search-overlay{display:none!important;}body{padding-top:0!important;}}'
+            '@media print{.aisa-topbar,.aisa-menu-backdrop,.aisa-menu-drawer,.aisa-bell-panel,.aisa-admin-panel,.aisa-notif-modal,.aisa-search-overlay{display:none!important;}body{padding-top:0!important;}}'
         ].join('');
         document.head.appendChild(s);
     }
@@ -391,12 +505,22 @@
                     '<button class="aisa-tb-btn aisa-tb-home" type="button" aria-label="Home">' + ICONS.home + '</button>' +
                     '<button class="aisa-tb-btn aisa-tb-menu" type="button" aria-label="Open menu">' + ICONS.menu + '</button>' +
                 '</div>' +
+                '<button class="aisa-tb-searchpill" type="button" aria-label="Search the Learning Hub">' +
+                    ICONS.search +
+                    '<span class="ph">Search modules, tools, committees&hellip;</span>' +
+                    '<span class="kbd" aria-hidden="true">&#8984; K</span>' +
+                '</button>' +
                 '<div class="aisa-topbar-right">' +
                     '<div class="aisa-topbar-actions aisa-topbar-actions-right">' +
+                        '<button class="aisa-tb-lang" type="button" aria-label="Switch language">' +
+                            ICONS.globe + '<span class="aisa-tb-lang-label"></span>' +
+                        '</button>' +
+                        '<button class="aisa-tb-btn aisa-tb-admin" type="button" aria-label="Admin tools" hidden>' +
+                            ICONS.admin +
+                        '</button>' +
                         '<button class="aisa-tb-btn aisa-tb-bell" type="button" aria-label="Notifications">' +
                             ICONS.bell + '<b class="aisa-tb-badge" aria-hidden="true"></b>' +
                         '</button>' +
-                        '<button class="aisa-tb-btn aisa-tb-search" type="button" aria-label="Search">' + ICONS.search + '</button>' +
                     '</div>' +
                     '<a class="aisa-topbar-brand" href="' + rootUrl('index.html') + '" aria-label="AISA Learning Hub home">' +
                         '<img src="' + rootUrl('AISA_logo.png') + '" alt="AISA" ' +
@@ -463,6 +587,32 @@
             '</div>' +
             '<div class="aisa-bell-list"></div>';
 
+        /* Admin shortcuts panel. Anchored under the shield button when
+         * opened. Kept minimal — just one-click links to the two admin
+         * destinations the drawer also exposes. */
+        var adminPanel = document.createElement('div');
+        adminPanel.className = 'aisa-admin-panel';
+        adminPanel.setAttribute('role', 'dialog');
+        adminPanel.setAttribute('aria-label', 'Admin tools');
+        adminPanel.innerHTML =
+            '<div class="aisa-admin-head">' +
+                '<span class="t">Admin tools</span>' +
+            '</div>' +
+            '<a class="aisa-admin-item" href="' + rootUrl('admin-dashboard.html') + '">' +
+                '<span class="ic" aria-hidden="true">\u{1F6E1}️</span>' +
+                '<span class="body">' +
+                    '<span class="tt">Admin Dashboard</span>' +
+                    '<span class="dd">Staff completion overview &amp; compliance reports</span>' +
+                '</span>' +
+            '</a>' +
+            '<a class="aisa-admin-item" href="' + rootUrl('admin-notifications.html') + '">' +
+                '<span class="ic" aria-hidden="true">\u{1F4E2}</span>' +
+                '<span class="body">' +
+                    '<span class="tt">Send Notifications</span>' +
+                    '<span class="dd">Compose &amp; publish a notification to staff</span>' +
+                '</span>' +
+            '</a>';
+
         /* Search overlay */
         var search = document.createElement('div');
         search.className = 'aisa-search-overlay';
@@ -480,18 +630,23 @@
         document.body.appendChild(backdrop);
         document.body.appendChild(drawer);
         document.body.appendChild(panel);
+        document.body.appendChild(adminPanel);
         document.body.appendChild(search);
 
         refs.bar         = bar;
         refs.backdrop    = backdrop;
         refs.drawer      = drawer;
         refs.panel       = panel;
+        refs.adminPanel  = adminPanel;
         refs.search      = search;
         refs.btnBack     = bar.querySelector('.aisa-tb-back');
         refs.btnHome     = bar.querySelector('.aisa-tb-home');
         refs.btnMenu     = bar.querySelector('.aisa-tb-menu');
         refs.btnBell     = bar.querySelector('.aisa-tb-bell');
-        refs.btnSearch   = bar.querySelector('.aisa-tb-search');
+        refs.btnAdmin    = bar.querySelector('.aisa-tb-admin');
+        refs.btnLang     = bar.querySelector('.aisa-tb-lang');
+        refs.btnLangLabel = bar.querySelector('.aisa-tb-lang-label');
+        refs.btnSearch   = bar.querySelector('.aisa-tb-searchpill');
         refs.bellBadge   = bar.querySelector('.aisa-tb-badge');
         refs.bellList    = panel.querySelector('.aisa-bell-list');
         refs.bellMarkAll = panel.querySelector('.aisa-bell-markall');
@@ -512,8 +667,16 @@
         /* --- Home button --- */
         refs.btnHome.addEventListener('click', function () { window.location.href = rootUrl('index.html'); });
 
+        /* --- Language toggle --- */
+        applyLang(readLang(), { announce: false });
+        if (refs.btnLang) {
+            refs.btnLang.addEventListener('click', function () {
+                applyLang(readLang() === 'ar' ? 'en' : 'ar', { announce: true });
+            });
+        }
+
         /* --- Drawer behaviour --- */
-        function drawerOpen()  { closePanel(); closeSearch(); refs.btnMenu.classList.add('open'); backdrop.classList.add('open'); drawer.classList.add('open'); refs.btnMenu.setAttribute('aria-label', 'Close menu'); }
+        function drawerOpen()  { closePanel(); closeAdminPanel(); closeSearch(); refs.btnMenu.classList.add('open'); backdrop.classList.add('open'); drawer.classList.add('open'); refs.btnMenu.setAttribute('aria-label', 'Close menu'); }
         function drawerClose() { refs.btnMenu.classList.remove('open'); backdrop.classList.remove('open'); drawer.classList.remove('open'); refs.btnMenu.setAttribute('aria-label', 'Open menu'); }
         function drawerIsOpen() { return drawer.classList.contains('open'); }
 
@@ -530,21 +693,12 @@
 
         /* --- Bell panel --- */
         function openPanel() {
-            drawerClose(); closeSearch();
+            drawerClose(); closeAdminPanel(); closeSearch();
             /* Anchor the panel to the bell button. Now that the bell
              * sits on the right side, prefer right-edge alignment so
              * the panel stays on screen; left-edge is the fallback for
              * narrow viewports where the panel goes full-width anyway. */
-            var rect = refs.btnBell.getBoundingClientRect();
-            panel.style.left  = '';
-            panel.style.right = '';
-            var vw = window.innerWidth || document.documentElement.clientWidth || 0;
-            if (vw > 480) {
-                /* Distance from the right edge of the viewport to the
-                 * right edge of the bell button — keeps the panel
-                 * tucked under the bell without overflowing. */
-                panel.style.right = Math.max(8, vw - rect.right) + 'px';
-            }
+            anchorRight(panel, refs.btnBell);
             panel.classList.add('open');
             refs.btnBell.setAttribute('aria-label', 'Close notifications');
         }
@@ -562,9 +716,35 @@
         });
         refs.bellMarkAll.addEventListener('click', markAllRead);
 
+        /* --- Admin panel --- */
+        function openAdminPanel() {
+            if (!refs.btnAdmin) return;
+            drawerClose(); closePanel(); closeSearch();
+            anchorRight(adminPanel, refs.btnAdmin);
+            adminPanel.classList.add('open');
+            refs.btnAdmin.setAttribute('aria-label', 'Close admin tools');
+        }
+        function closeAdminPanel() {
+            adminPanel.classList.remove('open');
+            if (refs.btnAdmin) refs.btnAdmin.setAttribute('aria-label', 'Admin tools');
+        }
+        function adminPanelIsOpen() { return adminPanel.classList.contains('open'); }
+
+        if (refs.btnAdmin) {
+            refs.btnAdmin.addEventListener('click', function (e) {
+                e.stopPropagation();
+                adminPanelIsOpen() ? closeAdminPanel() : openAdminPanel();
+            });
+        }
+        document.addEventListener('click', function (e) {
+            if (!adminPanelIsOpen()) return;
+            if (adminPanel.contains(e.target) || (refs.btnAdmin && refs.btnAdmin.contains(e.target))) return;
+            closeAdminPanel();
+        });
+
         /* --- Search overlay --- */
         function openSearch() {
-            drawerClose(); closePanel();
+            drawerClose(); closePanel(); closeAdminPanel();
             search.classList.add('open');
             refs.searchInput.value = '';
             renderSearchResults('');
@@ -573,6 +753,20 @@
         }
         function closeSearch() { search.classList.remove('open'); }
         function searchIsOpen() { return search.classList.contains('open'); }
+
+        /* Position a floating dropdown under a top-bar button, anchored
+         * to the right edge of the viewport so it stays on-screen even
+         * when the button sits near the right side. Falls back to no
+         * positioning on tiny viewports where panels go full-width. */
+        function anchorRight(el, btn) {
+            el.style.left = '';
+            el.style.right = '';
+            var rect = btn.getBoundingClientRect();
+            var vw = window.innerWidth || document.documentElement.clientWidth || 0;
+            if (vw > 480) {
+                el.style.right = Math.max(8, vw - rect.right) + 'px';
+            }
+        }
 
         refs.btnSearch.addEventListener('click', openSearch);
         refs.searchInput.addEventListener('input', function () { renderSearchResults(refs.searchInput.value); });
@@ -596,10 +790,11 @@
                 return;
             }
             if (e.key !== 'Escape') return;
-            if (refs.openModal) { closeNotificationModal(); return; }
-            if (searchIsOpen()) { closeSearch(); return; }
-            if (panelIsOpen())  { closePanel();  return; }
-            if (drawerIsOpen()) { drawerClose(); return; }
+            if (refs.openModal)     { closeNotificationModal(); return; }
+            if (searchIsOpen())     { closeSearch();     return; }
+            if (adminPanelIsOpen()) { closeAdminPanel(); return; }
+            if (panelIsOpen())      { closePanel();      return; }
+            if (drawerIsOpen())     { drawerClose();     return; }
         });
 
         /* Expose closers for internal cross-calls. */
@@ -627,8 +822,14 @@
             window.aisaAuth.isAdmin().then(function (yes) {
                 if (!yes) return;
                 isAdminUser = true;
+                /* Drawer admin items. */
                 var items = refs.drawer ? refs.drawer.querySelectorAll('.aisa-menu-admin-item') : [];
                 items.forEach(function (li) { li.style.display = ''; });
+                /* App-bar admin shortcut button. */
+                if (refs.btnAdmin) {
+                    refs.btnAdmin.removeAttribute('hidden');
+                    refs.btnAdmin.classList.add('show');
+                }
                 /* If the search overlay happens to be open right now, re-render
                  * so the admin destinations appear without re-typing. */
                 if (refs.search && refs.search.classList.contains('open')) {
