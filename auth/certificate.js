@@ -223,7 +223,102 @@
             '</body></html>';
     }
 
-    /* Wait for auth, then wire up once the DOM is ready. */
+    /* -------- completion celebration modal -------- */
+
+    var modalShown = false;
+    var modalStylesInjected = false;
+
+    function injectModalStyles() {
+        if (modalStylesInjected) return;
+        modalStylesInjected = true;
+        var s = document.createElement('style');
+        s.id = 'aisa-cert-modal-style';
+        s.textContent = [
+            '.aisa-cert-modal-overlay{position:fixed;inset:0;z-index:2147483600;',
+            'display:flex;align-items:center;justify-content:center;padding:1rem;',
+            'background:rgba(15,23,42,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);',
+            'font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;',
+            'animation:aisa-cert-fade .25s ease-out;}',
+            '@keyframes aisa-cert-fade{from{opacity:0}to{opacity:1}}',
+            '.aisa-cert-modal-card{position:relative;background:#fff;color:#0f172a;width:100%;',
+            'max-width:440px;border-radius:1.25rem;padding:2.25rem 2rem 1.75rem;text-align:center;',
+            'box-shadow:0 25px 50px -12px rgba(0,0,0,.45);',
+            'animation:aisa-cert-pop .4s cubic-bezier(.22,1,.36,1) both;}',
+            '@keyframes aisa-cert-pop{from{opacity:0;transform:translateY(12px) scale(.97)}',
+            'to{opacity:1;transform:translateY(0) scale(1)}}',
+            '.aisa-cert-modal-emoji{font-size:3.25rem;line-height:1;margin-bottom:.25rem;}',
+            '.aisa-cert-modal-badge{display:inline-block;background:#fef3c7;color:#92400e;',
+            'font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;',
+            'padding:.25rem .7rem;border-radius:9999px;margin-bottom:.75rem;}',
+            '.aisa-cert-modal-title{font-size:1.6rem;font-weight:800;margin:.25rem 0 .5rem;letter-spacing:-.01em;}',
+            '.aisa-cert-modal-text{color:#475569;font-size:1rem;line-height:1.55;margin:0 0 1.5rem;}',
+            '.aisa-cert-modal-text b{color:#0f172a;}',
+            '.aisa-cert-modal-actions{display:flex;flex-direction:column;gap:.6rem;}',
+            '.aisa-cert-modal-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;',
+            'font:inherit;font-weight:800;cursor:pointer;border:1px solid transparent;',
+            'padding:.85rem 1.25rem;border-radius:.75rem;transition:all .15s;}',
+            '.aisa-cert-modal-btn.primary{background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;}',
+            '.aisa-cert-modal-btn.primary:hover{transform:translateY(-1px);box-shadow:0 12px 24px -8px rgba(6,182,212,.5);}',
+            '.aisa-cert-modal-btn.ghost{background:transparent;color:#64748b;font-weight:600;}',
+            '.aisa-cert-modal-btn.ghost:hover{color:#0f172a;}',
+            '.aisa-cert-modal-close{position:absolute;top:.75rem;right:.75rem;background:transparent;',
+            'border:none;cursor:pointer;color:#94a3b8;font-size:1.5rem;line-height:1;width:2rem;height:2rem;',
+            'display:flex;align-items:center;justify-content:center;border-radius:.5rem;}',
+            '.aisa-cert-modal-close:hover{background:#f1f5f9;color:#0f172a;}'
+        ].join('');
+        document.head.appendChild(s);
+    }
+
+    function showCertificateModal() {
+        if (modalShown) return;
+        modalShown = true;
+        injectModalStyles();
+
+        var overlay = document.createElement('div');
+        overlay.className = 'aisa-cert-modal-overlay';
+        overlay.setAttribute('role', 'dialog');
+        overlay.setAttribute('aria-modal', 'true');
+        overlay.setAttribute('aria-label', 'Module complete');
+        overlay.innerHTML =
+            '<div class="aisa-cert-modal-card">' +
+                '<button class="aisa-cert-modal-close" type="button" aria-label="Close">&times;</button>' +
+                '<div class="aisa-cert-modal-emoji" aria-hidden="true">\u{1F389}</div>' +
+                '<div class="aisa-cert-modal-badge">Module Complete</div>' +
+                '<h2 class="aisa-cert-modal-title">Congratulations!</h2>' +
+                '<p class="aisa-cert-modal-text">You’ve completed <b>' + esc(getModuleTitle()) + '</b>.<br>' +
+                    'Your certificate of completion is ready to download.</p>' +
+                '<div class="aisa-cert-modal-actions">' +
+                    '<button class="aisa-cert-modal-btn primary" type="button" data-action="download">' +
+                        '\u{1F393} Download Certificate</button>' +
+                    '<button class="aisa-cert-modal-btn ghost" type="button" data-action="later">Maybe later</button>' +
+                '</div>' +
+            '</div>';
+        document.body.appendChild(overlay);
+
+        function close() {
+            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        }
+        overlay.querySelector('.aisa-cert-modal-close').addEventListener('click', close);
+        overlay.querySelector('[data-action="later"]').addEventListener('click', close);
+        overlay.querySelector('[data-action="download"]').addEventListener('click', function () {
+            openCertificate();
+            close();
+        });
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) close();  // click backdrop to dismiss
+        });
+    }
+
+    /* Pop the certificate modal the moment a module is genuinely
+     * completed in this session — gate.js fires this once, and never
+     * on silent rehydration when a returning user reopens a finished
+     * module. Deferred slightly so the module's own completion banner
+     * and confetti land first, then the modal rises over them. */
+    document.addEventListener('aisa:module-completed', function () {
+        setTimeout(showCertificateModal, 350);
+    });
+
+    /* Wait for auth, then wire up the banner button once the DOM is ready. */
     if (typeof window.aisaReady === 'function') {
         window.aisaReady(function () {
             if (document.readyState === 'loading') {

@@ -118,7 +118,7 @@
         if (auxLoaded) return;
         auxLoaded = true;
         if (!GATE_SCRIPT_SRC) return;
-        ['onboarding.js?v=1', 'certificate.js?v=1'].forEach(function (name) {
+        ['onboarding.js?v=1', 'certificate.js?v=2'].forEach(function (name) {
             var url = GATE_SCRIPT_SRC.replace(/gate\.js(\?.*)?$/, name);
             if (url === GATE_SCRIPT_SRC) return;  // pattern didn't match — skip safely
             var s = document.createElement('script');
@@ -692,6 +692,15 @@
                     if (currentPct() !== 100) return;
                     if (!api.isConfigured()) return;
                     recorded = true;
+                    /* Announce a genuine, user-driven completion so shared
+                     * helpers (the certificate popup) can react. This fires
+                     * once per session and NOT on silent rehydration, because
+                     * applyDone() sets `recorded` without calling maybeRecord. */
+                    try {
+                        document.dispatchEvent(new CustomEvent('aisa:module-completed', {
+                            detail: { moduleId: moduleId, version: version }
+                        }));
+                    } catch (e) {}
                     api.recordEvent(moduleId, 'completed', 100, version).then(function () {
                         showToast('Completion saved');
                     }).catch(function (err) {
