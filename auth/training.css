@@ -384,10 +384,14 @@
 }
 
 /* Hide the original "Module Progress" card so it doesn't duplicate
- * the training top bar. The original card always contains #progress-bar. */
+ * the training top bar. The original card always contains #progress-bar;
+ * we don't know the wrapper tag (div on most PD modules, section on
+ * return-to-school) so we match both. */
 .aisa-train-managed div:has(> #progress-bar),
 .aisa-train-managed div:has(> div > #progress-bar),
-.aisa-train-managed div:has(> div > div > #progress-bar) {
+.aisa-train-managed div:has(> div > div > #progress-bar),
+.aisa-train-managed section:has(> div > #progress-bar),
+.aisa-train-managed section:has(> div > div > #progress-bar) {
     display: none !important;
 }
 
