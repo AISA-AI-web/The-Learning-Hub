@@ -1,19 +1,26 @@
 /*
- * AISA Learning Hub — global navigation menu.
+ * AISA Learning Hub — global top app-bar.
  *
- * Auto-loaded by auth/gate.js on every page. Injects:
- *   - A hamburger button at top-left that opens a slide-in drawer with
- *     links to every section of the Hub and a Sign-out button.
- *   - A bell button right of the hamburger that opens a notifications
- *     dropdown. Each item is clickable; click expands the notification
- *     in a full-view modal with rich-text links rendered.
- *   - An unread badge on the bell that reflects the per-user filtered
- *     notification count from the backend.
+ * Auto-loaded by auth/gate.js on every page. Injects a single fixed
+ * top app-bar that becomes the navigation surface for the whole Hub:
  *
- * Notification bodies may contain markdown-style links — [label](url) —
- * and bare URLs are auto-linkified. Anything else is escaped. The
- * renderer is exposed as window.AisaRichText so admin pages can preview
- * exactly what staff will see.
+ *   ┌───────────────────────────────────────────────────────────────┐
+ *   │  [←] [⌂] [☰] [🔔] [🔍]                       AISA Learning Hub │
+ *   └───────────────────────────────────────────────────────────────┘
+ *
+ * - Back:        history.back() (disabled if there's nothing to go to)
+ * - Home:        navigates to index.html
+ * - Menu (☰):    slide-in drawer with every section + Sign out
+ * - Bell:        unread badge + dropdown of recent notifications →
+ *                clicking a notification opens a full-view modal with
+ *                rich-text links rendered (window.AisaRichText.render)
+ * - Search:      full-screen overlay over an in-memory index of all
+ *                Hub pages and PD modules; ⌘K / Ctrl-K opens it too
+ * - Brand:       AISA logo + wordmark, links to the Learning Hub home
+ *
+ * Per-page sticky headers (the ones with the duplicated AISA logo)
+ * are hidden via CSS so this is the only top navigation visible.
+ * Body padding-top is set to the bar's height so nothing slips under.
  */
 (function () {
     'use strict';
@@ -39,9 +46,67 @@
         { label: 'Committees',        icon: '\u{1F91D}', href: 'Committees/committees.html' }
     ];
 
+    /* Searchable destinations — hand-curated so search isn't dependent
+     * on crawling page content. Add to this list whenever a new
+     * destination is created. Entries marked adminOnly are only shown
+     * in search results once we know the signed-in user is an admin. */
+    var SEARCH_INDEX = [
+        /* Hub home + personal */
+        { title: 'Learning Hub',                       desc: 'AISA hub home page',                                           href: 'index.html',                                                                       icon: '\u{1F3E0}', tag: 'Hub' },
+        { title: 'My Dashboard',                       desc: 'Your PD progress, badges, and certificate downloads',           href: 'dashboard.html',                                                                   icon: '\u{1F4CA}', tag: 'Personal' },
+
+        /* Admin (filtered to admins only) */
+        { title: 'Admin Dashboard',                    desc: 'Staff completion overview and compliance reports',              href: 'admin-dashboard.html',                                                             icon: '\u{1F6E1}',  tag: 'Admin', adminOnly: true },
+        { title: 'Send Notifications',                 desc: 'Compose and publish notifications to staff',                    href: 'admin-notifications.html',                                                         icon: '\u{1F4E2}',  tag: 'Admin', adminOnly: true },
+
+        /* PD modules */
+        { title: 'PD Modules',                         desc: 'All professional development modules',                          href: 'PD%20Modules/pd.html',                                                             icon: '\u{1F393}', tag: 'Hub' },
+        { title: 'AI Ethics & Policy',                 desc: 'Required: AISA AI vision, principles, approved tools',          href: 'PD%20Modules/ai-ethics-module.html',                                               icon: '\u{1F9ED}', tag: 'Module' },
+        { title: 'Return to School',                   desc: 'Required: ADEK protocols, drills, safety',                      href: 'PD%20Modules/return-to-school.html',                                               icon: '\u{1F6A8}', tag: 'Module' },
+        { title: 'Workspace Studio',                   desc: 'Build Flows + Skills for everyday tasks in Google Workspace',   href: 'PD%20Modules/workspace-studio-module.html',                                        icon: '\u{1F6E0}', tag: 'Module' },
+        { title: 'NotebookLM',                         desc: 'Source-grounded AI for lesson planning and presentations',      href: 'PD%20Modules/notebooklm-module.html',                                              icon: '\u{1F4D2}', tag: 'Module' },
+        { title: 'Chalkie',                            desc: 'AI teaching assistant masterclass',                             href: 'PD%20Modules/chalkie-module.html',                                                 icon: '\u{270F}',  tag: 'Module' },
+        { title: 'AI & Assessment',                    desc: 'Assessment design in the age of AI',                            href: 'PD%20Modules/ai-and-assessment.html',                                              icon: '\u{1F4DD}', tag: 'Module' },
+
+        /* Orientation Hub */
+        { title: 'Orientation Hub',                    desc: 'Landing page for new-staff onboarding',                         href: 'Orientation%20Hub/orientation-hub.html',                                           icon: '\u{1F9ED}', tag: 'Hub' },
+        { title: 'Orientation overview',               desc: 'Welcome and orientation introduction',                          href: 'Orientation%20Hub/orientation.html',                                               icon: '\u{1F44B}', tag: 'Onboarding' },
+        { title: 'AISA history',                       desc: 'About the American International School in Abu Dhabi',          href: 'Orientation%20Hub/aisa-history.html',                                              icon: '\u{1F3DB}', tag: 'Onboarding' },
+        { title: 'First-week checklist & FAQs',        desc: 'Practical guidance for your first week at AISA',                href: 'Orientation%20Hub/first-week-faqs.html',                                           icon: '\u{2705}',  tag: 'Onboarding' },
+        { title: 'Living in Abu Dhabi',                desc: 'Visas, banking, housing, transport, getting settled',           href: 'Orientation%20Hub/living-in-abu-dhabi.html',                                       icon: '\u{1F3D9}', tag: 'Onboarding' },
+        { title: 'Meet the AISA team',                 desc: 'Leadership and key staff directory',                            href: 'Orientation%20Hub/meet-the-team.html',                                             icon: '\u{1F465}', tag: 'Onboarding' },
+        { title: 'Programs & Curriculum',              desc: 'Academic programs and curriculum overview',                     href: 'Orientation%20Hub/programs-and-curriculum.html',                                   icon: '\u{1F4DA}', tag: 'Onboarding' },
+        { title: 'Work matters & policies',            desc: 'HR essentials, professional standards, policies',               href: 'Orientation%20Hub/work-matters.html',                                              icon: '\u{1F4CB}', tag: 'Onboarding' },
+        { title: 'New Teachers Onboarding Guide (PDF)', desc: 'Full onboarding handbook PDF for new staff',                   href: 'Orientation%20Hub/Copy%20of%20AISA%20New%20Teachers%20%20Onbording%20Guide%20.pdf', icon: '\u{1F4C4}', tag: 'Reference' },
+
+        /* Tools */
+        { title: 'Tools & Resources',                  desc: 'AI tools, templates, and reference materials',                  href: 'Tools%20and%20Resources/tools.html',                                               icon: '\u{1F6E0}', tag: 'Hub' },
+        { title: 'Lesson Planning Tool',               desc: 'Excellent Teaching & Learning lesson planner',                  href: 'Tools%20and%20Resources/lesson-planning-tool.html',                                icon: '\u{1F4DD}', tag: 'Tool' },
+
+        /* Library */
+        { title: 'Library Hub',                        desc: 'Books, articles, and research collections',                     href: 'Library%20Hub/library-hub.html',                                                   icon: '\u{1F4DA}', tag: 'Hub' },
+        { title: 'Library — for students',             desc: 'Student-facing library resources',                              href: 'Library%20Hub/student.html',                                                       icon: '\u{1F393}', tag: 'Library' },
+        { title: 'Library — for teachers & staff',     desc: 'Staff-facing library resources',                                href: 'Library%20Hub/teacher.html',                                                       icon: '\u{1F468}\u{200D}\u{1F3EB}', tag: 'Library' },
+
+        /* Wired Wed */
+        { title: 'Wired Wednesdays',                   desc: 'Weekly drop-in AI sessions',                                    href: 'Wired%20Wednesdays/wired-wednesdays.html',                                         icon: '\u{26A1}',  tag: 'Hub' },
+
+        /* Media Hub */
+        { title: 'Media Hub',                          desc: 'Newsletters, videos, recordings',                               href: 'Media%20Hub/media.html',                                                           icon: '\u{1F3AC}', tag: 'Hub' },
+        { title: 'Digital Tools Newsletter — May 4',   desc: 'Issue 1: digital tools deep-dives',                             href: 'Media%20Hub/may4.html',                                                            icon: '\u{1F4F0}', tag: 'Newsletter' },
+        { title: 'Digital Lion Newsletter — May 11',   desc: 'Issue 2: Wired Wednesdays, Flows, Gemini in Workspace',         href: 'Media%20Hub/may11.html',                                                           icon: '\u{1F4F0}', tag: 'Newsletter' },
+        { title: 'Digital Lion Newsletter — May 18',   desc: 'Issue 3: class visit schedule, AI integration snapshot form',   href: 'Media%20Hub/may18.html',                                                           icon: '\u{1F4F0}', tag: 'Newsletter' },
+        { title: 'Classroom AI Integration Snapshot',  desc: 'Non-evaluative classroom-visit observation form (PDF)',         href: 'Media%20Hub/Classroom%20AI%20Integration%20Snapshot.pdf',                          icon: '\u{1F4CB}', tag: 'Reference' },
+
+        /* Committees */
+        { title: 'Committees & Governance',            desc: 'AISA staff committees',                                         href: 'Committees/committees.html',                                                       icon: '\u{1F91D}', tag: 'Hub' },
+        { title: '25–26 Committee List (PDF)',         desc: 'Current academic-year committee membership',                    href: 'Committees/25-26%20committee%20list%20(1).pdf',                                    icon: '\u{1F4C4}', tag: 'Reference' }
+    ];
+
     var built = false;
     var refs = {};
-    var notifications = [];  // last fetched list
+    var notifications = [];
+    var isAdminUser = false;  // flipped to true once isAdmin() resolves yes
 
     /* -------- shared rich-text helpers (exposed via window.AisaRichText) -------- */
 
@@ -51,20 +116,9 @@
         });
     }
 
-    /**
-     * Render free-form notification body safely as HTML.
-     *   - Escapes everything.
-     *   - Recognises markdown links: [label](url) where url is http(s) or mailto.
-     *   - Auto-linkifies bare http(s) URLs that aren't already inside a link.
-     *   - Preserves newlines as <br>.
-     * Returns a string safe to inject via innerHTML.
-     */
     function renderRichText(text) {
         if (!text) return '';
         var safe = escapeHtml(text);
-
-        /* Replace markdown links first, stashing rendered anchors so the
-         * bare-URL pass doesn't re-process URLs that we already wrapped. */
         var anchors = [];
         safe = safe.replace(
             /\[([^\]]+)\]\(((?:https?:\/\/|mailto:)[^\s)]+)\)/g,
@@ -74,9 +128,6 @@
                 return '\x00A' + ix + '\x00';
             }
         );
-        /* Auto-linkify bare URLs (only at word boundaries, never mid-token).
-         * Strip trailing punctuation that's almost certainly part of the
-         * surrounding sentence, not the URL. */
         safe = safe.replace(
             /(^|[\s(])(https?:\/\/[^\s<]+)/g,
             function (_, prefix, url) {
@@ -86,9 +137,7 @@
                 return prefix + makeAnchor(url, url) + trail;
             }
         );
-        /* Restore stashed anchors. */
         safe = safe.replace(/\x00A(\d+)\x00/g, function (_, ix) { return anchors[+ix]; });
-        /* Newlines as line breaks. */
         return safe.replace(/\n/g, '<br>');
     }
 
@@ -123,158 +172,236 @@
         timeFull:  timeFull
     };
 
+    /* -------- icon SVGs (Lucide-style, 1.8 stroke) -------- */
+
+    function icon(path, viewBox) {
+        return '<svg viewBox="' + (viewBox || '0 0 24 24') + '" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">' + path + '</svg>';
+    }
+    var ICONS = {
+        back:   icon('<path d="M15 18l-6-6 6-6"/>'),
+        home:   icon('<path d="M3 9.5L12 3l9 6.5V20a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 20V9.5z"/><path d="M9 21V13h6v8"/>'),
+        menu:   icon('<path d="M4 7h16M4 12h16M4 17h16"/>'),
+        bell:   icon('<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M13.73 21a2 2 0 0 1-3.46 0"/>'),
+        search: icon('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>'),
+        close:  icon('<path d="M18 6L6 18M6 6l12 12"/>'),
+        signout: icon('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>')
+    };
+
     /* -------- styles -------- */
+
+    var BAR_HEIGHT = '3.75rem';  // 60px
 
     function injectStyles() {
         var s = document.createElement('style');
         s.id = 'aisa-menu-style';
         s.textContent = [
-            /* === Floating buttons (hamburger + bell) === */
-            '.aisa-menu-toggle,.aisa-bell-toggle{position:fixed;top:.55rem;z-index:2147483000;',
-            'width:2.6rem;height:2.6rem;border-radius:.8rem;border:1px solid #e2e8f0;',
-            'background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);',
-            'box-shadow:0 4px 14px -4px rgba(15,23,42,.3);cursor:pointer;',
-            'display:flex;align-items:center;justify-content:center;',
-            'transition:transform .15s,box-shadow .15s;}',
-            '.aisa-menu-toggle:hover,.aisa-bell-toggle:hover{transform:translateY(-1px);box-shadow:0 8px 20px -6px rgba(15,23,42,.4);}',
-            '.aisa-menu-toggle{left:.6rem;flex-direction:column;gap:0;}',
-            '.aisa-bell-toggle{left:3.5rem;color:#0f172a;}',
+            /* === Reset body so the fixed bar doesn't cover content === */
+            'body{padding-top:' + BAR_HEIGHT + ';}',
 
-            '.aisa-menu-toggle span{display:block;width:1.15rem;height:2px;border-radius:2px;',
-            'background:#0f172a;margin:2px 0;transition:transform .2s,opacity .2s;}',
-            '.aisa-menu-toggle.open span:nth-child(1){transform:translateY(6px) rotate(45deg);}',
-            '.aisa-menu-toggle.open span:nth-child(2){opacity:0;}',
-            '.aisa-menu-toggle.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}',
+            /* Hide the duplicated per-page sticky headers across the site
+             * so the global app-bar is the only top navigation surface. */
+            'body > header.sticky.top-0{display:none!important;}',
 
-            '.aisa-bell-toggle svg{width:1.25rem;height:1.25rem;}',
-            '.aisa-bell-toggle.has-unread svg{color:#0f172a;}',
+            /* === Top app-bar === */
+            '.aisa-topbar{position:fixed;top:0;left:0;right:0;height:' + BAR_HEIGHT + ';z-index:2147483000;',
+                'background:rgba(255,255,255,.92);-webkit-backdrop-filter:saturate(180%) blur(12px);backdrop-filter:saturate(180%) blur(12px);',
+                'border-bottom:1px solid #e2e8f0;',
+                'font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}',
+            '.aisa-topbar-inner{height:100%;max-width:none;margin:0 auto;padding:0 1rem;',
+                'display:flex;align-items:center;justify-content:space-between;gap:.5rem;}',
+            '.aisa-topbar-actions{display:flex;align-items:center;gap:.25rem;}',
 
-            /* Unread badge (lives on the bell now). */
-            '.aisa-menu-badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;',
-            'padding:0 4px;border-radius:9999px;background:#ef4444;color:#fff;font-size:11px;',
-            'font-weight:800;line-height:18px;text-align:center;box-shadow:0 0 0 2px #fff;display:none;font-style:normal;}',
-            '.aisa-menu-badge.show{display:block;}',
+            /* Action buttons (bigger than before for the "professional" feel) */
+            '.aisa-tb-btn{position:relative;width:2.6rem;height:2.6rem;display:inline-flex;align-items:center;justify-content:center;',
+                'background:transparent;border:none;border-radius:.75rem;cursor:pointer;color:#0f172a;',
+                'transition:background .15s,color .15s,transform .12s;-webkit-tap-highlight-color:transparent;}',
+            '.aisa-tb-btn svg{width:1.35rem;height:1.35rem;}',
+            '.aisa-tb-btn:hover{background:#f1f5f9;}',
+            '.aisa-tb-btn:active{transform:scale(.96);}',
+            '.aisa-tb-btn:focus-visible{outline:2px solid #4f46e5;outline-offset:2px;}',
+            '.aisa-tb-btn:disabled{opacity:.35;cursor:default;pointer-events:none;}',
 
-            /* === Drawer (menu) === */
+            /* Hamburger animation: rotate ☰ → ✕ via CSS when drawer is open. */
+            '.aisa-tb-btn.aisa-tb-menu svg path{transition:transform .2s,opacity .2s;transform-origin:center;}',
+            '.aisa-tb-btn.aisa-tb-menu.open svg{transform:rotate(90deg);transition:transform .2s;}',
+
+            /* Brand on the right */
+            '.aisa-topbar-brand{display:inline-flex;align-items:center;gap:.6rem;text-decoration:none;',
+                'padding:.35rem .55rem .35rem .35rem;border-radius:.6rem;transition:background .15s;}',
+            '.aisa-topbar-brand:hover{background:#f1f5f9;}',
+            '.aisa-topbar-brand img{width:2rem;height:2rem;object-fit:contain;border-radius:.35rem;}',
+            '.aisa-topbar-brand .wm{font-weight:800;color:#0f172a;font-size:.95rem;letter-spacing:-.01em;line-height:1;',
+                'display:flex;flex-direction:column;}',
+            '.aisa-topbar-brand .wm small{font-weight:600;font-size:.68rem;color:#64748b;margin-top:2px;letter-spacing:.04em;}',
+
+            /* Unread badge on the bell */
+            '.aisa-tb-badge{position:absolute;top:.35rem;right:.4rem;min-width:18px;height:18px;',
+                'padding:0 4px;border-radius:9999px;background:#ef4444;color:#fff;font-size:11px;',
+                'font-weight:800;line-height:18px;text-align:center;box-shadow:0 0 0 2px rgba(255,255,255,.92);display:none;font-style:normal;}',
+            '.aisa-tb-badge.show{display:block;}',
+
+            /* === Menu drawer === */
             '.aisa-menu-backdrop{position:fixed;inset:0;z-index:2147483001;background:rgba(15,23,42,.5);',
-            '-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;visibility:hidden;',
-            'transition:opacity .25s,visibility .25s;}',
+                '-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);opacity:0;visibility:hidden;',
+                'transition:opacity .25s,visibility .25s;}',
             '.aisa-menu-backdrop.open{opacity:1;visibility:visible;}',
 
-            '.aisa-menu-drawer{position:fixed;top:0;left:0;bottom:0;z-index:2147483002;width:300px;max-width:84vw;',
-            'background:#ffffff;box-shadow:0 0 60px rgba(15,23,42,.35);transform:translateX(-104%);',
-            'transition:transform .28s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;',
-            'font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}',
+            '.aisa-menu-drawer{position:fixed;top:0;left:0;bottom:0;z-index:2147483002;width:320px;max-width:88vw;',
+                'background:#ffffff;box-shadow:0 0 60px rgba(15,23,42,.35);transform:translateX(-104%);',
+                'transition:transform .28s cubic-bezier(.22,1,.36,1);display:flex;flex-direction:column;',
+                'font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}',
             '.aisa-menu-drawer.open{transform:translateX(0);}',
             '.aisa-menu-head{padding:1.25rem 1.25rem 1rem;border-bottom:1px solid #f1f5f9;',
-            'display:flex;align-items:center;gap:.75rem;background:linear-gradient(135deg,#0c4a6e,#312e81);color:#fff;}',
+                'display:flex;align-items:center;gap:.75rem;background:linear-gradient(135deg,#0c4a6e,#312e81);color:#fff;}',
             '.aisa-menu-head .logo{width:2.5rem;height:2.5rem;border-radius:.6rem;background:#fff;',
-            'display:flex;align-items:center;justify-content:center;font-weight:800;color:#0b2545;flex-shrink:0;overflow:hidden;}',
+                'display:flex;align-items:center;justify-content:center;font-weight:800;color:#0b2545;flex-shrink:0;overflow:hidden;}',
             '.aisa-menu-head .logo img{width:100%;height:100%;object-fit:contain;}',
             '.aisa-menu-head .who{min-width:0;}',
             '.aisa-menu-head .who .name{font-weight:700;font-size:.95rem;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
-            '.aisa-menu-head .who .email{font-size:.75rem;opacity:.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+            '.aisa-menu-head .who .email{font-size:.75rem;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
             '.aisa-menu-list{list-style:none;margin:0;padding:.5rem;overflow-y:auto;flex:1;}',
-            '.aisa-menu-list a{display:flex;align-items:center;gap:.75rem;padding:.7rem .8rem;border-radius:.6rem;',
-            'text-decoration:none;color:#0f172a;font-weight:600;font-size:.92rem;transition:background .15s;}',
+            '.aisa-menu-list a{display:flex;align-items:center;gap:.75rem;padding:.75rem .8rem;border-radius:.6rem;',
+                'text-decoration:none;color:#0f172a;font-weight:600;font-size:.92rem;transition:background .15s;}',
             '.aisa-menu-list a:hover{background:#f1f5f9;}',
             '.aisa-menu-list a .ico{width:1.5rem;text-align:center;font-size:1.05rem;flex-shrink:0;}',
             '.aisa-menu-foot{padding:.75rem;border-top:1px solid #f1f5f9;}',
             '.aisa-menu-signout{width:100%;display:flex;align-items:center;justify-content:center;gap:.5rem;',
-            'padding:.7rem 1rem;border-radius:.6rem;border:1px solid #fecaca;background:#fef2f2;color:#b91c1c;',
-            'font:inherit;font-weight:700;cursor:pointer;transition:background .15s;}',
+                'padding:.75rem 1rem;border-radius:.6rem;border:1px solid #fecaca;background:#fef2f2;color:#b91c1c;',
+                'font:inherit;font-weight:700;cursor:pointer;transition:background .15s;}',
             '.aisa-menu-signout:hover{background:#fee2e2;}',
+            '.aisa-menu-signout svg{width:16px;height:16px;}',
 
             /* === Bell dropdown panel === */
-            '.aisa-bell-panel{position:fixed;top:3.5rem;left:.6rem;z-index:2147483005;width:360px;max-width:calc(100vw - 1.2rem);',
-            'background:#fff;border:1px solid #e2e8f0;border-radius:1rem;box-shadow:0 25px 50px -12px rgba(15,23,42,.35);',
-            'font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#0f172a;',
-            'opacity:0;visibility:hidden;transform:translateY(-6px);',
-            'transition:opacity .15s,transform .15s,visibility .15s;display:flex;flex-direction:column;max-height:75vh;}',
+            '.aisa-bell-panel{position:fixed;top:calc(' + BAR_HEIGHT + ' + .25rem);z-index:2147483005;width:380px;max-width:calc(100vw - 1.2rem);',
+                'background:#fff;border:1px solid #e2e8f0;border-radius:1rem;box-shadow:0 25px 50px -12px rgba(15,23,42,.35);',
+                'font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#0f172a;',
+                'opacity:0;visibility:hidden;transform:translateY(-6px);',
+                'transition:opacity .15s,transform .15s,visibility .15s;display:flex;flex-direction:column;max-height:75vh;}',
             '.aisa-bell-panel.open{opacity:1;visibility:visible;transform:translateY(0);}',
-            '.aisa-bell-head{padding:.85rem 1rem;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;}',
+            '.aisa-bell-head{padding:.95rem 1rem;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between;}',
             '.aisa-bell-head .t{font-size:.95rem;font-weight:800;color:#0f172a;}',
-            '.aisa-bell-head button{font:inherit;font-size:.75rem;font-weight:700;color:#4f46e5;background:none;border:none;cursor:pointer;padding:0;}',
+            '.aisa-bell-head button{font:inherit;font-size:.78rem;font-weight:700;color:#4f46e5;background:none;border:none;cursor:pointer;padding:0;}',
             '.aisa-bell-head button:hover{text-decoration:underline;}',
             '.aisa-bell-head button:disabled{color:#cbd5e1;cursor:default;text-decoration:none;}',
             '.aisa-bell-list{flex:1;overflow-y:auto;padding:.4rem;}',
-            '.aisa-bell-empty{padding:2rem 1rem;text-align:center;color:#94a3b8;font-size:.85rem;}',
+            '.aisa-bell-empty{padding:2.25rem 1rem;text-align:center;color:#94a3b8;font-size:.85rem;}',
             '.aisa-bell-empty .e{font-size:1.75rem;margin-bottom:.5rem;}',
 
             '.aisa-bell-item{display:block;width:100%;text-align:left;border:none;background:#f8fafc;',
-            'border-radius:.6rem;padding:.7rem .8rem;margin-bottom:.3rem;cursor:pointer;position:relative;transition:background .15s;}',
+                'border-radius:.6rem;padding:.75rem .85rem;margin-bottom:.3rem;cursor:pointer;position:relative;transition:background .15s;}',
             '.aisa-bell-item:hover{background:#f1f5f9;}',
             '.aisa-bell-item.unread{background:#eef2ff;}',
             '.aisa-bell-item.unread:hover{background:#e0e7ff;}',
             '.aisa-bell-item .nt{font-weight:700;font-size:.9rem;color:#0f172a;line-height:1.3;padding-right:1rem;}',
             '.aisa-bell-item .nb{font-size:.8rem;color:#475569;margin-top:3px;line-height:1.4;',
-            'display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
+                'display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
             '.aisa-bell-item .nm{font-size:.7rem;color:#94a3b8;margin-top:5px;}',
-            '.aisa-bell-item .dot{position:absolute;top:.85rem;right:.7rem;width:8px;height:8px;border-radius:50%;background:#4f46e5;}',
+            '.aisa-bell-item .dot{position:absolute;top:.95rem;right:.85rem;width:8px;height:8px;border-radius:50%;background:#4f46e5;}',
 
-            /* === Full-view modal === */
+            /* === Search overlay === */
+            '.aisa-search-overlay{position:fixed;inset:0;z-index:2147483006;display:flex;align-items:flex-start;justify-content:center;',
+                'padding:5rem 1rem 1rem;background:rgba(15,23,42,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);',
+                'opacity:0;visibility:hidden;transition:opacity .18s,visibility .18s;',
+                'font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}',
+            '.aisa-search-overlay.open{opacity:1;visibility:visible;}',
+            '.aisa-search-card{width:100%;max-width:620px;background:#fff;border-radius:1rem;box-shadow:0 25px 50px -12px rgba(0,0,0,.4);',
+                'display:flex;flex-direction:column;max-height:70vh;overflow:hidden;transform:translateY(-6px);transition:transform .2s;}',
+            '.aisa-search-overlay.open .aisa-search-card{transform:translateY(0);}',
+            '.aisa-search-inputrow{display:flex;align-items:center;gap:.6rem;padding:.85rem 1.1rem;border-bottom:1px solid #f1f5f9;}',
+            '.aisa-search-inputrow svg{width:1.25rem;height:1.25rem;color:#64748b;flex-shrink:0;}',
+            '.aisa-search-input{flex:1;border:none;outline:none;font:inherit;font-size:1.05rem;color:#0f172a;background:transparent;}',
+            '.aisa-search-input::placeholder{color:#94a3b8;}',
+            '.aisa-search-kbd{font-size:.7rem;font-weight:700;color:#64748b;background:#f1f5f9;padding:.15rem .4rem;border-radius:.35rem;}',
+            '.aisa-search-results{flex:1;overflow-y:auto;padding:.4rem;}',
+            '.aisa-search-empty{padding:2rem 1rem;text-align:center;color:#94a3b8;font-size:.85rem;}',
+            '.aisa-search-result{display:flex;align-items:center;gap:.85rem;width:100%;padding:.7rem .85rem;border-radius:.6rem;',
+                'text-decoration:none;color:#0f172a;font:inherit;cursor:pointer;transition:background .12s;border:none;background:transparent;text-align:left;}',
+            '.aisa-search-result:hover,.aisa-search-result.active{background:#eef2ff;}',
+            '.aisa-search-result .ic{width:2.2rem;height:2.2rem;border-radius:.5rem;background:#f1f5f9;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem;}',
+            '.aisa-search-result .body{min-width:0;flex:1;}',
+            '.aisa-search-result .tt{font-weight:700;font-size:.92rem;color:#0f172a;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+            '.aisa-search-result .dd{font-size:.78rem;color:#64748b;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+            '.aisa-search-result .tag{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#4f46e5;background:#eef2ff;padding:.2rem .45rem;border-radius:9999px;flex-shrink:0;}',
+
+            /* === Full-view notification modal === */
             '.aisa-notif-modal{position:fixed;inset:0;z-index:2147483010;display:flex;align-items:center;justify-content:center;',
-            'background:rgba(15,23,42,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);',
-            'opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s;padding:1rem;',
-            'font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}',
+                'background:rgba(15,23,42,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);',
+                'opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s;padding:1rem;',
+                'font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;}',
             '.aisa-notif-modal.open{opacity:1;visibility:visible;}',
             '.aisa-notif-card{background:#fff;color:#0f172a;border-radius:1.25rem;box-shadow:0 25px 50px -12px rgba(0,0,0,.4);',
-            'width:100%;max-width:560px;max-height:85vh;display:flex;flex-direction:column;',
-            'transform:translateY(8px) scale(.98);transition:transform .25s cubic-bezier(.22,1,.36,1);}',
+                'width:100%;max-width:560px;max-height:85vh;display:flex;flex-direction:column;',
+                'transform:translateY(8px) scale(.98);transition:transform .25s cubic-bezier(.22,1,.36,1);}',
             '.aisa-notif-modal.open .aisa-notif-card{transform:translateY(0) scale(1);}',
             '.aisa-notif-card-head{padding:1.5rem 1.5rem 1rem;border-bottom:1px solid #f1f5f9;position:relative;}',
-            '.aisa-notif-card-head .close{position:absolute;top:.75rem;right:.75rem;background:transparent;border:none;cursor:pointer;',
-            'color:#94a3b8;font-size:1.5rem;line-height:1;width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;',
-            'border-radius:.5rem;}',
+            '.aisa-notif-card-head .close{position:absolute;top:.85rem;right:.85rem;background:transparent;border:none;cursor:pointer;',
+                'color:#94a3b8;font-size:1.5rem;line-height:1;width:2rem;height:2rem;display:flex;align-items:center;justify-content:center;',
+                'border-radius:.5rem;}',
             '.aisa-notif-card-head .close:hover{background:#f1f5f9;color:#0f172a;}',
             '.aisa-notif-card-head .badge{display:inline-block;background:#fef3c7;color:#92400e;font-size:.65rem;',
-            'font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:.2rem .6rem;border-radius:9999px;margin-bottom:.6rem;}',
+                'font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:.2rem .6rem;border-radius:9999px;margin-bottom:.6rem;}',
             '.aisa-notif-card-head h2{font-size:1.35rem;font-weight:800;color:#0f172a;margin:0 2rem .25rem 0;line-height:1.25;}',
             '.aisa-notif-card-head .meta{font-size:.8rem;color:#64748b;}',
             '.aisa-notif-card-body{padding:1.25rem 1.5rem 1.5rem;overflow-y:auto;flex:1;font-size:.95rem;color:#334155;line-height:1.6;white-space:normal;word-break:break-word;}',
-            '.aisa-notif-card-body p{margin:0 0 .75em;}',
 
-            /* Link styling (used in panel preview AND in modal) */
             '.aisa-rt-link{color:#4f46e5;text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1.5px;}',
             '.aisa-rt-link:hover{color:#312e81;}',
 
-            /* Small screens */
+            /* === Responsive === */
+            '@media (max-width:640px){',
+                '.aisa-topbar-inner{padding:0 .5rem;}',
+                '.aisa-tb-btn{width:2.4rem;height:2.4rem;border-radius:.6rem;}',
+                '.aisa-tb-btn svg{width:1.2rem;height:1.2rem;}',
+                '.aisa-topbar-brand .wm{display:none;}',
+                '.aisa-topbar-brand img{width:1.85rem;height:1.85rem;}',
+            '}',
+            '@media (max-width:380px){',
+                '.aisa-topbar-actions{gap:0;}',
+                '.aisa-tb-btn{width:2.15rem;height:2.15rem;}',
+            '}',
             '@media (max-width:480px){',
-                '.aisa-bell-panel{left:.5rem;right:.5rem;width:auto;max-width:none;}',
+                '.aisa-bell-panel{left:.5rem!important;right:.5rem;width:auto;max-width:none;}',
                 '.aisa-notif-card{max-height:90vh;border-radius:1rem;}',
+                '.aisa-search-overlay{padding:1rem 0.5rem 0.5rem;align-items:flex-start;}',
             '}',
 
-            '@media print{.aisa-menu-toggle,.aisa-bell-toggle,.aisa-menu-backdrop,.aisa-menu-drawer,.aisa-bell-panel,.aisa-notif-modal{display:none!important;}}'
+            '@media print{.aisa-topbar,.aisa-menu-backdrop,.aisa-menu-drawer,.aisa-bell-panel,.aisa-notif-modal,.aisa-search-overlay{display:none!important;}body{padding-top:0!important;}}'
         ].join('');
         document.head.appendChild(s);
     }
 
-    /* -------- build -------- */
+    /* -------- build the topbar -------- */
 
     function build() {
         if (built) return;
         built = true;
         injectStyles();
 
-        /* Hamburger */
-        var toggle = document.createElement('button');
-        toggle.className = 'aisa-menu-toggle';
-        toggle.type = 'button';
-        toggle.setAttribute('aria-label', 'Open menu');
-        toggle.innerHTML = '<span></span><span></span><span></span>';
+        var bar = document.createElement('header');
+        bar.className = 'aisa-topbar';
+        bar.setAttribute('role', 'banner');
 
-        /* Bell */
-        var bell = document.createElement('button');
-        bell.className = 'aisa-bell-toggle';
-        bell.type = 'button';
-        bell.setAttribute('aria-label', 'Open notifications');
-        bell.innerHTML =
-            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">' +
-                '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/>' +
-            '</svg>' +
-            '<b class="aisa-menu-badge" aria-hidden="true"></b>';
+        bar.innerHTML =
+            '<div class="aisa-topbar-inner">' +
+                '<div class="aisa-topbar-actions">' +
+                    '<button class="aisa-tb-btn aisa-tb-back" type="button" aria-label="Back">' + ICONS.back + '</button>' +
+                    '<button class="aisa-tb-btn aisa-tb-home" type="button" aria-label="Home">' + ICONS.home + '</button>' +
+                    '<button class="aisa-tb-btn aisa-tb-menu" type="button" aria-label="Open menu">' + ICONS.menu + '</button>' +
+                    '<button class="aisa-tb-btn aisa-tb-bell" type="button" aria-label="Notifications">' +
+                        ICONS.bell + '<b class="aisa-tb-badge" aria-hidden="true"></b>' +
+                    '</button>' +
+                    '<button class="aisa-tb-btn aisa-tb-search" type="button" aria-label="Search">' + ICONS.search + '</button>' +
+                '</div>' +
+                '<a class="aisa-topbar-brand" href="' + rootUrl('index.html') + '" aria-label="AISA Learning Hub home">' +
+                    '<img src="' + rootUrl('AISA_logo.png') + '" alt="AISA" ' +
+                        'onerror="this.style.display=\'none\';">' +
+                    '<span class="wm">AISA<small>Learning Hub</small></span>' +
+                '</a>' +
+            '</div>';
 
-        /* Drawer backdrop + drawer */
+        document.body.appendChild(bar);
+
+        /* Drawer */
         var backdrop = document.createElement('div');
         backdrop.className = 'aisa-menu-backdrop';
 
@@ -304,12 +431,10 @@
             '</div>' +
             '<ul class="aisa-menu-list">' + linksHtml + adminHtml + '</ul>' +
             '<div class="aisa-menu-foot">' +
-                '<button type="button" class="aisa-menu-signout">' +
-                    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>' +
-                    'Sign out</button>' +
+                '<button type="button" class="aisa-menu-signout">' + ICONS.signout + 'Sign out</button>' +
             '</div>';
 
-        /* Bell dropdown */
+        /* Bell panel */
         var panel = document.createElement('div');
         panel.className = 'aisa-bell-panel';
         panel.setAttribute('role', 'dialog');
@@ -321,29 +446,61 @@
             '</div>' +
             '<div class="aisa-bell-list"></div>';
 
-        document.body.appendChild(toggle);
-        document.body.appendChild(bell);
+        /* Search overlay */
+        var search = document.createElement('div');
+        search.className = 'aisa-search-overlay';
+        search.setAttribute('role', 'dialog');
+        search.setAttribute('aria-label', 'Search the Learning Hub');
+        search.innerHTML =
+            '<div class="aisa-search-card">' +
+                '<div class="aisa-search-inputrow">' + ICONS.search +
+                    '<input class="aisa-search-input" type="search" placeholder="Search modules, pages, and resources…" autocomplete="off" spellcheck="false">' +
+                    '<span class="aisa-search-kbd">Esc</span>' +
+                '</div>' +
+                '<div class="aisa-search-results"></div>' +
+            '</div>';
+
         document.body.appendChild(backdrop);
         document.body.appendChild(drawer);
         document.body.appendChild(panel);
+        document.body.appendChild(search);
 
-        refs.toggle      = toggle;
-        refs.bell        = bell;
+        refs.bar         = bar;
         refs.backdrop    = backdrop;
         refs.drawer      = drawer;
         refs.panel       = panel;
-        refs.bellBadge   = bell.querySelector('.aisa-menu-badge');
+        refs.search      = search;
+        refs.btnBack     = bar.querySelector('.aisa-tb-back');
+        refs.btnHome     = bar.querySelector('.aisa-tb-home');
+        refs.btnMenu     = bar.querySelector('.aisa-tb-menu');
+        refs.btnBell     = bar.querySelector('.aisa-tb-bell');
+        refs.btnSearch   = bar.querySelector('.aisa-tb-search');
+        refs.bellBadge   = bar.querySelector('.aisa-tb-badge');
         refs.bellList    = panel.querySelector('.aisa-bell-list');
         refs.bellMarkAll = panel.querySelector('.aisa-bell-markall');
         refs.name        = drawer.querySelector('.who .name');
         refs.email       = drawer.querySelector('.who .email');
+        refs.searchInput = search.querySelector('.aisa-search-input');
+        refs.searchResults = search.querySelector('.aisa-search-results');
+
+        /* --- Back button --- */
+        if (window.history.length <= 1) {
+            refs.btnBack.disabled = true;
+            refs.btnBack.setAttribute('aria-disabled', 'true');
+        }
+        refs.btnBack.addEventListener('click', function () {
+            if (window.history.length > 1) window.history.back();
+        });
+
+        /* --- Home button --- */
+        refs.btnHome.addEventListener('click', function () { window.location.href = rootUrl('index.html'); });
 
         /* --- Drawer behaviour --- */
-        function drawerOpen()  { closePanel(); toggle.classList.add('open'); backdrop.classList.add('open'); drawer.classList.add('open'); toggle.setAttribute('aria-label', 'Close menu'); }
-        function drawerClose() { toggle.classList.remove('open'); backdrop.classList.remove('open'); drawer.classList.remove('open'); toggle.setAttribute('aria-label', 'Open menu'); }
+        function drawerOpen()  { closePanel(); closeSearch(); refs.btnMenu.classList.add('open'); backdrop.classList.add('open'); drawer.classList.add('open'); refs.btnMenu.setAttribute('aria-label', 'Close menu'); }
+        function drawerClose() { refs.btnMenu.classList.remove('open'); backdrop.classList.remove('open'); drawer.classList.remove('open'); refs.btnMenu.setAttribute('aria-label', 'Open menu'); }
         function drawerIsOpen() { return drawer.classList.contains('open'); }
 
-        toggle.addEventListener('click', function () { drawerIsOpen() ? drawerClose() : drawerOpen(); });
+        refs.btnMenu.addEventListener('click', function () { drawerIsOpen() ? drawerClose() : drawerOpen(); });
         backdrop.addEventListener('click', drawerClose);
 
         drawer.querySelector('.aisa-menu-signout').addEventListener('click', function () {
@@ -354,32 +511,73 @@
             }
         });
 
-        /* --- Bell behaviour --- */
-        function openPanel()  { drawerClose(); panel.classList.add('open'); bell.setAttribute('aria-label', 'Close notifications'); }
-        function closePanel() { panel.classList.remove('open'); bell.setAttribute('aria-label', 'Open notifications'); }
+        /* --- Bell panel --- */
+        function openPanel() {
+            drawerClose(); closeSearch();
+            /* Position the panel under the bell button. */
+            var rect = refs.btnBell.getBoundingClientRect();
+            panel.style.left = Math.max(8, rect.left) + 'px';
+            panel.classList.add('open');
+            refs.btnBell.setAttribute('aria-label', 'Close notifications');
+        }
+        function closePanel() { panel.classList.remove('open'); refs.btnBell.setAttribute('aria-label', 'Notifications'); }
         function panelIsOpen() { return panel.classList.contains('open'); }
 
-        bell.addEventListener('click', function (e) {
+        refs.btnBell.addEventListener('click', function (e) {
             e.stopPropagation();
             panelIsOpen() ? closePanel() : openPanel();
         });
-        /* Click outside closes the panel; clicks inside the panel itself
-         * (or on the bell) are filtered out by stopPropagation/contains. */
         document.addEventListener('click', function (e) {
             if (!panelIsOpen()) return;
-            if (panel.contains(e.target) || bell.contains(e.target)) return;
+            if (panel.contains(e.target) || refs.btnBell.contains(e.target)) return;
             closePanel();
         });
-
         refs.bellMarkAll.addEventListener('click', markAllRead);
 
-        /* Global escape closes whichever is open. */
+        /* --- Search overlay --- */
+        function openSearch() {
+            drawerClose(); closePanel();
+            search.classList.add('open');
+            refs.searchInput.value = '';
+            renderSearchResults('');
+            /* Defer focus so the transition fires first. */
+            setTimeout(function () { refs.searchInput.focus(); }, 30);
+        }
+        function closeSearch() { search.classList.remove('open'); }
+        function searchIsOpen() { return search.classList.contains('open'); }
+
+        refs.btnSearch.addEventListener('click', openSearch);
+        refs.searchInput.addEventListener('input', function () { renderSearchResults(refs.searchInput.value); });
+        refs.searchInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') {
+                var first = refs.searchResults.querySelector('.aisa-search-result');
+                if (first) first.click();
+            } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                moveSearchHighlight(e.key === 'ArrowDown' ? 1 : -1);
+            }
+        });
+        search.addEventListener('click', function (e) { if (e.target === search) closeSearch(); });
+
+        /* Global keyboard shortcuts. */
         document.addEventListener('keydown', function (e) {
+            /* Cmd/Ctrl-K opens search from anywhere. */
+            if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+                e.preventDefault();
+                searchIsOpen() ? closeSearch() : openSearch();
+                return;
+            }
             if (e.key !== 'Escape') return;
             if (refs.openModal) { closeNotificationModal(); return; }
+            if (searchIsOpen()) { closeSearch(); return; }
             if (panelIsOpen())  { closePanel();  return; }
             if (drawerIsOpen()) { drawerClose(); return; }
         });
+
+        /* Expose closers for internal cross-calls. */
+        refs._closeDrawer = drawerClose;
+        refs._closePanel  = closePanel;
+        refs._closeSearch = closeSearch;
 
         fillUser();
     }
@@ -400,23 +598,85 @@
             if (!window.aisaAuth || typeof window.aisaAuth.isAdmin !== 'function') return;
             window.aisaAuth.isAdmin().then(function (yes) {
                 if (!yes) return;
+                isAdminUser = true;
                 var item = refs.drawer && refs.drawer.querySelector('.aisa-menu-admin-item');
                 if (item) item.style.display = '';
+                /* If the search overlay happens to be open right now, re-render
+                 * so the admin destinations appear without re-typing. */
+                if (refs.search && refs.search.classList.contains('open')) {
+                    renderSearchResults(refs.searchInput ? refs.searchInput.value : '');
+                }
             }).catch(function () {});
         } catch (e) {}
     }
 
-    /* -------- Notifications: bell list, modal, badge -------- */
+    /* -------- search -------- */
+
+    function renderSearchResults(query) {
+        var q = (query || '').trim().toLowerCase();
+        /* Hide admin-only destinations from non-admins. */
+        var visible = SEARCH_INDEX.filter(function (it) { return isAdminUser || !it.adminOnly; });
+        var items;
+        if (!q) {
+            /* Empty query: show top destinations as a quick-launcher. */
+            items = visible.slice(0, 8);
+        } else {
+            items = visible
+                .map(function (it) {
+                    var hay = (it.title + ' ' + (it.desc || '') + ' ' + (it.tag || '')).toLowerCase();
+                    if (hay.indexOf(q) === -1) return null;
+                    /* Score: title match beats desc match. */
+                    var score = it.title.toLowerCase().indexOf(q);
+                    return { it: it, score: score === -1 ? 1000 : score };
+                })
+                .filter(Boolean)
+                .sort(function (a, b) { return a.score - b.score; })
+                .map(function (x) { return x.it; });
+        }
+        if (!items.length) {
+            refs.searchResults.innerHTML = '<div class="aisa-search-empty">No results for &ldquo;' + escapeHtml(query) + '&rdquo;.</div>';
+            return;
+        }
+        refs.searchResults.innerHTML = items.map(function (it, ix) {
+            return '<button class="aisa-search-result' + (ix === 0 ? ' active' : '') + '" type="button" data-href="' + escapeHtml(rootUrl(it.href)) + '">' +
+                '<span class="ic">' + (it.icon || '\u{2728}') + '</span>' +
+                '<span class="body">' +
+                    '<span class="tt">' + escapeHtml(it.title) + '</span>' +
+                    '<span class="dd">' + escapeHtml(it.desc || '') + '</span>' +
+                '</span>' +
+                '<span class="tag">' + escapeHtml(it.tag || '') + '</span>' +
+            '</button>';
+        }).join('');
+
+        refs.searchResults.querySelectorAll('.aisa-search-result').forEach(function (el) {
+            el.addEventListener('click', function () { window.location.href = el.getAttribute('data-href'); });
+            el.addEventListener('mouseenter', function () {
+                refs.searchResults.querySelectorAll('.aisa-search-result.active').forEach(function (a) { a.classList.remove('active'); });
+                el.classList.add('active');
+            });
+        });
+    }
+
+    function moveSearchHighlight(dir) {
+        var all = Array.prototype.slice.call(refs.searchResults.querySelectorAll('.aisa-search-result'));
+        if (!all.length) return;
+        var idx = all.findIndex(function (el) { return el.classList.contains('active'); });
+        if (idx === -1) idx = 0;
+        idx = Math.max(0, Math.min(all.length - 1, idx + dir));
+        all.forEach(function (el) { el.classList.remove('active'); });
+        all[idx].classList.add('active');
+        all[idx].scrollIntoView({ block: 'nearest' });
+    }
+
+    /* -------- Notifications -------- */
 
     function updateBadge(count) {
-        if (!refs.bellBadge || !refs.bell) return;
+        if (!refs.bellBadge) return;
         if (count > 0) {
             refs.bellBadge.textContent = count > 9 ? '9+' : String(count);
             refs.bellBadge.classList.add('show');
-            refs.bell.classList.add('has-unread');
         } else {
             refs.bellBadge.classList.remove('show');
-            refs.bell.classList.remove('has-unread');
         }
     }
 
@@ -450,7 +710,6 @@
             el.addEventListener('click', function () {
                 var idx = parseInt(el.getAttribute('data-idx'), 10);
                 openNotificationModal(notifications[idx]);
-                /* Mark read locally + server-side. */
                 if (!notifications[idx].read) {
                     notifications[idx].read = true;
                     el.classList.remove('unread');
@@ -477,7 +736,6 @@
     function openNotificationModal(n) {
         if (!n) return;
         closeNotificationModal();
-        /* Hide the panel — the modal takes over the focus. */
         if (refs.panel) refs.panel.classList.remove('open');
 
         var modal = document.createElement('div');
@@ -497,7 +755,6 @@
                 '</div>' +
             '</div>';
         document.body.appendChild(modal);
-        /* Force a reflow so the .open transition triggers. */
         void modal.offsetWidth;
         modal.classList.add('open');
 
@@ -513,7 +770,6 @@
         if (!m) return;
         m.classList.remove('open');
         refs.openModal = null;
-        /* Wait for transition before removing. */
         setTimeout(function () { if (m.parentNode) m.parentNode.removeChild(m); }, 220);
     }
 
