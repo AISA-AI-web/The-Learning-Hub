@@ -39,11 +39,16 @@ const NOTIF_READS_SHEET      = 'notification_reads';
 const SESSION_DURATION_DAYS  = 365;
 
 const NOTIF_HEADERS = [
-  'id', 'created_at_iso', 'author_email', 'author_name', 'title', 'body', 'active'
+  'id', 'created_at_iso', 'author_email', 'author_name',
+  'title', 'body',
+  'target_tags',    // comma-separated; empty = no tag filter
+  'target_emails',  // comma-separated; empty = no email filter
+  'active'          // false to soft-delete
 ];
 const NOTIF_READ_HEADERS = [
   'notification_id', 'email', 'read_at_iso'
 ];
+const ROSTER_HEADERS = ['email', 'name', 'tags'];  // tags = comma-separated
 
 const EVENT_HEADERS = [
   'timestamp_iso', 'email', 'name', 'module_id', 'event',
@@ -137,6 +142,9 @@ function doPost(e) {
       case 'admin_notification_stats':
         if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
         return jsonOut(adminNotificationStats());
+      case 'admin_list_tags':
+        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
+        return jsonOut(adminListTags());
 
       case 'sign_out':
         revokeSession(body.session_token);
@@ -506,6 +514,60 @@ function adminOverview() {
   };
 }
 
+// ---------- Roster (email → tags lookup) ----------
+
+/**
+ * The `roster` tab is the source of truth for staff tags. Columns:
+ *   email | name | tags
+ * Where `tags` is a comma-separated list (e.g. "elementary,grade-4,math").
+ * Admins manage tags directly in the Sheet — no code change needed.
+ *
+ * Note: the same tab is also consumed by adminOverview() to surface
+ * staff who haven't signed in yet. Both readers must tolerate the tab
+ * being absent.
+ */
+function _parseList(v) {
+  return String(v == null ? '' : v)
+    .split(',')
+    .map(function (s) { return s.trim().toLowerCase(); })
+    .filter(function (s) { return !!s; });
+}
+
+function getRosterIndex() {
+  // Returns { byEmail: { emailLower: { email, name, tags:[...] } }, allTags: [sorted unique] }
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const sheet = ss.getSheetByName(ROSTER_SHEET);
+  const result = { byEmail: {}, allTags: [] };
+  if (!sheet) return result;
+  const last = sheet.getLastRow();
+  if (last < 2) return result;
+  // Read at most ROSTER_HEADERS.length columns; tolerate older sheets
+  // with only [email, name].
+  const width = Math.min(sheet.getLastColumn(), ROSTER_HEADERS.length);
+  const rows = sheet.getRange(2, 1, last - 1, width).getValues();
+  const tagSet = {};
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const email = String(row[0] || '').trim().toLowerCase();
+    if (!email) continue;
+    const tags = _parseList(row[2]);
+    result.byEmail[email] = {
+      email: email,
+      name:  String(row[1] || ''),
+      tags:  tags
+    };
+    for (let j = 0; j < tags.length; j++) tagSet[tags[j]] = true;
+  }
+  result.allTags = Object.keys(tagSet).sort();
+  return result;
+}
+
+function getTagsForEmail(email) {
+  const idx = getRosterIndex();
+  const entry = idx.byEmail[String(email || '').trim().toLowerCase()];
+  return entry ? entry.tags : [];
+}
+
 // ---------- Notifications ----------
 
 function getNotifsSheet() {
@@ -538,26 +600,59 @@ function isActiveFlag(v) {
   return !(s === 'false' || s === 'no' || s === '0');
 }
 
-/** All active notifications, newest first, raw rows as objects. */
+/** All active notifications, newest first. Tolerant of older row widths
+ *  (pre-targeting). Each notification carries its target_tags and
+ *  target_emails arrays so callers can decide who receives it. */
 function readActiveNotifications() {
   const sheet = getNotifsSheet();
   const last = sheet.getLastRow();
   if (last < 2) return [];
-  const rows = sheet.getRange(2, 1, last - 1, NOTIF_HEADERS.length).getValues();
+  // Read whatever the sheet has — never wider than NOTIF_HEADERS, but it
+  // may be narrower if the sheet predates the targeting columns.
+  const width = Math.min(sheet.getLastColumn(), NOTIF_HEADERS.length);
+  const rows = sheet.getRange(2, 1, last - 1, width).getValues();
+  const i_id    = NOTIF_HEADERS.indexOf('id');
+  const i_ts    = NOTIF_HEADERS.indexOf('created_at_iso');
+  const i_name  = NOTIF_HEADERS.indexOf('author_name');
+  const i_title = NOTIF_HEADERS.indexOf('title');
+  const i_body  = NOTIF_HEADERS.indexOf('body');
+  const i_tags  = NOTIF_HEADERS.indexOf('target_tags');
+  const i_em    = NOTIF_HEADERS.indexOf('target_emails');
+  const i_act   = NOTIF_HEADERS.indexOf('active');
   const out = [];
   for (let i = 0; i < rows.length; i++) {
     const r = rows[i];
-    if (!isActiveFlag(r[6])) continue;
+    // Active flag lives at the rightmost present column on legacy rows;
+    // fall back to it if we read fewer columns than NOTIF_HEADERS.
+    const activeVal = (i_act < width) ? r[i_act] : r[r.length - 1];
+    if (!isActiveFlag(activeVal)) continue;
     out.push({
-      id:          String(r[0]),
-      created_at:  String(r[1]),
-      author_name: String(r[3] || ''),
-      title:       String(r[4] || ''),
-      body:        String(r[5] || '')
+      id:            String(r[i_id]),
+      created_at:    String(r[i_ts]),
+      author_name:   String(r[i_name] || ''),
+      title:         String(r[i_title] || ''),
+      body:          String(r[i_body] || ''),
+      target_tags:   _parseList(i_tags < width ? r[i_tags] : ''),
+      target_emails: _parseList(i_em   < width ? r[i_em]   : '')
     });
   }
   out.sort(function (a, b) { return a.created_at < b.created_at ? 1 : -1; });
   return out;
+}
+
+/** True if `email` should see notification `n` given its targeting. */
+function userReceivesNotification(email, n, userTags) {
+  // Broadcast: no targeting set → everyone gets it.
+  if (!n.target_tags.length && !n.target_emails.length) return true;
+  const e = String(email || '').trim().toLowerCase();
+  if (n.target_emails.indexOf(e) !== -1) return true;
+  if (n.target_tags.length) {
+    const tags = userTags || getTagsForEmail(email);
+    for (let i = 0; i < tags.length; i++) {
+      if (n.target_tags.indexOf(tags[i]) !== -1) return true;
+    }
+  }
+  return false;
 }
 
 /** Set of notification ids this email has already read. */
@@ -579,34 +674,45 @@ function readIdsFor(email) {
 function listNotifications(email) {
   const notifs = readActiveNotifications();
   const readSet = readIdsFor(email);
+  const userTags = getTagsForEmail(email);
   let unread = 0;
-  const items = notifs.map(function (n) {
+  const items = [];
+  for (let i = 0; i < notifs.length; i++) {
+    const n = notifs[i];
+    if (!userReceivesNotification(email, n, userTags)) continue;
     const read = !!readSet[n.id];
     if (!read) unread++;
-    return {
+    items.push({
       id: n.id, created_at: n.created_at, author_name: n.author_name,
       title: n.title, body: n.body, read: read
-    };
-  });
+    });
+  }
   return { ok: true, notifications: items, unread: unread };
 }
 
 function postNotification(claims, body) {
-  const title = String(body.title || '').slice(0, 200).trim();
-  const text  = String(body.body  || '').slice(0, 4000).trim();
+  const title         = String(body.title || '').slice(0, 200).trim();
+  const text          = String(body.body  || '').slice(0, 4000).trim();
+  const target_tags   = _parseList(body.target_tags).slice(0, 50);
+  const target_emails = _parseList(body.target_emails).slice(0, 200);
   if (!title && !text) return { ok: false, error: 'empty_notification' };
 
   const id = 'n_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
-  getNotifsSheet().appendRow([
-    id,
-    new Date().toISOString(),
-    claims.email,
-    claims.name || '',
-    title,
-    text,
-    true
-  ]);
-  return { ok: true, id: id };
+  const row = new Array(NOTIF_HEADERS.length).fill('');
+  row[NOTIF_HEADERS.indexOf('id')]             = id;
+  row[NOTIF_HEADERS.indexOf('created_at_iso')] = new Date().toISOString();
+  row[NOTIF_HEADERS.indexOf('author_email')]   = claims.email;
+  row[NOTIF_HEADERS.indexOf('author_name')]    = claims.name || '';
+  row[NOTIF_HEADERS.indexOf('title')]          = title;
+  row[NOTIF_HEADERS.indexOf('body')]           = text;
+  row[NOTIF_HEADERS.indexOf('target_tags')]    = target_tags.join(',');
+  row[NOTIF_HEADERS.indexOf('target_emails')]  = target_emails.join(',');
+  row[NOTIF_HEADERS.indexOf('active')]         = true;
+  getNotifsSheet().appendRow(row);
+  return {
+    ok: true, id: id,
+    target_tags: target_tags, target_emails: target_emails
+  };
 }
 
 function markNotificationRead(claims, body) {
@@ -619,13 +725,19 @@ function markNotificationRead(claims, body) {
 }
 
 function markAllNotificationsRead(claims) {
+  // Only auto-mark the ones the user is actually a recipient of, so the
+  // user's read history doesn't get polluted with notifications they
+  // never had access to.
   const notifs = readActiveNotifications();
   const readSet = readIdsFor(claims.email);
+  const userTags = getTagsForEmail(claims.email);
   const sheet = getNotifReadsSheet();
   const now = new Date().toISOString();
   const toAdd = [];
   for (let i = 0; i < notifs.length; i++) {
-    if (!readSet[notifs[i].id]) toAdd.push([notifs[i].id, claims.email, now]);
+    const n = notifs[i];
+    if (!userReceivesNotification(claims.email, n, userTags)) continue;
+    if (!readSet[n.id]) toAdd.push([n.id, claims.email, now]);
   }
   if (toAdd.length) {
     sheet.getRange(sheet.getLastRow() + 1, 1, toAdd.length, NOTIF_READ_HEADERS.length).setValues(toAdd);
@@ -650,9 +762,12 @@ function deleteNotification(body) {
   return { ok: true };
 }
 
-/** Admin view: each active notification plus how many staff have read it. */
+/** Admin view: each active notification with targeting info, the number
+ *  of people the targeting resolves to, and how many have read it. */
 function adminNotificationStats() {
   const notifs = readActiveNotifications();
+  const roster = getRosterIndex();
+
   // Count reads per notification id in one pass.
   const reads = getNotifReadsSheet();
   const last = reads.getLastRow();
@@ -664,11 +779,51 @@ function adminNotificationStats() {
       counts[id] = (counts[id] || 0) + 1;
     }
   }
+
+  // Total "audience" for a broadcast (no targeting). We use the
+  // adminOverview people list — every signed-in user union the roster.
+  // Computing it on every call is fine at this scale.
+  const overviewPeople = adminOverview().people || [];
+  const totalAudience = overviewPeople.length;
+
+  function resolveAudience(n) {
+    if (!n.target_tags.length && !n.target_emails.length) return totalAudience;
+    const matched = {};
+    // Match by email
+    for (let i = 0; i < n.target_emails.length; i++) matched[n.target_emails[i]] = true;
+    // Match by tag (against roster)
+    if (n.target_tags.length) {
+      const tagSet = {};
+      n.target_tags.forEach(function (t) { tagSet[t] = true; });
+      const byEmail = roster.byEmail;
+      Object.keys(byEmail).forEach(function (email) {
+        if (matched[email]) return;
+        const tags = byEmail[email].tags || [];
+        for (let j = 0; j < tags.length; j++) {
+          if (tagSet[tags[j]]) { matched[email] = true; return; }
+        }
+      });
+    }
+    return Object.keys(matched).length;
+  }
+
   const items = notifs.map(function (n) {
-    n.read_count = counts[n.id] || 0;
+    n.read_count     = counts[n.id] || 0;
+    n.recipient_count = resolveAudience(n);
     return n;
   });
-  return { ok: true, notifications: items, generated_at: new Date().toISOString() };
+  return {
+    ok: true,
+    notifications: items,
+    generated_at: new Date().toISOString()
+  };
+}
+
+/** Admin view: the union of tags currently in the roster, so the
+ *  compose UI can show pickable chips. */
+function adminListTags() {
+  const roster = getRosterIndex();
+  return { ok: true, tags: roster.allTags };
 }
 
 // ---------- Output ----------
