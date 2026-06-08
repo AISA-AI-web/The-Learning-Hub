@@ -422,10 +422,20 @@
                 '<span>' + l.label + '</span></a></li>';
         }).join('');
 
-        var adminHtml = '<li class="aisa-menu-admin-item" style="display:none;">' +
-            '<a href="' + rootUrl('admin-dashboard.html') + '">' +
-                '<span class="ico" aria-hidden="true">\u{1F6E1}️</span>' +
-                '<span>Admin Dashboard</span></a></li>';
+        /* Admin-only menu items. Hidden by default; revealed once
+         * window.aisaAuth.isAdmin() resolves true. The per-page admin
+         * headers used to host these links, but the global app-bar
+         * hides those headers — so the drawer is now the canonical
+         * entry-point for every admin destination. */
+        var adminHtml =
+            '<li class="aisa-menu-admin-item" style="display:none;">' +
+                '<a href="' + rootUrl('admin-dashboard.html') + '">' +
+                    '<span class="ico" aria-hidden="true">\u{1F6E1}️</span>' +
+                    '<span>Admin Dashboard</span></a></li>' +
+            '<li class="aisa-menu-admin-item" style="display:none;">' +
+                '<a href="' + rootUrl('admin-notifications.html') + '">' +
+                    '<span class="ico" aria-hidden="true">\u{1F4E2}</span>' +
+                    '<span>Send Notifications</span></a></li>';
 
         drawer.innerHTML =
             '<div class="aisa-menu-head">' +
@@ -617,8 +627,8 @@
             window.aisaAuth.isAdmin().then(function (yes) {
                 if (!yes) return;
                 isAdminUser = true;
-                var item = refs.drawer && refs.drawer.querySelector('.aisa-menu-admin-item');
-                if (item) item.style.display = '';
+                var items = refs.drawer ? refs.drawer.querySelectorAll('.aisa-menu-admin-item') : [];
+                items.forEach(function (li) { li.style.display = ''; });
                 /* If the search overlay happens to be open right now, re-render
                  * so the admin destinations appear without re-typing. */
                 if (refs.search && refs.search.classList.contains('open')) {
