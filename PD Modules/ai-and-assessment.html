@@ -96,15 +96,65 @@
             background: linear-gradient(135deg, #c026d3 0%, #e11d48 50%, #f59e0b 100%);
             color: white;
             box-shadow: 0 8px 20px -6px rgba(192, 38, 211, 0.45);
-            transform: translateY(-1px);
         }
         .module-panel { display: none; }
         .module-panel.is-active { display: block; animation: fadeIn 0.35s ease; }
 
+        /* ---- Left module sidebar (converted from the old top tab bar) ---- */
+        .aia-course-grid {
+            display: grid;
+            grid-template-columns: 280px minmax(0, 1fr);
+            gap: 2rem;
+            align-items: start;
+        }
         .module-tabs-bar {
             position: sticky;
             top: 5rem;
             z-index: 40;
+        }
+        .module-tabs-bar [role="tablist"] {
+            flex-direction: column;
+            overflow: visible;
+            gap: 0.25rem;
+        }
+        .aia-sidebar-heading {
+            font-size: 0.7rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            padding: 0.35rem 0.5rem 0.75rem;
+            border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 0.25rem;
+        }
+        .module-tab {
+            width: 100%;
+            justify-content: flex-start;
+            position: relative;
+        }
+        /* Green check pinned to the right edge once a module is complete. */
+        .module-tab.is-complete::after {
+            content: '';
+            margin-left: auto;
+            width: 1.15rem;
+            height: 1.15rem;
+            border-radius: 9999px;
+            background-color: #10b981;
+            flex-shrink: 0;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E");
+            background-size: 0.7rem;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .module-tab.is-complete[aria-selected="false"] {
+            border-color: #a7f3d0;
+            background: #f0fdf4;
+        }
+        @media (max-width: 900px) {
+            .aia-course-grid { grid-template-columns: 1fr; }
+            .module-tabs-bar { position: static; }
+            .module-tabs-bar [role="tablist"] { flex-direction: row; overflow-x: auto; }
+            .module-tab { width: auto; }
         }
 
         .light-card { transition: transform 0.25s ease, box-shadow 0.25s ease; }
@@ -138,7 +188,7 @@
             .module-panel { display: block !important; page-break-before: always; }
         }
     </style>
-    <script src="../auth/gate.js?v=7"></script>
+    <script src="../auth/gate.js?v=8"></script>
 </head>
 <body class="bg-dot-pattern text-slate-800 antialiased selection:bg-assess selection:text-white pb-20 overflow-x-hidden">
 
@@ -238,10 +288,11 @@
     </section>
 
     <!-- COURSE CONTENT BLOCK WILL BE INSERTED BELOW -->
-    <section id="course-content" class="max-w-7xl mx-auto px-6 relative">
-        <!-- Sticky Module Tabs -->
+    <section id="course-content" class="max-w-7xl mx-auto px-6 relative aia-course-grid">
+        <!-- Module sidebar (left) -->
         <div class="module-tabs-bar mb-8 no-print">
             <div class="bg-white/90 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-lg p-2 flex gap-1.5 overflow-x-auto" role="tablist" aria-label="Module navigation">
+                <div class="aia-sidebar-heading">Modules</div>
                 <button class="module-tab bg-white border border-slate-200 text-slate-700 font-bold px-4 py-3 rounded-xl text-xs sm:text-sm flex items-center gap-2" data-module="1" aria-selected="true" onclick="switchModule(1)">
                     <span class="w-6 h-6 rounded-lg bg-fuchsia-100 text-fuchsia-700 flex items-center justify-center font-black text-xs flex-shrink-0">1</span>
                     <span>Set the Rules</span>
@@ -272,6 +323,7 @@
                 </button>
             </div>
         </div>
+        <div class="aia-course-main">
         <!-- MODULE 1: Setting AI Guidelines -->
         <div class="module-panel is-active" data-module="1"><div class="bg-white/90 backdrop-blur-xl rounded-[2.5rem] p-6 lg:p-12 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white relative group">
             <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-fuchsia-600 to-transparent rounded-t-[2.5rem] opacity-60"></div>
@@ -1144,7 +1196,7 @@
             </div>
         </div></div>
         <!-- Completion Banner -->
-        <div id="completion-banner" class="hidden mt-10 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-[2rem] p-8 text-center shadow-xl no-print">
+        <div id="completion-banner" data-cert-title="Assessment Design in the Age of AI" class="hidden mt-10 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 rounded-[2rem] p-8 text-center shadow-xl no-print">
             <div class="text-4xl mb-2">&#127881;</div>
             <h3 class="font-heading text-2xl font-black text-white mb-1">Module Complete!</h3>
             <p class="text-emerald-50 font-medium">You're ready to redesign your next assessment. Print the cheat sheet and keep it above your desk.</p>
@@ -1157,11 +1209,13 @@
                 Previous
             </button>
             <span id="module-indicator" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Module 1 of 7</span>
-            <button id="next-module" onclick="nextModule()" class="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-fuchsia-600 to-rose-500 rounded-2xl hover:shadow-lg hover:shadow-fuchsia-600/30 transition-all">
-                Next
+            <button id="next-module" onclick="nextModule()" class="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-fuchsia-600 to-rose-500 rounded-2xl hover:shadow-lg hover:shadow-fuchsia-600/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none">
+                <span class="next-label">Next</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </button>
         </div>
+        <p id="module-gate-hint" class="hidden mt-4 text-center text-sm font-semibold text-rose-600 no-print">Answer the knowledge checks correctly to complete this module and continue.</p>
+        </div><!-- /aia-course-main -->
     </section>
 
     <!-- Footer -->
@@ -1205,6 +1259,7 @@
                 const banner = document.getElementById('completion-banner');
                 if (banner) banner.classList.add('hidden');
             }
+            if (typeof syncSidebar === 'function') syncSidebar();
         }
 
         // --- AIAS level tabs ---
@@ -1217,9 +1272,20 @@
             });
         }
 
-        // --- Top-level module tabs ---
+        // --- Top-level module navigation (left sidebar) ---
         const TOTAL_MODULES = 7;
         let currentModule = 1;
+
+        /* Modules that contain a graded assessment. Their completion is
+         * gated on every listed quiz being answered correctly. */
+        const MODULE_QUIZZES = { 6: [1, 2, 3] };
+        const quizCorrect = {};
+
+        function moduleReady(n) {
+            const qs = MODULE_QUIZZES[n];
+            if (!qs) return true;
+            return qs.every(q => quizCorrect[q]);
+        }
 
         function switchModule(n) {
             if (n < 1 || n > TOTAL_MODULES) return;
@@ -1231,15 +1297,62 @@
                 panel.classList.toggle('is-active', Number(panel.dataset.module) === n);
             });
             document.getElementById('prev-module').disabled = (n === 1);
-            document.getElementById('next-module').disabled = (n === TOTAL_MODULES);
             document.getElementById('module-indicator').innerText = 'Module ' + n + ' of ' + TOTAL_MODULES;
+            updateNextButton();
+            syncSidebar();
+            /* Scroll to the start of the module content (just below the
+             * sticky page nav), not the very top of the page. */
             const target = document.getElementById('course-content');
             if (target) {
-                const top = target.getBoundingClientRect().top + window.pageYOffset - 100;
+                const top = target.getBoundingClientRect().top + window.pageYOffset - 90;
                 window.scrollTo({ top: top, behavior: 'smooth' });
             }
         }
-        function nextModule() { switchModule(currentModule + 1); }
+
+        /* Reflect each module's "Mark Complete" checkbox onto the sidebar
+         * tabs as green checks. Runs on every progress change — manual
+         * tick, auto-tick on Next, or backend rehydration on revisit. */
+        function syncSidebar() {
+            document.querySelectorAll('.module-panel').forEach(panel => {
+                const n = panel.dataset.module;
+                const cb = panel.querySelector('.module-checkbox');
+                const tab = document.querySelector('.module-tab[data-module="' + n + '"]');
+                if (tab) tab.classList.toggle('is-complete', !!(cb && cb.checked));
+            });
+        }
+
+        /* Tick the given module's hidden completion checkbox, which fires
+         * updateProgress (progress bar + sidebar) and the backend
+         * recordEvent pipeline wired up in gate.js. */
+        function markModuleComplete(n) {
+            const panel = document.querySelector('.module-panel[data-module="' + n + '"]');
+            if (!panel) return;
+            const cb = panel.querySelector('.module-checkbox');
+            if (cb && !cb.checked) {
+                cb.checked = true;
+                cb.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        }
+
+        /* The Next button doubles as "check off this module". On the last
+         * module it reads Finish; on assessment modules it stays disabled
+         * until the knowledge checks are answered correctly. */
+        function updateNextButton() {
+            const btn = document.getElementById('next-module');
+            if (!btn) return;
+            const label = btn.querySelector('.next-label');
+            const hint = document.getElementById('module-gate-hint');
+            const ready = moduleReady(currentModule);
+            btn.disabled = !ready;
+            if (label) label.textContent = (currentModule === TOTAL_MODULES) ? 'Finish' : 'Next';
+            if (hint) hint.classList.toggle('hidden', ready);
+        }
+
+        function nextModule() {
+            if (!moduleReady(currentModule)) { updateNextButton(); return; }
+            markModuleComplete(currentModule);
+            if (currentModule < TOTAL_MODULES) switchModule(currentModule + 1);
+        }
         function prevModule() { switchModule(currentModule - 1); }
 
         document.addEventListener('keydown', (e) => {
@@ -1250,6 +1363,8 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('prev-module').disabled = true;
+            updateNextButton();
+            syncSidebar();
             loadPlanner();
         });
         // --- Quiz logic ---
@@ -1268,33 +1383,31 @@
         };
 
         function checkAnswer(quizNum, el, isCorrect) {
-            if (quizAnswered[quizNum]) return;
-            quizAnswered[quizNum] = true;
+            if (quizCorrect[quizNum]) return; // already solved — ignore further clicks
             const options = document.querySelectorAll('#quiz-' + quizNum + '-options .quiz-option');
             const feedback = document.getElementById('quiz-' + quizNum + '-feedback');
 
-            options.forEach(opt => {
-                opt.style.pointerEvents = 'none';
-                opt.style.opacity = '0.6';
-            });
-            el.style.opacity = '1';
-            el.classList.add('selected');
-
             if (isCorrect) {
-                el.classList.add('correct');
-                feedback.innerHTML = '<div class="flex items-start gap-2"><span class="text-emerald-600 text-lg mt-0.5">&#10003;</span><span class="text-emerald-800">' + quizExplanations.correct[quizNum] + '</span></div>';
-                feedback.classList.remove('hidden');
-                feedback.classList.add('bg-emerald-50', 'border', 'border-emerald-200');
-            } else {
-                el.classList.add('incorrect');
+                quizCorrect[quizNum] = true;
                 options.forEach(opt => {
-                    if (opt.getAttribute('onclick') && opt.getAttribute('onclick').includes('true')) {
-                        opt.style.opacity = '1';
-                        opt.classList.add('correct');
-                    }
+                    opt.style.pointerEvents = 'none';
+                    if (opt !== el) opt.style.opacity = '0.6';
                 });
-                feedback.innerHTML = '<div class="flex items-start gap-2"><span class="text-rose-600 text-lg mt-0.5">&#10007;</span><span class="text-rose-800">' + quizExplanations.wrong[quizNum] + '</span></div>';
-                feedback.classList.remove('hidden');
+                el.style.opacity = '1';
+                el.classList.add('selected', 'correct');
+                feedback.innerHTML = '<div class="flex items-start gap-2"><span class="text-emerald-600 text-lg mt-0.5">&#10003;</span><span class="text-emerald-800">' + quizExplanations.correct[quizNum] + '</span></div>';
+                feedback.classList.remove('hidden', 'bg-rose-50', 'border-rose-200');
+                feedback.classList.add('bg-emerald-50', 'border', 'border-emerald-200');
+                updateNextButton();
+            } else {
+                /* Wrong answer: lock just this option and invite a retry,
+                 * without revealing the correct choice. The module can't
+                 * be checked off until they actually get it right. */
+                el.classList.add('selected', 'incorrect');
+                el.style.pointerEvents = 'none';
+                el.style.opacity = '0.6';
+                feedback.innerHTML = '<div class="flex items-start gap-2"><span class="text-rose-600 text-lg mt-0.5">&#10007;</span><span class="text-rose-800">' + quizExplanations.wrong[quizNum] + ' <strong>Try another option.</strong></span></div>';
+                feedback.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200');
                 feedback.classList.add('bg-rose-50', 'border', 'border-rose-200');
             }
         }

@@ -9,11 +9,17 @@
 /* ------------ Layout ------------ */
 .aisa-train-layout {
     display: grid;
-    grid-template-columns: 290px minmax(0, 1fr);
+    grid-template-columns: 280px minmax(0, 1fr);
     gap: 2rem;
     align-items: start;
-    max-width: 1220px;
-    margin: 0 auto;
+}
+/* When training manages the page, widen the module's own (narrow,
+ * centered) content wrapper so the chapter sidebar sits near the
+ * page's left gutter instead of floating mid-page with dead space
+ * on the left. 1536px matches the nav's container width, so the
+ * sidebar lines up with the logo. */
+.aisa-train-managed .aisa-train-widthhost {
+    max-width: 1536px;
 }
 @media (max-width: 900px) {
     .aisa-train-layout {

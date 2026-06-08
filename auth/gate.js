@@ -111,17 +111,21 @@
         var s = document.querySelector('script[src*="auth/gate.js"]');
         return s ? s.src : '';
     })();
-    var onboardingLoaded = false;
+    var auxLoaded = false;
     function loadOnboarding() {
-        if (onboardingLoaded) return;
-        onboardingLoaded = true;
+        /* Name kept for back-compat; loads all sibling auth helpers
+         * (first-login tutorial/survey gate + completion certificate). */
+        if (auxLoaded) return;
+        auxLoaded = true;
         if (!GATE_SCRIPT_SRC) return;
-        var url = GATE_SCRIPT_SRC.replace(/gate\.js(\?.*)?$/, 'onboarding.js?v=1');
-        if (url === GATE_SCRIPT_SRC) return;  // pattern didn't match — abort safely
-        var s = document.createElement('script');
-        s.src   = url;
-        s.async = true;
-        document.head.appendChild(s);
+        ['onboarding.js?v=1', 'certificate.js?v=1'].forEach(function (name) {
+            var url = GATE_SCRIPT_SRC.replace(/gate\.js(\?.*)?$/, name);
+            if (url === GATE_SCRIPT_SRC) return;  // pattern didn't match — skip safely
+            var s = document.createElement('script');
+            s.src   = url;
+            s.async = true;
+            document.head.appendChild(s);
+        });
     }
 
     var autoTrackingWired = false;
