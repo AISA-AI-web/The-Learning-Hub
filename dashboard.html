@@ -88,7 +88,14 @@
         </section>
 
         <!-- Modules list -->
-        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">Training Modules</h3>
+        <div class="flex items-baseline justify-between mb-3 px-1">
+            <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">Training Modules</h3>
+            <button id="dash-modules-toggle" type="button"
+                    class="hidden text-xs font-bold text-indigo-700 hover:text-indigo-900 transition-colors">
+                <!-- Label populated by render() so it can flip between
+                     "Show all N modules" and "Show fewer". -->
+            </button>
+        </div>
         <section id="dash-modules" class="grid gap-3 mb-10"></section>
 
         <!-- System items -->
@@ -117,6 +124,9 @@
         ];
         const TOTAL = MODULES.length;
         const RING_CIRCUMFERENCE = 326.7; // 2πr, r=52
+        const PREVIEW_COUNT = 3;          // modules shown before "Show all"
+        let modulesExpanded = false;      // toggled by the Show-all button
+        let lastMap = {};                 // most recent completion map for re-renders
 
         function fmtDate(iso) {
             if (!iso) return '';
@@ -176,9 +186,13 @@
         }
 
         function render(map) {
-            // Modules
+            lastMap = map || {};
+            // Modules — default to the first PREVIEW_COUNT so the
+            // dashboard stays scannable, with a toggle to reveal the rest.
             const modWrap = document.getElementById('dash-modules');
-            modWrap.innerHTML = MODULES.map(m => moduleCard(m, map[m.id])).join('');
+            const toggleBtn = document.getElementById('dash-modules-toggle');
+            const visible = modulesExpanded ? MODULES : MODULES.slice(0, PREVIEW_COUNT);
+            modWrap.innerHTML = visible.map(m => moduleCard(m, map[m.id])).join('');
             modWrap.querySelectorAll('.dash-cert-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const title = decodeURIComponent(btn.getAttribute('data-cert'));
@@ -187,6 +201,18 @@
                     }
                 });
             });
+
+            // Toggle button: show only when there's something hidden.
+            if (toggleBtn) {
+                if (TOTAL > PREVIEW_COUNT) {
+                    toggleBtn.classList.remove('hidden');
+                    toggleBtn.innerHTML = modulesExpanded
+                        ? 'Show fewer <svg class="inline-block w-3.5 h-3.5 ml-0.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>'
+                        : 'Show all ' + TOTAL + ' modules <svg class="inline-block w-3.5 h-3.5 ml-0.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>';
+                } else {
+                    toggleBtn.classList.add('hidden');
+                }
+            }
 
             // System items
             document.getElementById('dash-system').innerHTML =
@@ -219,6 +245,17 @@
 
         // Render an empty state immediately, then hydrate.
         render({});
+
+        // Toggle the modules preview between 3 and the full list.
+        // Re-render against the most recent completion map so badges stay accurate.
+        (function wireToggle() {
+            const toggleBtn = document.getElementById('dash-modules-toggle');
+            if (!toggleBtn) return;
+            toggleBtn.addEventListener('click', () => {
+                modulesExpanded = !modulesExpanded;
+                render(lastMap);
+            });
+        })();
 
         if (window.aisaReady) {
             window.aisaReady(function (auth) {
