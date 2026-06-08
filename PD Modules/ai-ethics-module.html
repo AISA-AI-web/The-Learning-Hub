@@ -66,9 +66,9 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
-    <link rel="stylesheet" href="../auth/training.css?v=2">
-    <script src="../auth/gate.js?v=7"></script>
-    <script src="../auth/training.js?v=2"></script>
+    <link rel="stylesheet" href="../auth/training.css?v=3">
+    <script src="../auth/gate.js?v=8"></script>
+    <script src="../auth/training.js?v=3"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
@@ -114,36 +114,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Hero Section -->
-        <header class="relative py-12 lg:py-16 overflow-hidden rounded-[2rem] bg-white/70 mb-16 border border-white shadow-sm">
-            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-full pointer-events-none opacity-60">
-                <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-emerald-400/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob"></div>
-                <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-cyan-400/30 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" style="animation-delay:2s"></div>
-                <div class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-teal-500/20 rounded-full mix-blend-multiply filter blur-[80px] opacity-70 animate-blob" style="animation-delay:4s"></div>
-            </div>
-            <div class="relative z-10 text-center px-6">
-                <div class="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg mb-6">
-                    <span class="text-4xl">🤖</span>
-                </div>
-                <h2 class="font-heading text-3xl lg:text-4xl font-black text-slate-900 mb-4">Why Does AISA Have an AI Policy?</h2>
-                <p class="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">AI is transforming education. This module will help you understand AISA's vision for responsible AI use, the six guiding principles that govern our approach, and what is expected of you as a professional.</p>
-                <div class="flex flex-wrap justify-center gap-4 mt-8 text-sm font-semibold">
-                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
-                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        ~15 min read
-                    </div>
-                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
-                        <svg class="w-4 h-4 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        3 Knowledge Checks
-                    </div>
-                    <div class="bg-white/80 border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 shadow-sm">
-                        <svg class="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                        Interactive Scenarios
-                    </div>
-                </div>
-            </div>
-        </header>
 
         <!-- ===================== SECTION 1: THE CASE FOR GOVERNANCE ===================== -->
         <div class="timeline-container">
@@ -734,7 +704,7 @@
         </div><!-- end timeline -->
 
         <!-- Completion Banner -->
-        <div id="completion-banner" class="hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
+        <div id="completion-banner" data-cert-title="AI Vision &amp; Ethical Framework" class="hidden bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
             <span class="text-5xl mb-4 block">🎉</span>
             <h3 class="text-2xl font-heading font-black mb-2">Module Complete!</h3>
             <p class="text-emerald-100 max-w-lg mx-auto">You've completed the AISA AI Vision & Ethical Framework training module. Thank you for investing in responsible AI use at AISA.</p>

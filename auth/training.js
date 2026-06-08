@@ -150,10 +150,19 @@
         layout.appendChild(main);
         main.appendChild(anchor);
 
+        /* The module's own content wrapper is usually a narrow, centered
+         * column (e.g. Tailwind's max-w-5xl mx-auto). Tag it so our CSS
+         * can widen it and pull the sidebar toward the page's left gutter
+         * instead of leaving dead space on the left. */
+        if (layout.parentNode && layout.parentNode.classList) {
+            layout.parentNode.classList.add('aisa-train-widthhost');
+        }
+
         refs.sidebarList   = sidebar.querySelector('.aisa-train-chapter-list');
         refs.progressFill  = topbar.querySelector('.aisa-train-topbar-bar-fill');
         refs.progressText  = topbar.querySelector('.aisa-train-topbar-text');
         refs.main          = main;
+        refs.layout        = layout;
 
         chapters.forEach(function (c, i) {
             var li = document.createElement('li');
@@ -264,14 +273,26 @@
         return true;
     }
 
-    function render() {
+    function render(scroll) {
         chapters.forEach(function (c, i) {
             c.el.classList.toggle('aisa-current', i === currentIndex);
         });
         updateSidebar();
         updateNavState();
         updateProgress();
-        try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch (e) { window.scrollTo(0, 0); }
+        if (scroll) scrollToContent();
+    }
+
+    /* Scroll so the start of the current chapter sits just below the
+     * sticky page nav — not the very top of the page, which would show
+     * the module header again on every Next. */
+    function scrollToContent() {
+        var target = refs.layout;
+        if (!target) return;
+        var y = target.getBoundingClientRect().top + window.pageYOffset - 80;
+        if (y < 0) y = 0;
+        try { window.scrollTo({ top: y, behavior: 'smooth' }); }
+        catch (e) { window.scrollTo(0, y); }
     }
 
     function updateSidebar() {
@@ -321,14 +342,14 @@
         if (!unlockedSet.has(chap.id) && !completedSet.has(chap.id)) return;
         currentIndex = idx;
         saveState();
-        render();
+        render(true);
     }
 
     function goPrev() {
         if (currentIndex === 0) return;
         currentIndex--;
         saveState();
-        render();
+        render(true);
     }
 
     function goNext() {
@@ -352,7 +373,7 @@
             unlockedSet.add(chapters[currentIndex].id);
         }
         saveState();
-        render();
+        render(true);
     }
 
     /* -------- utilities -------- */
