@@ -118,7 +118,7 @@
         if (auxLoaded) return;
         auxLoaded = true;
         if (!GATE_SCRIPT_SRC) return;
-        ['onboarding.js?v=1', 'certificate.js?v=2', 'menu.js?v=2'].forEach(function (name) {
+        ['onboarding.js?v=1', 'certificate.js?v=2', 'menu.js?v=3'].forEach(function (name) {
             var url = GATE_SCRIPT_SRC.replace(/gate\.js(\?.*)?$/, name);
             if (url === GATE_SCRIPT_SRC) return;  // pattern didn't match — skip safely
             var s = document.createElement('script');
@@ -627,6 +627,26 @@
              * staff member. Rejects with 'not_admin' for non-admins. */
             adminOverview: function () {
                 return apiCall('admin_overview');
+            },
+
+            /* ----- Notifications ----- */
+            getNotifications: function () {
+                return apiCall('get_notifications');
+            },
+            markNotificationRead: function (id) {
+                return apiCall('mark_notification_read', { notification_id: id });
+            },
+            markAllNotificationsRead: function () {
+                return apiCall('mark_all_notifications_read');
+            },
+            postNotification: function (title, body) {
+                return apiCall('post_notification', { title: title || '', body: body || '' });
+            },
+            deleteNotification: function (id) {
+                return apiCall('delete_notification', { notification_id: id });
+            },
+            adminNotificationStats: function () {
+                return apiCall('admin_notification_stats');
             },
 
             /* Resolve to true/false for whether the current user is an

@@ -34,7 +34,16 @@ const PAGEVIEWS_SHEET        = 'pageviews';
 const CLICKS_SHEET           = 'clicks';
 const ADMINS_SHEET           = 'admins';   // who can see the admin dashboard
 const ROSTER_SHEET           = 'roster';   // optional: full expected staff list
+const NOTIFS_SHEET           = 'notifications';
+const NOTIF_READS_SHEET      = 'notification_reads';
 const SESSION_DURATION_DAYS  = 365;
+
+const NOTIF_HEADERS = [
+  'id', 'created_at_iso', 'author_email', 'author_name', 'title', 'body', 'active'
+];
+const NOTIF_READ_HEADERS = [
+  'notification_id', 'email', 'read_at_iso'
+];
 
 const EVENT_HEADERS = [
   'timestamp_iso', 'email', 'name', 'module_id', 'event',
@@ -111,6 +120,24 @@ function doPost(e) {
       case 'admin_overview':
         if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
         return jsonOut(adminOverview());
+
+      // ----- Notifications -----
+      case 'get_notifications':
+        return jsonOut(listNotifications(claims.email));
+      case 'mark_notification_read':
+        return jsonOut(markNotificationRead(claims, body));
+      case 'mark_all_notifications_read':
+        return jsonOut(markAllNotificationsRead(claims));
+      case 'post_notification':
+        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
+        return jsonOut(postNotification(claims, body));
+      case 'delete_notification':
+        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
+        return jsonOut(deleteNotification(body));
+      case 'admin_notification_stats':
+        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
+        return jsonOut(adminNotificationStats());
+
       case 'sign_out':
         revokeSession(body.session_token);
         return jsonOut({ ok: true });
@@ -477,6 +504,171 @@ function adminOverview() {
     people: Object.keys(people).map(function (k) { return people[k]; }),
     completions: completions
   };
+}
+
+// ---------- Notifications ----------
+
+function getNotifsSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(NOTIFS_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(NOTIFS_SHEET);
+    sheet.appendRow(NOTIF_HEADERS);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, NOTIF_HEADERS.length).setFontWeight('bold');
+  }
+  return sheet;
+}
+
+function getNotifReadsSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(NOTIF_READS_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(NOTIF_READS_SHEET);
+    sheet.appendRow(NOTIF_READ_HEADERS);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, NOTIF_READ_HEADERS.length).setFontWeight('bold');
+  }
+  return sheet;
+}
+
+function isActiveFlag(v) {
+  // Default to active unless explicitly set to a falsey marker.
+  const s = String(v).trim().toLowerCase();
+  return !(s === 'false' || s === 'no' || s === '0');
+}
+
+/** All active notifications, newest first, raw rows as objects. */
+function readActiveNotifications() {
+  const sheet = getNotifsSheet();
+  const last = sheet.getLastRow();
+  if (last < 2) return [];
+  const rows = sheet.getRange(2, 1, last - 1, NOTIF_HEADERS.length).getValues();
+  const out = [];
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i];
+    if (!isActiveFlag(r[6])) continue;
+    out.push({
+      id:          String(r[0]),
+      created_at:  String(r[1]),
+      author_name: String(r[3] || ''),
+      title:       String(r[4] || ''),
+      body:        String(r[5] || '')
+    });
+  }
+  out.sort(function (a, b) { return a.created_at < b.created_at ? 1 : -1; });
+  return out;
+}
+
+/** Set of notification ids this email has already read. */
+function readIdsFor(email) {
+  const sheet = getNotifReadsSheet();
+  const last = sheet.getLastRow();
+  const set = {};
+  if (last < 2) return set;
+  const rows = sheet.getRange(2, 1, last - 1, NOTIF_READ_HEADERS.length).getValues();
+  const target = String(email || '').trim().toLowerCase();
+  for (let i = 0; i < rows.length; i++) {
+    if (String(rows[i][1] || '').trim().toLowerCase() === target) {
+      set[String(rows[i][0])] = true;
+    }
+  }
+  return set;
+}
+
+function listNotifications(email) {
+  const notifs = readActiveNotifications();
+  const readSet = readIdsFor(email);
+  let unread = 0;
+  const items = notifs.map(function (n) {
+    const read = !!readSet[n.id];
+    if (!read) unread++;
+    return {
+      id: n.id, created_at: n.created_at, author_name: n.author_name,
+      title: n.title, body: n.body, read: read
+    };
+  });
+  return { ok: true, notifications: items, unread: unread };
+}
+
+function postNotification(claims, body) {
+  const title = String(body.title || '').slice(0, 200).trim();
+  const text  = String(body.body  || '').slice(0, 4000).trim();
+  if (!title && !text) return { ok: false, error: 'empty_notification' };
+
+  const id = 'n_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+  getNotifsSheet().appendRow([
+    id,
+    new Date().toISOString(),
+    claims.email,
+    claims.name || '',
+    title,
+    text,
+    true
+  ]);
+  return { ok: true, id: id };
+}
+
+function markNotificationRead(claims, body) {
+  const id = String(body.notification_id || '').trim();
+  if (!id) return { ok: false, error: 'missing_notification_id' };
+  // Avoid duplicate read rows for the same person + notification.
+  if (readIdsFor(claims.email)[id]) return { ok: true, already: true };
+  getNotifReadsSheet().appendRow([id, claims.email, new Date().toISOString()]);
+  return { ok: true };
+}
+
+function markAllNotificationsRead(claims) {
+  const notifs = readActiveNotifications();
+  const readSet = readIdsFor(claims.email);
+  const sheet = getNotifReadsSheet();
+  const now = new Date().toISOString();
+  const toAdd = [];
+  for (let i = 0; i < notifs.length; i++) {
+    if (!readSet[notifs[i].id]) toAdd.push([notifs[i].id, claims.email, now]);
+  }
+  if (toAdd.length) {
+    sheet.getRange(sheet.getLastRow() + 1, 1, toAdd.length, NOTIF_READ_HEADERS.length).setValues(toAdd);
+  }
+  return { ok: true, marked: toAdd.length };
+}
+
+function deleteNotification(body) {
+  const id = String(body.notification_id || '').trim();
+  if (!id) return { ok: false, error: 'missing_notification_id' };
+  const sheet = getNotifsSheet();
+  const last = sheet.getLastRow();
+  if (last < 2) return { ok: true };
+  const ids = sheet.getRange(2, 1, last - 1, 1).getValues();
+  for (let i = 0; i < ids.length; i++) {
+    if (String(ids[i][0]) === id) {
+      // Soft delete: flip the active column to FALSE.
+      sheet.getRange(i + 2, NOTIF_HEADERS.indexOf('active') + 1).setValue(false);
+      return { ok: true };
+    }
+  }
+  return { ok: true };
+}
+
+/** Admin view: each active notification plus how many staff have read it. */
+function adminNotificationStats() {
+  const notifs = readActiveNotifications();
+  // Count reads per notification id in one pass.
+  const reads = getNotifReadsSheet();
+  const last = reads.getLastRow();
+  const counts = {};
+  if (last >= 2) {
+    const rows = reads.getRange(2, 1, last - 1, 1).getValues();
+    for (let i = 0; i < rows.length; i++) {
+      const id = String(rows[i][0]);
+      counts[id] = (counts[id] || 0) + 1;
+    }
+  }
+  const items = notifs.map(function (n) {
+    n.read_count = counts[n.id] || 0;
+    return n;
+  });
+  return { ok: true, notifications: items, generated_at: new Date().toISOString() };
 }
 
 // ---------- Output ----------

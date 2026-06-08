@@ -81,6 +81,30 @@
             'padding:.7rem 1rem;border-radius:.6rem;border:1px solid #fecaca;background:#fef2f2;color:#b91c1c;',
             'font:inherit;font-weight:700;cursor:pointer;transition:background .15s;}',
             '.aisa-menu-signout:hover{background:#fee2e2;}',
+
+            // Unread badge on the hamburger
+            '.aisa-menu-badge{position:absolute;top:-5px;right:-5px;min-width:18px;height:18px;',
+            'padding:0 4px;border-radius:9999px;background:#ef4444;color:#fff;font-size:11px;',
+            'font-weight:800;line-height:18px;text-align:center;box-shadow:0 0 0 2px #fff;display:none;font-style:normal;}',
+            '.aisa-menu-badge.show{display:block;}',
+
+            // Notifications section in the drawer
+            '.aisa-menu-notifs{border-bottom:1px solid #f1f5f9;}',
+            '.aisa-menu-notifs-head{display:flex;align-items:center;justify-content:space-between;padding:.7rem .9rem .3rem;}',
+            '.aisa-menu-notifs-head .t{font-size:.68rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#94a3b8;}',
+            '.aisa-menu-notifs-head button{font:inherit;font-size:.72rem;font-weight:700;color:#4f46e5;background:none;border:none;cursor:pointer;padding:0;}',
+            '.aisa-menu-notifs-head button:hover{text-decoration:underline;}',
+            '.aisa-menu-notifs-list{max-height:240px;overflow-y:auto;padding:0 .55rem .55rem;}',
+            '.aisa-menu-notif{display:block;width:100%;text-align:left;border:none;background:#f8fafc;',
+            'border-radius:.6rem;padding:.6rem .7rem;margin-top:.35rem;cursor:pointer;position:relative;transition:background .15s;}',
+            '.aisa-menu-notif:hover{background:#f1f5f9;}',
+            '.aisa-menu-notif.unread{background:#eef2ff;}',
+            '.aisa-menu-notif.unread:hover{background:#e0e7ff;}',
+            '.aisa-menu-notif .nt{font-weight:700;font-size:.85rem;color:#0f172a;line-height:1.25;padding-right:1rem;}',
+            '.aisa-menu-notif .nb{font-size:.78rem;color:#475569;margin-top:2px;line-height:1.35;white-space:pre-wrap;word-break:break-word;}',
+            '.aisa-menu-notif .nm{font-size:.66rem;color:#94a3b8;margin-top:4px;}',
+            '.aisa-menu-notif .dot{position:absolute;top:.7rem;right:.65rem;width:8px;height:8px;border-radius:50%;background:#4f46e5;}',
+
             '@media print{.aisa-menu-toggle,.aisa-menu-backdrop,.aisa-menu-drawer{display:none!important;}}'
         ].join('');
         document.head.appendChild(s);
@@ -95,7 +119,8 @@
         toggle.className = 'aisa-menu-toggle';
         toggle.type = 'button';
         toggle.setAttribute('aria-label', 'Open menu');
-        toggle.innerHTML = '<span></span><span></span><span></span>';
+        toggle.innerHTML = '<span></span><span></span><span></span>' +
+            '<b class="aisa-menu-badge" aria-hidden="true"></b>';
 
         var backdrop = document.createElement('div');
         backdrop.className = 'aisa-menu-backdrop';
@@ -125,6 +150,13 @@
                     '<div class="email"></div>' +
                 '</div>' +
             '</div>' +
+            '<div class="aisa-menu-notifs" style="display:none;">' +
+                '<div class="aisa-menu-notifs-head">' +
+                    '<span class="t">Notifications</span>' +
+                    '<button type="button" class="aisa-menu-markall">Mark all read</button>' +
+                '</div>' +
+                '<div class="aisa-menu-notifs-list"></div>' +
+            '</div>' +
             '<ul class="aisa-menu-list">' + linksHtml + adminHtml + '</ul>' +
             '<div class="aisa-menu-foot">' +
                 '<button type="button" class="aisa-menu-signout">' +
@@ -136,11 +168,16 @@
         document.body.appendChild(backdrop);
         document.body.appendChild(drawer);
 
-        refs.toggle   = toggle;
-        refs.backdrop = backdrop;
-        refs.drawer   = drawer;
-        refs.name     = drawer.querySelector('.who .name');
-        refs.email    = drawer.querySelector('.who .email');
+        refs.toggle     = toggle;
+        refs.backdrop   = backdrop;
+        refs.drawer     = drawer;
+        refs.name       = drawer.querySelector('.who .name');
+        refs.email      = drawer.querySelector('.who .email');
+        refs.badge      = toggle.querySelector('.aisa-menu-badge');
+        refs.notifsWrap = drawer.querySelector('.aisa-menu-notifs');
+        refs.notifsList = drawer.querySelector('.aisa-menu-notifs-list');
+
+        drawer.querySelector('.aisa-menu-markall').addEventListener('click', markAllRead);
 
         function open()  { toggle.classList.add('open'); backdrop.classList.add('open'); drawer.classList.add('open'); toggle.setAttribute('aria-label', 'Close menu'); }
         function close() { toggle.classList.remove('open'); backdrop.classList.remove('open'); drawer.classList.remove('open'); toggle.setAttribute('aria-label', 'Open menu'); }
@@ -183,15 +220,106 @@
         } catch (e) {}
     }
 
+    /* ----- Notifications ----- */
+
+    function escapeHtml(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+            return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+        });
+    }
+
+    function timeAgo(iso) {
+        if (!iso) return '';
+        var then = new Date(iso).getTime();
+        if (!then) return '';
+        var s = Math.max(0, Math.floor((Date.now() - then) / 1000));
+        if (s < 60) return 'just now';
+        var m = Math.floor(s / 60); if (m < 60) return m + 'm ago';
+        var h = Math.floor(m / 60); if (h < 24) return h + 'h ago';
+        var d = Math.floor(h / 24); if (d < 7)  return d + 'd ago';
+        try { return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }); }
+        catch (e) { return ''; }
+    }
+
+    function updateBadge(count) {
+        if (!refs.badge) return;
+        if (count > 0) {
+            refs.badge.textContent = count > 9 ? '9+' : String(count);
+            refs.badge.classList.add('show');
+        } else {
+            refs.badge.classList.remove('show');
+        }
+    }
+
+    function renderNotifications(items) {
+        if (!refs.notifsWrap || !refs.notifsList) return;
+        if (!items || !items.length) {
+            refs.notifsWrap.style.display = 'none';
+            updateBadge(0);
+            return;
+        }
+        refs.notifsWrap.style.display = '';
+        var unread = 0;
+        refs.notifsList.innerHTML = items.map(function (n) {
+            if (!n.read) unread++;
+            return '<button type="button" class="aisa-menu-notif' + (n.read ? '' : ' unread') + '" data-id="' + escapeHtml(n.id) + '">' +
+                (n.read ? '' : '<span class="dot" aria-hidden="true"></span>') +
+                '<div class="nt">' + escapeHtml(n.title || 'Notification') + '</div>' +
+                (n.body ? '<div class="nb">' + escapeHtml(n.body) + '</div>' : '') +
+                '<div class="nm">' + escapeHtml(n.author_name || 'AISA') + ' · ' + timeAgo(n.created_at) + '</div>' +
+            '</button>';
+        }).join('');
+        updateBadge(unread);
+
+        refs.notifsList.querySelectorAll('.aisa-menu-notif').forEach(function (el) {
+            el.addEventListener('click', function () {
+                if (!el.classList.contains('unread')) return;
+                var id = el.getAttribute('data-id');
+                el.classList.remove('unread');
+                var dot = el.querySelector('.dot'); if (dot) dot.remove();
+                var current = refs.notifsList.querySelectorAll('.aisa-menu-notif.unread').length;
+                updateBadge(current);
+                if (window.aisaAuth && window.aisaAuth.markNotificationRead) {
+                    window.aisaAuth.markNotificationRead(id).catch(function () {});
+                }
+            });
+        });
+    }
+
+    function markAllRead() {
+        if (!refs.notifsList) return;
+        refs.notifsList.querySelectorAll('.aisa-menu-notif.unread').forEach(function (el) {
+            el.classList.remove('unread');
+            var dot = el.querySelector('.dot'); if (dot) dot.remove();
+        });
+        updateBadge(0);
+        if (window.aisaAuth && window.aisaAuth.markAllNotificationsRead) {
+            window.aisaAuth.markAllNotificationsRead().catch(function () {});
+        }
+    }
+
+    function loadNotifications() {
+        if (!window.aisaAuth || typeof window.aisaAuth.getNotifications !== 'function') return;
+        if (!window.aisaAuth.isConfigured || !window.aisaAuth.isConfigured()) return;
+        window.aisaAuth.getNotifications().then(function (r) {
+            renderNotifications((r && r.notifications) || []);
+        }).catch(function () {});
+    }
+
+    function afterAuth() {
+        fillUser();
+        loadNotifications();
+    }
+
     function start() {
         if (document.body) {
             build();
         } else {
             document.addEventListener('DOMContentLoaded', build);
         }
-        /* Fill in the signed-in user once auth resolves. */
+        /* Fill in the signed-in user + notifications once auth resolves. */
         if (typeof window.aisaReady === 'function') {
-            window.aisaReady(function () { if (built) fillUser(); else document.addEventListener('DOMContentLoaded', fillUser); });
+            window.aisaReady(function () { if (built) afterAuth(); else document.addEventListener('DOMContentLoaded', afterAuth); });
         }
     }
 
