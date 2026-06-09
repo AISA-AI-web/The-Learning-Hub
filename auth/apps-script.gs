@@ -36,6 +36,7 @@ const ADMINS_SHEET           = 'admins';   // who can see the admin dashboard
 const ROSTER_SHEET           = 'roster';   // optional: full expected staff list
 const NOTIFS_SHEET           = 'notifications';
 const NOTIF_READS_SHEET      = 'notification_reads';
+const CERT_EMAILS_SHEET      = 'certificate_emails';  // dedup log for cert mailings
 const SESSION_DURATION_DAYS  = 365;
 
 const NOTIF_HEADERS = [
@@ -49,6 +50,10 @@ const NOTIF_READ_HEADERS = [
   'notification_id', 'email', 'read_at_iso'
 ];
 const ROSTER_HEADERS = ['email', 'name', 'tags'];  // tags = comma-separated
+
+const CERT_EMAIL_HEADERS = [
+  'sent_at_iso', 'email', 'name', 'module_id', 'module_title', 'filename'
+];
 
 const EVENT_HEADERS = [
   'timestamp_iso', 'email', 'name', 'module_id', 'event',
@@ -145,6 +150,10 @@ function doPost(e) {
       case 'admin_list_tags':
         if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
         return jsonOut(adminListTags());
+
+      // ----- Certificates -----
+      case 'email_certificate':
+        return jsonOut(emailCertificate(claims, body));
 
       case 'sign_out':
         revokeSession(body.session_token);
@@ -824,6 +833,134 @@ function adminNotificationStats() {
 function adminListTags() {
   const roster = getRosterIndex();
   return { ok: true, tags: roster.allTags };
+}
+
+// ---------- Certificate emails ----------
+//
+// Required scopes (Apps Script will prompt on first run after deploy):
+//   - https://www.googleapis.com/auth/gmail.send  (via GmailApp)
+//   - https://www.googleapis.com/auth/script.send_mail (via MailApp, fallback)
+//
+// The frontend generates the PDF client-side (jsPDF + html2canvas in
+// auth/certificate.js) and POSTs the base64-encoded bytes here. We
+// attach them to a friendly email and log to certificate_emails so
+// repeated clicks don't pester the user with duplicate mailings.
+
+function getCertEmailsSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(CERT_EMAILS_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(CERT_EMAILS_SHEET);
+    sheet.appendRow(CERT_EMAIL_HEADERS);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, CERT_EMAIL_HEADERS.length).setFontWeight('bold');
+  }
+  return sheet;
+}
+
+/** Has this user already been emailed a certificate for this module? */
+function certAlreadySent(email, moduleId, moduleTitle) {
+  const sheet = getCertEmailsSheet();
+  const last = sheet.getLastRow();
+  if (last < 2) return false;
+  const rows = sheet.getRange(2, 1, last - 1, CERT_EMAIL_HEADERS.length).getValues();
+  const i_email  = CERT_EMAIL_HEADERS.indexOf('email');
+  const i_modId  = CERT_EMAIL_HEADERS.indexOf('module_id');
+  const i_modT   = CERT_EMAIL_HEADERS.indexOf('module_title');
+  for (let i = 0; i < rows.length; i++) {
+    if (String(rows[i][i_email]) !== email) continue;
+    // Match by module_id when both sides have one; otherwise fall back
+    // to a case-insensitive title match so a missing id doesn't bypass dedup.
+    if (moduleId && rows[i][i_modId] && String(rows[i][i_modId]) === moduleId) return true;
+    if (!moduleId && String(rows[i][i_modT]).toLowerCase() === moduleTitle.toLowerCase()) return true;
+  }
+  return false;
+}
+
+function emailCertificate(claims, body) {
+  const moduleId    = String(body.module_id    || '').slice(0, 80);
+  const moduleTitle = String(body.module_title || 'Professional Development Module').slice(0, 200);
+  const pdfBase64   = String(body.pdf_base64   || '');
+  let filename      = String(body.filename     || 'Certificate.pdf').slice(0, 160);
+  if (!filename.toLowerCase().endsWith('.pdf')) filename += '.pdf';
+
+  if (!pdfBase64)      return { ok: false, error: 'missing_pdf' };
+  if (!claims.email)   return { ok: false, error: 'missing_email' };
+
+  // Idempotent: once we've emailed this user a cert for this module, stop.
+  if (certAlreadySent(claims.email, moduleId, moduleTitle)) {
+    return { ok: true, already_sent: true };
+  }
+
+  let pdfBytes;
+  try {
+    pdfBytes = Utilities.base64Decode(pdfBase64);
+  } catch (e) {
+    return { ok: false, error: 'bad_pdf_encoding' };
+  }
+  const blob = Utilities.newBlob(pdfBytes, 'application/pdf', filename);
+
+  const name    = (claims.name && String(claims.name).trim()) || claims.email.split('@')[0];
+  const subject = '🎓 Your AISA certificate: ' + moduleTitle;
+  const plain =
+    'Hi ' + name + ',\n\n' +
+    'Congratulations on completing ' + moduleTitle + '. Your certificate of\n' +
+    'completion is attached to this email as a PDF — print it, share it,\n' +
+    'or keep it for your records.\n\n' +
+    'You can also re-download it any time from your dashboard:\n' +
+    '   https://aisa-ai-web.github.io/The-Learning-Hub/dashboard.html\n\n' +
+    'Thanks for putting in the time.\n\n' +
+    '— AISA Learning Hub';
+  const html =
+    '<div style="font-family:Inter,Arial,sans-serif;font-size:15px;color:#0f172a;line-height:1.55;max-width:560px;">' +
+      '<p style="margin:0 0 12px;">Hi ' + escapeHtmlForEmail(name) + ',</p>' +
+      '<p style="margin:0 0 12px;">Congratulations on completing <b>' + escapeHtmlForEmail(moduleTitle) + '</b>. ' +
+        'Your certificate of completion is attached to this email as a PDF — print it, share it, ' +
+        'or keep it for your records.</p>' +
+      '<p style="margin:0 0 12px;">You can also re-download it any time from ' +
+        '<a href="https://aisa-ai-web.github.io/The-Learning-Hub/dashboard.html" style="color:#4f46e5;">your dashboard</a>.</p>' +
+      '<p style="margin:18px 0 0;color:#64748b;font-size:13px;">— AISA Learning Hub</p>' +
+    '</div>';
+
+  // Prefer GmailApp (richer scope, sends from the script owner's address);
+  // fall back to MailApp if Gmail scope hasn't been authorized yet.
+  try {
+    GmailApp.sendEmail(claims.email, subject, plain, {
+      attachments: [blob],
+      htmlBody:    html,
+      name:        'AISA Learning Hub'
+    });
+  } catch (gmailErr) {
+    try {
+      MailApp.sendEmail({
+        to:          claims.email,
+        subject:     subject,
+        body:        plain,
+        htmlBody:    html,
+        attachments: [blob],
+        name:        'AISA Learning Hub'
+      });
+    } catch (mailErr) {
+      return { ok: false, error: 'send_failed: ' + mailErr };
+    }
+  }
+
+  getCertEmailsSheet().appendRow([
+    new Date().toISOString(),
+    claims.email,
+    claims.name || '',
+    moduleId,
+    moduleTitle,
+    filename
+  ]);
+
+  return { ok: true, already_sent: false };
+}
+
+function escapeHtmlForEmail(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c];
+  });
 }
 
 // ---------- Output ----------

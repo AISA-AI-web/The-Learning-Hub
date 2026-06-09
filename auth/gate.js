@@ -118,7 +118,7 @@
         if (auxLoaded) return;
         auxLoaded = true;
         if (!GATE_SCRIPT_SRC) return;
-        ['onboarding.js?v=1', 'certificate.js?v=2', 'search-index.js?v=1', 'menu.js?v=8'].forEach(function (name) {
+        ['onboarding.js?v=1', 'certificate.js?v=3', 'search-index.js?v=1', 'menu.js?v=8'].forEach(function (name) {
             var url = GATE_SCRIPT_SRC.replace(/gate\.js(\?.*)?$/, name);
             if (url === GATE_SCRIPT_SRC) return;  // pattern didn't match — skip safely
             var s = document.createElement('script');
@@ -655,6 +655,22 @@
             },
             adminListTags: function () {
                 return apiCall('admin_list_tags');
+            },
+
+            /* ----- Certificate email ----- */
+            /* Email the user a copy of their just-generated certificate
+             * as a PDF attachment. The PDF is built client-side by
+             * auth/certificate.js (jsPDF + html2canvas) and passed in as
+             * a base64 string. The server dedups by (email, module),
+             * so repeated clicks won't send a second email. */
+            emailCertificate: function (opts) {
+                opts = opts || {};
+                return apiCall('email_certificate', {
+                    module_id:    String(opts.module_id    || ''),
+                    module_title: String(opts.module_title || ''),
+                    filename:     String(opts.filename     || 'Certificate.pdf'),
+                    pdf_base64:   String(opts.pdf_base64   || '')
+                });
             },
 
             /* Resolve to true/false for whether the current user is an
