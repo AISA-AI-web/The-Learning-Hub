@@ -285,9 +285,25 @@
             '.aisa-tb-btn.aisa-tb-menu svg path{transition:transform .2s,opacity .2s;transform-origin:center;}',
             '.aisa-tb-btn.aisa-tb-menu.open svg{transform:rotate(90deg);transition:transform .2s;}',
 
-            /* Admin shield button — hidden until isAdmin() resolves true. */
-            '.aisa-tb-btn.aisa-tb-admin{color:#0f766e;}',
-            '.aisa-tb-btn.aisa-tb-admin:hover{background:#ccfbf1;}',
+            /* Admin pill — the entry point for admin-only tools. Hidden
+             * by default with display:none; revealAdminIfAllowed() flips
+             * .show on (so this stays invisible to non-admins even if
+             * the CSS for other top-bar buttons would otherwise win
+             * over the HTML [hidden] attribute). Amber/orange so it
+             * reads instantly as "admin mode" against the white bar. */
+            '.aisa-tb-admin{display:none;align-items:center;gap:.45rem;height:2.4rem;padding:0 .85rem;',
+                'background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;text-decoration:none;',
+                'border:none;border-radius:9999px;font:inherit;font-weight:800;font-size:.82rem;',
+                'letter-spacing:.01em;cursor:pointer;',
+                'box-shadow:0 6px 16px -6px rgba(249,115,22,.55),0 0 0 1px rgba(255,255,255,.18) inset;',
+                'transition:transform .15s,box-shadow .15s,filter .15s;-webkit-tap-highlight-color:transparent;}',
+            '.aisa-tb-admin.show{display:inline-flex;}',
+            '.aisa-tb-admin:hover{transform:translateY(-1px);filter:brightness(1.05);',
+                'box-shadow:0 10px 22px -6px rgba(249,115,22,.65),0 0 0 1px rgba(255,255,255,.24) inset;}',
+            '.aisa-tb-admin:active{transform:translateY(0);}',
+            '.aisa-tb-admin:focus-visible{outline:2px solid #fff;outline-offset:2px;}',
+            '.aisa-tb-admin svg{width:1.05rem;height:1.05rem;stroke-width:2.2;flex-shrink:0;}',
+            '.aisa-tb-admin .label{white-space:nowrap;}',
 
             /* Language toggle — pill with globe icon + the target language. */
             '.aisa-tb-lang{display:inline-flex;align-items:center;gap:.4rem;height:2.4rem;padding:0 .8rem;',
@@ -387,23 +403,6 @@
             '.aisa-bell-item .nm{font-size:.7rem;color:#94a3b8;margin-top:5px;}',
             '.aisa-bell-item .dot{position:absolute;top:.95rem;right:.85rem;width:8px;height:8px;border-radius:50%;background:#4f46e5;}',
 
-            /* === Admin dropdown panel === */
-            '.aisa-admin-panel{position:fixed;top:calc(' + BAR_HEIGHT + ' + .25rem);z-index:2147483005;width:300px;max-width:calc(100vw - 1.2rem);',
-                'background:#fff;border:1px solid #e2e8f0;border-radius:1rem;box-shadow:0 25px 50px -12px rgba(15,23,42,.35);',
-                'font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#0f172a;',
-                'opacity:0;visibility:hidden;transform:translateY(-6px);',
-                'transition:opacity .15s,transform .15s,visibility .15s;padding:.4rem;}',
-            '.aisa-admin-panel.open{opacity:1;visibility:visible;transform:translateY(0);}',
-            '.aisa-admin-head{padding:.5rem .75rem .25rem;display:flex;align-items:center;justify-content:space-between;}',
-            '.aisa-admin-head .t{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:#64748b;}',
-            '.aisa-admin-item{display:flex;align-items:center;gap:.75rem;padding:.65rem .75rem;border-radius:.6rem;',
-                'text-decoration:none;color:#0f172a;transition:background .12s;}',
-            '.aisa-admin-item:hover{background:#f1f5f9;}',
-            '.aisa-admin-item .ic{width:2.1rem;height:2.1rem;border-radius:.55rem;background:#f1f5f9;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem;flex-shrink:0;}',
-            '.aisa-admin-item .body{min-width:0;flex:1;}',
-            '.aisa-admin-item .tt{display:block;font-weight:700;font-size:.9rem;line-height:1.25;}',
-            '.aisa-admin-item .dd{display:block;font-size:.75rem;color:#64748b;margin-top:1px;}',
-
             /* === Search overlay === */
             '.aisa-search-overlay{position:fixed;inset:0;z-index:2147483006;display:flex;align-items:flex-start;justify-content:center;',
                 'padding:5rem 1rem 1rem;background:rgba(15,23,42,.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);',
@@ -466,9 +465,14 @@
                 /* Language pill loses its text label on small screens, becomes icon-only. */
                 '.aisa-tb-lang{width:2.4rem;padding:0;justify-content:center;border-radius:.6rem;}',
                 '.aisa-tb-lang-label{display:none;}',
+                /* Admin pill: keep colour-coded shape but drop the "Admin" label
+                 * to save horizontal space. Still distinctive enough thanks to
+                 * the amber gradient. */
+                '.aisa-tb-admin.show{padding:0 .6rem;}',
+                '.aisa-tb-admin .label{display:none;}',
             '}',
             '@media (max-width:480px){',
-                '.aisa-bell-panel,.aisa-admin-panel{left:.5rem!important;right:.5rem!important;width:auto;max-width:none;}',
+                '.aisa-bell-panel{left:.5rem!important;right:.5rem!important;width:auto;max-width:none;}',
                 '.aisa-notif-card{max-height:90vh;border-radius:1rem;}',
                 '.aisa-search-overlay{padding:1rem 0.5rem 0.5rem;align-items:flex-start;}',
                 /* Search pill collapses to icon-only — placeholder takes too much width. */
@@ -482,7 +486,7 @@
                 '.aisa-tb-searchpill{width:2.15rem;max-width:2.15rem;min-width:2.15rem;}',
             '}',
 
-            '@media print{.aisa-topbar,.aisa-menu-backdrop,.aisa-menu-drawer,.aisa-bell-panel,.aisa-admin-panel,.aisa-notif-modal,.aisa-search-overlay{display:none!important;}body{padding-top:0!important;}}'
+            '@media print{.aisa-topbar,.aisa-menu-backdrop,.aisa-menu-drawer,.aisa-bell-panel,.aisa-notif-modal,.aisa-search-overlay{display:none!important;}body{padding-top:0!important;}}'
         ].join('');
         document.head.appendChild(s);
     }
@@ -515,9 +519,9 @@
                         '<button class="aisa-tb-lang" type="button" aria-label="Switch language">' +
                             ICONS.globe + '<span class="aisa-tb-lang-label"></span>' +
                         '</button>' +
-                        '<button class="aisa-tb-btn aisa-tb-admin" type="button" aria-label="Admin tools" hidden>' +
-                            ICONS.admin +
-                        '</button>' +
+                        '<a class="aisa-tb-admin" href="' + rootUrl('admin-dashboard.html') + '" aria-label="Admin">' +
+                            ICONS.admin + '<span class="label">Admin</span>' +
+                        '</a>' +
                         '<button class="aisa-tb-btn aisa-tb-bell" type="button" aria-label="Notifications">' +
                             ICONS.bell + '<b class="aisa-tb-badge" aria-hidden="true"></b>' +
                         '</button>' +
@@ -546,20 +550,15 @@
                 '<span>' + l.label + '</span></a></li>';
         }).join('');
 
-        /* Admin-only menu items. Hidden by default; revealed once
-         * window.aisaAuth.isAdmin() resolves true. The per-page admin
-         * headers used to host these links, but the global app-bar
-         * hides those headers — so the drawer is now the canonical
-         * entry-point for every admin destination. */
+        /* Admin-only drawer entry. Hidden by default; revealAdminIfAllowed()
+         * unhides it once isAdmin() resolves true. Send Notifications and
+         * any other admin tools are reached from inside the Admin
+         * Dashboard page (the admin hub) rather than duplicated here. */
         var adminHtml =
             '<li class="aisa-menu-admin-item" style="display:none;">' +
                 '<a href="' + rootUrl('admin-dashboard.html') + '">' +
                     '<span class="ico" aria-hidden="true">\u{1F6E1}️</span>' +
-                    '<span>Admin Dashboard</span></a></li>' +
-            '<li class="aisa-menu-admin-item" style="display:none;">' +
-                '<a href="' + rootUrl('admin-notifications.html') + '">' +
-                    '<span class="ico" aria-hidden="true">\u{1F4E2}</span>' +
-                    '<span>Send Notifications</span></a></li>';
+                    '<span>Admin Dashboard</span></a></li>';
 
         drawer.innerHTML =
             '<div class="aisa-menu-head">' +
@@ -587,32 +586,6 @@
             '</div>' +
             '<div class="aisa-bell-list"></div>';
 
-        /* Admin shortcuts panel. Anchored under the shield button when
-         * opened. Kept minimal — just one-click links to the two admin
-         * destinations the drawer also exposes. */
-        var adminPanel = document.createElement('div');
-        adminPanel.className = 'aisa-admin-panel';
-        adminPanel.setAttribute('role', 'dialog');
-        adminPanel.setAttribute('aria-label', 'Admin tools');
-        adminPanel.innerHTML =
-            '<div class="aisa-admin-head">' +
-                '<span class="t">Admin tools</span>' +
-            '</div>' +
-            '<a class="aisa-admin-item" href="' + rootUrl('admin-dashboard.html') + '">' +
-                '<span class="ic" aria-hidden="true">\u{1F6E1}️</span>' +
-                '<span class="body">' +
-                    '<span class="tt">Admin Dashboard</span>' +
-                    '<span class="dd">Staff completion overview &amp; compliance reports</span>' +
-                '</span>' +
-            '</a>' +
-            '<a class="aisa-admin-item" href="' + rootUrl('admin-notifications.html') + '">' +
-                '<span class="ic" aria-hidden="true">\u{1F4E2}</span>' +
-                '<span class="body">' +
-                    '<span class="tt">Send Notifications</span>' +
-                    '<span class="dd">Compose &amp; publish a notification to staff</span>' +
-                '</span>' +
-            '</a>';
-
         /* Search overlay */
         var search = document.createElement('div');
         search.className = 'aisa-search-overlay';
@@ -630,14 +603,12 @@
         document.body.appendChild(backdrop);
         document.body.appendChild(drawer);
         document.body.appendChild(panel);
-        document.body.appendChild(adminPanel);
         document.body.appendChild(search);
 
         refs.bar         = bar;
         refs.backdrop    = backdrop;
         refs.drawer      = drawer;
         refs.panel       = panel;
-        refs.adminPanel  = adminPanel;
         refs.search      = search;
         refs.btnBack     = bar.querySelector('.aisa-tb-back');
         refs.btnHome     = bar.querySelector('.aisa-tb-home');
@@ -676,7 +647,7 @@
         }
 
         /* --- Drawer behaviour --- */
-        function drawerOpen()  { closePanel(); closeAdminPanel(); closeSearch(); refs.btnMenu.classList.add('open'); backdrop.classList.add('open'); drawer.classList.add('open'); refs.btnMenu.setAttribute('aria-label', 'Close menu'); }
+        function drawerOpen()  { closePanel(); closeSearch(); refs.btnMenu.classList.add('open'); backdrop.classList.add('open'); drawer.classList.add('open'); refs.btnMenu.setAttribute('aria-label', 'Close menu'); }
         function drawerClose() { refs.btnMenu.classList.remove('open'); backdrop.classList.remove('open'); drawer.classList.remove('open'); refs.btnMenu.setAttribute('aria-label', 'Open menu'); }
         function drawerIsOpen() { return drawer.classList.contains('open'); }
 
@@ -693,7 +664,7 @@
 
         /* --- Bell panel --- */
         function openPanel() {
-            drawerClose(); closeAdminPanel(); closeSearch();
+            drawerClose(); closeSearch();
             /* Anchor the panel to the bell button. Now that the bell
              * sits on the right side, prefer right-edge alignment so
              * the panel stays on screen; left-edge is the fallback for
@@ -716,35 +687,9 @@
         });
         refs.bellMarkAll.addEventListener('click', markAllRead);
 
-        /* --- Admin panel --- */
-        function openAdminPanel() {
-            if (!refs.btnAdmin) return;
-            drawerClose(); closePanel(); closeSearch();
-            anchorRight(adminPanel, refs.btnAdmin);
-            adminPanel.classList.add('open');
-            refs.btnAdmin.setAttribute('aria-label', 'Close admin tools');
-        }
-        function closeAdminPanel() {
-            adminPanel.classList.remove('open');
-            if (refs.btnAdmin) refs.btnAdmin.setAttribute('aria-label', 'Admin tools');
-        }
-        function adminPanelIsOpen() { return adminPanel.classList.contains('open'); }
-
-        if (refs.btnAdmin) {
-            refs.btnAdmin.addEventListener('click', function (e) {
-                e.stopPropagation();
-                adminPanelIsOpen() ? closeAdminPanel() : openAdminPanel();
-            });
-        }
-        document.addEventListener('click', function (e) {
-            if (!adminPanelIsOpen()) return;
-            if (adminPanel.contains(e.target) || (refs.btnAdmin && refs.btnAdmin.contains(e.target))) return;
-            closeAdminPanel();
-        });
-
         /* --- Search overlay --- */
         function openSearch() {
-            drawerClose(); closePanel(); closeAdminPanel();
+            drawerClose(); closePanel();
             search.classList.add('open');
             refs.searchInput.value = '';
             renderSearchResults('');
@@ -790,11 +735,10 @@
                 return;
             }
             if (e.key !== 'Escape') return;
-            if (refs.openModal)     { closeNotificationModal(); return; }
-            if (searchIsOpen())     { closeSearch();     return; }
-            if (adminPanelIsOpen()) { closeAdminPanel(); return; }
-            if (panelIsOpen())      { closePanel();      return; }
-            if (drawerIsOpen())     { drawerClose();     return; }
+            if (refs.openModal) { closeNotificationModal(); return; }
+            if (searchIsOpen()) { closeSearch(); return; }
+            if (panelIsOpen())  { closePanel();  return; }
+            if (drawerIsOpen()) { drawerClose(); return; }
         });
 
         /* Expose closers for internal cross-calls. */
@@ -822,16 +766,16 @@
             window.aisaAuth.isAdmin().then(function (yes) {
                 if (!yes) return;
                 isAdminUser = true;
-                /* Drawer admin items. */
+                /* Drawer "Admin Dashboard" entry — kept hidden inline via
+                 * style="display:none" until we know the user is an admin. */
                 var items = refs.drawer ? refs.drawer.querySelectorAll('.aisa-menu-admin-item') : [];
                 items.forEach(function (li) { li.style.display = ''; });
-                /* App-bar admin shortcut button. */
-                if (refs.btnAdmin) {
-                    refs.btnAdmin.removeAttribute('hidden');
-                    refs.btnAdmin.classList.add('show');
-                }
+                /* App-bar Admin pill — CSS-default is display:none so a
+                 * race with the script can never briefly expose it to a
+                 * non-admin. .show flips it on. */
+                if (refs.btnAdmin) refs.btnAdmin.classList.add('show');
                 /* If the search overlay happens to be open right now, re-render
-                 * so the admin destinations appear without re-typing. */
+                 * so admin-only destinations appear without re-typing. */
                 if (refs.search && refs.search.classList.contains('open')) {
                     renderSearchResults(refs.searchInput ? refs.searchInput.value : '');
                 }
