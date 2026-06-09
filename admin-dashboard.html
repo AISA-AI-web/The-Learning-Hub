@@ -74,10 +74,43 @@
 
         <!-- Dashboard -->
         <div id="state-ready" class="hidden">
-            <div class="mb-8">
+            <div class="mb-6">
+                <div class="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mb-3">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                    Admin Console
+                </div>
                 <h2 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">PD Compliance Overview</h2>
                 <p class="text-slate-500 font-medium mt-1">Completion status across all staff. <span id="generated-at"></span></p>
             </div>
+
+            <!-- Admin tools — the central hub for everything admin-only.
+                 Add new admin destinations here as cards (and to auth/search-index.js
+                 with adminOnly:true so search picks them up). The drawer + the
+                 amber Admin pill in the app-bar both lead here. -->
+            <section aria-label="Admin tools" class="mb-8">
+                <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">Admin Tools</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <a href="admin-notifications.html" class="group block bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-amber-200 hover:-translate-y-0.5 transition-all p-5 focus:outline-none focus:ring-2 focus:ring-amber-300">
+                        <div class="flex items-start gap-4">
+                            <div class="w-11 h-11 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-xl flex-shrink-0">📢</div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-slate-900 leading-tight">Send Notifications</p>
+                                <p class="text-sm text-slate-500 mt-0.5 leading-snug">Compose and publish a notification to staff.</p>
+                                <span class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 mt-2 group-hover:translate-x-0.5 transition-transform">
+                                    Open
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                    <!-- Placeholder so the grid reads as an extensible hub
+                         even with only one real tool today. Remove when a
+                         second admin destination ships. -->
+                    <div class="hidden lg:flex bg-slate-50/60 border border-dashed border-slate-200 rounded-2xl p-5 items-center justify-center text-center">
+                        <div class="text-sm text-slate-400 font-semibold">More admin tools coming soon.</div>
+                    </div>
+                </div>
+            </section>
 
             <!-- Summary cards -->
             <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
