@@ -35,8 +35,34 @@
     var JSPDF_URL       = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
     var HTML2CANVAS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
 
-    var injected      = false;
-    var libsPromise   = null;
+    /* Google Fonts used by the certificate. `display=block` keeps text
+     * invisible (rather than swapped in with a fallback) until the real
+     * font has loaded — critical because html2canvas renders to a
+     * canvas in the *parent* document. If the parent's font registry
+     * doesn't have Great Vibes / Cormorant Garamond ready, the canvas
+     * falls back to Arial while html2canvas measures word boundaries
+     * against the iframe's real-font layout, and the two get out of
+     * sync (overlapping words, eaten spaces, rules cutting through
+     * cursive). We force-load these into the parent page below. */
+    var CERT_FONTS_URL = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Great+Vibes&family=Inter:wght@400;500;600;700&display=block';
+    /* Each entry is a CSS shorthand for document.fonts.load(); covers the
+     * actual sizes/weights the certificate uses. */
+    var CERT_FONT_FACES = [
+        '700 64px "Great Vibes"',
+        '400 64px "Great Vibes"',
+        '400 30px "Great Vibes"',
+        '700 21px "Cormorant Garamond"',
+        '600 21px "Cormorant Garamond"',
+        '500 21px "Cormorant Garamond"',
+        '700 46px "Cormorant Garamond"',
+        '400 15px Inter',
+        '700 14px Inter',
+        '600 13px Inter'
+    ];
+
+    var injected         = false;
+    var libsPromise      = null;
+    var parentFontsPromise = null;
 
     function init() {
         if (injected) return;
@@ -200,6 +226,45 @@
         return libsPromise;
     }
 
+    /* Inject the cert's Google Fonts into the *parent* document and
+     * resolve when every face the certificate actually uses has
+     * finished loading. Without this, html2canvas's canvas in the
+     * parent falls back to Arial while the iframe's layout is measured
+     * in Great Vibes / Cormorant Garamond — and the certificate text
+     * comes out overlapping or with collapsed spaces. */
+    function ensureParentFontsLoaded() {
+        if (parentFontsPromise) return parentFontsPromise;
+
+        if (!document.querySelector('link[data-aisa-cert-fonts]')) {
+            var link = document.createElement('link');
+            link.rel  = 'stylesheet';
+            link.href = CERT_FONTS_URL;
+            link.setAttribute('data-aisa-cert-fonts', '1');
+            document.head.appendChild(link);
+        }
+
+        parentFontsPromise = new Promise(function (resolve) {
+            function loadAll() {
+                if (!document.fonts || !document.fonts.load) { resolve(); return; }
+                var jobs = CERT_FONT_FACES.map(function (spec) {
+                    /* document.fonts.load returns a promise that resolves with
+                     * the loaded FontFace[]; errors here shouldn't block — we
+                     * just settle and let html2canvas use the best it can. */
+                    return document.fonts.load(spec).catch(function () { return null; });
+                });
+                Promise.all(jobs).then(function () {
+                    /* One extra ready-fence so the registry is fully updated. */
+                    (document.fonts.ready || Promise.resolve()).then(function () { resolve(); });
+                });
+            }
+            /* The browser may not have parsed the @font-face rules from the
+             * link yet — settle a tick first so document.fonts.load() sees
+             * the families it's being asked to fetch. */
+            setTimeout(loadAll, 30);
+        });
+        return parentFontsPromise;
+    }
+
     /* -------- certificate template (capture-friendly) -------- */
 
     /* Build a complete HTML document containing just the certificate
@@ -214,11 +279,18 @@
             '<meta name="viewport" content="width=device-width, initial-scale=1" />' +
             '<link rel="preconnect" href="https://fonts.googleapis.com">' +
             '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
-            '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Great+Vibes&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">' +
+            '<link href="' + esc(CERT_FONTS_URL) + '" rel="stylesheet">' +
             '<style>' +
             '*{box-sizing:border-box;}' +
             'html,body{margin:0;padding:0;background:transparent;}' +
-            'body{font-family:"Inter",system-ui,sans-serif;}' +
+            /* Disable kerning + ligatures and force geometric text rendering
+             * so html2canvas measures and draws each character at the same
+             * x-position. With these off, glyph advance widths match the
+             * canvas\'s fillText() output and we avoid overlap / eaten-space
+             * artifacts. */
+            'body{font-family:"Inter",system-ui,sans-serif;font-kerning:none;' +
+                'font-feature-settings:"liga" 0,"clig" 0,"calt" 0,"kern" 0;' +
+                'text-rendering:geometricPrecision;-webkit-font-smoothing:antialiased;}' +
             '.sheet{position:relative;width:1122px;height:794px;' +
                 'background:#fffdf8;padding:54px 64px;overflow:hidden;}' +
             '.frame{position:absolute;inset:18px;border:2px solid #c8a24a;}' +
@@ -232,18 +304,24 @@
                 'font-size:46px;color:#0b2545;letter-spacing:.02em;margin:14px 0 2px;}' +
             '.cert-sub{font-size:13px;letter-spacing:.28em;text-transform:uppercase;color:#64748b;margin-bottom:18px;}' +
             '.awarded{font-size:15px;color:#475569;margin-bottom:6px;}' +
-            '.name{font-family:"Great Vibes",cursive;font-size:64px;line-height:1.05;' +
-                'color:#0b2545;margin:2px 0 6px;}' +
-            '.name-rule{width:60%;max-width:520px;height:1px;background:#c8a24a;margin:0 auto 18px;}' +
+            /* Cursive headline: extra line-height so the ascenders/descenders
+             * have room (Great Vibes glyphs extend well past the line box at
+             * default heights, which causes the gold rule to slice through
+             * the name when html2canvas snapshots). */
+            '.name{font-family:"Great Vibes",cursive;font-size:64px;line-height:1.35;' +
+                'color:#0b2545;margin:0 0 4px;padding:6px 0 10px;}' +
+            '.name-rule{width:60%;max-width:520px;height:1px;background:#c8a24a;margin:6px auto 18px;}' +
             '.body-text{font-family:"Cormorant Garamond",serif;font-size:21px;color:#334155;' +
-                'max-width:760px;line-height:1.5;margin:0 auto;}' +
+                'max-width:760px;line-height:1.5;margin:0 auto;white-space:normal;}' +
             '.body-text .module{font-weight:700;color:#0b2545;}' +
             '.meta{margin-top:14px;font-size:14px;color:#64748b;}' +
             '.spacer{flex:1;}' +
             '.sigs{display:flex;justify-content:center;gap:120px;width:100%;margin-top:8px;}' +
             '.sig{display:flex;flex-direction:column;align-items:center;min-width:240px;}' +
-            '.sig-name{font-family:"Great Vibes",cursive;font-size:30px;color:#0b2545;height:34px;line-height:34px;}' +
-            '.sig-rule{width:230px;height:1px;background:#94a3b8;margin:4px 0 7px;}' +
+            /* Same breathing-room treatment for signature names. */
+            '.sig-name{font-family:"Great Vibes",cursive;font-size:30px;color:#0b2545;' +
+                'line-height:1.4;padding:4px 0 6px;}' +
+            '.sig-rule{width:230px;height:1px;background:#94a3b8;margin:6px 0 7px;}' +
             '.sig-person{font-weight:700;font-size:14px;color:#0f172a;}' +
             '.sig-title{font-size:12px;color:#64748b;margin-top:2px;max-width:240px;}' +
             '.seal{position:absolute;right:64px;bottom:58px;width:96px;height:96px;border-radius:50%;' +
@@ -308,7 +386,14 @@
 
         function waitForAssets() {
             return new Promise(function (resolve) {
-                var fontsReady = (doc.fonts && doc.fonts.ready) || Promise.resolve();
+                var iframeFontsReady = (doc.fonts && doc.fonts.ready) || Promise.resolve();
+                /* Same explicit per-face load inside the iframe so its
+                 * layout is finalised before we snapshot it. */
+                var iframeFontLoads = (doc.fonts && doc.fonts.load)
+                    ? Promise.all(CERT_FONT_FACES.map(function (spec) {
+                        return doc.fonts.load(spec).catch(function () { return null; });
+                    }))
+                    : Promise.resolve();
                 var logoImg = doc.querySelector('img.logo');
                 var imgReady = (!logoImg || logoImg.complete)
                     ? Promise.resolve()
@@ -316,9 +401,13 @@
                         logoImg.onload = r;
                         logoImg.onerror = r;
                     });
-                Promise.all([fontsReady, imgReady]).then(function () {
-                    /* Settle one paint frame so layout is stable. */
-                    requestAnimationFrame(function () { setTimeout(resolve, 60); });
+                Promise.all([iframeFontLoads, iframeFontsReady, imgReady]).then(function () {
+                    /* Two paint frames + a small buffer so the iframe's
+                     * font-display:block swap has fully committed before
+                     * html2canvas walks the DOM. */
+                    requestAnimationFrame(function () {
+                        requestAnimationFrame(function () { setTimeout(resolve, 120); });
+                    });
                 });
             });
         }
@@ -330,8 +419,16 @@
                 backgroundColor: '#fffdf8',
                 useCORS: true,
                 logging: false,
+                /* Match the iframe's intrinsic layout so html2canvas's
+                 * cloned document lays out the .sheet identically. */
                 windowWidth:  1122,
-                windowHeight: 794
+                windowHeight: 794,
+                /* Render via SVG <foreignObject>: lets the browser's own
+                 * text engine paint the characters, which respects our
+                 * loaded Great Vibes / Cormorant Garamond metrics. The
+                 * library still falls back to the canvas path if the
+                 * SVG round-trip fails. */
+                foreignObjectRendering: true
             });
         }).then(function (canvas) {
             if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
@@ -391,7 +488,7 @@
 
         setStatus('preparing', 'Generating your certificate…');
 
-        loadLibs()
+        Promise.all([loadLibs(), ensureParentFontsLoaded()])
             .then(function () { return generateCertPdf(name, title, date, getLogoUrl()); })
             .then(function (pdf) {
                 /* 1) Real download — fires the Chrome download bar. */
