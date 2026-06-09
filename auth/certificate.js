@@ -4,25 +4,19 @@
  * Auto-loaded by auth/gate.js once the user is signed in. On any page
  * that has a #completion-banner, it injects a "Download Certificate"
  * button. When the module is finished (the banner is revealed) the
- * button is right there; clicking it generates a real PDF in the
- * browser, downloads it to the user's Downloads folder, and emails a
- * copy to the teacher's @aisa.sch.ae address.
+ * button is right there; clicking it opens a print-ready certificate
+ * in a new tab, pre-filled with:
  *
- * Pipeline:
- *   1. Lazy-load jsPDF + html2canvas from cdnjs on first click.
- *   2. Render the certificate in an off-screen iframe so its fonts
- *      and CSS stay isolated from the host page.
- *   3. html2canvas captures the .sheet at 2× scale.
- *   4. jsPDF embeds the canvas as a JPEG into an A4 landscape page
- *      and triggers a Blob download (no pop-up, no print dialog —
- *      shows up directly in Chrome's downloads bar).
- *   5. The same base64 PDF is POSTed to the backend, which emails
- *      it as an attachment via aisaAuth.emailCertificate(). The
- *      server dedups so repeated clicks don't spam the user.
+ *   - the signed-in teacher's name (from the Google session, falling
+ *     back to a title-cased version of their email),
+ *   - the module title (from #completion-banner[data-cert-title], or
+ *     window.AISA_CERT_TITLE, or a cleaned document.title),
+ *   - today's date,
+ *   - two fixed signatures: the Director and the Head of Curriculum.
  *
- * The certificate template (name, module title, date, signatures,
- * decorative frame + seal) is the same as before — only the
- * delivery mechanism changed.
+ * The certificate is produced via the browser's native print-to-PDF,
+ * so there are no external dependencies — it works even when CDN
+ * scripts are blocked.
  */
 (function () {
     'use strict';
@@ -30,39 +24,7 @@
     var DIRECTOR   = { name: 'Dr. Andrew Torris', title: 'Director' };
     var CURRICULUM = { name: 'Amira El Turabi',  title: 'Head of Curriculum, Teaching and Learning' };
 
-    /* CDN libraries for client-side PDF generation. Pinned to specific
-     * versions so the certificate output is reproducible. */
-    var JSPDF_URL       = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    var HTML2CANVAS_URL = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-
-    /* Google Fonts used by the certificate. `display=block` keeps text
-     * invisible (rather than swapped in with a fallback) until the real
-     * font has loaded — critical because html2canvas renders to a
-     * canvas in the *parent* document. If the parent's font registry
-     * doesn't have Great Vibes / Cormorant Garamond ready, the canvas
-     * falls back to Arial while html2canvas measures word boundaries
-     * against the iframe's real-font layout, and the two get out of
-     * sync (overlapping words, eaten spaces, rules cutting through
-     * cursive). We force-load these into the parent page below. */
-    var CERT_FONTS_URL = 'https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Great+Vibes&family=Inter:wght@400;500;600;700&display=block';
-    /* Each entry is a CSS shorthand for document.fonts.load(); covers the
-     * actual sizes/weights the certificate uses. */
-    var CERT_FONT_FACES = [
-        '700 64px "Great Vibes"',
-        '400 64px "Great Vibes"',
-        '400 30px "Great Vibes"',
-        '700 21px "Cormorant Garamond"',
-        '600 21px "Cormorant Garamond"',
-        '500 21px "Cormorant Garamond"',
-        '700 46px "Cormorant Garamond"',
-        '400 15px Inter',
-        '700 14px Inter',
-        '600 13px Inter'
-    ];
-
-    var injected         = false;
-    var libsPromise      = null;
-    var parentFontsPromise = null;
+    var injected = false;
 
     function init() {
         if (injected) return;
@@ -76,14 +38,14 @@
         if (banner.querySelector('.aisa-cert-btn')) return;
         var wrap = document.createElement('div');
         wrap.className = 'aisa-cert-btn-wrap no-print';
-        wrap.style.cssText = 'margin-top:1.25rem;display:flex;flex-direction:column;align-items:center;gap:.5rem;';
+        wrap.style.cssText = 'margin-top:1.25rem;display:flex;justify-content:center;';
 
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'aisa-cert-btn';
         btn.innerHTML =
             '<span aria-hidden="true" style="font-size:1.15em;line-height:1">\u{1F393}</span>' +
-            '<span class="label">Download Your Certificate</span>';
+            '<span>Download Your Certificate</span>';
         btn.style.cssText = [
             'display:inline-flex;align-items:center;gap:.6rem;cursor:pointer;',
             'font-family:inherit;font-size:1rem;font-weight:800;color:#0f172a;',
@@ -91,7 +53,6 @@
             'box-shadow:0 10px 25px -8px rgba(0,0,0,.35);transition:transform .15s,box-shadow .15s;'
         ].join('');
         btn.addEventListener('mouseenter', function () {
-            if (btn.disabled) return;
             btn.style.transform = 'translateY(-2px)';
             btn.style.boxShadow = '0 14px 30px -8px rgba(0,0,0,.45)';
         });
@@ -99,38 +60,21 @@
             btn.style.transform = 'translateY(0)';
             btn.style.boxShadow = '0 10px 25px -8px rgba(0,0,0,.35)';
         });
-
-        var status = document.createElement('div');
-        status.className = 'aisa-cert-btn-status';
-        status.style.cssText = 'font-size:.8rem;font-weight:600;color:#fff;opacity:.85;min-height:1em;text-align:center;';
-
-        btn.addEventListener('click', function () {
-            openCertificate({ button: btn, status: status });
-        });
+        btn.addEventListener('click', function () { openCertificate(); });
 
         wrap.appendChild(btn);
-        wrap.appendChild(status);
         banner.appendChild(wrap);
     }
 
     /* -------- data helpers -------- */
 
-    function getUser() {
-        try {
-            return window.aisaAuth && window.aisaAuth.getUser ? window.aisaAuth.getUser() : null;
-        } catch (e) { return null; }
-    }
-
     function getUserName() {
-        var u = getUser();
-        if (u && u.name && u.name.trim()) return u.name.trim();
-        if (u && u.email) return titleCaseFromEmail(u.email);
+        try {
+            var u = window.aisaAuth && window.aisaAuth.getUser ? window.aisaAuth.getUser() : null;
+            if (u && u.name && u.name.trim()) return u.name.trim();
+            if (u && u.email) return titleCaseFromEmail(u.email);
+        } catch (e) {}
         return 'AISA Educator';
-    }
-
-    function getUserEmail() {
-        var u = getUser();
-        return (u && u.email) ? u.email : '';
     }
 
     function titleCaseFromEmail(email) {
@@ -146,14 +90,8 @@
         if (banner && banner.dataset && banner.dataset.certTitle) return banner.dataset.certTitle;
         if (window.AISA_CERT_TITLE) return window.AISA_CERT_TITLE;
         var t = document.title || 'Professional Development Module';
+        /* Strip a leading "AISA | " / "AISA - " style site prefix. */
         return t.replace(/^\s*AISA\s*[|\-–—:]\s*/i, '').trim() || 'Professional Development Module';
-    }
-
-    function getModuleId() {
-        var banner = document.getElementById('completion-banner');
-        if (banner && banner.dataset && banner.dataset.moduleId) return banner.dataset.moduleId;
-        if (window.AISA_MODULE_ID) return window.AISA_MODULE_ID;
-        return '';
     }
 
     /* Where "Back to Modules" should go from the completion modal.
@@ -186,113 +124,58 @@
         });
     }
 
-    function safeFilenamePart(s) {
-        return String(s || '')
-            .replace(/[\\/:*?"<>|]+/g, '')   // strip filesystem-unsafe chars
-            .replace(/\s+/g, ' ')
-            .trim()
-            .slice(0, 80);
-    }
+    /* -------- certificate window -------- */
 
-    /* -------- CDN library loading -------- */
-
-    function loadScript(src) {
-        return new Promise(function (resolve, reject) {
-            var existing = document.querySelector('script[data-aisa-cert-lib="' + src + '"]');
-            if (existing) {
-                if (existing.dataset.loaded === '1') resolve();
-                else { existing.addEventListener('load', resolve); existing.addEventListener('error', reject); }
-                return;
-            }
-            var s = document.createElement('script');
-            s.src = src;
-            s.async = true;
-            s.setAttribute('data-aisa-cert-lib', src);
-            s.addEventListener('load', function () { s.dataset.loaded = '1'; resolve(); });
-            s.addEventListener('error', function () { reject(new Error('Could not load ' + src)); });
-            document.head.appendChild(s);
-        });
-    }
-
-    function loadLibs() {
-        if (libsPromise) return libsPromise;
-        libsPromise = Promise.all([
-            loadScript(JSPDF_URL),
-            loadScript(HTML2CANVAS_URL)
-        ]).catch(function (err) {
-            libsPromise = null;  // allow retry on transient CDN failure
-            throw err;
-        });
-        return libsPromise;
-    }
-
-    /* Inject the cert's Google Fonts into the *parent* document and
-     * resolve when every face the certificate actually uses has
-     * finished loading. Without this, html2canvas's canvas in the
-     * parent falls back to Arial while the iframe's layout is measured
-     * in Great Vibes / Cormorant Garamond — and the certificate text
-     * comes out overlapping or with collapsed spaces. */
-    function ensureParentFontsLoaded() {
-        if (parentFontsPromise) return parentFontsPromise;
-
-        if (!document.querySelector('link[data-aisa-cert-fonts]')) {
-            var link = document.createElement('link');
-            link.rel  = 'stylesheet';
-            link.href = CERT_FONTS_URL;
-            link.setAttribute('data-aisa-cert-fonts', '1');
-            document.head.appendChild(link);
+    function openCertificate(opts) {
+        opts = (opts && typeof opts === 'object' && opts.nodeType === undefined) ? opts : {};
+        var name  = opts.name  || getUserName();
+        var title = opts.title || getModuleTitle();
+        var html = buildCertHtml(name, title, todayString(), getLogoUrl());
+        var w = window.open('', '_blank');
+        if (!w) {
+            alert('Please allow pop-ups for this site to download your certificate.');
+            return;
         }
-
-        parentFontsPromise = new Promise(function (resolve) {
-            function loadAll() {
-                if (!document.fonts || !document.fonts.load) { resolve(); return; }
-                var jobs = CERT_FONT_FACES.map(function (spec) {
-                    /* document.fonts.load returns a promise that resolves with
-                     * the loaded FontFace[]; errors here shouldn't block — we
-                     * just settle and let html2canvas use the best it can. */
-                    return document.fonts.load(spec).catch(function () { return null; });
-                });
-                Promise.all(jobs).then(function () {
-                    /* One extra ready-fence so the registry is fully updated. */
-                    (document.fonts.ready || Promise.resolve()).then(function () { resolve(); });
-                });
-            }
-            /* The browser may not have parsed the @font-face rules from the
-             * link yet — settle a tick first so document.fonts.load() sees
-             * the families it's being asked to fetch. */
-            setTimeout(loadAll, 30);
-        });
-        return parentFontsPromise;
+        w.document.open();
+        w.document.write(html);
+        w.document.close();
     }
 
-    /* -------- certificate template (capture-friendly) -------- */
+    function signatureBlock(person) {
+        return '' +
+            '<div class="sig">' +
+                '<div class="sig-name">' + esc(person.name) + '</div>' +
+                '<div class="sig-rule"></div>' +
+                '<div class="sig-person">' + esc(person.name) + '</div>' +
+                '<div class="sig-title">' + esc(person.title) + '</div>' +
+            '</div>';
+    }
 
-    /* Build a complete HTML document containing just the certificate
-     * sheet, no toolbar, no auto-print. Loaded into the off-screen
-     * iframe used for html2canvas capture. */
-    function buildCaptureHtml(name, title, date, logo) {
+    function buildCertHtml(name, title, date, logo) {
         var logoTag = logo
-            ? '<img src="' + esc(logo) + '" alt="AISA" class="logo" crossorigin="anonymous" />'
+            ? '<img src="' + esc(logo) + '" alt="AISA" class="logo" />'
             : '<div class="logo-fallback">AISA</div>';
 
         return '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8" />' +
+            '<title>Certificate of Completion — ' + esc(name) + '</title>' +
             '<meta name="viewport" content="width=device-width, initial-scale=1" />' +
             '<link rel="preconnect" href="https://fonts.googleapis.com">' +
             '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
-            '<link href="' + esc(CERT_FONTS_URL) + '" rel="stylesheet">' +
+            '<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Great+Vibes&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">' +
             '<style>' +
+            '@page{size:A4 landscape;margin:0;}' +
             '*{box-sizing:border-box;}' +
-            'html,body{margin:0;padding:0;background:transparent;}' +
-            /* Disable kerning + ligatures and force geometric text rendering
-             * so html2canvas measures and draws each character at the same
-             * x-position. With these off, glyph advance widths match the
-             * canvas\'s fillText() output and we avoid overlap / eaten-space
-             * artifacts. */
-            'body{font-family:"Inter",system-ui,sans-serif;font-kerning:none;' +
-                'font-feature-settings:"liga" 0,"clig" 0,"calt" 0,"kern" 0;' +
-                'text-rendering:geometricPrecision;-webkit-font-smoothing:antialiased;}' +
-            '.sheet{position:relative;width:1122px;height:794px;' +
-                'background:#fffdf8;padding:54px 64px;overflow:hidden;}' +
+            'html,body{margin:0;padding:0;}' +
+            'body{font-family:"Inter",system-ui,sans-serif;background:#475569;' +
+                'display:flex;flex-direction:column;align-items:center;padding:24px;}' +
+            '.toolbar{display:flex;gap:.75rem;margin-bottom:18px;}' +
+            '.toolbar button{font:inherit;font-weight:700;cursor:pointer;border:none;' +
+                'padding:.7rem 1.4rem;border-radius:9999px;}' +
+            '.toolbar .print{background:#0f172a;color:#fff;}' +
+            '.toolbar .close{background:#e2e8f0;color:#0f172a;}' +
+            '.sheet{position:relative;width:1122px;max-width:100%;aspect-ratio:1.414/1;' +
+                'background:#fffdf8;box-shadow:0 30px 60px -20px rgba(0,0,0,.5);' +
+                'padding:54px 64px;overflow:hidden;}' +
             '.frame{position:absolute;inset:18px;border:2px solid #c8a24a;}' +
             '.frame:before{content:"";position:absolute;inset:7px;border:1px solid #d8c081;}' +
             '.inner{position:relative;height:100%;display:flex;flex-direction:column;' +
@@ -304,33 +187,33 @@
                 'font-size:46px;color:#0b2545;letter-spacing:.02em;margin:14px 0 2px;}' +
             '.cert-sub{font-size:13px;letter-spacing:.28em;text-transform:uppercase;color:#64748b;margin-bottom:18px;}' +
             '.awarded{font-size:15px;color:#475569;margin-bottom:6px;}' +
-            /* Cursive headline: extra line-height so the ascenders/descenders
-             * have room (Great Vibes glyphs extend well past the line box at
-             * default heights, which causes the gold rule to slice through
-             * the name when html2canvas snapshots). */
-            '.name{font-family:"Great Vibes",cursive;font-size:64px;line-height:1.35;' +
-                'color:#0b2545;margin:0 0 4px;padding:6px 0 10px;}' +
-            '.name-rule{width:60%;max-width:520px;height:1px;background:#c8a24a;margin:6px auto 18px;}' +
+            '.name{font-family:"Great Vibes",cursive;font-size:64px;line-height:1.05;' +
+                'color:#0b2545;margin:2px 0 6px;}' +
+            '.name-rule{width:60%;max-width:520px;height:1px;background:#c8a24a;margin:0 auto 18px;}' +
             '.body-text{font-family:"Cormorant Garamond",serif;font-size:21px;color:#334155;' +
-                'max-width:760px;line-height:1.5;margin:0 auto;white-space:normal;}' +
+                'max-width:760px;line-height:1.5;margin:0 auto;}' +
             '.body-text .module{font-weight:700;color:#0b2545;}' +
             '.meta{margin-top:14px;font-size:14px;color:#64748b;}' +
             '.spacer{flex:1;}' +
             '.sigs{display:flex;justify-content:center;gap:120px;width:100%;margin-top:8px;}' +
             '.sig{display:flex;flex-direction:column;align-items:center;min-width:240px;}' +
-            /* Same breathing-room treatment for signature names. */
-            '.sig-name{font-family:"Great Vibes",cursive;font-size:30px;color:#0b2545;' +
-                'line-height:1.4;padding:4px 0 6px;}' +
-            '.sig-rule{width:230px;height:1px;background:#94a3b8;margin:6px 0 7px;}' +
+            '.sig-name{font-family:"Great Vibes",cursive;font-size:30px;color:#0b2545;height:34px;line-height:34px;}' +
+            '.sig-rule{width:230px;height:1px;background:#94a3b8;margin:4px 0 7px;}' +
             '.sig-person{font-weight:700;font-size:14px;color:#0f172a;}' +
             '.sig-title{font-size:12px;color:#64748b;margin-top:2px;max-width:240px;}' +
             '.seal{position:absolute;right:64px;bottom:58px;width:96px;height:96px;border-radius:50%;' +
                 'background:radial-gradient(circle at 50% 40%,#e7c873,#c8a24a);color:#0b2545;' +
                 'display:flex;flex-direction:column;align-items:center;justify-content:center;' +
-                'border:3px solid #fffdf8;}' +
+                'box-shadow:0 6px 14px -4px rgba(0,0,0,.4);border:3px solid #fffdf8;}' +
             '.seal b{font-size:13px;letter-spacing:.14em;}' +
             '.seal span{font-size:9px;letter-spacing:.18em;text-transform:uppercase;margin-top:2px;}' +
+            '@media print{body{background:#fff;padding:0;}.toolbar{display:none;}' +
+                '.sheet{box-shadow:none;width:100%;height:100vh;max-width:none;}}' +
             '</style></head><body>' +
+            '<div class="toolbar">' +
+                '<button class="print" onclick="window.print()">\u{1F4BE} Print / Save as PDF</button>' +
+                '<button class="close" onclick="window.close()">Close</button>' +
+            '</div>' +
             '<div class="sheet"><div class="frame"></div><div class="inner">' +
                 logoTag +
                 '<div class="org">American International School in Abu Dhabi</div>' +
@@ -349,190 +232,8 @@
                 '</div>' +
                 '<div class="seal"><b>AISA</b><span>Certified</span></div>' +
             '</div></div>' +
+            '<script>window.addEventListener("load",function(){setTimeout(function(){try{window.focus();window.print();}catch(e){}} ,400);});<\/script>' +
             '</body></html>';
-    }
-
-    function signatureBlock(person) {
-        return '' +
-            '<div class="sig">' +
-                '<div class="sig-name">' + esc(person.name) + '</div>' +
-                '<div class="sig-rule"></div>' +
-                '<div class="sig-person">' + esc(person.name) + '</div>' +
-                '<div class="sig-title">' + esc(person.title) + '</div>' +
-            '</div>';
-    }
-
-    /* -------- PDF generation -------- */
-
-    /* Render the certificate inside an off-screen iframe at its natural
-     * pixel size, wait for fonts + the logo to load, then html2canvas
-     * the sheet and embed it in an A4-landscape jsPDF. Returns the
-     * jsPDF instance so the caller can `.save()` it and grab base64. */
-    function generateCertPdf(name, title, date, logo) {
-        var iframe = document.createElement('iframe');
-        iframe.setAttribute('aria-hidden', 'true');
-        iframe.setAttribute('tabindex', '-1');
-        iframe.style.cssText = [
-            'position:fixed;left:-100000px;top:0;',
-            'width:1122px;height:794px;',
-            'border:0;opacity:0;pointer-events:none;'
-        ].join('');
-        document.body.appendChild(iframe);
-
-        var doc = iframe.contentDocument;
-        doc.open();
-        doc.write(buildCaptureHtml(name, title, date, logo));
-        doc.close();
-
-        function waitForAssets() {
-            return new Promise(function (resolve) {
-                var iframeFontsReady = (doc.fonts && doc.fonts.ready) || Promise.resolve();
-                /* Same explicit per-face load inside the iframe so its
-                 * layout is finalised before we snapshot it. */
-                var iframeFontLoads = (doc.fonts && doc.fonts.load)
-                    ? Promise.all(CERT_FONT_FACES.map(function (spec) {
-                        return doc.fonts.load(spec).catch(function () { return null; });
-                    }))
-                    : Promise.resolve();
-                var logoImg = doc.querySelector('img.logo');
-                var imgReady = (!logoImg || logoImg.complete)
-                    ? Promise.resolve()
-                    : new Promise(function (r) {
-                        logoImg.onload = r;
-                        logoImg.onerror = r;
-                    });
-                Promise.all([iframeFontLoads, iframeFontsReady, imgReady]).then(function () {
-                    /* Two paint frames + a small buffer so the iframe's
-                     * font-display:block swap has fully committed before
-                     * html2canvas walks the DOM. */
-                    requestAnimationFrame(function () {
-                        requestAnimationFrame(function () { setTimeout(resolve, 120); });
-                    });
-                });
-            });
-        }
-
-        return waitForAssets().then(function () {
-            var sheet = doc.querySelector('.sheet');
-            return window.html2canvas(sheet, {
-                scale: 2,
-                backgroundColor: '#fffdf8',
-                useCORS: true,
-                logging: false,
-                /* Match the iframe's intrinsic layout so html2canvas's
-                 * cloned document lays out the .sheet identically. */
-                windowWidth:  1122,
-                windowHeight: 794,
-                /* Render via SVG <foreignObject>: lets the browser's own
-                 * text engine paint the characters, which respects our
-                 * loaded Great Vibes / Cormorant Garamond metrics. The
-                 * library still falls back to the canvas path if the
-                 * SVG round-trip fails. */
-                foreignObjectRendering: true
-            });
-        }).then(function (canvas) {
-            if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-            var jsPDFCtor = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
-            if (!jsPDFCtor) throw new Error('jsPDF not available');
-            var pdf = new jsPDFCtor({ orientation: 'landscape', unit: 'mm', format: 'a4', compress: true });
-            var imgData = canvas.toDataURL('image/jpeg', 0.92);
-            pdf.addImage(imgData, 'JPEG', 0, 0, 297, 210);
-            return pdf;
-        }).catch(function (err) {
-            if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-            throw err;
-        });
-    }
-
-    /* -------- public open() flow -------- */
-
-    /* opts:
-     *   name, title, moduleId  — overrides for cert content
-     *   button, status         — DOM elements to reflect progress in
-     *                            (used by the inline banner button)
-     *   onStatus(state, msg)   — optional callback for the completion
-     *                            modal so it can update its own copy
-     */
-    function openCertificate(opts) {
-        opts = (opts && typeof opts === 'object' && opts.nodeType === undefined) ? opts : {};
-        var name     = opts.name     || getUserName();
-        var title    = opts.title    || getModuleTitle();
-        var moduleId = opts.moduleId || getModuleId();
-        var date     = todayString();
-        var filename = 'AISA Certificate - ' + safeFilenamePart(title) + ' - ' + safeFilenamePart(name) + '.pdf';
-
-        var button     = opts.button || null;
-        var statusEl   = opts.status || null;
-        var onStatus   = typeof opts.onStatus === 'function' ? opts.onStatus : null;
-
-        function setStatus(state, msg) {
-            if (statusEl) statusEl.textContent = msg || '';
-            if (button) {
-                var label = button.querySelector('.label');
-                if (state === 'preparing') {
-                    button.disabled = true;
-                    button.style.opacity = '.85';
-                    if (label) label.textContent = 'Preparing your certificate…';
-                } else if (state === 'done' || state === 'emailed' || state === 'downloaded-only') {
-                    button.disabled = false;
-                    button.style.opacity = '1';
-                    if (label) label.textContent = 'Download Again';
-                } else if (state === 'error') {
-                    button.disabled = false;
-                    button.style.opacity = '1';
-                    if (label) label.textContent = 'Try Again';
-                }
-            }
-            if (onStatus) onStatus(state, msg);
-        }
-
-        setStatus('preparing', 'Generating your certificate…');
-
-        Promise.all([loadLibs(), ensureParentFontsLoaded()])
-            .then(function () { return generateCertPdf(name, title, date, getLogoUrl()); })
-            .then(function (pdf) {
-                /* 1) Real download — fires the Chrome download bar. */
-                pdf.save(filename);
-
-                /* 2) Email a copy via the backend. Fire-and-forget so
-                 *    a network blip doesn't undo the local download. */
-                var base64 = '';
-                try {
-                    var dataUri = pdf.output('datauristring');
-                    base64 = dataUri.split(',')[1] || '';
-                } catch (e) {}
-
-                if (!base64 || !window.aisaAuth || typeof window.aisaAuth.emailCertificate !== 'function') {
-                    setStatus('downloaded-only', 'Saved to your downloads.');
-                    return;
-                }
-
-                setStatus('preparing', 'Emailing you a copy…');
-                return window.aisaAuth.emailCertificate({
-                    module_id:    moduleId || '',
-                    module_title: title,
-                    filename:     filename,
-                    pdf_base64:   base64
-                }).then(function (r) {
-                    var email = getUserEmail();
-                    if (r && r.already_sent) {
-                        setStatus('emailed', email
-                            ? 'Saved. A copy was already emailed to ' + email + '.'
-                            : 'Saved. A copy was already emailed to you.');
-                    } else {
-                        setStatus('emailed', email
-                            ? 'Saved. Also emailed to ' + email + '.'
-                            : 'Saved. Also emailed to you.');
-                    }
-                }).catch(function (err) {
-                    console.warn('AISA: certificate email failed', err);
-                    setStatus('downloaded-only', 'Saved to your downloads (email failed — try again).');
-                });
-            })
-            .catch(function (err) {
-                console.warn('AISA: certificate generation failed', err);
-                setStatus('error', 'Could not generate the certificate. Please try again.');
-            });
     }
 
     /* -------- completion celebration modal -------- */
@@ -570,8 +271,7 @@
             'font:inherit;font-weight:800;cursor:pointer;border:1px solid transparent;',
             'padding:.85rem 1.25rem;border-radius:.75rem;transition:all .15s;}',
             '.aisa-cert-modal-btn.primary{background:linear-gradient(135deg,#10b981,#06b6d4);color:#fff;}',
-            '.aisa-cert-modal-btn.primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 12px 24px -8px rgba(6,182,212,.5);}',
-            '.aisa-cert-modal-btn.primary:disabled{opacity:.75;cursor:default;}',
+            '.aisa-cert-modal-btn.primary:hover{transform:translateY(-1px);box-shadow:0 12px 24px -8px rgba(6,182,212,.5);}',
             '.aisa-cert-modal-btn.ghost{background:transparent;color:#64748b;font-weight:600;}',
             '.aisa-cert-modal-btn.ghost:hover{color:#0f172a;}',
             '.aisa-cert-modal-close{position:absolute;top:.75rem;right:.75rem;background:transparent;',
@@ -604,7 +304,7 @@
                 '<div class="aisa-cert-modal-badge">Module Complete</div>' +
                 '<h2 class="aisa-cert-modal-title">Congratulations!</h2>' +
                 '<p class="aisa-cert-modal-text">You’ve completed <b>' + esc(getModuleTitle()) + '</b>.<br>' +
-                    'Download your certificate — we’ll also email you a copy.</p>' +
+                    'Download your certificate, then head back to choose your next module.</p>' +
                 '<div class="aisa-cert-modal-actions">' +
                     '<button class="aisa-cert-modal-btn primary" type="button" data-action="download">' +
                         '\u{1F393} Download Certificate</button>' +
@@ -618,10 +318,6 @@
         }
         function goBack() { window.location.href = modulesUrl; }
 
-        var textEl    = overlay.querySelector('.aisa-cert-modal-text');
-        var actionsEl = overlay.querySelector('.aisa-cert-modal-actions');
-        var btn       = overlay.querySelector('[data-action="download"]');
-
         overlay.querySelector('.aisa-cert-modal-close').addEventListener('click', close);
         overlay.addEventListener('click', function (e) {
             if (e.target === overlay) close();  // click backdrop to dismiss
@@ -629,33 +325,20 @@
         overlay.querySelector('[data-action="back"]').addEventListener('click', function (e) {
             e.preventDefault(); goBack();
         });
-
-        btn.addEventListener('click', function () {
-            openCertificate({
-                button: null,
-                status: null,
-                onStatus: function (state, msg) {
-                    if (state === 'preparing') {
-                        btn.disabled = true;
-                        btn.innerHTML = '<span aria-hidden="true">\u{231B}</span> ' + esc(msg || 'Preparing…');
-                    } else if (state === 'emailed' || state === 'downloaded-only') {
-                        btn.disabled = false;
-                        btn.innerHTML = '\u{1F393} Download Again';
-                        if (textEl) textEl.textContent = msg || 'Saved to your downloads.';
-                        /* Pivot CTAs once the certificate is in hand. */
-                        var backBtn = document.createElement('button');
-                        backBtn.type = 'button';
-                        backBtn.className = 'aisa-cert-modal-btn ghost';
-                        backBtn.textContent = '← Back to Modules';
-                        backBtn.addEventListener('click', goBack);
-                        actionsEl.appendChild(backBtn);
-                    } else if (state === 'error') {
-                        btn.disabled = false;
-                        btn.innerHTML = '\u{1F504} Try Again';
-                        if (textEl) textEl.textContent = msg || 'Something went wrong. Please try again.';
-                    }
-                }
-            });
+        overlay.querySelector('[data-action="download"]').addEventListener('click', function () {
+            openCertificate();
+            /* After the cert opens in its own tab, make returning to the
+             * module list the clear, prominent next step. */
+            var actions = overlay.querySelector('.aisa-cert-modal-actions');
+            var text = overlay.querySelector('.aisa-cert-modal-text');
+            if (text) text.innerHTML = 'Your certificate opened in a new tab — use ' +
+                '<b>Print → Save as PDF</b> there to keep it.';
+            actions.innerHTML =
+                '<button class="aisa-cert-modal-btn primary" type="button" data-action="back2">' +
+                    '← Back to Modules</button>' +
+                '<button class="aisa-cert-modal-btn ghost" type="button" data-action="stay">Stay on this page</button>';
+            actions.querySelector('[data-action="back2"]').addEventListener('click', goBack);
+            actions.querySelector('[data-action="stay"]').addEventListener('click', close);
         });
     }
 
@@ -669,8 +352,8 @@
     });
 
     /* Public API:
-     *   open(opts)   — generate + download the certificate (opts.title
-     *                  to override the module name; used by dashboards).
+     *   open(opts)   — open the print certificate directly (opts.title to
+     *                  override the module name; used by dashboards).
      *   celebrate()  — force the completion modal (used by "Finish
      *                  training" so it always does something, even on a
      *                  revisit where the backend event won't re-fire). */
