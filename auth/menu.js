@@ -508,6 +508,9 @@
                     '<button class="aisa-tb-btn aisa-tb-back" type="button" aria-label="Back">' + ICONS.back + '</button>' +
                     '<button class="aisa-tb-btn aisa-tb-home" type="button" aria-label="Home">' + ICONS.home + '</button>' +
                     '<button class="aisa-tb-btn aisa-tb-menu" type="button" aria-label="Open menu">' + ICONS.menu + '</button>' +
+                    '<a class="aisa-tb-admin" href="' + rootUrl('admin-dashboard.html') + '" aria-label="Admin">' +
+                        ICONS.admin + '<span class="label">Admin</span>' +
+                    '</a>' +
                 '</div>' +
                 '<button class="aisa-tb-searchpill" type="button" aria-label="Search the Learning Hub">' +
                     ICONS.search +
@@ -519,9 +522,6 @@
                         '<button class="aisa-tb-lang" type="button" aria-label="Switch language">' +
                             ICONS.globe + '<span class="aisa-tb-lang-label"></span>' +
                         '</button>' +
-                        '<a class="aisa-tb-admin" href="' + rootUrl('admin-dashboard.html') + '" aria-label="Admin">' +
-                            ICONS.admin + '<span class="label">Admin</span>' +
-                        '</a>' +
                         '<button class="aisa-tb-btn aisa-tb-bell" type="button" aria-label="Notifications">' +
                             ICONS.bell + '<b class="aisa-tb-badge" aria-hidden="true"></b>' +
                         '</button>' +
