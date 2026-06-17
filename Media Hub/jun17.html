@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Digital Lion Newsletter — June 17</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: { primary: '#0b2545', secondary: '#0891b2', accent: '#f59e0b' },
+                        animation: { 'blob': 'blob 7s infinite' },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(8, 47, 73, 0.25); }
+        .hero-gradient { background: linear-gradient(135deg, #0a1929 0%, #0b3559 35%, #0e6e91 75%, #0891b2 100%); }
+        .hero-overlay {
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(34, 211, 238, 0.18) 0, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(251, 191, 36, 0.15) 0, transparent 45%);
+        }
+
+        /* --- Headline CTA: pulsing amber glow on the "open dashboard" button --- */
+        .hub-cta {
+            animation: hubPulse 2.4s ease-in-out infinite;
+        }
+        @keyframes hubPulse {
+            0%, 100% { box-shadow: 0 6px 18px 0 rgba(245, 158, 11, 0.55), 0 0 0 0 rgba(245, 158, 11, 0.5); }
+            50%      { box-shadow: 0 12px 30px 0 rgba(245, 158, 11, 0.65), 0 0 0 14px rgba(245, 158, 11, 0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hub-cta { animation: none; }
+        }
+
+        /* --- Bilingual toggle: show only the active language --- */
+        html[lang="en"] .lang-ar { display: none !important; }
+        html[lang="ar"] .lang-en { display: none !important; }
+
+        /* Arabic typography */
+        html[lang="ar"] body,
+        html[lang="ar"] .font-heading { font-family: 'Cairo', 'Inter', sans-serif; }
+        html[lang="ar"] .uppercase { text-transform: none; letter-spacing: normal; }
+        html[lang="ar"] .tracking-widest,
+        html[lang="ar"] .tracking-wider { letter-spacing: normal; }
+
+        /* RTL flow: flip directional margins and arrow icons */
+        html[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+        html[dir="rtl"] .mr-1\.5 { margin-right: 0; margin-left: 0.375rem; }
+        html[dir="rtl"] .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+        html[dir="rtl"] .mr-3 { margin-right: 0; margin-left: 0.75rem; }
+        html[dir="rtl"] .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+        html[dir="rtl"] .text-left { text-align: right; }
+
+        /* Language toggle pill */
+        .lang-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 700;
+            font-size: 0.75rem;
+            padding: 0.45rem 0.9rem;
+            border-radius: 9999px;
+            background: linear-gradient(135deg, #7e22ce, #ec4899);
+            color: #fff;
+            box-shadow: 0 4px 14px -4px rgba(126, 34, 206, 0.45);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .lang-toggle:hover { transform: translateY(-1px); box-shadow: 0 6px 18px -4px rgba(126, 34, 206, 0.55); }
+    </style>
+    <script src="../auth/gate.js?v=12"></script>
+</head>
+<body class="bg-slate-50 text-gray-800 min-h-screen flex flex-col">
+
+<!-- Hero -->
+    <section class="hero-gradient text-white relative overflow-hidden">
+        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
+        <div class="absolute -top-20 -left-20 w-72 h-72 bg-cyan-400/25 rounded-full blur-3xl animate-blob"></div>
+        <div class="absolute -bottom-24 -right-16 w-80 h-80 bg-amber-300/25 rounded-full blur-3xl animate-blob" style="animation-delay: 2s;"></div>
+        <div class="container mx-auto px-6 py-12 md:py-16 relative z-10 max-w-4xl">
+            <figure class="mb-8 flex justify-center">
+                <img src="the_digital_lion_logo.png" alt="Digital Lion — AISA's Teaching &amp; Learning newsletter" class="w-full max-w-2xl rounded-2xl shadow-2xl border border-white/20">
+            </figure>
+            <p class="text-xs font-bold uppercase tracking-widest text-amber-300 text-center mb-4">
+                <span class="lang-en">Issue No. 4 &middot; June 17</span>
+                <span class="lang-ar">العدد الرابع · ١٧ يونيو</span>
+            </p>
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-5 drop-shadow-lg text-center">
+                <span class="lang-en">Year-end roundup — what's new on the Hub, in Workspace, and from ADEK</span>
+                <span class="lang-ar">حصيلة نهاية العام — ما الجديد في المركز، وفي Workspace، ومن ADEK</span>
+            </h2>
+            <p class="text-lg md:text-xl max-w-3xl mx-auto text-cyan-50 drop-shadow text-center">
+                <span class="lang-en">The Learning Hub now signs you in and remembers your progress, Gemini will run your calendar for you, and a handful of important ADEK dates land in August and September.</span>
+                <span class="lang-ar">أصبح مركز التعلم يسجّل دخولكم ويحفظ تقدّمكم في الوحدات، وسيتولّى Gemini إدارة تقويمكم، وهناك مواعيد مهمّة من ADEK في أغسطس وسبتمبر.</span>
+            </p>
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm">
+                <span class="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3 py-1 font-semibold">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span class="lang-en">June 17</span>
+                    <span class="lang-ar">١٧ يونيو</span>
+                </span>
+                <span class="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3 py-1 font-semibold">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-5.13a4 4 0 11-8 0 4 4 0 018 0zm6 3a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span class="lang-en">For All Staff</span>
+                    <span class="lang-ar">لجميع الطاقم</span>
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main -->
+    <main class="flex-grow">
+        <div class="container mx-auto px-6 py-14 max-w-4xl">
+
+            <!-- Section: Hub upgrade — auth + progress tracking + SLT admins -->
+            <section class="bg-gradient-to-br from-amber-50 via-white to-cyan-50 rounded-2xl shadow-lg border-t-8 border-amber-500 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-200 via-amber-100 to-cyan-100 flex items-center justify-center">
+                            <span class="text-3xl">🔐</span>
+                        </div>
+                        <span class="inline-block bg-amber-100 text-amber-900 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">Big Change · Read This One</span>
+                            <span class="lang-ar">تغيير مهم · لا تفوّتوه</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-heading font-bold text-amber-900 mb-2">
+                            <span class="lang-en">The Hub now signs you in — and remembers what you've finished</span>
+                            <span class="lang-ar">المركز يسجّل دخولكم الآن — ويتذكّر ما أنجزتموه</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-3">
+                            <span class="lang-en">The Learning Hub is now <strong>email-authenticated</strong>. You'll sign in once with your <strong>@aisa.sch.ae</strong> account, and from then on every PD module, training, and certificate you complete is saved against your name. Close the tab, come back tomorrow, and your progress is still there.</span>
+                            <span class="lang-ar">أصبح مركز التعلم الآن <strong>محميًا بالبريد المؤسّسيّ</strong>. تسجّلون الدخول مرّة واحدة باستخدام حساب <strong>@aisa.sch.ae</strong>، وبعدها يُحفظ كلّ ما تنجزونه من وحدات تطوير مهنيّ وتدريبات وشهادات تحت اسمكم. أغلقوا التبويب وعودوا غدًا — يبقى تقدّمكم محفوظًا.</span>
+                        </p>
+                        <ul class="text-sm text-gray-700 space-y-1.5 mb-5">
+                            <li class="flex items-start"><span class="text-amber-600 mr-2">✓</span>
+                                <span class="lang-en"><strong>Sign in once.</strong> Your @aisa.sch.ae Google account is the key — no separate password to remember.</span>
+                                <span class="lang-ar"><strong>تسجيل دخول واحد.</strong> حساب Google الخاصّ بـ @aisa.sch.ae هو المفتاح — لا توجد كلمة سرّ منفصلة تحتاجون إلى تذكّرها.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-amber-600 mr-2">✓</span>
+                                <span class="lang-en"><strong>Module progress is saved.</strong> Start a module, get pulled into a meeting, finish it later from the same spot.</span>
+                                <span class="lang-ar"><strong>يُحفظ تقدّم الوحدات تلقائيًا.</strong> ابدأوا وحدة، انشغلوا باجتماع، ثم أكملوا لاحقًا من النقطة نفسها.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-amber-600 mr-2">✓</span>
+                                <span class="lang-en"><strong>SLT is being added as admins.</strong> They can see Hub-wide completion data and post school-wide notifications when something matters — like the Chalkie.ai feedback survey landing later this week.</span>
+                                <span class="lang-ar"><strong>سيُضاف فريق القيادة (SLT) كمشرفين.</strong> سيتمكّنون من الاطّلاع على بيانات الإنجاز عبر المركز ونشر إشعارات على مستوى المدرسة عند الحاجة — مثل استبيان رأيكم في Chalkie.ai الذي سيصل خلال هذا الأسبوع.</span>
+                            </li>
+                            <li class="flex items-start"><span class="text-amber-600 mr-2">✓</span>
+                                <span class="lang-en"><strong>Nothing else changes.</strong> Same URLs, same pages, same content. You'll just see a Google sign-in the first time you land.</span>
+                                <span class="lang-ar"><strong>لا شيء آخر يتغيّر.</strong> الروابط نفسها، والصفحات نفسها، والمحتوى نفسه. ستظهر لكم فقط شاشة تسجيل دخول Google في المرّة الأولى.</span>
+                            </li>
+                        </ul>
+                        <div class="rounded-2xl bg-gradient-to-br from-amber-100 via-orange-50 to-amber-100 border-2 border-amber-300 p-5 md:p-6 shadow-md">
+                            <div class="flex flex-col md:flex-row md:items-center gap-5">
+                                <div class="flex-1">
+                                    <p class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-extrabold text-amber-800 bg-amber-200/70 rounded-full px-3 py-1 mb-2">
+                                        <span>📊</span>
+                                        <span class="lang-en">New &middot; Your Dashboard</span>
+                                        <span class="lang-ar">جديد · لوحة التحكّم الخاصّة بكم</span>
+                                    </p>
+                                    <p class="font-heading font-extrabold text-lg md:text-xl text-amber-950 leading-tight">
+                                        <span class="lang-en">See your progress on a single page</span>
+                                        <span class="lang-ar">شاهدوا تقدّمكم في صفحة واحدة</span>
+                                    </p>
+                                    <p class="text-xs md:text-sm text-amber-900/80 mt-1.5">
+                                        <span class="lang-en">Modules completed, certificates earned, and what's next — all in one view.</span>
+                                        <span class="lang-ar">الوحدات المُنجَزة، والشهادات المكتسبة، والخطوة التالية — في صفحة واحدة.</span>
+                                    </p>
+                                </div>
+                                <a href="../dashboard.html" class="hub-cta inline-flex items-center justify-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 text-white py-4 px-7 rounded-full text-base md:text-lg font-extrabold hover:from-amber-600 hover:to-orange-600 transition-all whitespace-nowrap shrink-0">
+                                    <span>📊</span>
+                                    <span class="lang-en">Open your Dashboard</span>
+                                    <span class="lang-ar">افتحوا لوحة التحكّم</span>
+                                    <svg class="w-5 h-5 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Gemini in Calendar — schedule, modify, cancel meetings -->
+            <section class="bg-white rounded-2xl shadow-lg border-t-8 border-cyan-600 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-cyan-50 flex items-center justify-center">
+                            <span class="text-3xl">📅</span>
+                        </div>
+                        <span class="inline-block bg-cyan-100 text-cyan-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">Workspace Update</span>
+                            <span class="lang-ar">تحديث Workspace</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-heading font-bold text-cyan-900 mb-2">
+                            <span class="lang-en">Gemini can now schedule, modify, and cancel your meetings — directly</span>
+                            <span class="lang-ar">يستطيع Gemini الآن جدولة اجتماعاتكم وتعديلها وإلغاءها مباشرةً</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-3">
+                            <span class="lang-en">No more bouncing between Calendar tabs to find a free slot. Open the <strong>Gemini side panel in Google Calendar</strong> (the little spark icon) and just ask:</span>
+                            <span class="lang-ar">لا حاجة للتنقّل بين تبويبات التقويم بحثًا عن موعد فارغ. افتحوا <strong>قائمة Gemini الجانبيّة داخل Google Calendar</strong> (أيقونة الشرارة الصغيرة) واطلبوا مباشرةً:</span>
+                        </p>
+                        <div class="grid sm:grid-cols-3 gap-3 mb-5">
+                            <div class="rounded-xl bg-cyan-50 border border-cyan-200 p-4">
+                                <p class="text-[10px] font-extrabold uppercase tracking-widest text-cyan-700 mb-1.5">
+                                    <span class="lang-en">Schedule</span>
+                                    <span class="lang-ar">جدوِلة</span>
+                                </p>
+                                <p class="text-sm text-cyan-950 leading-snug">
+                                    <span class="lang-en">"Book a 30-min sync with Sara next Tuesday afternoon."</span>
+                                    <span class="lang-ar">"اجعل اجتماعًا قصيرًا (٣٠ دقيقة) مع سارة بعد ظهر الثلاثاء القادم."</span>
+                                </p>
+                            </div>
+                            <div class="rounded-xl bg-blue-50 border border-blue-200 p-4">
+                                <p class="text-[10px] font-extrabold uppercase tracking-widest text-blue-700 mb-1.5">
+                                    <span class="lang-en">Modify</span>
+                                    <span class="lang-ar">تعديل</span>
+                                </p>
+                                <p class="text-sm text-blue-950 leading-snug">
+                                    <span class="lang-en">"Move my last meeting today with Ahmed to Thursday at 2pm."</span>
+                                    <span class="lang-ar">"انقل آخر اجتماعاتي اليوم مع أحمد إلى الخميس الساعة الثانية ظهرًا."</span>
+                                </p>
+                            </div>
+                            <div class="rounded-xl bg-indigo-50 border border-indigo-200 p-4">
+                                <p class="text-[10px] font-extrabold uppercase tracking-widest text-indigo-700 mb-1.5">
+                                    <span class="lang-en">Cancel</span>
+                                    <span class="lang-ar">إلغاء</span>
+                                </p>
+                                <p class="text-sm text-indigo-950 leading-snug">
+                                    <span class="lang-en">"Cancel my next meeting with the curriculum team."</span>
+                                    <span class="lang-ar">"ألغِ اجتماعي القادم مع فريق المناهج."</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-3">
+                            <a href="https://calendar.google.com" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-cyan-700 text-white py-2.5 px-5 rounded-full text-sm font-semibold hover:bg-cyan-800 transition-colors shadow-md">
+                                <span class="lang-en">Open Google Calendar</span>
+                                <span class="lang-ar">افتحوا Google Calendar</span>
+                                <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            </a>
+                            <a href="https://support.google.com/gemini/answer/15305236" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-white border border-cyan-200 text-cyan-800 py-2.5 px-5 rounded-full text-sm font-semibold hover:bg-cyan-50 transition-colors">
+                                <span class="lang-en">Read the Google guide</span>
+                                <span class="lang-ar">اطّلعوا على دليل Google</span>
+                                <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Google Drive mobile — hover scanner -->
+            <section class="bg-white rounded-2xl shadow-lg border-t-8 border-emerald-500 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-emerald-50 flex items-center justify-center">
+                            <span class="text-3xl">📸</span>
+                        </div>
+                        <span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">Mobile · Try Today</span>
+                            <span class="lang-ar">للموبايل · جرّبوها اليوم</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-heading font-bold text-emerald-900 mb-2">
+                            <span class="lang-en">Google Drive mobile — hover your camera, get a clean PDF</span>
+                            <span class="lang-ar">تطبيق Google Drive للموبايل — مرّروا الكاميرا واحصلوا على PDF نظيف</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-3">
+                            <span class="lang-en">The Drive mobile app's scanner just got a serious upgrade. You no longer have to tap, align, and crop — just <strong>hover your phone over the document</strong> and it captures, AI-enhances, and uploads to your Drive in one motion. Great for parent letters, student work, ADEK paperwork, anything physical you need digital in five seconds.</span>
+                            <span class="lang-ar">حصل ماسح تطبيق Drive للموبايل على تحديث كبير. لم تعد بحاجة إلى الضغط والمحاذاة والقصّ — فقط <strong>مرّروا الهاتف فوق المستند</strong> وسيتمّ التقاطه وتحسينه بالذكاء الاصطناعيّ ورفعه إلى Drive في حركة واحدة. ممتاز لرسائل أولياء الأمور، وأعمال الطلاب، ومستندات ADEK، أو أيّ ورقة تحتاجون إلى نسختها الرقميّة خلال ثوانٍ.</span>
+                        </p>
+                        <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 mb-5">
+                            <p class="text-[10px] font-bold uppercase tracking-widest text-emerald-700 mb-2 flex items-center gap-1.5"><span>💡</span>
+                                <span class="lang-en">How to find it</span>
+                                <span class="lang-ar">كيف تصلون إليها</span>
+                            </p>
+                            <p class="text-sm text-gray-700">
+                                <span class="lang-en">Open the <strong>Drive app</strong> on your phone &rarr; tap the <strong>＋</strong> button &rarr; choose <strong>Scan</strong>. Hold the camera over the doc — that's the whole thing.</span>
+                                <span class="lang-ar">افتحوا <strong>تطبيق Drive</strong> على هاتفكم &larr; اضغطوا زرّ <strong>＋</strong> &larr; اختاروا <strong>مسح ضوئيّ (Scan)</strong>. ثبّتوا الكاميرا فوق المستند — هذا كلّ شيء.</span>
+                            </p>
+                        </div>
+                        <a href="https://drive.google.com" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-emerald-700 text-white py-2.5 px-5 rounded-full text-sm font-semibold hover:bg-emerald-800 transition-colors shadow-md">
+                            <span class="lang-en">Open Google Drive</span>
+                            <span class="lang-ar">افتحوا Google Drive</span>
+                            <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Google Classroom — student progress on standards -->
+            <section class="bg-white rounded-2xl shadow-lg border-t-8 border-blue-700 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-blue-50 flex items-center justify-center">
+                            <span class="text-3xl">📈</span>
+                        </div>
+                        <span class="inline-block bg-blue-100 text-blue-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">Classroom Update</span>
+                            <span class="lang-ar">تحديث Classroom</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-heading font-bold text-blue-900 mb-2">
+                            <span class="lang-en">Track student progress on learning outcomes &amp; standards in Classroom</span>
+                            <span class="lang-ar">تتبّعوا تقدّم الطلاب على نواتج التعلّم والمعايير داخل Classroom</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-3">
+                            <span class="lang-en">Google Classroom now lets you tag assignments against <strong>learning outcomes and standards</strong>, and view per-student mastery over time. Easier to spot who needs an intervention, easier to evidence progress when ADEK asks, and easier to plan the next unit around where the class actually is — not where the pacing guide says it should be.</span>
+                            <span class="lang-ar">أصبح بإمكانكم في Google Classroom ربط المهامّ بـ<strong>نواتج التعلّم والمعايير</strong>، ثم متابعة مدى إتقان كلّ طالب لها عبر الزمن. أسهل في تحديد من يحتاج إلى تدخّل، وأسهل في تقديم دلائل التقدّم عندما تطلبها ADEK، وأسهل في تخطيط الوحدة القادمة بناءً على واقع الصفّ — لا على دليل التوقيت المثاليّ.</span>
+                        </p>
+                        <a href="https://classroom.google.com" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-blue-700 text-white py-2.5 px-5 rounded-full text-sm font-semibold hover:bg-blue-800 transition-colors shadow-md">
+                            <span class="lang-en">Open Google Classroom</span>
+                            <span class="lang-ar">افتحوا Google Classroom</span>
+                            <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Chalkie.ai trial complete -->
+            <section class="bg-gradient-to-br from-purple-50 via-white to-fuchsia-50 rounded-2xl shadow-lg border-t-8 border-purple-600 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-purple-100 flex items-center justify-center">
+                            <span class="text-3xl">🗳️</span>
+                        </div>
+                        <span class="inline-block bg-purple-100 text-purple-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">Your Voice Matters</span>
+                            <span class="lang-ar">صوتكم يهمّنا</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-heading font-bold text-purple-900 mb-2">
+                            <span class="lang-en">Chalkie.ai trial wraps up — feedback form arriving this week</span>
+                            <span class="lang-ar">تجربة Chalkie.ai قاربت على الانتهاء — استبيان رأيكم في طريقه إليكم هذا الأسبوع</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-3">
+                            <span class="lang-en">Our year-long <strong>Chalkie.ai trial has now ended</strong>. Whether we renew for next year is on you. By the end of this week you'll receive a <strong>notification in the Learning Hub</strong> with a short feedback form — how often you actually used Chalkie, what worked, what didn't, and whether it's worth keeping. The decision will be made directly from your responses.</span>
+                            <span class="lang-ar">انتهت <strong>تجربتنا التي استمرّت عامًا كاملًا لأداة Chalkie.ai</strong>. تجديدها للعام القادم قرار يعتمد عليكم. ستصلكم بنهاية هذا الأسبوع <strong>إشعار داخل مركز التعلم</strong> مع استبيان قصير — كم مرّة استخدمتم Chalkie فعلًا، وما الذي نجح، وما لم ينجح، وهل تستحقّ الاستمرار. سيُتَّخذ القرار مباشرةً بناءً على إجاباتكم.</span>
+                        </p>
+                        <p class="text-sm text-purple-900/80 italic">
+                            <span class="lang-en">Watch for the bell icon at the top of the Hub later this week — that's where the notification will land.</span>
+                            <span class="lang-ar">انتبهوا لأيقونة الجرس أعلى المركز خلال هذا الأسبوع — ستصلكم رسالة الإشعار من هناك.</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: ADEK calendar block -->
+            <section class="bg-gradient-to-br from-rose-50 via-white to-amber-50 rounded-2xl shadow-lg border-t-8 border-rose-600 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-rose-100 flex items-center justify-center">
+                            <span class="text-3xl">🏛️</span>
+                        </div>
+                        <span class="inline-block bg-rose-100 text-rose-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">From ADEK</span>
+                            <span class="lang-ar">من ADEK</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-heading font-bold text-rose-900 mb-2">
+                            <span class="lang-en">ADEK — what's landing in August &amp; September</span>
+                            <span class="lang-ar">ADEK — ما سيصلكم في أغسطس وسبتمبر</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-5">
+                            <span class="lang-en">Three connected updates from the Department of Education and Knowledge. Block these in your calendar now — full agendas and tools will follow in August.</span>
+                            <span class="lang-ar">ثلاث تحديثات مترابطة من دائرة التعليم والمعرفة. خصّصوا لها مكانًا في تقويمكم الآن — وستصلكم الأجندات الكاملة والأدوات في أغسطس.</span>
+                        </p>
+                        <div class="grid sm:grid-cols-3 gap-4 mb-4">
+                            <div class="rounded-2xl bg-gradient-to-br from-rose-50 via-white to-rose-100 border border-rose-200 p-5">
+                                <p class="text-[10px] font-extrabold uppercase tracking-widest text-rose-700 mb-1">
+                                    <span class="lang-en">End of August</span>
+                                    <span class="lang-ar">نهاية أغسطس</span>
+                                </p>
+                                <p class="font-heading font-extrabold text-xl text-rose-900 leading-tight mb-2">
+                                    <span class="lang-en">Mandatory ADEK training</span>
+                                    <span class="lang-ar">تدريب ADEK الإلزاميّ</span>
+                                </p>
+                                <p class="text-sm text-rose-900/80">
+                                    <span class="lang-en">All staff. Dates and agenda to follow in early August.</span>
+                                    <span class="lang-ar">لجميع الطاقم. ستُعلَن المواعيد والأجندة في بداية أغسطس.</span>
+                                </p>
+                            </div>
+                            <div class="rounded-2xl bg-gradient-to-br from-amber-50 via-white to-amber-100 border border-amber-200 p-5">
+                                <p class="text-[10px] font-extrabold uppercase tracking-widest text-amber-700 mb-1">
+                                    <span class="lang-en">By September</span>
+                                    <span class="lang-ar">بحلول سبتمبر</span>
+                                </p>
+                                <p class="font-heading font-extrabold text-xl text-amber-900 leading-tight mb-2">
+                                    <span class="lang-en">AI literacy curriculum</span>
+                                    <span class="lang-ar">منهاج الثقافة بالذكاء الاصطناعيّ</span>
+                                </p>
+                                <p class="text-sm text-amber-900/80">
+                                    <span class="lang-en">ADEK expects implementation to have begun. Planning support coming through the Hub.</span>
+                                    <span class="lang-ar">تتوقّع ADEK أن نكون قد بدأنا التطبيق. دعم التخطيط سيصلكم عبر المركز.</span>
+                                </p>
+                            </div>
+                            <div class="rounded-2xl bg-gradient-to-br from-orange-50 via-white to-orange-100 border border-orange-200 p-5">
+                                <p class="text-[10px] font-extrabold uppercase tracking-widest text-orange-700 mb-1">
+                                    <span class="lang-en">Submitted</span>
+                                    <span class="lang-ar">تمّ التقديم</span>
+                                </p>
+                                <p class="font-heading font-extrabold text-xl text-orange-900 leading-tight mb-2">
+                                    <span class="lang-en">School readiness self-assessment</span>
+                                    <span class="lang-ar">التقييم الذاتيّ لجاهزيّة المدرسة</span>
+                                </p>
+                                <p class="text-sm text-orange-900/80">
+                                    <span class="lang-en">Our submission to ADEK will directly shape the August training content.</span>
+                                    <span class="lang-ar">سيُحدّد ما قدّمناه لـ ADEK محتوى تدريب أغسطس بشكل مباشر.</span>
+                                </p>
+                            </div>
+                        </div>
+                        <a href="https://www.adek.gov.ae" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-rose-700 font-semibold hover:text-rose-900 text-sm">
+                            <span class="lang-en">Visit the ADEK site</span>
+                            <span class="lang-ar">زيارة موقع ADEK</span>
+                            <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: New on the Hub — Staff Performance Review forms -->
+            <section class="bg-white rounded-2xl shadow-lg border-t-8 border-teal-600 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0 flex md:flex-col items-center md:items-start gap-3 md:gap-2">
+                        <div class="h-14 w-14 rounded-2xl bg-teal-50 flex items-center justify-center">
+                            <span class="text-3xl">📊</span>
+                        </div>
+                        <span class="inline-block bg-teal-100 text-teal-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">New on the Hub</span>
+                            <span class="lang-ar">جديد في المركز</span>
+                        </span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-2xl font-heading font-bold text-teal-900 mb-2">
+                            <span class="lang-en">Fillable staff performance review forms</span>
+                            <span class="lang-ar">استمارات تقييم أداء الطاقم — قابلة للتعبئة إلكترونيًا</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            <span class="lang-en">Three of the annual support-staff review forms are now <strong>fillable on screen</strong>. Rate each indicator, type comments and goals, hit print and save the result as a PDF — drafts auto-save in your browser so a half-finished form survives a refresh.</span>
+                            <span class="lang-ar">أصبحت ثلاث استمارات سنويّة لمراجعة طاقم الدعم <strong>قابلة للتعبئة على الشاشة</strong>. قيّموا كلّ مؤشّر، اكتبوا التعليقات والأهداف، ثم اطبعوا واحفظوا كملفّ PDF — تُحفظ المسوّدات تلقائيًا في المتصفّح كي لا تضيع عند إعادة التحميل.</span>
+                        </p>
+                        <div class="grid sm:grid-cols-3 gap-3">
+                            <a href="../Tools%20and%20Resources/teacher-assistant-performance-report.html" class="group block rounded-xl border border-teal-200 bg-teal-50 hover:bg-teal-100 hover:border-teal-300 p-4 transition-all hover:-translate-y-0.5">
+                                <span class="w-10 h-10 rounded-lg bg-teal-200 flex items-center justify-center text-xl mb-2">🧑‍🏫</span>
+                                <p class="font-bold text-teal-900 leading-tight text-sm mb-1">
+                                    <span class="lang-en">Teacher Assistant Report</span>
+                                    <span class="lang-ar">تقرير مساعد المعلّم</span>
+                                </p>
+                                <span class="inline-flex items-center gap-1 text-teal-700 font-semibold text-xs">
+                                    <span class="lang-en">Open form</span>
+                                    <span class="lang-ar">افتحوا الاستمارة</span>
+                                    <svg class="w-3.5 h-3.5 rtl-flip transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </span>
+                            </a>
+                            <a href="../Tools%20and%20Resources/admin-support-staff-evaluation.html" class="group block rounded-xl border border-cyan-200 bg-cyan-50 hover:bg-cyan-100 hover:border-cyan-300 p-4 transition-all hover:-translate-y-0.5">
+                                <span class="w-10 h-10 rounded-lg bg-cyan-200 flex items-center justify-center text-xl mb-2">🗂️</span>
+                                <p class="font-bold text-cyan-900 leading-tight text-sm mb-1">
+                                    <span class="lang-en">Admin Support Staff Review</span>
+                                    <span class="lang-ar">مراجعة طاقم الدعم الإداريّ</span>
+                                </p>
+                                <span class="inline-flex items-center gap-1 text-cyan-700 font-semibold text-xs">
+                                    <span class="lang-en">Open form</span>
+                                    <span class="lang-ar">افتحوا الاستمارة</span>
+                                    <svg class="w-3.5 h-3.5 rtl-flip transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </span>
+                            </a>
+                            <a href="../Tools%20and%20Resources/hallway-bus-monitor-report.html" class="group block rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 hover:border-blue-300 p-4 transition-all hover:-translate-y-0.5">
+                                <span class="w-10 h-10 rounded-lg bg-blue-200 flex items-center justify-center text-xl mb-2">🚸</span>
+                                <p class="font-bold text-blue-900 leading-tight text-sm mb-1">
+                                    <span class="lang-en">Hallway / Bus Monitor Report</span>
+                                    <span class="lang-ar">تقرير مراقب الممرّات / الحافلة</span>
+                                </p>
+                                <span class="inline-flex items-center gap-1 text-blue-700 font-semibold text-xs">
+                                    <span class="lang-en">Open form</span>
+                                    <span class="lang-ar">افتحوا الاستمارة</span>
+                                    <svg class="w-3.5 h-3.5 rtl-flip transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section: Coming soon (Hall Pass) + For tinkerers (Antigravity) -->
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <!-- Hall Pass Hub -->
+                <section class="bg-white rounded-2xl shadow-lg border-t-8 border-indigo-600 card-hover p-7">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="h-12 w-12 rounded-2xl bg-indigo-50 flex items-center justify-center">
+                            <span class="text-2xl">🎟️</span>
+                        </div>
+                        <span class="inline-block bg-indigo-100 text-indigo-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">Coming Next Year</span>
+                            <span class="lang-ar">العام القادم</span>
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold text-indigo-900 mb-2 leading-tight">
+                        <span class="lang-en">Student Hall Pass Hub — final dev, spiral rollout in September</span>
+                        <span class="lang-ar">نظام تصاريح الممرّات للطلاب — قيد الإنهاء، إطلاق تدريجيّ في سبتمبر</span>
+                    </h3>
+                    <p class="text-sm text-gray-700 leading-relaxed">
+                        <span class="lang-en">A student-facing hall pass system is in its final development stages. We're targeting a spiral roll-out at the start of next school year — division by division — so the first few weeks shake out any kinks before everyone's on it.</span>
+                        <span class="lang-ar">يدخل نظام تصاريح الممرّات للطلاب مرحلته الأخيرة من التطوير. نستهدف إطلاقًا تدريجيًّا مع بداية العام الدراسيّ القادم — مرحلة تلو الأخرى — كي تنكشف أيّ ملاحظات في الأسابيع الأولى قبل تعميمه على الجميع.</span>
+                    </p>
+                </section>
+
+                <!-- Antigravity (for advanced users) -->
+                <section class="bg-white rounded-2xl shadow-lg border-t-8 border-violet-600 card-hover p-7">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="h-12 w-12 rounded-2xl bg-violet-50 flex items-center justify-center">
+                            <span class="text-2xl">🪐</span>
+                        </div>
+                        <span class="inline-block bg-violet-100 text-violet-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                            <span class="lang-en">For Tinkerers</span>
+                            <span class="lang-ar">لمحبّي التجربة</span>
+                        </span>
+                    </div>
+                    <h3 class="text-xl font-heading font-bold text-violet-900 mb-2 leading-tight">
+                        <span class="lang-en">Antigravity — Google's answer to Claude, for advanced users</span>
+                        <span class="lang-ar">Antigravity — ردّ Google على Claude، للمستخدمين المتقدّمين</span>
+                    </h3>
+                    <p class="text-sm text-gray-700 leading-relaxed mb-3">
+                        <span class="lang-en">Google's new agentic platform is essentially the <strong>Claude of Google Workspace</strong> — a downloadable desktop app where multiple AI agents plan, build, and run things on your behalf. Not a daily tool for most teachers, but if you're already comfortable with Gemini and want to push further, this is the playground.</span>
+                        <span class="lang-ar">منصّة Google الجديدة المعتمدة على الوكلاء (Agents) هي عمليًا <strong>"Claude لـ Google Workspace"</strong> — تطبيق سطح مكتب قابل للتحميل تُخطّط فيه وكلاء الذكاء الاصطناعيّ المتعدّدون وتنفّذ المهامّ نيابةً عنكم. ليست أداةً يوميّةً لمعظم المعلّمين، لكن إن كنتم مرتاحين مع Gemini وتودّون التعمّق أكثر، فهذه ساحتكم.</span>
+                    </p>
+                    <a href="https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-violet-700 font-semibold hover:text-violet-900 text-sm">
+                        <span class="lang-en">Read Google's announcement</span>
+                        <span class="lang-ar">اقرؤوا إعلان Google</span>
+                        <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                </section>
+            </div>
+
+            <!-- Section: Questions / contact -->
+            <section class="bg-gradient-to-br from-blue-950 via-blue-900 to-cyan-800 rounded-2xl shadow-xl p-8 md:p-10 text-white text-center mb-8">
+                <h3 class="text-2xl md:text-3xl font-heading font-extrabold mb-3">
+                    <span class="lang-en">Have a question? Want something added to the Hub?</span>
+                    <span class="lang-ar">لديكم سؤال؟ تودّون إضافة شيء إلى المركز؟</span>
+                </h3>
+                <p class="text-cyan-50 max-w-2xl mx-auto mb-6">
+                    <span class="lang-en">If any of the above isn't clear — the sign-in, the dashboard, the ADEK timelines, the Chalkie feedback form — please ask. End-of-year is exactly when small confusions are easiest to clear up.</span>
+                    <span class="lang-ar">إن لم يتّضح أيّ ممّا سبق — تسجيل الدخول، أو لوحة التحكّم، أو مواعيد ADEK، أو استبيان Chalkie — فلا تتردّدوا في السؤال. نهاية العام هو أنسب وقتٍ لإزالة أيّ التباس بسيط.</span>
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                    <button type="button" class="copy-email inline-flex items-center gap-2 bg-amber-400 text-blue-950 py-3 px-6 rounded-full font-bold hover:bg-amber-300 transition-colors shadow-lg" data-email="bbaki@aisa.sch.ae" data-toast-en="Email copied to clipboard: bbaki@aisa.sch.ae" data-toast-ar="تم نسخ البريد الإلكتروني: bbaki@aisa.sch.ae">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <span class="lang-en">Email me — bbaki@aisa.sch.ae</span>
+                        <span class="lang-ar">راسلوني — bbaki@aisa.sch.ae</span>
+                    </button>
+                    <a href="../dashboard.html" class="inline-flex items-center gap-2 bg-white/15 border border-white/30 text-white py-3 px-6 rounded-full font-bold hover:bg-white/25 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        <span class="lang-en">Open your Dashboard</span>
+                        <span class="lang-ar">افتحوا لوحة التحكّم</span>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Previous issue -->
+            <section class="bg-white rounded-2xl shadow-md border border-slate-200 p-6 mb-8">
+                <div class="flex items-center justify-between gap-4 flex-wrap">
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-700 mb-1">
+                            <span class="lang-en">Previous Issue</span>
+                            <span class="lang-ar">العدد السابق</span>
+                        </p>
+                        <p class="font-heading font-bold text-blue-950">
+                            <span class="lang-en">May 18 — Issue No. 3: Class visit schedule, the Classroom AI Integration Snapshot, AI &amp; Innovation survey, MAP testing hub</span>
+                            <span class="lang-ar">١٨ مايو — العدد الثالث: جدول الزيارات الصفّيّة، استمارة لمحة دمج الذكاء الاصطناعيّ، استبيان الذكاء الاصطناعي والابتكار، مركز اختبار MAP</span>
+                        </p>
+                    </div>
+                    <a href="may18.html" class="inline-flex items-center gap-2 text-cyan-700 font-semibold hover:text-blue-950 text-sm">
+                        <span class="lang-en">Read May 18</span>
+                        <span class="lang-ar">قراءة عدد ١٨ مايو</span>
+                        <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </a>
+                </div>
+            </section>
+
+            <p class="text-center text-xs text-gray-500">
+                <span class="lang-en">Digital Lion Newsletter &middot; Issue No. 4 &middot; June 17 &middot; AISA Teaching &amp; Learning Department</span>
+                <span class="lang-ar">نشرة ديجيتال لايون · العدد الرابع · ١٧ يونيو · قسم التعليم والتعلم في AISA</span>
+            </p>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-blue-950 text-cyan-100 mt-auto">
+        <div class="h-1 bg-gradient-to-r from-blue-950 via-cyan-500 to-amber-400 w-full"></div>
+        <div class="container mx-auto px-6 py-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <img src="../AISA_logo.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
+                <span class="font-heading font-bold text-lg tracking-wide">
+                    <span class="lang-en">AISA Media Hub</span>
+                    <span class="lang-ar">مركز الإعلام في AISA</span>
+                </span>
+            </div>
+            <p class="text-xs text-cyan-200/80">
+                <span class="lang-en">American International School in Abu Dhabi &middot; Teaching &amp; Learning Department</span>
+                <span class="lang-ar">المدرسة الأمريكية الدولية في أبوظبي · قسم التعليم والتعلم</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Copy-to-clipboard toast -->
+    <div id="copy-toast" role="status" aria-live="polite" class="fixed bottom-6 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 pointer-events-none z-[100] flex items-center gap-3 bg-slate-900 text-white text-sm font-medium px-5 py-3 rounded-full shadow-xl border border-white/10 transition-all duration-300">
+        <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        <span id="copy-toast-msg">Copied!</span>
+    </div>
+
+    <script>
+        // --- Copy email to clipboard with toast ---
+        (function () {
+            const toast = document.getElementById('copy-toast');
+            const msg = document.getElementById('copy-toast-msg');
+            let hideTimer = null;
+
+            function showToast(text) {
+                if (!toast || !msg) return;
+                msg.textContent = text;
+                clearTimeout(hideTimer);
+                toast.classList.remove('opacity-0', 'translate-y-4', 'pointer-events-none');
+                toast.classList.add('opacity-100', 'translate-y-0');
+                hideTimer = setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-4', 'pointer-events-none');
+                    toast.classList.remove('opacity-100', 'translate-y-0');
+                }, 2400);
+            }
+
+            async function copyText(text) {
+                if (navigator.clipboard && window.isSecureContext) {
+                    try { await navigator.clipboard.writeText(text); return true; } catch (e) {}
+                }
+                const ta = document.createElement('textarea');
+                ta.value = text;
+                ta.setAttribute('readonly', '');
+                ta.style.position = 'fixed';
+                ta.style.left = '-9999px';
+                document.body.appendChild(ta);
+                ta.select();
+                let ok = false;
+                try { ok = document.execCommand('copy'); } catch (e) {}
+                document.body.removeChild(ta);
+                return ok;
+            }
+
+            document.addEventListener('click', async (event) => {
+                const btn = event.target.closest('.copy-email');
+                if (!btn) return;
+                event.preventDefault();
+                const email = btn.getAttribute('data-email') || '';
+                const isArabic = document.documentElement.getAttribute('lang') === 'ar';
+                const successText = isArabic
+                    ? (btn.getAttribute('data-toast-ar') || 'تم نسخ البريد الإلكتروني')
+                    : (btn.getAttribute('data-toast-en') || 'Email copied to clipboard');
+                const failureText = isArabic ? 'تعذّر النسخ — البريد: ' + email : "Couldn't copy — email: " + email;
+                const ok = await copyText(email);
+                showToast(ok ? successText : failureText);
+            });
+        })();
+    </script>
+
+    <script>
+        (function () {
+            const STORAGE_KEY = 'aisa-newsletter-lang';
+            const html = document.documentElement;
+            const toggleBtn = document.getElementById('lang-toggle');
+
+            function applyLang(lang) {
+                const next = lang === 'ar' ? 'ar' : 'en';
+                html.setAttribute('lang', next);
+                html.setAttribute('dir', next === 'ar' ? 'rtl' : 'ltr');
+                try { localStorage.setItem(STORAGE_KEY, next); } catch (e) { /* ignore */ }
+            }
+
+            let saved = 'en';
+            try { saved = localStorage.getItem(STORAGE_KEY) || 'en'; } catch (e) { /* ignore */ }
+            applyLang(saved);
+
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    const current = html.getAttribute('lang') === 'ar' ? 'ar' : 'en';
+                    applyLang(current === 'ar' ? 'en' : 'ar');
+                });
+            }
+        })();
+    </script>
+
+</body>
+</html>
