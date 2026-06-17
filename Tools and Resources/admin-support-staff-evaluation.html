@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Admin Support Staff Performance Review</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="performance-review.css">
+    <script src="../auth/gate.js?v=12"></script>
+</head>
+<body>
+    <main id="form-root"></main>
+
+    <script src="performance-review.js"></script>
+    <script>
+        renderPerformanceReview({
+            formId: 'admin-support-staff-2025-26',
+            title: 'Admin Support Staff Performance Review',
+            subtitle: 'SY 2025 – 26',
+            headerFields: [
+                { label: 'Employee Name' },
+                { label: 'Position' },
+                { label: 'Reviewer Name' },
+                { label: 'Reviewer Position' },
+                { label: 'Evaluation Date' }
+            ],
+            sections: [
+                {
+                    name: 'Professional Behavior',
+                    criteria: [
+                        'Reports to work on time (inc. breaks) and notifies of absence',
+                        'Maintains an ethical and confidential environment',
+                        'Addresses conflicts with others in an appropriate and effective manner, aligned with faculty/staff ethics',
+                        'Makes a positive contribution to the school’s functions and activities',
+                        'Maintains a professional appearance and demeanor',
+                        'Seeks current information on issues relating to job (duties/exceptionalities)',
+                        'Demonstrates flexibility to changes in schedules, work assignments, etc.'
+                    ]
+                },
+                {
+                    name: 'Relationship with Others',
+                    criteria: [
+                        'Shows enthusiasm, patience and understanding when working with others',
+                        'Treats & interacts with others in a respectful, responsible and fair manner with due consideration to the students’ physical, social and emotional development',
+                        'Maintains effective and cooperative relationships with others while being a positive role model',
+                        'Demonstrates an understanding of, and an ability to implement, all aspects of AISA’s Guiding Statements',
+                        'Demonstrates a sense when others in the workplace require assistance'
+                    ]
+                },
+                {
+                    name: 'Team Support',
+                    criteria: [
+                        'Participates cooperatively when acting as a member of a school-based team',
+                        'Shares relevant information with teacher / appropriate staff members',
+                        'Communicates with parents effectively and in a respectful manner',
+                        'Uses established communication systems with teachers, parents and AISA stakeholders as directed, through documentation',
+                        'Assists others with their duties should your support be requested'
+                    ]
+                },
+                {
+                    name: 'General Support & Customer Service',
+                    criteria: [
+                        'Adapts materials as planned and directed by job description and supervisors',
+                        'Demonstrates a sense of when others require assistance',
+                        'Maintains awareness of goals and objectives for customer service',
+                        'Records required information on day-to-day activities as requested by supervisors or required within the scope of work defined in the job description',
+                        'Helps others with assigned tasks when requested',
+                        'Commitment to customer satisfaction and school improvement'
+                    ]
+                },
+                {
+                    name: 'Personal Attributes',
+                    criteria: [
+                        'Responds appropriately to constructive criticism',
+                        'Continues to learn in this position',
+                        'Shows initiative and ambition to achieve',
+                        'Handles money and items of value appropriately',
+                        'Expresses themselves well orally and in writing'
+                    ]
+                },
+                {
+                    name: 'Health and Safety',
+                    criteria: [
+                        'Understanding of school health and safety policies and procedures',
+                        'Performs and follows the Health and Safety points as per the staff’s job description',
+                        'Proactive in preventing safety risks in work area',
+                        'Communicates safety concerns clearly and effectively',
+                        'Responds calmly and professionally during incidents or emergencies'
+                    ]
+                }
+            ],
+            reflection: {
+                label: 'The Employee’s Overall Reflection',
+                helper: 'This self-evaluation process has provided a valuable opportunity to reflect on my contributions.'
+            }
+        });
+    </script>
+</body>
+</html>

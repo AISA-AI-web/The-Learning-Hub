@@ -32,31 +32,7 @@
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
-    <!-- Top Navigation Bar -->
-    <header class="bg-white/80 backdrop-blur-lg shadow-sm sticky top-0 z-40 border-b border-gray-100">
-        <div class="h-1 bg-gradient-to-r from-slate-800 via-indigo-700 to-blue-600 w-full"></div>
-        <nav class="container mx-auto pl-16 pr-6 py-3 flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-4 group" title="Back to Learning Hub">
-                <img src="AISA_logo.png" alt="AISA Logo" class="h-10 w-10 md:h-12 md:w-12 object-contain transition-transform group-hover:scale-105" onerror="this.src='https://via.placeholder.com/150/003366/FFFFFF?text=AISA'">
-                <div class="flex flex-col justify-center">
-                    <h1 class="text-lg md:text-xl font-black text-slate-900 tracking-tight leading-none uppercase font-heading">AISA</h1>
-                    <span class="text-[9px] md:text-[10px] font-semibold text-gray-500 uppercase tracking-widest mt-0.5">Admin Dashboard</span>
-                </div>
-            </a>
-            <div class="flex items-center gap-3">
-                <a href="admin-notifications.html" class="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-                    <span class="hidden sm:inline">Notifications</span>
-                </a>
-                <button id="export-btn" class="hidden items-center gap-2 text-sm font-bold text-white bg-slate-900 hover:bg-slate-700 transition-colors px-4 py-2 rounded-xl">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
-                    Export CSV
-                </button>
-            </div>
-        </nav>
-    </header>
-
-    <main class="max-w-7xl mx-auto px-4 lg:px-6 pt-8 pb-20">
+<main class="max-w-7xl mx-auto px-4 lg:px-6 pt-8 pb-20">
 
         <!-- Loading -->
         <div id="state-loading" class="text-center py-24">
@@ -103,12 +79,25 @@
                             </div>
                         </div>
                     </a>
-                    <!-- Placeholder so the grid reads as an extensible hub
-                         even with only one real tool today. Remove when a
-                         second admin destination ships. -->
-                    <div class="hidden lg:flex bg-slate-50/60 border border-dashed border-slate-200 rounded-2xl p-5 items-center justify-center text-center">
-                        <div class="text-sm text-slate-400 font-semibold">More admin tools coming soon.</div>
-                    </div>
+                    <!-- Export CSV: the on-click handler lives in the script
+                         block below. The whole card IS the button so it
+                         matches the visual weight of the other tool cards.
+                         Hidden until adminOverview() resolves with data
+                         (otherwise there's nothing to export). -->
+                    <button id="export-btn" type="button"
+                            class="hidden group text-left bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-amber-200 hover:-translate-y-0.5 transition-all p-5 focus:outline-none focus:ring-2 focus:ring-amber-300">
+                        <div class="flex items-start gap-4">
+                            <div class="w-11 h-11 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-xl flex-shrink-0">⬇️</div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-slate-900 leading-tight">Export CSV</p>
+                                <p class="text-sm text-slate-500 mt-0.5 leading-snug">Download the full compliance matrix for spreadsheet review.</p>
+                                <span class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 mt-2 group-hover:translate-x-0.5 transition-transform">
+                                    Download
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+                                </span>
+                            </div>
+                        </div>
+                    </button>
                 </div>
             </section>
 
@@ -328,8 +317,12 @@
                 document.getElementById('generated-at').textContent =
                     'Updated ' + new Date(payload.generated_at).toLocaleString('en-GB');
             }
+            /* Export CSV is the second admin-hub card; reveal once we
+             * have data to export. `block` matches the sibling card so
+             * the grid lays out evenly. */
             const ex = document.getElementById('export-btn');
-            ex.classList.remove('hidden'); ex.classList.add('flex');
+            ex.classList.remove('hidden');
+            ex.classList.add('block');
             showState('state-ready');
             rendered = true;
         }

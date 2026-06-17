@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Hallway / Bus Monitor Performance Report</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="performance-review.css">
+    <script src="../auth/gate.js?v=12"></script>
+</head>
+<body>
+    <main id="form-root"></main>
+
+    <script src="performance-review.js"></script>
+    <script>
+        renderPerformanceReview({
+            formId: 'hallway-bus-monitor-2025-26',
+            title: 'Hallway / Bus Monitor Performance Report',
+            subtitle: 'SY 2025 – 26',
+            headerFields: [
+                { label: 'Name of Employee' },
+                { label: 'Name of Evaluator' },
+                { label: 'Evaluation Date' }
+            ],
+            sections: [
+                {
+                    name: 'Professional Behavior',
+                    criteria: [
+                        'Reports to work on time (inc. breaks) and notifies of absence',
+                        'Addresses conflicts with admin, bus, or otherwise',
+                        'Makes a positive contribution to the school’s functions and activities',
+                        'Maintains a professional appearance and demeanor'
+                    ]
+                },
+                {
+                    name: 'Relationship with Students',
+                    criteria: [
+                        'Enjoys working with students and treats them with respect',
+                        'Can positively solve bus behaviors and conflict',
+                        'Demonstrates a sense when a student requires assistance'
+                    ]
+                },
+                {
+                    name: 'Team Support',
+                    criteria: [
+                        'Works well with other hallway monitors and grade-level teams',
+                        'Communicates effectively with others and admin',
+                        'Positively communicates with parents',
+                        'Assists with school supervision duties'
+                    ]
+                },
+                {
+                    name: 'Personal Attributes',
+                    criteria: [
+                        'Responds appropriately to constructive criticism',
+                        'Continues to learn in this position',
+                        'Shows initiative and ambition to achieve',
+                        'Handles money and items of value appropriately',
+                        'Expresses themselves well orally and in writing'
+                    ]
+                },
+                {
+                    name: 'Health and Safety',
+                    criteria: [
+                        'Understanding of school health and safety policies and procedures',
+                        'Performs and follows the Health and Safety points as per the staff’s job description',
+                        'Proactive in preventing safety risks in work area',
+                        'Communicates safety concerns clearly and effectively',
+                        'Responds calmly and professionally during incidents or emergencies'
+                    ]
+                }
+            ],
+            reflection: { label: 'Employee Remarks / Comments on Their Performance' }
+        });
+    </script>
+</body>
+</html>
