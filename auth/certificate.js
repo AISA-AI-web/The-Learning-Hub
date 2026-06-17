@@ -11,6 +11,9 @@
  *     back to a title-cased version of their email),
  *   - the module title (from #completion-banner[data-cert-title], or
  *     window.AISA_CERT_TITLE, or a cleaned document.title),
+ *   - the PD hours awarded (from #completion-banner[data-cert-hours] or
+ *     window.AISA_CERT_HOURS; defaults to the school minimum of 1 hour),
+ *     stated explicitly so teachers can log them as ADEK PD hours,
  *   - today's date,
  *   - two fixed signatures: the Director and the Head of Curriculum.
  *
@@ -94,6 +97,33 @@
         return t.replace(/^\s*AISA\s*[|\-–—:]\s*/i, '').trim() || 'Professional Development Module';
     }
 
+    /* PD hours awarded for this module — printed on the certificate so it
+     * can be logged toward ADEK professional-development requirements.
+     * Source order: banner data-attr, global override, then the school's
+     * minimum of 1 hour per module. */
+    function getModuleHours() {
+        var raw = null;
+        var banner = document.getElementById('completion-banner');
+        if (banner && banner.dataset && banner.dataset.certHours != null && banner.dataset.certHours !== '') {
+            raw = banner.dataset.certHours;
+        } else if (window.AISA_CERT_HOURS != null && window.AISA_CERT_HOURS !== '') {
+            raw = window.AISA_CERT_HOURS;
+        }
+        var n = parseFloat(raw);
+        if (!isFinite(n) || n <= 0) n = 1;   /* school minimum: 1 PD hour */
+        return Math.round(n * 100) / 100;     /* tidy any float noise */
+    }
+
+    /* "1 hour", "1.5 hours", "2 hours" — singular only for exactly one. */
+    function hoursLabel(n) {
+        return numberLabel(n) + ' ' + (n === 1 ? 'hour' : 'hours');
+    }
+
+    /* Bare numeral, no trailing ".0": 1 → "1", 1.5 → "1.5". */
+    function numberLabel(n) {
+        return (n % 1 === 0) ? String(n) : String(n);
+    }
+
     /* Where "Back to Modules" should go from the completion modal.
      * All PD modules live alongside pd.html, so a relative link works;
      * overridable per page. */
@@ -130,7 +160,8 @@
         opts = (opts && typeof opts === 'object' && opts.nodeType === undefined) ? opts : {};
         var name  = opts.name  || getUserName();
         var title = opts.title || getModuleTitle();
-        var html = buildCertHtml(name, title, todayString(), getLogoUrl());
+        var hours = (opts.hours != null) ? opts.hours : getModuleHours();
+        var html = buildCertHtml(name, title, todayString(), getLogoUrl(), hours);
         var w = window.open('', '_blank');
         if (!w) {
             alert('Please allow pop-ups for this site to download your certificate.');
@@ -151,7 +182,11 @@
             '</div>';
     }
 
-    function buildCertHtml(name, title, date, logo) {
+    function buildCertHtml(name, title, date, logo, hours) {
+        var h = parseFloat(hours);
+        if (!isFinite(h) || h <= 0) h = 1;
+        h = Math.round(h * 100) / 100;
+
         var logoTag = logo
             ? '<img src="' + esc(logo) + '" alt="AISA" class="logo" />'
             : '<div class="logo-fallback">AISA</div>';
@@ -193,7 +228,12 @@
             '.body-text{font-family:"Cormorant Garamond",serif;font-size:21px;color:#334155;' +
                 'max-width:760px;line-height:1.5;margin:0 auto;}' +
             '.body-text .module{font-weight:700;color:#0b2545;}' +
+            '.body-text .hours{font-weight:700;color:#0b2545;white-space:nowrap;}' +
             '.meta{margin-top:14px;font-size:14px;color:#64748b;}' +
+            '.pd-hours{margin-top:8px;display:inline-flex;align-items:center;gap:.5rem;' +
+                'font-size:13px;font-weight:700;color:#7c6320;letter-spacing:.06em;' +
+                'background:#fbf3da;border:1px solid #e7d8a8;border-radius:9999px;padding:5px 14px;' +
+                '-webkit-print-color-adjust:exact;print-color-adjust:exact;}' +
             '.spacer{flex:1;}' +
             '.sigs{display:flex;justify-content:center;gap:120px;width:100%;margin-top:8px;}' +
             '.sig{display:flex;flex-direction:column;align-items:center;min-width:240px;}' +
@@ -223,7 +263,9 @@
                 '<div class="name">' + esc(name) + '</div>' +
                 '<div class="name-rule"></div>' +
                 '<div class="body-text">for successfully completing the professional development module ' +
-                    '<span class="module">' + esc(title) + '</span>.</div>' +
+                    '<span class="module">' + esc(title) + '</span>, representing ' +
+                    '<span class="hours">' + esc(hoursLabel(h)) + '</span> of professional development.</div>' +
+                '<div class="pd-hours">\u{1F4DA} Professional Development Hours: ' + esc(numberLabel(h)) + '</div>' +
                 '<div class="meta">Completed on ' + esc(date) + '</div>' +
                 '<div class="spacer"></div>' +
                 '<div class="sigs">' +
@@ -303,7 +345,8 @@
                 '<div class="aisa-cert-modal-emoji" aria-hidden="true">\u{1F389}</div>' +
                 '<div class="aisa-cert-modal-badge">Module Complete</div>' +
                 '<h2 class="aisa-cert-modal-title">Congratulations!</h2>' +
-                '<p class="aisa-cert-modal-text">You’ve completed <b>' + esc(getModuleTitle()) + '</b>.<br>' +
+                '<p class="aisa-cert-modal-text">You’ve completed <b>' + esc(getModuleTitle()) + '</b> ' +
+                    '(<b>' + esc(hoursLabel(getModuleHours())) + '</b> of PD).<br>' +
                     'Download your certificate, then head back to choose your next module.</p>' +
                 '<div class="aisa-cert-modal-actions">' +
                     '<button class="aisa-cert-modal-btn primary" type="button" data-action="download">' +
