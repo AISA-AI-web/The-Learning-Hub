@@ -41,12 +41,9 @@
         { title: "Admin Dashboard", desc: "Staff completion overview and compliance reports.", url: "admin-dashboard.html", type: "Admin", icon: "🛡️", keywords: "admin dashboard staff completion compliance reports", adminOnly: true },
         { title: "Send Notifications", desc: "Compose and publish notifications to staff.", url: "admin-notifications.html", type: "Admin", icon: "📢", keywords: "admin notifications send compose broadcast announcement", adminOnly: true },
 
-        // === Wired Wednesdays ===
-        { title: "Wired Wednesdays", desc: "Weekly 30-min drop-in sessions on AI &amp; ed-tech. Wednesdays 3:00–3:30 PM.", url: "Wired%20Wednesdays/wired-wednesdays.html", type: "Page", icon: "⚡", keywords: "wired wednesdays weekly drop in pd professional development ai ed tech sessions wednesday 3pm voluntary live online meet" },
-        { title: "Join Wired Wednesdays (Google Meet)", desc: "Recurring Google Meet link for every Wired Wednesdays session.", url: "https://meet.google.com/yhf-vppd-hnh", type: "Action", icon: "🎥", keywords: "wired wednesdays join meet google meet link video call recurring weekly session" },
-        { title: "Wired Wednesdays — May 13: NotebookLM Interactive Podcasts", desc: "Session 01: turn unit materials into a two-host podcast students can talk back to.", url: "Wired%20Wednesdays/wired-wednesdays.html#schedule", type: "Session", icon: "🎙️", keywords: "wired wednesdays may 13 session 01 notebooklm interactive podcasts audio overview google ai" },
-        { title: "Wired Wednesdays Schedule", desc: "Spring season schedule: every Wednesday from May 13 through June 24.", url: "Wired%20Wednesdays/wired-wednesdays.html#schedule", type: "Schedule", icon: "📅", keywords: "wired wednesdays schedule spring season may june dates calendar weekly" },
-        { title: "Suggest a Wired Wednesdays Topic", desc: "Pitch a tool, workflow, or classroom idea for a future Wednesday session.", url: "Wired%20Wednesdays/wired-wednesdays.html#suggest", type: "Action", icon: "💡", keywords: "wired wednesdays suggest topic idea future session request pitch tool workflow classroom" },
+        // === Wired Wednesdays — ON HOLD (paused) ===
+        // Sessions are delisted from search + nav for now. To bring them back,
+        // restore these entries from git history (and the nav link in menu.js).
 
         // === PD modules ===
         { title: "Objectives & Success Criteria", desc: "Craft clear objectives and tiered success criteria.", url: "PD%20Modules/pd.html#module-objectives", type: "PD Module", icon: "🎯", keywords: "objectives success criteria lesson planning tiered differentiation" },

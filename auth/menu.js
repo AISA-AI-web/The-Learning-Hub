@@ -48,7 +48,6 @@
         { label: 'Orientation',       icon: '\u{1F9ED}', href: 'Orientation%20Hub/orientation-hub.html' },
         { label: 'Tools & Resources', icon: '\u{1F6E0}️', href: 'Tools%20and%20Resources/tools.html' },
         { label: 'Library',           icon: '\u{1F4DA}', href: 'Library%20Hub/library-hub.html' },
-        { label: 'Wired Wednesdays',  icon: '\u{26A1}',  href: 'Wired%20Wednesdays/wired-wednesdays.html' },
         { label: 'Media Hub',         icon: '\u{1F3AC}', href: 'Media%20Hub/media.html' },
         { label: 'Committees',        icon: '\u{1F91D}', href: 'Committees/committees.html' }
     ];
@@ -95,9 +94,6 @@
         { title: 'Library Hub',                        desc: 'Books, articles, and research collections',                     href: 'Library%20Hub/library-hub.html',                                                   icon: '\u{1F4DA}', tag: 'Hub' },
         { title: 'Library — for students',             desc: 'Student-facing library resources',                              href: 'Library%20Hub/student.html',                                                       icon: '\u{1F393}', tag: 'Library' },
         { title: 'Library — for teachers & staff',     desc: 'Staff-facing library resources',                                href: 'Library%20Hub/teacher.html',                                                       icon: '\u{1F468}\u{200D}\u{1F3EB}', tag: 'Library' },
-
-        /* Wired Wed */
-        { title: 'Wired Wednesdays',                   desc: 'Weekly drop-in AI sessions',                                    href: 'Wired%20Wednesdays/wired-wednesdays.html',                                         icon: '\u{26A1}',  tag: 'Hub' },
 
         /* Media Hub */
         { title: 'Media Hub',                          desc: 'Newsletters, videos, recordings',                               href: 'Media%20Hub/media.html',                                                           icon: '\u{1F3AC}', tag: 'Hub' },
