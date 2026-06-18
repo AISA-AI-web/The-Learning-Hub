@@ -39,6 +39,7 @@
 
         // === Admin (hidden from non-admins) ===
         { title: "Admin Dashboard", desc: "Staff completion overview and compliance reports.", url: "admin-dashboard.html", type: "Admin", icon: "🛡️", keywords: "admin dashboard staff completion compliance reports", adminOnly: true },
+        { title: "Admin Charts", desc: "Hours trend, completion funnel, engagement quality, activity heatmap.", url: "admin-charts.html", type: "Admin", icon: "📈", keywords: "admin charts graphs analytics pd hours trend completion funnel engagement quality skim heatmap activity time range monthly weekly daily", adminOnly: true },
         { title: "Send Notifications", desc: "Compose and publish notifications to staff.", url: "admin-notifications.html", type: "Admin", icon: "📢", keywords: "admin notifications send compose broadcast announcement", adminOnly: true },
 
         // === Wired Wednesdays — ON HOLD (paused) ===

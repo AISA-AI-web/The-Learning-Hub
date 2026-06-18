@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Admin Charts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = { theme: { extend: { fontFamily: { heading: ['Poppins', 'sans-serif'] } } } };
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .bg-dot-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        section[id] { scroll-margin-top: 5rem; }   /* account for the fixed app-bar */
+
+        /* Activity heatmap — GitHub-style calendar grid */
+        .heatmap { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 1fr); gap: 3px; }
+        .heatmap-cell { width: 12px; height: 12px; border-radius: 2px; background: #f1f5f9; }
+        .heatmap-cell.l1 { background: #c7d2fe; }
+        .heatmap-cell.l2 { background: #818cf8; }
+        .heatmap-cell.l3 { background: #4f46e5; }
+        .heatmap-cell.l4 { background: #312e81; }
+        .heatmap-month-label {
+            grid-row: 1 / 2; font-size: 10px; color: #64748b; font-weight: 700;
+            padding-bottom: 2px;
+        }
+
+        /* Time-range pill toggle */
+        .range-btn {
+            padding: .35rem .8rem; border-radius: 9999px; font-size: .75rem; font-weight: 700;
+            color: #475569; background: #f1f5f9; border: 1px solid transparent;
+            cursor: pointer; transition: background .15s, color .15s, border-color .15s;
+        }
+        .range-btn:hover { background: #e2e8f0; }
+        .range-btn.active { background: #0f172a; color: #fff; }
+    </style>
+    <script src="auth/gate.js?v=13"></script>
+    <!-- Chart.js v4 — small, well-supported, prints OK -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-dot-pattern text-gray-800 min-h-screen">
+
+<main class="max-w-6xl mx-auto px-4 lg:px-6 pt-8 pb-20">
+
+    <!-- Loading -->
+    <div id="state-loading" class="text-center py-24">
+        <div class="inline-block w-8 h-8 border-3 border-slate-200 border-t-slate-800 rounded-full animate-spin" style="border-width:3px;"></div>
+        <p class="text-slate-500 mt-4 font-medium">Loading charts…</p>
+    </div>
+
+    <!-- Access denied -->
+    <div id="state-denied" class="hidden max-w-md mx-auto text-center py-20">
+        <div class="text-5xl mb-4">🔒</div>
+        <h2 class="text-xl font-heading font-black text-slate-900 mb-2">Admin access required</h2>
+        <p class="text-slate-500">This page is limited to PD leads and SLT.</p>
+        <a href="admin-dashboard.html" class="inline-block mt-6 text-indigo-700 font-bold hover:text-indigo-900">← Back to the admin dashboard</a>
+    </div>
+
+    <!-- Ready -->
+    <div id="state-ready" class="hidden">
+
+        <!-- Header -->
+        <div class="mb-6">
+            <div class="inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mb-3">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                Admin Charts
+            </div>
+            <h2 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">PD effectiveness at a glance</h2>
+            <p class="text-slate-500 font-medium mt-1">
+                Four views to help SLT assess what's landing, what's being skimmed, and where to invest next.
+                <span id="generated-at"></span>
+            </p>
+            <nav class="mt-4 flex flex-wrap gap-2 text-xs font-bold">
+                <a href="#hours"      class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full transition-colors">📈 Hours trend</a>
+                <a href="#completion" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full transition-colors">📊 Completion funnel</a>
+                <a href="#engagement" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full transition-colors">⏱️ Engagement quality</a>
+                <a href="#activity"   class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-full transition-colors">🔥 Activity heatmap</a>
+                <a href="admin-dashboard.html" class="ml-auto bg-white border border-slate-200 hover:border-slate-300 text-slate-700 px-3 py-1.5 rounded-full transition-colors">← Back to admin dashboard</a>
+            </nav>
+        </div>
+
+        <!-- 1. Hours trend -->
+        <section id="hours" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+            <div class="flex items-start justify-between gap-4 mb-4 flex-wrap">
+                <div>
+                    <h3 class="font-heading font-extrabold text-lg text-slate-900">PD hours over time</h3>
+                    <p class="text-sm text-slate-500 mt-0.5">School-wide hours earned per period, stacked by module. Picks up momentum spikes and dips you can plan around.</p>
+                </div>
+                <div class="flex gap-1.5" id="hours-range">
+                    <button class="range-btn" data-range="30">1 mo</button>
+                    <button class="range-btn active" data-range="90">3 mo</button>
+                    <button class="range-btn" data-range="180">6 mo</button>
+                    <button class="range-btn" data-range="365">1 yr</button>
+                </div>
+            </div>
+            <div class="relative" style="height:320px;">
+                <canvas id="chart-hours"></canvas>
+            </div>
+            <div class="mt-3 flex flex-wrap items-center gap-4 text-xs text-slate-500">
+                <span>Total in range: <strong id="hours-total" class="text-slate-900">0 h</strong></span>
+                <span>Avg per person: <strong id="hours-avg" class="text-slate-900">0 h</strong></span>
+                <span>Top module: <strong id="hours-top" class="text-slate-900">—</strong></span>
+            </div>
+        </section>
+
+        <!-- 2. Completion funnel -->
+        <section id="completion" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+            <div class="mb-4">
+                <h3 class="font-heading font-extrabold text-lg text-slate-900">Completion by module</h3>
+                <p class="text-sm text-slate-500 mt-0.5">Percentage of staff who have finished each module. Required modules are highlighted; anything below 60% is worth a nudge or a rethink.</p>
+            </div>
+            <div class="relative" style="height:380px;">
+                <canvas id="chart-completion"></canvas>
+            </div>
+        </section>
+
+        <!-- 3. Engagement quality -->
+        <section id="engagement" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+            <div class="mb-4">
+                <h3 class="font-heading font-extrabold text-lg text-slate-900">Engagement quality per module</h3>
+                <p class="text-sm text-slate-500 mt-0.5">Average minutes spent per module (left axis) vs the share of teachers who skimmed it — average chapter under 30 seconds (right axis). High skim with low time = "too easy" or "not landing."</p>
+            </div>
+            <div class="relative" style="height:340px;">
+                <canvas id="chart-engagement"></canvas>
+            </div>
+            <p id="engagement-empty" class="hidden text-sm text-slate-400 mt-3 text-center">No dwell data yet — engagement metrics populate as teachers work through PD modules.</p>
+            <p id="engagement-needs-migration" class="hidden mt-3 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                <strong>Heads up:</strong> the dwell sheet still has the old per-chapter layout. Run
+                <code class="font-mono bg-amber-100 px-1.5 py-0.5 rounded">migrateDwellToPerModule()</code>
+                once from the Apps Script editor.
+            </p>
+        </section>
+
+        <!-- 4. Activity heatmap -->
+        <section id="activity" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+            <div class="mb-4">
+                <h3 class="font-heading font-extrabold text-lg text-slate-900">Daily completion activity</h3>
+                <p class="text-sm text-slate-500 mt-0.5">One square per day for the last 90 days. Darker = more module completions that day. Surfaces seasonality, post-meeting bursts, and Friday-afternoon dead zones.</p>
+            </div>
+            <div id="heatmap-host" class="overflow-x-auto pb-2">
+                <div id="heatmap-grid" class="heatmap mx-auto"></div>
+            </div>
+            <div class="mt-4 flex items-center gap-3 text-xs text-slate-500 justify-center">
+                <span>Less</span>
+                <div class="heatmap-cell"></div>
+                <div class="heatmap-cell l1"></div>
+                <div class="heatmap-cell l2"></div>
+                <div class="heatmap-cell l3"></div>
+                <div class="heatmap-cell l4"></div>
+                <span>More</span>
+                <span class="ml-6">Busiest day in range: <strong id="activity-peak" class="text-slate-900">—</strong></span>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<script>
+/* ============================================================
+ * Module registry — single source of truth across the three
+ * dashboards (kept in sync with dashboard.html and
+ * admin-dashboard.html). The chart code joins admin_overview
+ * payloads against this for titles, hours-per-module, and the
+ * required flag.
+ * ============================================================ */
+const MODULES = [
+    { id: 'ai-ethics',         short: 'AI Ethics',        title: 'AI Vision & Ethical Framework',         required: true,  hours: 1 },
+    { id: 'return-to-school',  short: 'Return to School', title: 'Return to School — Emergency Protocol', required: true,  hours: 2 },
+    { id: 'ai-and-assessment', short: 'Assessment',       title: 'Assessment Design in the Age of AI',    required: false, hours: 1 },
+    { id: 'success-criteria',  short: 'Objectives',       title: 'Objectives & Success Criteria',         required: false, hours: 1 },
+    { id: 'notebooklm',        short: 'NotebookLM',       title: 'NotebookLM Masterclass',                required: false, hours: 1 },
+    { id: 'chalkie',           short: 'Chalkie',          title: 'Chalkie.ai Training',                   required: false, hours: 1 },
+    { id: 'workspace-studio',  short: 'Workspace Studio', title: 'Google Workspace Studio',               required: false, hours: 1 }
+];
+const MOD_BY_ID = {};
+MODULES.forEach(m => MOD_BY_ID[m.id] = m);
+
+/* Chart.js defaults: cleaner type, no jagged anti-aliasing on Hi-DPI screens. */
+if (window.Chart) {
+    Chart.defaults.font.family = 'Inter, system-ui, sans-serif';
+    Chart.defaults.color = '#475569';
+    Chart.defaults.borderColor = '#e2e8f0';
+}
+
+let OVERVIEW = null;
+let DWELL_ROWS = null;
+let DWELL_NEEDS_MIGRATION = false;
+let hoursChart = null, completionChart = null, engagementChart = null;
+
+function fmtHours(n) {
+    if (!isFinite(n)) return '0';
+    return (n % 1 === 0) ? String(n) : n.toFixed(1).replace(/\.0$/, '');
+}
+function showState(id) {
+    ['state-loading','state-denied','state-ready'].forEach(s => {
+        const el = document.getElementById(s);
+        if (el) el.classList.toggle('hidden', s !== id);
+    });
+}
+
+/* ---- Data joins ------------------------------------------------- */
+
+/* Walk admin_overview.completions, return one record per completion
+ * with the per-module hours attached. Filters out anything missing
+ * either a timestamp or a known module. */
+function completionsWithHours(payload) {
+    const out = [];
+    (payload.completions || []).forEach(c => {
+        const mod = MOD_BY_ID[c.module_id];
+        if (!mod) return;
+        const ts = c.completed_at;
+        if (!ts) return;
+        const d = new Date(ts);
+        if (isNaN(d.getTime())) return;
+        out.push({ email: c.email, module_id: c.module_id, hours: mod.hours || 0, when: d });
+    });
+    return out;
+}
+
+/* ---- 1. Hours trend chart -------------------------------------- */
+
+function renderHoursChart() {
+    if (!OVERVIEW) return;
+    const activeBtn = document.querySelector('#hours-range .range-btn.active');
+    const days = parseInt(activeBtn.getAttribute('data-range'), 10) || 90;
+    const now = new Date();
+    const cutoff = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+
+    /* Bucketing: 1mo→daily, 3mo→weekly, 6mo/1yr→monthly. */
+    const bucketing = days <= 30 ? 'day' : (days <= 90 ? 'week' : 'month');
+    function bucketKey(d) {
+        if (bucketing === 'day') {
+            return d.toISOString().slice(0, 10);
+        }
+        if (bucketing === 'week') {
+            const ws = new Date(d);
+            ws.setHours(0,0,0,0);
+            ws.setDate(ws.getDate() - ws.getDay()); // Sunday-start
+            return ws.toISOString().slice(0, 10);
+        }
+        return d.toISOString().slice(0, 7);
+    }
+    function bucketLabel(key) {
+        if (bucketing === 'day' || bucketing === 'week') {
+            return new Date(key + 'T00:00:00').toLocaleDateString('en-GB',
+                bucketing === 'day' ? { month: 'short', day: 'numeric' } : { month: 'short', day: 'numeric' });
+        }
+        return new Date(key + '-01T00:00:00').toLocaleDateString('en-GB', { year: '2-digit', month: 'short' });
+    }
+    /* Build the full set of buckets between cutoff and now so the
+     * chart has zero-filled gaps instead of compressing time. */
+    const buckets = [];
+    const cursor = new Date(cutoff);
+    cursor.setHours(0,0,0,0);
+    const end = new Date(now);
+    end.setHours(0,0,0,0);
+    if (bucketing === 'day') {
+        while (cursor <= end) { buckets.push(bucketKey(cursor)); cursor.setDate(cursor.getDate() + 1); }
+    } else if (bucketing === 'week') {
+        cursor.setDate(cursor.getDate() - cursor.getDay());
+        while (cursor <= end) { buckets.push(bucketKey(cursor)); cursor.setDate(cursor.getDate() + 7); }
+    } else {
+        cursor.setDate(1);
+        while (cursor <= end) { buckets.push(bucketKey(cursor)); cursor.setMonth(cursor.getMonth() + 1); }
+    }
+
+    /* Per-module per-bucket hour sums. */
+    const completions = completionsWithHours(OVERVIEW).filter(c => c.when >= cutoff && c.when <= now);
+    const seriesByModule = {};
+    MODULES.forEach(m => { seriesByModule[m.id] = Object.fromEntries(buckets.map(b => [b, 0])); });
+    let totalHours = 0;
+    const perModuleTotals = {};
+    completions.forEach(c => {
+        const key = bucketKey(c.when);
+        if (key in seriesByModule[c.module_id]) seriesByModule[c.module_id][key] += c.hours;
+        totalHours += c.hours;
+        perModuleTotals[c.module_id] = (perModuleTotals[c.module_id] || 0) + c.hours;
+    });
+
+    /* Stack colour palette — cool indigo→amber so adjacent modules
+     * stay readable. */
+    const palette = ['#4f46e5','#06b6d4','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899'];
+    const datasets = MODULES.filter(m => perModuleTotals[m.id] > 0).map((m, i) => ({
+        label: m.short,
+        data: buckets.map(b => seriesByModule[m.id][b]),
+        backgroundColor: palette[i % palette.length] + 'cc',
+        borderColor: palette[i % palette.length],
+        borderWidth: 1,
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        pointHoverRadius: 4
+    }));
+
+    if (hoursChart) hoursChart.destroy();
+    hoursChart = new Chart(document.getElementById('chart-hours'), {
+        type: 'line',
+        data: { labels: buckets.map(bucketLabel), datasets: datasets },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                tooltip: { mode: 'index', intersect: false,
+                    callbacks: { label: (ctx) => ctx.dataset.label + ': ' + fmtHours(ctx.parsed.y) + ' h' } },
+                legend: { position: 'bottom', labels: { boxWidth: 10, padding: 12, font: { size: 11 } } }
+            },
+            interaction: { mode: 'index', intersect: false },
+            scales: {
+                x: { stacked: true, grid: { display: false } },
+                y: { stacked: true, beginAtZero: true,
+                    title: { display: true, text: 'PD hours', font: { size: 11, weight: '700' } },
+                    ticks: { precision: 0 } }
+            }
+        }
+    });
+
+    /* Side stats. */
+    const staff = (OVERVIEW.people || []).length;
+    document.getElementById('hours-total').textContent = fmtHours(Math.round(totalHours * 10) / 10) + ' h';
+    document.getElementById('hours-avg').textContent =
+        (staff ? fmtHours(Math.round(totalHours / staff * 10) / 10) : '0') + ' h';
+    const topId = Object.keys(perModuleTotals).sort((a, b) => perModuleTotals[b] - perModuleTotals[a])[0];
+    document.getElementById('hours-top').textContent = topId
+        ? (MOD_BY_ID[topId].short + ' · ' + fmtHours(perModuleTotals[topId]) + ' h')
+        : '—';
+}
+
+/* ---- 2. Completion funnel ------------------------------------- */
+
+function renderCompletionChart() {
+    if (!OVERVIEW) return;
+    const total = (OVERVIEW.people || []).length;
+    if (!total) return;
+    const done = {};
+    MODULES.forEach(m => { done[m.id] = 0; });
+    (OVERVIEW.people || []).forEach(p => {
+        const personDone = {};
+        (OVERVIEW.completions || []).forEach(c => {
+            if (c.email === p.email) personDone[c.module_id] = true;
+        });
+        Object.keys(personDone).forEach(id => { if (id in done) done[id]++; });
+    });
+    const sorted = MODULES.slice().sort((a, b) =>
+        (done[b.id] / total) - (done[a.id] / total));
+
+    if (completionChart) completionChart.destroy();
+    completionChart = new Chart(document.getElementById('chart-completion'), {
+        type: 'bar',
+        data: {
+            labels: sorted.map(m => m.short + (m.required ? ' (required)' : '')),
+            datasets: [{
+                label: '% staff complete',
+                data: sorted.map(m => Math.round(done[m.id] / total * 100)),
+                backgroundColor: sorted.map(m => m.required ? '#f43f5e' : '#6366f1'),
+                borderRadius: 6,
+                barThickness: 22,
+                maxBarThickness: 28
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: {
+                    label: (ctx) => ctx.parsed.x + '% (' + done[sorted[ctx.dataIndex].id] + ' of ' + total + ' staff)'
+                } }
+            },
+            scales: {
+                x: { min: 0, max: 100,
+                    title: { display: true, text: '% of staff complete', font: { size: 11, weight: '700' } },
+                    ticks: { callback: v => v + '%' } },
+                y: { grid: { display: false } }
+            }
+        }
+    });
+}
+
+/* ---- 3. Engagement quality ------------------------------------ */
+
+function renderEngagementChart() {
+    const emptyEl = document.getElementById('engagement-empty');
+    const migEl = document.getElementById('engagement-needs-migration');
+    if (DWELL_NEEDS_MIGRATION) {
+        migEl.classList.remove('hidden');
+        return;
+    }
+    const rows = DWELL_ROWS || [];
+    if (!rows.length) {
+        emptyEl.classList.remove('hidden');
+        return;
+    }
+    /* Per-module aggregates across all teachers. */
+    const SKIM_SECS = 30;
+    const agg = {};
+    MODULES.forEach(m => { agg[m.id] = { totalSecs: 0, n: 0, skim: 0 }; });
+    rows.forEach(r => {
+        const a = agg[r.module_id]; if (!a) return;
+        a.totalSecs += (r.total_seconds || 0);
+        a.n++;
+        if (r.avg_secs_per_chapter > 0 && r.avg_secs_per_chapter < SKIM_SECS) a.skim++;
+    });
+    const labels = [], avgMin = [], skimPct = [];
+    MODULES.forEach(m => {
+        const a = agg[m.id];
+        if (!a.n) return;
+        labels.push(m.short);
+        avgMin.push(Math.round((a.totalSecs / a.n) / 6) / 10);     // minutes, 1 dp
+        skimPct.push(Math.round((a.skim / a.n) * 100));
+    });
+    if (!labels.length) {
+        emptyEl.classList.remove('hidden');
+        return;
+    }
+
+    if (engagementChart) engagementChart.destroy();
+    engagementChart = new Chart(document.getElementById('chart-engagement'), {
+        data: {
+            labels: labels,
+            datasets: [
+                { type: 'bar', label: 'Avg time on module (min)',
+                  data: avgMin, backgroundColor: '#06b6d4cc', borderRadius: 6,
+                  yAxisID: 'yMin', order: 2 },
+                { type: 'line', label: '% who skimmed (avg < 30s/chapter)',
+                  data: skimPct, borderColor: '#f43f5e', backgroundColor: '#f43f5e',
+                  yAxisID: 'yPct', tension: 0.3, borderWidth: 2,
+                  pointRadius: 4, pointHoverRadius: 6, fill: false, order: 1 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 10, padding: 12, font: { size: 11 } } },
+                tooltip: { mode: 'index', intersect: false }
+            },
+            scales: {
+                x: { grid: { display: false } },
+                yMin: { type: 'linear', position: 'left', beginAtZero: true,
+                    title: { display: true, text: 'Average minutes', font: { size: 11, weight: '700' } } },
+                yPct: { type: 'linear', position: 'right', beginAtZero: true, max: 100,
+                    grid: { display: false },
+                    title: { display: true, text: '% skim', font: { size: 11, weight: '700' } },
+                    ticks: { callback: v => v + '%' } }
+            }
+        }
+    });
+}
+
+/* ---- 4. Activity heatmap (90-day calendar grid) --------------- */
+
+function renderHeatmap() {
+    if (!OVERVIEW) return;
+    const DAYS = 90;
+    const now = new Date(); now.setHours(0,0,0,0);
+    const start = new Date(now.getTime() - (DAYS - 1) * 24 * 60 * 60 * 1000);
+    /* Align to Sunday so the grid has clean weekly columns. */
+    while (start.getDay() !== 0) start.setDate(start.getDate() - 1);
+
+    const counts = {};
+    completionsWithHours(OVERVIEW).forEach(c => {
+        const key = new Date(c.when.getFullYear(), c.when.getMonth(), c.when.getDate()).toISOString().slice(0, 10);
+        counts[key] = (counts[key] || 0) + 1;
+    });
+
+    const cells = [];
+    let peakKey = null, peakCount = 0;
+    let prevMonth = -1;
+    const cursor = new Date(start);
+    while (cursor <= now) {
+        const key = cursor.toISOString().slice(0, 10);
+        const n = counts[key] || 0;
+        cells.push({ key: key, count: n, day: cursor.getDay(), month: cursor.getMonth() });
+        if (n > peakCount) { peakCount = n; peakKey = key; }
+        cursor.setDate(cursor.getDate() + 1);
+    }
+
+    const grid = document.getElementById('heatmap-grid');
+    grid.innerHTML = '';
+    grid.style.gridTemplateColumns = 'repeat(' + Math.ceil(cells.length / 7) + ', 12px)';
+
+    cells.forEach((c, i) => {
+        const cell = document.createElement('div');
+        const lvl = c.count === 0 ? '' : (c.count <= 2 ? 'l1' : c.count <= 5 ? 'l2' : c.count <= 10 ? 'l3' : 'l4');
+        cell.className = 'heatmap-cell ' + lvl;
+        const niceDate = new Date(c.key + 'T00:00:00').toLocaleDateString('en-GB',
+            { weekday: 'short', day: 'numeric', month: 'short' });
+        cell.title = niceDate + ' · ' + c.count + (c.count === 1 ? ' completion' : ' completions');
+        cell.style.gridRow = String(c.day + 1);
+        grid.appendChild(cell);
+    });
+
+    document.getElementById('activity-peak').textContent = peakKey
+        ? new Date(peakKey + 'T00:00:00').toLocaleDateString('en-GB',
+            { weekday: 'short', day: 'numeric', month: 'short' }) +
+            ' · ' + peakCount + ' completions'
+        : '—';
+}
+
+/* ---- Boot ----------------------------------------------------- */
+
+function renderAll() {
+    renderHoursChart();
+    renderCompletionChart();
+    renderEngagementChart();
+    renderHeatmap();
+}
+
+document.getElementById('hours-range').addEventListener('click', function (ev) {
+    const btn = ev.target.closest('.range-btn'); if (!btn) return;
+    this.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderHoursChart();
+});
+
+if (window.aisaReady) {
+    window.aisaReady(function (auth) {
+        if (!auth.isConfigured()) { showState('state-denied'); return; }
+        const overviewP = auth.adminOverview();
+        const dwellP    = auth.getAdminDwell ? auth.getAdminDwell() : Promise.resolve({ ok: true, rows: [] });
+        Promise.all([overviewP, dwellP]).then(function (results) {
+            const ov = results[0], dw = results[1];
+            if (!ov || !ov.ok) { showState('state-denied'); return; }
+            OVERVIEW = ov;
+            if (dw && dw.ok) {
+                DWELL_ROWS = dw.rows || [];
+            } else if (dw && dw.error === 'dwell_sheet_needs_migration') {
+                DWELL_NEEDS_MIGRATION = true;
+            }
+            const gen = document.getElementById('generated-at');
+            if (gen && ov.generated_at) {
+                try {
+                    gen.textContent = '· generated ' + new Date(ov.generated_at).toLocaleString('en-GB',
+                        { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+                } catch (e) { /* ignore */ }
+            }
+            showState('state-ready');
+            /* Let layout settle (the section becomes visible) before
+             * Chart.js measures the canvas — avoids the 0×0 paint bug. */
+            requestAnimationFrame(renderAll);
+        }).catch(function (err) {
+            console.warn('AISA: admin charts failed', err);
+            showState('state-denied');
+        });
+    });
+} else {
+    showState('state-denied');
+}
+</script>
+
+</body>
+</html>
