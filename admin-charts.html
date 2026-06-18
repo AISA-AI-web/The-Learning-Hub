@@ -63,7 +63,19 @@
         <div class="text-5xl mb-4">🔒</div>
         <h2 class="text-xl font-heading font-black text-slate-900 mb-2">Admin access required</h2>
         <p class="text-slate-500">This page is limited to PD leads and SLT.</p>
-        <a href="admin-dashboard.html" class="inline-block mt-6 text-indigo-700 font-bold hover:text-indigo-900">← Back to the admin dashboard</a>
+
+        <!-- Diagnostic: most "denied" failures here aren't actually about
+             permissions — they're stale cache or a network/CORS issue. -->
+        <div id="denied-detail" class="hidden mt-6 text-left bg-slate-50 border border-slate-200 rounded-xl p-4">
+            <p class="text-xs font-bold uppercase tracking-widest text-slate-500 mb-2">Diagnostic</p>
+            <p class="text-sm text-slate-700">Server returned: <code id="denied-error" class="font-mono bg-white border border-slate-200 rounded px-1.5 py-0.5 text-xs">—</code></p>
+            <p id="denied-hint" class="text-sm text-slate-600 mt-2"></p>
+        </div>
+
+        <div class="mt-6 flex flex-col sm:flex-row gap-2 justify-center">
+            <button id="reset-admin-cache" type="button" class="text-sm font-bold bg-slate-900 text-white px-4 py-2 rounded-full hover:bg-slate-700 transition-colors">Clear admin cache &amp; reload</button>
+            <a href="admin-dashboard.html" class="text-sm font-bold text-indigo-700 hover:text-indigo-900 px-4 py-2 rounded-full">← Back to admin dashboard</a>
+        </div>
     </div>
 
     <!-- Ready -->
@@ -207,6 +219,38 @@ function showState(id) {
         if (el) el.classList.toggle('hidden', s !== id);
     });
 }
+
+/* Surface the actual server error on the denied screen so we can tell
+ * "not_admin" from a CORS / network / unknown_action / deploy issue. */
+function showDenied(err) {
+    showState('state-denied');
+    const detail = document.getElementById('denied-detail');
+    const code   = document.getElementById('denied-error');
+    const hint   = document.getElementById('denied-hint');
+    if (!detail || !code || !hint) return;
+    const msg = (err && err.message) ? String(err.message) : 'unknown';
+    code.textContent = msg;
+    const hints = {
+        'not_admin':                 'Your @aisa.sch.ae email isn\'t in the `admins` sheet, OR the Apps Script is reading from the wrong sheet. Open the spreadsheet → admins tab → add (or check) your email in column A.',
+        'invalid_session':           'Your session expired. Click "Clear admin cache & reload" — you\'ll be prompted to sign in again.',
+        'invalid_token':             'Your session is invalid. Click "Clear admin cache & reload" to re-authenticate.',
+        'api_error':                 'The Apps Script returned an unexpected error. Check Apps Script → Executions for the stack trace.',
+        'aisa_api_not_configured':   'The Apps Script URL isn\'t set in gate.js. This is a deploy issue, not a permissions issue.'
+    };
+    hint.textContent = hints[msg] ||
+        'Likely cache or network. Hard-reload the page (Cmd+Shift+R / Ctrl+F5), or click "Clear admin cache & reload".';
+    detail.classList.remove('hidden');
+}
+
+document.addEventListener('click', function (ev) {
+    if (ev.target && ev.target.id === 'reset-admin-cache') {
+        try {
+            localStorage.removeItem('aisa_is_admin_v1');
+            localStorage.removeItem('aisa_completions_v1');
+        } catch (e) { /* ignore */ }
+        location.reload();
+    }
+});
 
 /* ---- Data joins ------------------------------------------------- */
 
@@ -516,14 +560,17 @@ document.getElementById('hours-range').addEventListener('click', function (ev) {
 
 if (window.aisaReady) {
     window.aisaReady(function (auth) {
-        if (!auth.isConfigured()) { showState('state-denied'); return; }
+        if (!auth.isConfigured()) {
+            showDenied(new Error('aisa_api_not_configured'));
+            return;
+        }
 
         /* adminOverview is the gate: if it succeeds we ARE admin and the
          * page renders. getAdminDwell loads independently so a missing
          * endpoint (e.g. the Apps Script hasn't been redeployed with the
          * dwell actions yet) leaves the other three charts working. */
         auth.adminOverview().then(function (ov) {
-            if (!ov || !ov.ok) { showState('state-denied'); return; }
+            if (!ov || !ov.ok) { showDenied(new Error((ov && ov.error) || 'unknown')); return; }
             OVERVIEW = ov;
             const gen = document.getElementById('generated-at');
             if (gen && ov.generated_at) {
