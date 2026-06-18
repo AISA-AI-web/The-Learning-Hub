@@ -158,11 +158,11 @@
             <!-- Engagement / time-on-task -->
             <div class="flex items-center justify-between gap-4 mb-3 mt-12 px-1 flex-wrap">
                 <div>
-                    <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">Engagement &middot; time per chapter</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">Engagement &middot; time per module</h3>
                     <p class="text-xs text-slate-500 mt-1 max-w-2xl">
-                        Per-person foreground time spent on each chapter of each PD module.
-                        A <span class="inline-flex items-center gap-1 align-middle text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest">Fast</span>
-                        flag fires when a chapter is completed in under 30&nbsp;seconds — useful for spotting skim-and-skip.
+                        Per-teacher foreground time on each PD module they've opened — total time, chapters touched, and the average seconds per chapter.
+                        A <span class="inline-flex items-center gap-1 align-middle text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest">Skim</span>
+                        flag fires when the average drops below 30&nbsp;seconds per chapter.
                     </p>
                 </div>
                 <div class="flex items-center gap-3">
@@ -173,8 +173,27 @@
                            class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
                 </div>
             </div>
-            <div id="dwell-people" class="space-y-3"></div>
+            <div id="dwell-table-wrap" class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr id="dwell-head" class="text-[11px] font-bold uppercase tracking-widest text-slate-500 bg-slate-50/60">
+                            <th data-sort="name"    class="text-left px-4 py-2.5 cursor-pointer hover:text-slate-900">Teacher</th>
+                            <th data-sort="module"  class="text-left px-4 py-2.5 cursor-pointer hover:text-slate-900">Module</th>
+                            <th data-sort="total"   class="text-right px-4 py-2.5 cursor-pointer hover:text-slate-900">Total time</th>
+                            <th data-sort="seen"    class="text-right px-4 py-2.5 cursor-pointer hover:text-slate-900">Chapters</th>
+                            <th data-sort="avg"     class="text-right px-4 py-2.5 cursor-pointer hover:text-slate-900">Avg / chapter</th>
+                            <th class="text-right px-4 py-2.5">Flag</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dwell-body"></tbody>
+                </table>
+            </div>
             <p id="dwell-empty" class="text-center text-slate-400 py-8">No engagement data yet — dwell time appears as teachers work through PD modules.</p>
+            <p id="dwell-needs-migration" class="hidden mt-3 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+                <strong>Heads up:</strong> the dwell sheet still has the old per-chapter layout. Run
+                <code class="font-mono bg-amber-100 px-1.5 py-0.5 rounded">migrateDwellToPerModule()</code>
+                once from the Apps Script editor to roll those rows into per-module summaries.
+            </p>
         </div>
     </main>
 
@@ -383,7 +402,12 @@
                  * shouldn't block the main compliance view. */
                 if (auth.getAdminDwell) {
                     auth.getAdminDwell().then(function (payload) {
-                        if (payload && payload.ok) renderDwell(payload.rows || []);
+                        if (payload && payload.ok) {
+                            renderDwell(payload.rows || []);
+                        } else if (payload && payload.error === 'dwell_sheet_needs_migration') {
+                            var n = document.getElementById('dwell-needs-migration');
+                            if (n) n.classList.remove('hidden');
+                        }
                     }).catch(function (err) {
                         console.warn('AISA: admin dwell failed', err);
                     });
@@ -396,16 +420,18 @@
 
     <script>
     /* ============================================================
-     * Engagement view — per-person × module × chapter dwell time.
-     * Renders an expandable card per teacher, showing each chapter
-     * they touched grouped by module, with totals and a "Fast" flag
-     * for chapters skimmed in under 30 seconds.
+     * Engagement view — flat per-teacher × per-module table.
+     * One row per (teacher, module) summarising total foreground
+     * time, chapters touched, and average secs per chapter, with a
+     * "Skim" flag when the average drops below 30s/chapter.
+     * Sortable by any column; module + name/email filters.
      * ============================================================ */
     (function () {
         'use strict';
-        const FAST_THRESHOLD_SECS = 30;
+        const SKIM_THRESHOLD_SECS = 30;
         let ALL_ROWS = [];
-        let MODULES_SEEN = [];
+        let sortKey = 'total';
+        let sortDir = 'desc';
 
         function fmtSecs(n) {
             n = Math.max(0, Math.floor(Number(n) || 0));
@@ -414,6 +440,12 @@
             if (m < 60) return s ? (m + 'm ' + s + 's') : (m + 'm');
             const h = Math.floor(m / 60), rm = m % 60;
             return rm ? (h + 'h ' + rm + 'm') : (h + 'h');
+        }
+
+        function fmtAvg(n) {
+            n = Number(n) || 0;
+            if (n >= 60) return fmtSecs(n);
+            return (Math.round(n * 10) / 10) + 's';
         }
 
         function moduleLabel(id) {
@@ -427,10 +459,8 @@
             if (!sel) return;
             const ids = {};
             rows.forEach(function (r) { ids[r.module_id] = true; });
-            MODULES_SEEN = Object.keys(ids).sort();
-            /* Keep the "All modules" placeholder, replace the rest. */
             sel.innerHTML = '<option value="">All modules</option>' +
-                MODULES_SEEN.map(function (id) {
+                Object.keys(ids).sort().map(function (id) {
                     return '<option value="' + escapeAttr(id) + '">' +
                         escapeHtml(moduleLabel(id)) + '</option>';
                 }).join('');
@@ -456,123 +486,78 @@
             });
         }
 
-        /* Pivot: rows → people[].modules[].chapters[] */
-        function pivot(rows) {
-            const byEmail = {};
-            rows.forEach(function (r) {
-                if (!byEmail[r.email]) {
-                    byEmail[r.email] = {
-                        email: r.email, name: r.name || '',
-                        total_seconds: 0, fast_count: 0, modules: {}
-                    };
-                }
-                const p = byEmail[r.email];
-                if (r.name && !p.name) p.name = r.name;
-                if (!p.modules[r.module_id]) p.modules[r.module_id] = {
-                    module_id: r.module_id, total_seconds: 0,
-                    fast_count: 0, chapters: []
-                };
-                const m = p.modules[r.module_id];
-                m.chapters.push({
-                    chapter: r.chapter, title: r.chapter_title,
-                    seconds: r.total_seconds, last_seen: r.last_seen
-                });
-                m.total_seconds += r.total_seconds;
-                p.total_seconds += r.total_seconds;
-                if (r.total_seconds > 0 && r.total_seconds < FAST_THRESHOLD_SECS) {
-                    m.fast_count++; p.fast_count++;
-                }
+        function sortRows(rows) {
+            const dir = sortDir === 'asc' ? 1 : -1;
+            const fn = {
+                name:   function (r) { return (r.name || r.email || '').toLowerCase(); },
+                module: function (r) { return moduleLabel(r.module_id).toLowerCase(); },
+                total:  function (r) { return r.total_seconds || 0; },
+                seen:   function (r) { return r.chapters_seen || 0; },
+                avg:    function (r) { return r.avg_secs_per_chapter || 0; }
+            }[sortKey] || function (r) { return r.total_seconds || 0; };
+            return rows.slice().sort(function (a, b) {
+                const va = fn(a), vb = fn(b);
+                if (va < vb) return -1 * dir;
+                if (va > vb) return  1 * dir;
+                return 0;
             });
-            const people = Object.keys(byEmail).map(function (e) {
-                const p = byEmail[e];
-                p.modules = Object.keys(p.modules).map(function (k) {
-                    const m = p.modules[k];
-                    m.chapters.sort(function (a, b) {
-                        const na = parseFloat(a.chapter), nb = parseFloat(b.chapter);
-                        if (isFinite(na) && isFinite(nb) && na !== nb) return na - nb;
-                        return a.chapter < b.chapter ? -1 : 1;
-                    });
-                    return m;
-                }).sort(function (a, b) { return a.module_id < b.module_id ? -1 : 1; });
-                return p;
-            });
-            /* Sort by total time descending so the most-engaged people land
-             * at the top — same convention as the compliance matrix. */
-            people.sort(function (a, b) { return b.total_seconds - a.total_seconds; });
-            return people;
         }
 
-        function chapterRow(c) {
-            const fast = c.seconds > 0 && c.seconds < FAST_THRESHOLD_SECS;
+        function tableRow(r) {
+            const skim = r.chapters_seen > 0 && r.avg_secs_per_chapter > 0 &&
+                         r.avg_secs_per_chapter < SKIM_THRESHOLD_SECS;
+            const display = r.name || r.email;
+            const sub = r.name ? r.email : '';
             return '' +
-                '<tr class="' + (fast ? 'bg-rose-50/40' : '') + '">' +
-                    '<td class="py-1.5 px-3 text-slate-500 font-mono text-[12px] w-12 align-top">' +
-                        escapeHtml(c.chapter) +
+                '<tr class="border-t border-slate-100 ' + (skim ? 'bg-rose-50/30' : '') + '">' +
+                    '<td class="px-4 py-2.5 align-top">' +
+                        '<p class="font-semibold text-slate-900 leading-tight">' + escapeHtml(display) + '</p>' +
+                        (sub ? '<p class="text-xs text-slate-500 truncate">' + escapeHtml(sub) + '</p>' : '') +
                     '</td>' +
-                    '<td class="py-1.5 px-3 text-slate-800 align-top">' +
-                        escapeHtml(c.title || ('Chapter ' + c.chapter)) +
-                        (fast ? ' <span class="inline-flex items-center gap-1 align-middle text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest ml-1">Fast</span>' : '') +
-                    '</td>' +
-                    '<td class="py-1.5 px-3 text-right tabular-nums font-semibold ' +
-                        (fast ? 'text-rose-700' : 'text-slate-800') + ' align-top w-20">' +
-                        escapeHtml(fmtSecs(c.seconds)) +
+                    '<td class="px-4 py-2.5 text-slate-800 align-top">' + escapeHtml(moduleLabel(r.module_id)) + '</td>' +
+                    '<td class="px-4 py-2.5 text-right tabular-nums font-bold ' +
+                        (skim ? 'text-rose-700' : 'text-slate-900') + ' align-top">' +
+                        escapeHtml(fmtSecs(r.total_seconds)) + '</td>' +
+                    '<td class="px-4 py-2.5 text-right tabular-nums text-slate-700 align-top">' +
+                        escapeHtml(String(r.chapters_seen || 0)) + '</td>' +
+                    '<td class="px-4 py-2.5 text-right tabular-nums ' +
+                        (skim ? 'text-rose-700 font-bold' : 'text-slate-700') + ' align-top">' +
+                        escapeHtml(fmtAvg(r.avg_secs_per_chapter)) + '</td>' +
+                    '<td class="px-4 py-2.5 text-right align-top">' +
+                        (skim
+                            ? '<span class="inline-flex items-center text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest">Skim</span>'
+                            : '') +
                     '</td>' +
                 '</tr>';
         }
 
-        function moduleBlock(m) {
-            return '' +
-                '<div class="border-t border-slate-100 first:border-t-0">' +
-                    '<div class="flex items-center justify-between px-4 py-2 bg-slate-50/60">' +
-                        '<p class="font-bold text-slate-800 text-sm">' + escapeHtml(moduleLabel(m.module_id)) + '</p>' +
-                        '<div class="flex items-center gap-3 text-xs">' +
-                            (m.fast_count
-                                ? '<span class="text-rose-700 font-bold">' + m.fast_count + ' fast</span>'
-                                : '') +
-                            '<span class="font-bold text-slate-700">' + escapeHtml(fmtSecs(m.total_seconds)) + '</span>' +
-                        '</div>' +
-                    '</div>' +
-                    '<table class="w-full text-sm">' +
-                        '<tbody>' + m.chapters.map(chapterRow).join('') + '</tbody>' +
-                    '</table>' +
-                '</div>';
-        }
-
-        function personCard(p) {
-            const display = p.name || p.email;
-            const sub = p.name ? p.email : '';
-            return '' +
-                '<details class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">' +
-                    '<summary class="cursor-pointer list-none flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-slate-50/60">' +
-                        '<div class="min-w-0 flex-1">' +
-                            '<p class="font-bold text-slate-900 truncate">' + escapeHtml(display) + '</p>' +
-                            (sub ? '<p class="text-xs text-slate-500 truncate">' + escapeHtml(sub) + '</p>' : '') +
-                        '</div>' +
-                        '<div class="flex items-center gap-3 text-xs shrink-0">' +
-                            (p.fast_count
-                                ? '<span class="inline-flex items-center gap-1 text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full font-bold uppercase tracking-widest text-[10px]">' + p.fast_count + ' fast</span>'
-                                : '') +
-                            '<span class="font-black text-lg tabular-nums text-slate-900">' + escapeHtml(fmtSecs(p.total_seconds)) + '</span>' +
-                            '<svg class="w-4 h-4 text-slate-400 transition-transform" style="transform:rotate(0deg)" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>' +
-                        '</div>' +
-                    '</summary>' +
-                    '<div>' + p.modules.map(moduleBlock).join('') + '</div>' +
-                '</details>';
+        function updateSortIndicators() {
+            const head = document.getElementById('dwell-head');
+            if (!head) return;
+            head.querySelectorAll('th[data-sort]').forEach(function (th) {
+                const arrow = (th.getAttribute('data-sort') === sortKey)
+                    ? (sortDir === 'asc' ? ' ▲' : ' ▼') : '';
+                const base = th.getAttribute('data-label') || (th.textContent || '').replace(/\s*[▲▼]$/, '').trim();
+                th.setAttribute('data-label', base);
+                th.textContent = base + arrow;
+            });
         }
 
         function rerender() {
-            const rows = filterRows();
-            const people = pivot(rows);
-            const wrap = document.getElementById('dwell-people');
+            const rows = sortRows(filterRows());
+            const body = document.getElementById('dwell-body');
             const empty = document.getElementById('dwell-empty');
-            if (!wrap || !empty) return;
-            if (!people.length) {
-                wrap.innerHTML = '';
+            if (!body || !empty) return;
+            if (!rows.length) {
+                body.innerHTML = '';
                 empty.classList.remove('hidden');
+                document.getElementById('dwell-table-wrap').classList.add('hidden');
                 return;
             }
             empty.classList.add('hidden');
-            wrap.innerHTML = people.map(personCard).join('');
+            document.getElementById('dwell-table-wrap').classList.remove('hidden');
+            body.innerHTML = rows.map(tableRow).join('');
+            updateSortIndicators();
         }
 
         window.renderDwell = function (rows) {
@@ -586,6 +571,22 @@
             const b = document.getElementById('dwell-search');
             if (a) a.addEventListener(ev, rerender);
             if (b) b.addEventListener(ev, rerender);
+        });
+
+        /* Header click → sort by that column; toggle direction if it's
+         * already the active sort. */
+        document.addEventListener('click', function (ev) {
+            const th = ev.target && ev.target.closest && ev.target.closest('#dwell-head th[data-sort]');
+            if (!th) return;
+            const next = th.getAttribute('data-sort');
+            if (next === sortKey) {
+                sortDir = (sortDir === 'asc') ? 'desc' : 'asc';
+            } else {
+                sortKey = next;
+                /* Numbers default desc (biggest first), strings default asc. */
+                sortDir = (next === 'name' || next === 'module') ? 'asc' : 'desc';
+            }
+            rerender();
         });
     })();
     </script>

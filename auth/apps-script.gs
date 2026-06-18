@@ -72,15 +72,20 @@ const CLICK_HEADERS = [
   'page_path', 'user_agent'
 ];
 
-/* Dwell rows hold the *absolute* seconds-on-chapter for one person.
- * Client sends absolute totals, server upserts by (email × module ×
- * chapter), so retries are idempotent and a flaky network doesn't
- * inflate the numbers. updated_at_iso is the last flush; first_seen_iso
- * is the first time we recorded any time on this chapter. */
+/* Dwell rows hold per-module engagement summaries — one row per person
+ * per module — rather than one row per chapter. The client sends the
+ * full per-chapter snapshot each flush; we aggregate to total_seconds
+ * (sum) + chapters_seen (count of chapters with >0s) + avg_secs_per_
+ * chapter (stored so it's readable directly in the sheet). Upsert by
+ * (email × module_id) so the row count is bounded at staff × modules
+ * (~1.4k school-wide steady-state, vs. ~11k for per-chapter). */
 const DWELL_HEADERS = [
-  'updated_at_iso', 'first_seen_iso', 'email', 'name',
-  'module_id', 'chapter', 'chapter_title', 'total_seconds', 'user_agent'
+  'updated_at_iso', 'first_seen_iso', 'email', 'name', 'module_id',
+  'total_seconds', 'chapters_seen', 'avg_secs_per_chapter', 'user_agent'
 ];
+/* Marker present only in the old per-chapter layout. Used to detect an
+ * un-migrated sheet so we can refuse writes/reads with a clear hint. */
+const DWELL_LEGACY_MARKER = 'chapter_title';
 
 // ---------- Time helpers ----------
 //
@@ -407,10 +412,22 @@ function getDwellSheet() {
   return sheet;
 }
 
-/* Upsert one row per (email × module × chapter). The client sends the
- * *absolute* seconds-so-far for each chapter; we overwrite, so a retry
- * (or a multi-tab race) can never double-count. first_seen_iso is set
- * only on the very first write for that row. */
+/* True if the existing sheet still has the old per-chapter headers; we
+ * refuse to read/write until migrateDwellToPerModule() runs once. */
+function dwellSheetIsLegacy(sheet) {
+  if (sheet.getLastRow() < 1) return false;
+  const headers = sheet.getRange(1, 1, 1, Math.min(20, sheet.getLastColumn())).getValues()[0];
+  for (let i = 0; i < headers.length; i++) {
+    if (String(headers[i] || '').trim() === DWELL_LEGACY_MARKER) return true;
+  }
+  return false;
+}
+
+/* Upsert one row per (email × module). The client sends absolute
+ * per-chapter totals; we sum them into total_seconds, count chapters
+ * with >0s into chapters_seen, derive avg_secs_per_chapter. Sending
+ * the full chapter snapshot every flush is what makes this idempotent
+ * — last write wins and races don't inflate the numbers. */
 function recordDwell(claims, body) {
   const moduleId  = String(body.module_id || '').slice(0, 80);
   const userAgent = String(body.user_agent || '').slice(0, 300);
@@ -420,114 +437,213 @@ function recordDwell(claims, body) {
   if (!Array.isArray(chapters) || chapters.length === 0) {
     return { ok: false, error: 'missing_chapters' };
   }
-  /* Trim payload defensively. */
-  chapters = chapters.slice(0, 200).map(function (c) {
-    return {
-      chapter:  String((c && c.chapter)  || '').slice(0, 32),
-      title:    String((c && c.title)    || '').slice(0, 200),
-      seconds:  Math.max(0, Math.min(Number((c && c.seconds) || 0) | 0, 24 * 60 * 60))
-    };
-  }).filter(function (c) { return c.chapter && c.seconds > 0; });
-  if (!chapters.length) return { ok: true, written: 0 };
+  /* Trim defensively, then aggregate to a single per-module summary. */
+  let totalSeconds = 0;
+  let chaptersSeen = 0;
+  for (let i = 0; i < Math.min(chapters.length, 200); i++) {
+    const c = chapters[i] || {};
+    const secs = Math.max(0, Math.min(Number(c.seconds || 0) | 0, 24 * 60 * 60));
+    if (secs > 0) { totalSeconds += secs; chaptersSeen++; }
+  }
+  if (chaptersSeen === 0) return { ok: true, written: 0 };
 
   const sheet = getDwellSheet();
+  if (dwellSheetIsLegacy(sheet)) {
+    return {
+      ok: false,
+      error: 'dwell_sheet_needs_migration',
+      hint: 'Run migrateDwellToPerModule() once from the Apps Script editor.'
+    };
+  }
   const idx = {
-    updated:  DWELL_HEADERS.indexOf('updated_at_iso'),
-    first:    DWELL_HEADERS.indexOf('first_seen_iso'),
-    email:    DWELL_HEADERS.indexOf('email'),
-    name:     DWELL_HEADERS.indexOf('name'),
-    module:   DWELL_HEADERS.indexOf('module_id'),
-    chapter:  DWELL_HEADERS.indexOf('chapter'),
-    title:    DWELL_HEADERS.indexOf('chapter_title'),
-    seconds:  DWELL_HEADERS.indexOf('total_seconds'),
-    ua:       DWELL_HEADERS.indexOf('user_agent')
+    updated:    DWELL_HEADERS.indexOf('updated_at_iso'),
+    first:      DWELL_HEADERS.indexOf('first_seen_iso'),
+    email:      DWELL_HEADERS.indexOf('email'),
+    name:       DWELL_HEADERS.indexOf('name'),
+    module:     DWELL_HEADERS.indexOf('module_id'),
+    seconds:    DWELL_HEADERS.indexOf('total_seconds'),
+    seen:       DWELL_HEADERS.indexOf('chapters_seen'),
+    avg:        DWELL_HEADERS.indexOf('avg_secs_per_chapter'),
+    ua:         DWELL_HEADERS.indexOf('user_agent')
   };
   const emailLower = String(claims.email || '').toLowerCase();
   const name       = claims.name || '';
   const now        = nowIsoLocal();
+  const avg        = Math.round((totalSeconds / chaptersSeen) * 10) / 10;
 
-  /* Read existing rows for this person × module so we can find the right
-   * (chapter) row to overwrite. Cheaper than scanning the whole sheet on
-   * every flush. */
+  /* Locate the existing (email × module) row, if any. Scanning the whole
+   * sheet is cheap at this scale (steady-state ~1.4k rows). */
   const lastRow = sheet.getLastRow();
   let existing = [];
   if (lastRow >= 2) {
     existing = sheet.getRange(2, 1, lastRow - 1, DWELL_HEADERS.length).getValues();
   }
-  const rowIndexByChapter = {};   // chapter -> 1-based sheet row
+  let foundRow = 0, firstSeen = now;
   for (let i = 0; i < existing.length; i++) {
     const r = existing[i];
     if (String(r[idx.email] || '').toLowerCase() !== emailLower) continue;
     if (String(r[idx.module] || '') !== moduleId) continue;
-    rowIndexByChapter[String(r[idx.chapter] || '')] = i + 2;
+    foundRow = i + 2;
+    firstSeen = String(r[idx.first] || now);
+    break;
   }
 
-  let written = 0;
-  chapters.forEach(function (c) {
-    const existingRow = rowIndexByChapter[c.chapter];
-    if (existingRow) {
-      /* Upsert: keep first_seen, refresh updated_at + total_seconds + name + ua. */
-      const row = existing[existingRow - 2];
-      const first = row[idx.first] || now;
-      sheet.getRange(existingRow, 1, 1, DWELL_HEADERS.length).setValues([[
-        now, first, emailLower, name, moduleId,
-        c.chapter, c.title, c.seconds, userAgent
-      ]]);
-    } else {
-      sheet.appendRow([
-        now, now, emailLower, name, moduleId,
-        c.chapter, c.title, c.seconds, userAgent
-      ]);
-    }
-    written++;
-  });
-
-  return { ok: true, written: written };
+  const rowValues = [
+    now, firstSeen, emailLower, name, moduleId,
+    totalSeconds, chaptersSeen, avg, userAgent
+  ];
+  if (foundRow) {
+    sheet.getRange(foundRow, 1, 1, DWELL_HEADERS.length).setValues([rowValues]);
+  } else {
+    sheet.appendRow(rowValues);
+  }
+  return { ok: true, written: 1, total_seconds: totalSeconds, chapters_seen: chaptersSeen, avg_secs_per_chapter: avg };
 }
 
-/* Admin view: flat list of rows ready to pivot in the dashboard JS.
- * Sorted by module then chapter then email so the UI doesn't have to. */
+/* Admin view: flat per-teacher × per-module rows. The dashboard renders
+ * a sortable table directly from this — no client-side pivot needed. */
 function adminDwell() {
   const sheet = getDwellSheet();
+  if (dwellSheetIsLegacy(sheet)) {
+    return {
+      ok: false,
+      error: 'dwell_sheet_needs_migration',
+      hint: 'Run migrateDwellToPerModule() once from the Apps Script editor.'
+    };
+  }
   const lastRow = sheet.getLastRow();
   if (lastRow < 2) {
     return { ok: true, generated_at: nowIsoLocal(), rows: [] };
   }
   const values = sheet.getRange(2, 1, lastRow - 1, DWELL_HEADERS.length).getValues();
   const idx = {
-    updated:  DWELL_HEADERS.indexOf('updated_at_iso'),
-    first:    DWELL_HEADERS.indexOf('first_seen_iso'),
-    email:    DWELL_HEADERS.indexOf('email'),
-    name:     DWELL_HEADERS.indexOf('name'),
-    module:   DWELL_HEADERS.indexOf('module_id'),
-    chapter:  DWELL_HEADERS.indexOf('chapter'),
-    title:    DWELL_HEADERS.indexOf('chapter_title'),
-    seconds:  DWELL_HEADERS.indexOf('total_seconds')
+    updated:    DWELL_HEADERS.indexOf('updated_at_iso'),
+    first:      DWELL_HEADERS.indexOf('first_seen_iso'),
+    email:      DWELL_HEADERS.indexOf('email'),
+    name:       DWELL_HEADERS.indexOf('name'),
+    module:     DWELL_HEADERS.indexOf('module_id'),
+    seconds:    DWELL_HEADERS.indexOf('total_seconds'),
+    seen:       DWELL_HEADERS.indexOf('chapters_seen'),
+    avg:        DWELL_HEADERS.indexOf('avg_secs_per_chapter')
   };
   const rows = values.map(function (r) {
     return {
-      email:          String(r[idx.email] || '').toLowerCase(),
-      name:           String(r[idx.name] || ''),
-      module_id:      String(r[idx.module] || ''),
-      chapter:        String(r[idx.chapter] || ''),
-      chapter_title:  String(r[idx.title] || ''),
-      total_seconds:  Number(r[idx.seconds] || 0) | 0,
-      first_seen:     String(r[idx.first] || ''),
-      last_seen:      String(r[idx.updated] || '')
+      email:                 String(r[idx.email] || '').toLowerCase(),
+      name:                  String(r[idx.name] || ''),
+      module_id:             String(r[idx.module] || ''),
+      total_seconds:         Number(r[idx.seconds] || 0) | 0,
+      chapters_seen:         Number(r[idx.seen] || 0) | 0,
+      avg_secs_per_chapter:  Number(r[idx.avg] || 0),
+      first_seen:            String(r[idx.first] || ''),
+      last_seen:             String(r[idx.updated] || '')
     };
-  });
-  rows.sort(function (a, b) {
-    if (a.module_id !== b.module_id) return a.module_id < b.module_id ? -1 : 1;
-    if (a.chapter   !== b.chapter)   return numCmp(a.chapter, b.chapter);
-    return a.email < b.email ? -1 : (a.email > b.email ? 1 : 0);
   });
   return { ok: true, generated_at: nowIsoLocal(), rows: rows };
 }
 
-function numCmp(a, b) {
-  const na = parseFloat(a), nb = parseFloat(b);
-  if (isFinite(na) && isFinite(nb) && na !== nb) return na - nb;
-  return a < b ? -1 : (a > b ? 1 : 0);
+/* ----- One-time migration: per-chapter rows → per-module rows. -----
+ *
+ * Run this ONCE from the Apps Script editor after deploying the new
+ * record_dwell/admin_dwell code. It:
+ *   1. Reads every existing per-chapter row from the dwell sheet.
+ *   2. Groups by (email × module_id), summing seconds and counting
+ *      chapters with >0s.
+ *   3. Replaces the sheet contents with the new per-module headers
+ *      and one aggregated row per group.
+ *   4. Writes a backup snapshot to a `dwell_legacy_backup_YYYYMMDD`
+ *      sheet so nothing is unrecoverable.
+ *
+ * Safe to re-run: if the sheet already has the new layout, it no-ops.
+ */
+function migrateDwellToPerModule() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(DWELL_SHEET);
+  if (!sheet) {
+    Logger.log('No dwell sheet found — nothing to migrate.');
+    return { ok: true, migrated: 0, note: 'no_sheet' };
+  }
+  if (!dwellSheetIsLegacy(sheet)) {
+    Logger.log('Dwell sheet already on per-module layout — nothing to do.');
+    return { ok: true, migrated: 0, note: 'already_migrated' };
+  }
+
+  const lastRow = sheet.getLastRow();
+  const lastCol = sheet.getLastColumn();
+  const headers = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
+  const old = {
+    updated:  headers.indexOf('updated_at_iso'),
+    first:    headers.indexOf('first_seen_iso'),
+    email:    headers.indexOf('email'),
+    name:     headers.indexOf('name'),
+    module:   headers.indexOf('module_id'),
+    chapter:  headers.indexOf('chapter'),
+    seconds:  headers.indexOf('total_seconds')
+  };
+
+  /* Snapshot the old contents to a backup tab before mutating anything. */
+  const stamp = Utilities.formatDate(new Date(), TIMEZONE, 'yyyyMMdd_HHmmss');
+  const backupName = 'dwell_legacy_backup_' + stamp;
+  if (lastRow >= 1) {
+    const backup = ss.insertSheet(backupName);
+    sheet.getRange(1, 1, lastRow, lastCol).copyTo(backup.getRange(1, 1));
+  }
+
+  /* Aggregate. */
+  const groups = {};   // emailLower|module -> aggregate
+  if (lastRow >= 2) {
+    const rows = sheet.getRange(2, 1, lastRow - 1, lastCol).getValues();
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i];
+      const emailLower = String(r[old.email] || '').toLowerCase();
+      const moduleId   = String(r[old.module] || '');
+      const seconds    = Number(r[old.seconds] || 0) | 0;
+      if (!emailLower || !moduleId) continue;
+      const key = emailLower + '|' + moduleId;
+      if (!groups[key]) {
+        groups[key] = {
+          updated:  String(r[old.updated] || ''),
+          first:    String(r[old.first] || ''),
+          email:    emailLower,
+          name:     String(r[old.name] || ''),
+          module:   moduleId,
+          seconds:  0,
+          chapters: 0
+        };
+      }
+      const g = groups[key];
+      if (seconds > 0) { g.seconds += seconds; g.chapters++; }
+      /* Earliest first_seen, latest updated_at. */
+      const u = String(r[old.updated] || '');
+      const f = String(r[old.first] || '');
+      if (u && (!g.updated || u > g.updated)) g.updated = u;
+      if (f && (!g.first || f < g.first))     g.first   = f;
+      if (!g.name && r[old.name]) g.name = String(r[old.name] || '');
+    }
+  }
+
+  /* Rewrite the sheet with the new layout. */
+  sheet.clear();
+  sheet.appendRow(DWELL_HEADERS);
+  sheet.setFrozenRows(1);
+  sheet.getRange(1, 1, 1, DWELL_HEADERS.length).setFontWeight('bold');
+
+  let written = 0;
+  Object.keys(groups).forEach(function (k) {
+    const g = groups[k];
+    if (g.chapters === 0) return;
+    const avg = Math.round((g.seconds / g.chapters) * 10) / 10;
+    sheet.appendRow([
+      g.updated || nowIsoLocal(),
+      g.first   || g.updated || nowIsoLocal(),
+      g.email, g.name, g.module,
+      g.seconds, g.chapters, avg,
+      ''   /* user_agent not carried forward — only the latest write knows it */
+    ]);
+    written++;
+  });
+
+  Logger.log('Migrated ' + written + ' per-module row(s). Backup: ' + backupName);
+  return { ok: true, migrated: written, backup_sheet: backupName };
 }
 
 // ---------- Completions ----------

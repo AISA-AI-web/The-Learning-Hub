@@ -12,9 +12,15 @@ fail silently and the dependent UIs stay empty:
 
 - **Abu Dhabi timezone:** `nowIsoLocal()` writes `+04:00` instead of
   UTC `Z` for all new rows. Existing rows untouched.
-- **Per-section dwell tracking:** new `dwell` sheet + `record_dwell` and
-  `admin_dwell` actions. The admin dashboard's Engagement section
-  populates from `admin_dwell` once it's live.
+- **Per-module dwell tracking** (per-chapter version collapsed for sheet
+  size): `dwell` sheet now stores one row per (email × module) with
+  total_seconds, chapters_seen, avg_secs_per_chapter. After redeploying
+  the new code, run `migrateDwellToPerModule()` **once** from the Apps
+  Script editor (Run → migrateDwellToPerModule). It snapshots the
+  existing per-chapter rows into a `dwell_legacy_backup_<timestamp>`
+  sheet, then rewrites `dwell` with the new headers. Until you run it,
+  the admin engagement section shows a yellow "needs migration" banner
+  and refuses writes so no data ever lands in the wrong shape.
 
 ## Next Digital Lion Newsletter — items to include
 
