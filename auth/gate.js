@@ -118,7 +118,7 @@
         if (auxLoaded) return;
         auxLoaded = true;
         if (!GATE_SCRIPT_SRC) return;
-        ['onboarding.js?v=1', 'certificate.js?v=7', 'search-index.js?v=5', 'menu.js?v=12'].forEach(function (name) {
+        ['onboarding.js?v=1', 'certificate.js?v=7', 'search-index.js?v=5', 'menu.js?v=12', 'dwell.js?v=1'].forEach(function (name) {
             var url = GATE_SCRIPT_SRC.replace(/gate\.js(\?.*)?$/, name);
             if (url === GATE_SCRIPT_SRC) return;  // pattern didn't match — skip safely
             var s = document.createElement('script');
@@ -704,6 +704,60 @@
                 }).catch(function (err) {
                     console.warn('AISA: pageview failed', err);
                 });
+            },
+
+            /* Fire-and-forget: ship per-chapter dwell totals for a PD
+             * module. `chapters` is an array of { chapter, title, seconds }
+             * giving the absolute seconds spent on each chapter so far —
+             * the backend overwrites the previous row for the same
+             * (email × module × chapter), so retries are idempotent and
+             * no time is double-counted.
+             *
+             * When opts.beacon is true (set by dwell.js during the
+             * tab-unload flush) we use navigator.sendBeacon so the request
+             * survives the navigation. */
+            recordDwell: function (moduleId, chapters, opts) {
+                if (!API_URL || !moduleId || !chapters || !chapters.length) {
+                    return Promise.resolve();
+                }
+                var session = readSession();
+                if (!session || !session.sessionToken) return Promise.resolve();
+
+                var body = {
+                    action:        'record_dwell',
+                    session_token: session.sessionToken,
+                    module_id:     String(moduleId).slice(0, 80),
+                    chapters:      chapters,
+                    user_agent:    (typeof navigator !== 'undefined' && navigator.userAgent) || ''
+                };
+
+                if (opts && opts.beacon && navigator.sendBeacon) {
+                    try {
+                        var blob = new Blob(
+                            [JSON.stringify(body)],
+                            { type: 'text/plain;charset=utf-8' }
+                        );
+                        navigator.sendBeacon(API_URL, blob);
+                        return Promise.resolve();
+                    } catch (e) { /* fall through to fetch */ }
+                }
+
+                return apiCall('record_dwell', {
+                    module_id:  body.module_id,
+                    chapters:   body.chapters,
+                    user_agent: body.user_agent
+                }).catch(function (err) {
+                    console.warn('AISA: dwell flush failed', err);
+                });
+            },
+
+            /* Admin-only: per-person × module × chapter dwell totals,
+             * powering the engagement view on admin-dashboard.html.
+             * Returns { ok: true, rows: [{ email, name, module_id,
+             * chapter, chapter_title, total_seconds, last_seen }] }. */
+            getAdminDwell: function () {
+                if (!API_URL) return Promise.resolve({ ok: false, rows: [] });
+                return apiCall('admin_dwell', {});
             },
 
             /* Fire-and-forget: log one named click to the backend's

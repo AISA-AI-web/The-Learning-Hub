@@ -37,6 +37,7 @@ const ADMINS_SHEET           = 'admins';   // who can see the admin dashboard
 const ROSTER_SHEET           = 'roster';   // optional: full expected staff list
 const NOTIFS_SHEET           = 'notifications';
 const NOTIF_READS_SHEET      = 'notification_reads';
+const DWELL_SHEET            = 'dwell';   // per-person × module × chapter dwell totals
 const SESSION_DURATION_DAYS  = 365;
 
 const NOTIF_HEADERS = [
@@ -69,6 +70,16 @@ const PAGEVIEW_HEADERS = [
 const CLICK_HEADERS = [
   'timestamp_iso', 'email', 'name', 'label',
   'page_path', 'user_agent'
+];
+
+/* Dwell rows hold the *absolute* seconds-on-chapter for one person.
+ * Client sends absolute totals, server upserts by (email × module ×
+ * chapter), so retries are idempotent and a flaky network doesn't
+ * inflate the numbers. updated_at_iso is the last flush; first_seen_iso
+ * is the first time we recorded any time on this chapter. */
+const DWELL_HEADERS = [
+  'updated_at_iso', 'first_seen_iso', 'email', 'name',
+  'module_id', 'chapter', 'chapter_title', 'total_seconds', 'user_agent'
 ];
 
 // ---------- Time helpers ----------
@@ -130,6 +141,11 @@ function doPost(e) {
         return jsonOut(recordPageview(claims, body));
       case 'record_click':
         return jsonOut(recordClick(claims, body));
+      case 'record_dwell':
+        return jsonOut(recordDwell(claims, body));
+      case 'admin_dwell':
+        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
+        return jsonOut(adminDwell());
       case 'whoami':
         return jsonOut({
           ok: true,
@@ -375,6 +391,143 @@ function recordClick(claims, body) {
     userAgent
   ]);
   return { ok: true };
+}
+
+// ---------- Dwell (per-chapter time on task) ----------
+
+function getDwellSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(DWELL_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(DWELL_SHEET);
+    sheet.appendRow(DWELL_HEADERS);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, DWELL_HEADERS.length).setFontWeight('bold');
+  }
+  return sheet;
+}
+
+/* Upsert one row per (email × module × chapter). The client sends the
+ * *absolute* seconds-so-far for each chapter; we overwrite, so a retry
+ * (or a multi-tab race) can never double-count. first_seen_iso is set
+ * only on the very first write for that row. */
+function recordDwell(claims, body) {
+  const moduleId  = String(body.module_id || '').slice(0, 80);
+  const userAgent = String(body.user_agent || '').slice(0, 300);
+  if (!moduleId) return { ok: false, error: 'missing_module_id' };
+
+  let chapters = body.chapters;
+  if (!Array.isArray(chapters) || chapters.length === 0) {
+    return { ok: false, error: 'missing_chapters' };
+  }
+  /* Trim payload defensively. */
+  chapters = chapters.slice(0, 200).map(function (c) {
+    return {
+      chapter:  String((c && c.chapter)  || '').slice(0, 32),
+      title:    String((c && c.title)    || '').slice(0, 200),
+      seconds:  Math.max(0, Math.min(Number((c && c.seconds) || 0) | 0, 24 * 60 * 60))
+    };
+  }).filter(function (c) { return c.chapter && c.seconds > 0; });
+  if (!chapters.length) return { ok: true, written: 0 };
+
+  const sheet = getDwellSheet();
+  const idx = {
+    updated:  DWELL_HEADERS.indexOf('updated_at_iso'),
+    first:    DWELL_HEADERS.indexOf('first_seen_iso'),
+    email:    DWELL_HEADERS.indexOf('email'),
+    name:     DWELL_HEADERS.indexOf('name'),
+    module:   DWELL_HEADERS.indexOf('module_id'),
+    chapter:  DWELL_HEADERS.indexOf('chapter'),
+    title:    DWELL_HEADERS.indexOf('chapter_title'),
+    seconds:  DWELL_HEADERS.indexOf('total_seconds'),
+    ua:       DWELL_HEADERS.indexOf('user_agent')
+  };
+  const emailLower = String(claims.email || '').toLowerCase();
+  const name       = claims.name || '';
+  const now        = nowIsoLocal();
+
+  /* Read existing rows for this person × module so we can find the right
+   * (chapter) row to overwrite. Cheaper than scanning the whole sheet on
+   * every flush. */
+  const lastRow = sheet.getLastRow();
+  let existing = [];
+  if (lastRow >= 2) {
+    existing = sheet.getRange(2, 1, lastRow - 1, DWELL_HEADERS.length).getValues();
+  }
+  const rowIndexByChapter = {};   // chapter -> 1-based sheet row
+  for (let i = 0; i < existing.length; i++) {
+    const r = existing[i];
+    if (String(r[idx.email] || '').toLowerCase() !== emailLower) continue;
+    if (String(r[idx.module] || '') !== moduleId) continue;
+    rowIndexByChapter[String(r[idx.chapter] || '')] = i + 2;
+  }
+
+  let written = 0;
+  chapters.forEach(function (c) {
+    const existingRow = rowIndexByChapter[c.chapter];
+    if (existingRow) {
+      /* Upsert: keep first_seen, refresh updated_at + total_seconds + name + ua. */
+      const row = existing[existingRow - 2];
+      const first = row[idx.first] || now;
+      sheet.getRange(existingRow, 1, 1, DWELL_HEADERS.length).setValues([[
+        now, first, emailLower, name, moduleId,
+        c.chapter, c.title, c.seconds, userAgent
+      ]]);
+    } else {
+      sheet.appendRow([
+        now, now, emailLower, name, moduleId,
+        c.chapter, c.title, c.seconds, userAgent
+      ]);
+    }
+    written++;
+  });
+
+  return { ok: true, written: written };
+}
+
+/* Admin view: flat list of rows ready to pivot in the dashboard JS.
+ * Sorted by module then chapter then email so the UI doesn't have to. */
+function adminDwell() {
+  const sheet = getDwellSheet();
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) {
+    return { ok: true, generated_at: nowIsoLocal(), rows: [] };
+  }
+  const values = sheet.getRange(2, 1, lastRow - 1, DWELL_HEADERS.length).getValues();
+  const idx = {
+    updated:  DWELL_HEADERS.indexOf('updated_at_iso'),
+    first:    DWELL_HEADERS.indexOf('first_seen_iso'),
+    email:    DWELL_HEADERS.indexOf('email'),
+    name:     DWELL_HEADERS.indexOf('name'),
+    module:   DWELL_HEADERS.indexOf('module_id'),
+    chapter:  DWELL_HEADERS.indexOf('chapter'),
+    title:    DWELL_HEADERS.indexOf('chapter_title'),
+    seconds:  DWELL_HEADERS.indexOf('total_seconds')
+  };
+  const rows = values.map(function (r) {
+    return {
+      email:          String(r[idx.email] || '').toLowerCase(),
+      name:           String(r[idx.name] || ''),
+      module_id:      String(r[idx.module] || ''),
+      chapter:        String(r[idx.chapter] || ''),
+      chapter_title:  String(r[idx.title] || ''),
+      total_seconds:  Number(r[idx.seconds] || 0) | 0,
+      first_seen:     String(r[idx.first] || ''),
+      last_seen:      String(r[idx.updated] || '')
+    };
+  });
+  rows.sort(function (a, b) {
+    if (a.module_id !== b.module_id) return a.module_id < b.module_id ? -1 : 1;
+    if (a.chapter   !== b.chapter)   return numCmp(a.chapter, b.chapter);
+    return a.email < b.email ? -1 : (a.email > b.email ? 1 : 0);
+  });
+  return { ok: true, generated_at: nowIsoLocal(), rows: rows };
+}
+
+function numCmp(a, b) {
+  const na = parseFloat(a), nb = parseFloat(b);
+  if (isFinite(na) && isFinite(nb) && na !== nb) return na - nb;
+  return a < b ? -1 : (a > b ? 1 : 0);
 }
 
 // ---------- Completions ----------
