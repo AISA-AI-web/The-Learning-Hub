@@ -186,40 +186,41 @@
             savePending(moduleId, totals);
         }, TICK_MS);
 
-        /* Network flush — sends only the chapters that have changed since
-         * the last flush, then resets their dirty flag (but keeps the total
-         * in totals so we can show local UI later if we want). */
+        /* Network flush — sends the FULL current chapter map (not a delta).
+         * The backend aggregates client-side per-chapter totals into a
+         * single per-module row (total_seconds, chapters_seen, avg), so
+         * we need the complete snapshot each flush to avoid double-counting
+         * across flushes. Skipped entirely when nothing has changed since
+         * the previous successful send. */
         function flush(useBeacon) {
-            var payload = [];
-            var changedKeys = Object.keys(dirty);
-            if (!changedKeys.length) return;
+            if (!Object.keys(dirty).length) return;
 
-            changedKeys.forEach(function (k) {
+            var payload = [];
+            Object.keys(totals).forEach(function (k) {
                 var secs = Math.min(totals[k] || 0, MAX_SECS_PER_FLUSH);
-                if (secs < FLUSH_MIN_SECS) return;
+                if (secs <= 0) return;
                 var parts = k.split(':');
                 var num = parts[0];
                 var title = titles[k] || k;
                 payload.push({ chapter: num, title: title, seconds: secs });
             });
-            if (!payload.length) return;
 
-            /* Clear dirty flags optimistically — server-side errors are
-             * recovered by the localStorage pending blob persisting the
-             * total, but the same delta isn't double-counted because we
-             * send absolute totals, not deltas. */
-            changedKeys.forEach(function (k) { delete dirty[k]; });
+            /* Require at least one chapter to clear the per-flush noise
+             * floor, otherwise it's just open-the-page-and-close noise. */
+            var anyAboveFloor = payload.some(function (c) { return c.seconds >= FLUSH_MIN_SECS; });
+            if (!payload.length || !anyAboveFloor) return;
+
+            /* Clear dirty flags optimistically — losing a flush to the
+             * network just means the next flush re-sends the same absolute
+             * totals (idempotent on the backend). */
+            dirty = {};
 
             if (window.aisaAuth && window.aisaAuth.recordDwell) {
                 window.aisaAuth.recordDwell(moduleId, payload, { beacon: !!useBeacon });
             }
 
-            /* Once the backend has the absolute totals, the pending blob's
-             * job (carry data across a hard close) is done — but we keep
-             * the totals in memory to support post-flush ticks. The
-             * localStorage copy is refreshed every tick so it stays in
-             * sync; on next page load the backend authoritative copy is
-             * the truth, and the pending blob is just a fallback. */
+            /* Keep the local pending blob in sync so a tab crash before
+             * the next flush doesn't lose what's already on the server. */
             savePending(moduleId, totals);
         }
 
