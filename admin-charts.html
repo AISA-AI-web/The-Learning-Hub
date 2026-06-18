@@ -507,13 +507,6 @@ function renderHeatmap() {
 
 /* ---- Boot ----------------------------------------------------- */
 
-function renderAll() {
-    renderHoursChart();
-    renderCompletionChart();
-    renderEngagementChart();
-    renderHeatmap();
-}
-
 document.getElementById('hours-range').addEventListener('click', function (ev) {
     const btn = ev.target.closest('.range-btn'); if (!btn) return;
     this.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
@@ -524,17 +517,14 @@ document.getElementById('hours-range').addEventListener('click', function (ev) {
 if (window.aisaReady) {
     window.aisaReady(function (auth) {
         if (!auth.isConfigured()) { showState('state-denied'); return; }
-        const overviewP = auth.adminOverview();
-        const dwellP    = auth.getAdminDwell ? auth.getAdminDwell() : Promise.resolve({ ok: true, rows: [] });
-        Promise.all([overviewP, dwellP]).then(function (results) {
-            const ov = results[0], dw = results[1];
+
+        /* adminOverview is the gate: if it succeeds we ARE admin and the
+         * page renders. getAdminDwell loads independently so a missing
+         * endpoint (e.g. the Apps Script hasn't been redeployed with the
+         * dwell actions yet) leaves the other three charts working. */
+        auth.adminOverview().then(function (ov) {
             if (!ov || !ov.ok) { showState('state-denied'); return; }
             OVERVIEW = ov;
-            if (dw && dw.ok) {
-                DWELL_ROWS = dw.rows || [];
-            } else if (dw && dw.error === 'dwell_sheet_needs_migration') {
-                DWELL_NEEDS_MIGRATION = true;
-            }
             const gen = document.getElementById('generated-at');
             if (gen && ov.generated_at) {
                 try {
@@ -543,13 +533,43 @@ if (window.aisaReady) {
                 } catch (e) { /* ignore */ }
             }
             showState('state-ready');
-            /* Let layout settle (the section becomes visible) before
-             * Chart.js measures the canvas — avoids the 0×0 paint bug. */
-            requestAnimationFrame(renderAll);
+            /* Let layout settle before Chart.js measures the canvases. */
+            requestAnimationFrame(function () {
+                renderHoursChart();
+                renderCompletionChart();
+                renderHeatmap();
+            });
         }).catch(function (err) {
-            console.warn('AISA: admin charts failed', err);
+            console.warn('AISA: admin overview failed', err);
             showState('state-denied');
         });
+
+        /* Engagement chart is best-effort. If the dwell endpoint isn't
+         * deployed yet, or the sheet still needs migration, the chart
+         * shows its own banner — but the rest of the page stays live. */
+        if (auth.getAdminDwell) {
+            auth.getAdminDwell().then(function (dw) {
+                if (dw && dw.ok) {
+                    DWELL_ROWS = dw.rows || [];
+                } else if (dw && dw.error === 'dwell_sheet_needs_migration') {
+                    DWELL_NEEDS_MIGRATION = true;
+                }
+                /* Only render once #engagement is visible (i.e. after
+                 * adminOverview flipped state-ready on). */
+                requestAnimationFrame(function () {
+                    if (document.getElementById('state-ready').classList.contains('hidden')) return;
+                    renderEngagementChart();
+                });
+            }).catch(function (err) {
+                console.warn('AISA: admin dwell failed', err);
+                /* Show the empty state so the section doesn't look broken. */
+                requestAnimationFrame(function () {
+                    if (document.getElementById('state-ready').classList.contains('hidden')) return;
+                    const e = document.getElementById('engagement-empty');
+                    if (e) e.classList.remove('hidden');
+                });
+            });
+        }
     });
 } else {
     showState('state-denied');
