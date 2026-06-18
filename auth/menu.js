@@ -237,6 +237,7 @@
         bell:   icon('<path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M13.73 21a2 2 0 0 1-3.46 0"/>'),
         search: icon('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>'),
         admin:  icon('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>'),
+        dash:   icon('<path d="M3 13h8V3H3v10zm10 8h8V11h-8v10zM3 21h8v-6H3v6zM13 3v6h8V3h-8z"/>'),
         globe:  icon('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'),
         close:  icon('<path d="M18 6L6 18M6 6l12 12"/>'),
         signout: icon('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>')
@@ -300,6 +301,25 @@
             '.aisa-tb-admin:focus-visible{outline:2px solid #fff;outline-offset:2px;}',
             '.aisa-tb-admin svg{width:1.05rem;height:1.05rem;stroke-width:2.2;flex-shrink:0;}',
             '.aisa-tb-admin .label{white-space:nowrap;}',
+
+            /* === "My Dashboard" pill — every signed-in user sees it ===
+             * Mirrors the admin pill, but indigo→cyan (clearly distinct from
+             * the amber admin pill) and visible by default. Hidden on the
+             * dashboard page itself (.aisa-tb-dash.hide-self) so it never
+             * links to where the user already is. */
+            '.aisa-tb-dash{display:inline-flex;align-items:center;gap:.45rem;height:2.4rem;padding:0 .85rem;',
+                'background:linear-gradient(135deg,#4f46e5,#06b6d4);color:#fff;text-decoration:none;',
+                'border:none;border-radius:9999px;font:inherit;font-weight:800;font-size:.82rem;',
+                'letter-spacing:.01em;cursor:pointer;',
+                'box-shadow:0 6px 16px -6px rgba(79,70,229,.5),0 0 0 1px rgba(255,255,255,.18) inset;',
+                'transition:transform .15s,box-shadow .15s,filter .15s;-webkit-tap-highlight-color:transparent;}',
+            '.aisa-tb-dash.hide-self{display:none;}',
+            '.aisa-tb-dash:hover{transform:translateY(-1px);filter:brightness(1.06);',
+                'box-shadow:0 10px 22px -6px rgba(79,70,229,.6),0 0 0 1px rgba(255,255,255,.24) inset;}',
+            '.aisa-tb-dash:active{transform:translateY(0);}',
+            '.aisa-tb-dash:focus-visible{outline:2px solid #fff;outline-offset:2px;}',
+            '.aisa-tb-dash svg{width:1.05rem;height:1.05rem;stroke-width:0;fill:currentColor;flex-shrink:0;}',
+            '.aisa-tb-dash .label{white-space:nowrap;}',
 
             /* Language toggle — pill with globe icon + the target language. */
             '.aisa-tb-lang{display:inline-flex;align-items:center;gap:.4rem;height:2.4rem;padding:0 .8rem;',
@@ -466,6 +486,9 @@
                  * the amber gradient. */
                 '.aisa-tb-admin.show{padding:0 .6rem;}',
                 '.aisa-tb-admin .label{display:none;}',
+                /* Same icon-only treatment for the Dashboard pill on narrow screens. */
+                '.aisa-tb-dash{padding:0 .6rem;}',
+                '.aisa-tb-dash .label{display:none;}',
             '}',
             '@media (max-width:480px){',
                 '.aisa-bell-panel{left:.5rem!important;right:.5rem!important;width:auto;max-width:none;}',
@@ -504,6 +527,9 @@
                     '<button class="aisa-tb-btn aisa-tb-back" type="button" aria-label="Back">' + ICONS.back + '</button>' +
                     '<button class="aisa-tb-btn aisa-tb-home" type="button" aria-label="Home">' + ICONS.home + '</button>' +
                     '<button class="aisa-tb-btn aisa-tb-menu" type="button" aria-label="Open menu">' + ICONS.menu + '</button>' +
+                    '<a class="aisa-tb-dash" href="' + rootUrl('dashboard.html') + '" aria-label="My Dashboard">' +
+                        ICONS.dash + '<span class="label">My Dashboard</span>' +
+                    '</a>' +
                     '<a class="aisa-tb-admin" href="' + rootUrl('admin-dashboard.html') + '" aria-label="Admin">' +
                         ICONS.admin + '<span class="label">Admin</span>' +
                     '</a>' +
@@ -611,6 +637,7 @@
         refs.btnMenu     = bar.querySelector('.aisa-tb-menu');
         refs.btnBell     = bar.querySelector('.aisa-tb-bell');
         refs.btnAdmin    = bar.querySelector('.aisa-tb-admin');
+        refs.btnDash     = bar.querySelector('.aisa-tb-dash');
         refs.btnLang     = bar.querySelector('.aisa-tb-lang');
         refs.btnLangLabel = bar.querySelector('.aisa-tb-lang-label');
         refs.btnSearch   = bar.querySelector('.aisa-tb-searchpill');
@@ -630,6 +657,17 @@
         refs.btnBack.addEventListener('click', function () {
             if (window.history.length > 1) window.history.back();
         });
+
+        /* --- "My Dashboard" pill: never link to where the user already is.
+         * Match the trailing path so it works under any Hub root, with or
+         * without a trailing slash. */
+        if (refs.btnDash) {
+            try {
+                if (/(^|\/)dashboard\.html(\?|#|$)/i.test(window.location.pathname)) {
+                    refs.btnDash.classList.add('hide-self');
+                }
+            } catch (_) {}
+        }
 
         /* --- Home button --- */
         refs.btnHome.addEventListener('click', function () { window.location.href = rootUrl('index.html'); });

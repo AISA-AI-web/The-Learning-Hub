@@ -65,6 +65,15 @@
                         <span class="text-xl font-bold text-slate-400">/ <span id="dash-total">0</span> modules complete</span></p>
                     <p id="dash-remaining" class="text-slate-500 mt-2 text-sm"></p>
                 </div>
+                <!-- Cumulative PD hours — what teachers log toward ADEK. -->
+                <div class="flex-shrink-0 sm:border-l sm:border-slate-200 sm:pl-6 text-center">
+                    <p class="text-slate-500 text-xs font-semibold uppercase tracking-widest mb-1">PD Hours Earned</p>
+                    <p class="leading-none">
+                        <span id="dash-hours" class="text-4xl font-black bg-gradient-to-br from-indigo-600 to-cyan-600 bg-clip-text text-transparent">0</span>
+                        <span class="text-base font-bold text-slate-400"> / <span id="dash-hours-total">0</span> h</span>
+                    </p>
+                    <p class="text-[11px] text-slate-500 mt-1.5 max-w-[14rem] mx-auto leading-snug">Use these toward your ADEK professional-development hours.</p>
+                </div>
             </div>
         </section>
 
@@ -90,15 +99,19 @@
 
     <script>
         // --- Registry of trackable items ---------------------------------
+        // `hours` = PD hours awarded on the certificate (and counted toward
+        // the teacher's ADEK PD hours total). Keep in sync with the matching
+        // entries in admin-dashboard.html.
         const MODULES = [
-            { id: 'ai-ethics',         emoji: '🤖', tag: 'Required',  title: 'AI Vision & Ethical Framework',          cert: 'AI Vision & Ethical Framework',            file: 'PD%20Modules/ai-ethics-module.html' },
-            { id: 'return-to-school',  emoji: '🚨', tag: 'Required',  title: 'Return to School — Emergency Protocol',  cert: 'Return to School — Emergency Protocol Training', file: 'PD%20Modules/return-to-school.html' },
-            { id: 'ai-and-assessment', emoji: '📝', tag: 'Pedagogy',  title: 'Assessment Design in the Age of AI',     cert: 'Assessment Design in the Age of AI',        file: 'PD%20Modules/ai-and-assessment.html' },
-            { id: 'success-criteria',  emoji: '🎯', tag: 'Pedagogy',  title: 'Objectives & Success Criteria',          cert: 'Objectives & Success Criteria',             file: 'PD%20Modules/pd.html#module-objectives' },
-            { id: 'notebooklm',        emoji: '📒', tag: 'AI Tool',   title: 'NotebookLM Masterclass',                 cert: 'NotebookLM Masterclass — Crafting AI Presentations', file: 'PD%20Modules/notebooklm-module.html' },
-            { id: 'chalkie',           emoji: '🧑‍🏫', tag: 'AI Tool',  title: 'Chalkie.ai Training',                    cert: 'Chalkie.ai — Drafting Partner Training',    file: 'PD%20Modules/chalkie-module.html' },
-            { id: 'workspace-studio',  emoji: '⚙️', tag: 'AI Tool',   title: 'Google Workspace Studio',                cert: 'Google Workspace Studio — Build AI Flows',  file: 'PD%20Modules/workspace-studio-module.html' }
+            { id: 'ai-ethics',         emoji: '🤖', tag: 'Required',  title: 'AI Vision & Ethical Framework',          cert: 'AI Vision & Ethical Framework',            file: 'PD%20Modules/ai-ethics-module.html',         hours: 1 },
+            { id: 'return-to-school',  emoji: '🚨', tag: 'Required',  title: 'Return to School — Emergency Protocol',  cert: 'Return to School — Emergency Protocol Training', file: 'PD%20Modules/return-to-school.html', hours: 2 },
+            { id: 'ai-and-assessment', emoji: '📝', tag: 'Pedagogy',  title: 'Assessment Design in the Age of AI',     cert: 'Assessment Design in the Age of AI',        file: 'PD%20Modules/ai-and-assessment.html',        hours: 1 },
+            { id: 'success-criteria',  emoji: '🎯', tag: 'Pedagogy',  title: 'Objectives & Success Criteria',          cert: 'Objectives & Success Criteria',             file: 'PD%20Modules/pd.html#module-objectives',     hours: 1 },
+            { id: 'notebooklm',        emoji: '📒', tag: 'AI Tool',   title: 'NotebookLM Masterclass',                 cert: 'NotebookLM Masterclass — Crafting AI Presentations', file: 'PD%20Modules/notebooklm-module.html', hours: 1 },
+            { id: 'chalkie',           emoji: '🧑‍🏫', tag: 'AI Tool',  title: 'Chalkie.ai Training',                    cert: 'Chalkie.ai — Drafting Partner Training',    file: 'PD%20Modules/chalkie-module.html',           hours: 1 },
+            { id: 'workspace-studio',  emoji: '⚙️', tag: 'AI Tool',   title: 'Google Workspace Studio',                cert: 'Google Workspace Studio — Build AI Flows',  file: 'PD%20Modules/workspace-studio-module.html',  hours: 1 }
         ];
+        const TOTAL_HOURS = MODULES.reduce((s, m) => s + (m.hours || 0), 0);
         const SYSTEM = [
             { id: 'tutorial', emoji: '👋', title: 'Welcome Tutorial' },
             { id: 'survey',   emoji: '📋', title: 'AI & Innovation Survey' }
@@ -211,6 +224,16 @@
             document.getElementById('dash-remaining').textContent = remaining === 0
                 ? '🎉 All modules complete — nice work!'
                 : remaining + ' module' + (remaining === 1 ? '' : 's') + ' remaining.';
+
+            // PD hours earned — sum the per-module hours over completed modules.
+            const earned = MODULES.reduce((s, m) => s + (map[m.id] ? (m.hours || 0) : 0), 0);
+            document.getElementById('dash-hours').textContent = fmtHours(earned);
+            document.getElementById('dash-hours-total').textContent = fmtHours(TOTAL_HOURS);
+        }
+
+        // Display helper: integers as "1", fractions as "1.5" (no trailing zero).
+        function fmtHours(n) {
+            return (n % 1 === 0) ? String(n) : n.toFixed(1).replace(/\.0$/, '');
         }
 
         function buildMap(items) {

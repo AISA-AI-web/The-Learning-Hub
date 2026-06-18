@@ -102,7 +102,7 @@
             </section>
 
             <!-- Summary cards -->
-            <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+            <section class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-8">
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                     <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Staff tracked</p>
                     <p id="stat-people" class="text-3xl font-black text-slate-900 mt-1">0</p>
@@ -121,6 +121,14 @@
                     <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Required done</p>
                     <p id="stat-required" class="text-3xl font-black text-slate-900 mt-1">0</p>
                     <p class="text-xs text-slate-400 font-semibold mt-0.5">completed all required</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 col-span-2 lg:col-span-1">
+                    <p class="text-xs font-bold uppercase tracking-widest text-slate-400">PD hours logged</p>
+                    <p class="leading-none mt-1">
+                        <span id="stat-hours" class="text-3xl font-black bg-gradient-to-br from-indigo-600 to-cyan-600 bg-clip-text text-transparent">0</span>
+                        <span class="text-base font-bold text-slate-400"> h</span>
+                    </p>
+                    <p class="text-xs text-slate-400 font-semibold mt-0.5">school-wide · <span id="stat-hours-avg">0</span> h avg / person</p>
                 </div>
             </section>
 
@@ -150,15 +158,16 @@
     </main>
 
     <script>
-        // Module registry — keep in sync with dashboard.html.
+        // Module registry — keep `hours` in sync with dashboard.html
+        // (the same numbers go on the certificate's "PD Hours" badge).
         const MODULES = [
-            { id: 'ai-ethics',         short: 'AI Ethics',        title: 'AI Vision & Ethical Framework',         required: true },
-            { id: 'return-to-school',  short: 'Return to School', title: 'Return to School — Emergency Protocol', required: true },
-            { id: 'ai-and-assessment', short: 'Assessment',       title: 'Assessment Design in the Age of AI',    required: false },
-            { id: 'success-criteria',  short: 'Objectives',       title: 'Objectives & Success Criteria',         required: false },
-            { id: 'notebooklm',        short: 'NotebookLM',       title: 'NotebookLM Masterclass',                required: false },
-            { id: 'chalkie',           short: 'Chalkie',          title: 'Chalkie.ai Training',                   required: false },
-            { id: 'workspace-studio',  short: 'Workspace Studio', title: 'Google Workspace Studio',               required: false }
+            { id: 'ai-ethics',         short: 'AI Ethics',        title: 'AI Vision & Ethical Framework',         required: true,  hours: 1 },
+            { id: 'return-to-school',  short: 'Return to School', title: 'Return to School — Emergency Protocol', required: true,  hours: 2 },
+            { id: 'ai-and-assessment', short: 'Assessment',       title: 'Assessment Design in the Age of AI',    required: false, hours: 1 },
+            { id: 'success-criteria',  short: 'Objectives',       title: 'Objectives & Success Criteria',         required: false, hours: 1 },
+            { id: 'notebooklm',        short: 'NotebookLM',       title: 'NotebookLM Masterclass',                required: false, hours: 1 },
+            { id: 'chalkie',           short: 'Chalkie',          title: 'Chalkie.ai Training',                   required: false, hours: 1 },
+            { id: 'workspace-studio',  short: 'Workspace Studio', title: 'Google Workspace Studio',               required: false, hours: 1 }
         ];
         // Extra compliance columns tracked the same way.
         const EXTRA = [
@@ -213,11 +222,12 @@
 
         function renderSummary(people) {
             const total = people.length;
-            let full = 0, sumMods = 0, reqDone = 0;
+            let full = 0, sumMods = 0, reqDone = 0, sumHours = 0;
             people.forEach(p => {
-                const n = MODULES.filter(m => p.done[m.id]).length;
-                sumMods += n;
-                if (n === MODULES.length) full++;
+                const completed = MODULES.filter(m => p.done[m.id]);
+                sumMods += completed.length;
+                sumHours += completed.reduce((s, m) => s + (m.hours || 0), 0);
+                if (completed.length === MODULES.length) full++;
                 if (REQUIRED.every(m => p.done[m.id])) reqDone++;
             });
             document.getElementById('stat-people').textContent = total;
@@ -226,6 +236,14 @@
             document.getElementById('stat-avg').textContent = total ? (sumMods / total).toFixed(1) : '0';
             document.getElementById('stat-avg-total').textContent = MODULES.length;
             document.getElementById('stat-required').textContent = reqDone;
+            document.getElementById('stat-hours').textContent = fmtHours(sumHours);
+            document.getElementById('stat-hours-avg').textContent = total ? fmtHours(sumHours / total) : '0';
+        }
+
+        // Display helper — integers as "12", fractions as "12.5".
+        function fmtHours(n) {
+            if (!isFinite(n)) return '0';
+            return (n % 1 === 0) ? String(n) : n.toFixed(1).replace(/\.0$/, '');
         }
 
         function renderModuleBars(people) {
