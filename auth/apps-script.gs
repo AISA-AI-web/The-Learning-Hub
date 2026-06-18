@@ -28,6 +28,7 @@
 
 const OAUTH_CLIENT_ID        = '719019551782-h9pdg57s6oq4jpo884a53o0d1pgel1u6.apps.googleusercontent.com';
 const ALLOWED_DOMAIN         = 'aisa.sch.ae';
+const TIMEZONE               = 'Asia/Dubai';  // Abu Dhabi (GST, UTC+04:00, no DST)
 const EVENTS_SHEET           = 'events';
 const SESSIONS_SHEET         = 'sessions';
 const PAGEVIEWS_SHEET        = 'pageviews';
@@ -69,6 +70,21 @@ const CLICK_HEADERS = [
   'timestamp_iso', 'email', 'name', 'label',
   'page_path', 'user_agent'
 ];
+
+// ---------- Time helpers ----------
+//
+// All sheet timestamps are stored as ISO 8601 strings in Abu Dhabi local
+// time with the explicit "+04:00" offset (e.g. 2026-06-17T14:58:00+04:00).
+// This is still valid ISO 8601 — `new Date(str)` parses it to the correct
+// UTC instant — so existing session-expiry checks and any client-side
+// sorting keep working. Existing rows already written in UTC ("...Z") are
+// left untouched.
+function isoLocal(date) {
+  return Utilities.formatDate(date, TIMEZONE, "yyyy-MM-dd'T'HH:mm:ssXXX");
+}
+function nowIsoLocal() {
+  return isoLocal(new Date());
+}
 
 // ---------- HTTP entry points ----------
 
@@ -204,8 +220,8 @@ function createSession(claims, userAgent) {
   const token = generateSessionToken();
   const now = new Date();
   const expiresAt = new Date(now.getTime() + SESSION_DURATION_DAYS * 24 * 60 * 60 * 1000);
-  const nowIso = now.toISOString();
-  const expIso = expiresAt.toISOString();
+  const nowIso = isoLocal(now);
+  const expIso = isoLocal(expiresAt);
 
   getSessionsSheet().appendRow([
     token,
@@ -239,7 +255,7 @@ function verifySessionToken(token) {
     const expiresAtMs = new Date(row[4]).getTime();
     if (!expiresAtMs || Date.now() > expiresAtMs) return null;
 
-    try { sheet.getRange(i + 2, 6).setValue(new Date().toISOString()); } catch (_) {}
+    try { sheet.getRange(i + 2, 6).setValue(nowIsoLocal()); } catch (_) {}
 
     return { email: row[1], name: row[2] };
   }
@@ -285,7 +301,7 @@ function recordEvent(claims, body) {
   if (!event)    return { ok: false, error: 'missing_event' };
 
   getEventsSheet().appendRow([
-    new Date().toISOString(),
+    nowIsoLocal(),
     claims.email,
     claims.name || '',
     moduleId,
@@ -332,7 +348,7 @@ function recordPageview(claims, body) {
   if (!pagePath) return { ok: false, error: 'missing_page_path' };
 
   getPageviewsSheet().appendRow([
-    new Date().toISOString(),
+    nowIsoLocal(),
     claims.email,
     claims.name || '',
     pagePath,
@@ -351,7 +367,7 @@ function recordClick(claims, body) {
   if (!label) return { ok: false, error: 'missing_label' };
 
   getClicksSheet().appendRow([
-    new Date().toISOString(),
+    nowIsoLocal(),
     claims.email,
     claims.name || '',
     label,
@@ -508,7 +524,7 @@ function adminOverview() {
 
   return {
     ok: true,
-    generated_at: new Date().toISOString(),
+    generated_at: nowIsoLocal(),
     people: Object.keys(people).map(function (k) { return people[k]; }),
     completions: completions
   };
@@ -700,7 +716,7 @@ function postNotification(claims, body) {
   const id = 'n_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
   const row = new Array(NOTIF_HEADERS.length).fill('');
   row[NOTIF_HEADERS.indexOf('id')]             = id;
-  row[NOTIF_HEADERS.indexOf('created_at_iso')] = new Date().toISOString();
+  row[NOTIF_HEADERS.indexOf('created_at_iso')] = nowIsoLocal();
   row[NOTIF_HEADERS.indexOf('author_email')]   = claims.email;
   row[NOTIF_HEADERS.indexOf('author_name')]    = claims.name || '';
   row[NOTIF_HEADERS.indexOf('title')]          = title;
@@ -720,7 +736,7 @@ function markNotificationRead(claims, body) {
   if (!id) return { ok: false, error: 'missing_notification_id' };
   // Avoid duplicate read rows for the same person + notification.
   if (readIdsFor(claims.email)[id]) return { ok: true, already: true };
-  getNotifReadsSheet().appendRow([id, claims.email, new Date().toISOString()]);
+  getNotifReadsSheet().appendRow([id, claims.email, nowIsoLocal()]);
   return { ok: true };
 }
 
@@ -732,7 +748,7 @@ function markAllNotificationsRead(claims) {
   const readSet = readIdsFor(claims.email);
   const userTags = getTagsForEmail(claims.email);
   const sheet = getNotifReadsSheet();
-  const now = new Date().toISOString();
+  const now = nowIsoLocal();
   const toAdd = [];
   for (let i = 0; i < notifs.length; i++) {
     const n = notifs[i];
@@ -815,7 +831,7 @@ function adminNotificationStats() {
   return {
     ok: true,
     notifications: items,
-    generated_at: new Date().toISOString()
+    generated_at: nowIsoLocal()
   };
 }
 
