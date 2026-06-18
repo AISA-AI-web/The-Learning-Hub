@@ -41,7 +41,7 @@
         if (banner.querySelector('.aisa-cert-btn')) return;
         var wrap = document.createElement('div');
         wrap.className = 'aisa-cert-btn-wrap no-print';
-        wrap.style.cssText = 'margin-top:1.25rem;display:flex;justify-content:center;';
+        wrap.style.cssText = 'margin-top:1.25rem;display:flex;flex-wrap:wrap;justify-content:center;gap:.75rem;';
 
         var btn = document.createElement('button');
         btn.type = 'button';
@@ -65,7 +65,35 @@
         });
         btn.addEventListener('click', function () { openCertificate(); });
 
+        /* Secondary CTA: forward path for engaged users who finish back-to-back.
+         * Goes to the PD modules list by default; per-page override is the same
+         * data-modules-url / window.AISA_MODULES_URL used by the completion modal. */
+        var nextBtn = document.createElement('a');
+        nextBtn.className = 'aisa-cert-next';
+        nextBtn.href = getModulesUrl();
+        nextBtn.innerHTML =
+            '<span aria-hidden="true" style="font-size:1.05em;line-height:1">\u{27A1}</span>' +
+            '<span>Return to My Learning Path</span>';
+        nextBtn.style.cssText = [
+            'display:inline-flex;align-items:center;gap:.55rem;cursor:pointer;text-decoration:none;',
+            'font-family:inherit;font-size:.95rem;font-weight:700;color:#ffffff;',
+            'background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.45);',
+            'padding:.8rem 1.45rem;border-radius:9999px;',
+            'transition:background .15s,border-color .15s,transform .15s;'
+        ].join('');
+        nextBtn.addEventListener('mouseenter', function () {
+            nextBtn.style.background = 'rgba(255,255,255,.22)';
+            nextBtn.style.borderColor = 'rgba(255,255,255,.7)';
+            nextBtn.style.transform = 'translateY(-2px)';
+        });
+        nextBtn.addEventListener('mouseleave', function () {
+            nextBtn.style.background = 'rgba(255,255,255,.14)';
+            nextBtn.style.borderColor = 'rgba(255,255,255,.45)';
+            nextBtn.style.transform = 'translateY(0)';
+        });
+
         wrap.appendChild(btn);
+        wrap.appendChild(nextBtn);
         banner.appendChild(wrap);
     }
 

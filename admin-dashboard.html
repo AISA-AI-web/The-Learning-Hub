@@ -28,7 +28,7 @@
         .sticky-col { position: sticky; left: 0; background: #fff; z-index: 1; }
         .matrix thead .sticky-col { z-index: 2; background:#fff; }
     </style>
-    <script src="auth/gate.js?v=12"></script>
+    <script src="auth/gate.js?v=13"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
@@ -102,7 +102,7 @@
             </section>
 
             <!-- Summary cards -->
-            <section class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+            <section class="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-8">
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
                     <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Staff tracked</p>
                     <p id="stat-people" class="text-3xl font-black text-slate-900 mt-1">0</p>
@@ -121,6 +121,14 @@
                     <p class="text-xs font-bold uppercase tracking-widest text-slate-400">Required done</p>
                     <p id="stat-required" class="text-3xl font-black text-slate-900 mt-1">0</p>
                     <p class="text-xs text-slate-400 font-semibold mt-0.5">completed all required</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 col-span-2 lg:col-span-1">
+                    <p class="text-xs font-bold uppercase tracking-widest text-slate-400">PD hours logged</p>
+                    <p class="leading-none mt-1">
+                        <span id="stat-hours" class="text-3xl font-black bg-gradient-to-br from-indigo-600 to-cyan-600 bg-clip-text text-transparent">0</span>
+                        <span class="text-base font-bold text-slate-400"> h</span>
+                    </p>
+                    <p class="text-xs text-slate-400 font-semibold mt-0.5">school-wide · <span id="stat-hours-avg">0</span> h avg / person</p>
                 </div>
             </section>
 
@@ -146,19 +154,41 @@
                 </table>
             </div>
             <p id="matrix-empty" class="hidden text-center text-slate-400 py-8">No staff match your filter.</p>
+
+            <!-- Engagement / time-on-task -->
+            <div class="flex items-center justify-between gap-4 mb-3 mt-12 px-1 flex-wrap">
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">Engagement &middot; time per chapter</h3>
+                    <p class="text-xs text-slate-500 mt-1 max-w-2xl">
+                        Per-person foreground time spent on each chapter of each PD module.
+                        A <span class="inline-flex items-center gap-1 align-middle text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest">Fast</span>
+                        flag fires when a chapter is completed in under 30&nbsp;seconds — useful for spotting skim-and-skip.
+                    </p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <select id="dwell-module-filter" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        <option value="">All modules</option>
+                    </select>
+                    <input id="dwell-search" type="search" placeholder="Search name or email…"
+                           class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                </div>
+            </div>
+            <div id="dwell-people" class="space-y-3"></div>
+            <p id="dwell-empty" class="text-center text-slate-400 py-8">No engagement data yet — dwell time appears as teachers work through PD modules.</p>
         </div>
     </main>
 
     <script>
-        // Module registry — keep in sync with dashboard.html.
+        // Module registry — keep `hours` in sync with dashboard.html
+        // (the same numbers go on the certificate's "PD Hours" badge).
         const MODULES = [
-            { id: 'ai-ethics',         short: 'AI Ethics',        title: 'AI Vision & Ethical Framework',         required: true },
-            { id: 'return-to-school',  short: 'Return to School', title: 'Return to School — Emergency Protocol', required: true },
-            { id: 'ai-and-assessment', short: 'Assessment',       title: 'Assessment Design in the Age of AI',    required: false },
-            { id: 'success-criteria',  short: 'Objectives',       title: 'Objectives & Success Criteria',         required: false },
-            { id: 'notebooklm',        short: 'NotebookLM',       title: 'NotebookLM Masterclass',                required: false },
-            { id: 'chalkie',           short: 'Chalkie',          title: 'Chalkie.ai Training',                   required: false },
-            { id: 'workspace-studio',  short: 'Workspace Studio', title: 'Google Workspace Studio',               required: false }
+            { id: 'ai-ethics',         short: 'AI Ethics',        title: 'AI Vision & Ethical Framework',         required: true,  hours: 1 },
+            { id: 'return-to-school',  short: 'Return to School', title: 'Return to School — Emergency Protocol', required: true,  hours: 2 },
+            { id: 'ai-and-assessment', short: 'Assessment',       title: 'Assessment Design in the Age of AI',    required: false, hours: 1 },
+            { id: 'success-criteria',  short: 'Objectives',       title: 'Objectives & Success Criteria',         required: false, hours: 1 },
+            { id: 'notebooklm',        short: 'NotebookLM',       title: 'NotebookLM Masterclass',                required: false, hours: 1 },
+            { id: 'chalkie',           short: 'Chalkie',          title: 'Chalkie.ai Training',                   required: false, hours: 1 },
+            { id: 'workspace-studio',  short: 'Workspace Studio', title: 'Google Workspace Studio',               required: false, hours: 1 }
         ];
         // Extra compliance columns tracked the same way.
         const EXTRA = [
@@ -213,11 +243,12 @@
 
         function renderSummary(people) {
             const total = people.length;
-            let full = 0, sumMods = 0, reqDone = 0;
+            let full = 0, sumMods = 0, reqDone = 0, sumHours = 0;
             people.forEach(p => {
-                const n = MODULES.filter(m => p.done[m.id]).length;
-                sumMods += n;
-                if (n === MODULES.length) full++;
+                const completed = MODULES.filter(m => p.done[m.id]);
+                sumMods += completed.length;
+                sumHours += completed.reduce((s, m) => s + (m.hours || 0), 0);
+                if (completed.length === MODULES.length) full++;
                 if (REQUIRED.every(m => p.done[m.id])) reqDone++;
             });
             document.getElementById('stat-people').textContent = total;
@@ -226,6 +257,14 @@
             document.getElementById('stat-avg').textContent = total ? (sumMods / total).toFixed(1) : '0';
             document.getElementById('stat-avg-total').textContent = MODULES.length;
             document.getElementById('stat-required').textContent = reqDone;
+            document.getElementById('stat-hours').textContent = fmtHours(sumHours);
+            document.getElementById('stat-hours-avg').textContent = total ? fmtHours(sumHours / total) : '0';
+        }
+
+        // Display helper — integers as "12", fractions as "12.5".
+        function fmtHours(n) {
+            if (!isFinite(n)) return '0';
+            return (n % 1 === 0) ? String(n) : n.toFixed(1).replace(/\.0$/, '');
         }
 
         function renderModuleBars(people) {
@@ -340,10 +379,215 @@
                     console.warn('AISA: admin overview failed', err);
                     showState('state-denied');
                 });
+                /* Engagement loads independently — a stale dwell sheet
+                 * shouldn't block the main compliance view. */
+                if (auth.getAdminDwell) {
+                    auth.getAdminDwell().then(function (payload) {
+                        if (payload && payload.ok) renderDwell(payload.rows || []);
+                    }).catch(function (err) {
+                        console.warn('AISA: admin dwell failed', err);
+                    });
+                }
             });
         } else {
             showState('state-denied');
         }
+    </script>
+
+    <script>
+    /* ============================================================
+     * Engagement view — per-person × module × chapter dwell time.
+     * Renders an expandable card per teacher, showing each chapter
+     * they touched grouped by module, with totals and a "Fast" flag
+     * for chapters skimmed in under 30 seconds.
+     * ============================================================ */
+    (function () {
+        'use strict';
+        const FAST_THRESHOLD_SECS = 30;
+        let ALL_ROWS = [];
+        let MODULES_SEEN = [];
+
+        function fmtSecs(n) {
+            n = Math.max(0, Math.floor(Number(n) || 0));
+            if (n < 60) return n + 's';
+            const m = Math.floor(n / 60), s = n % 60;
+            if (m < 60) return s ? (m + 'm ' + s + 's') : (m + 'm');
+            const h = Math.floor(m / 60), rm = m % 60;
+            return rm ? (h + 'h ' + rm + 'm') : (h + 'h');
+        }
+
+        function moduleLabel(id) {
+            const m = (typeof MODULES !== 'undefined') &&
+                      MODULES.find(function (x) { return x.id === id; });
+            return m ? m.title : id;
+        }
+
+        function buildModuleFilter(rows) {
+            const sel = document.getElementById('dwell-module-filter');
+            if (!sel) return;
+            const ids = {};
+            rows.forEach(function (r) { ids[r.module_id] = true; });
+            MODULES_SEEN = Object.keys(ids).sort();
+            /* Keep the "All modules" placeholder, replace the rest. */
+            sel.innerHTML = '<option value="">All modules</option>' +
+                MODULES_SEEN.map(function (id) {
+                    return '<option value="' + escapeAttr(id) + '">' +
+                        escapeHtml(moduleLabel(id)) + '</option>';
+                }).join('');
+        }
+
+        function escapeHtml(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        function escapeAttr(s) { return escapeHtml(s); }
+
+        function filterRows() {
+            const moduleId = document.getElementById('dwell-module-filter').value || '';
+            const q = (document.getElementById('dwell-search').value || '').trim().toLowerCase();
+            return ALL_ROWS.filter(function (r) {
+                if (moduleId && r.module_id !== moduleId) return false;
+                if (q) {
+                    const hay = (r.email + ' ' + r.name).toLowerCase();
+                    if (hay.indexOf(q) === -1) return false;
+                }
+                return true;
+            });
+        }
+
+        /* Pivot: rows → people[].modules[].chapters[] */
+        function pivot(rows) {
+            const byEmail = {};
+            rows.forEach(function (r) {
+                if (!byEmail[r.email]) {
+                    byEmail[r.email] = {
+                        email: r.email, name: r.name || '',
+                        total_seconds: 0, fast_count: 0, modules: {}
+                    };
+                }
+                const p = byEmail[r.email];
+                if (r.name && !p.name) p.name = r.name;
+                if (!p.modules[r.module_id]) p.modules[r.module_id] = {
+                    module_id: r.module_id, total_seconds: 0,
+                    fast_count: 0, chapters: []
+                };
+                const m = p.modules[r.module_id];
+                m.chapters.push({
+                    chapter: r.chapter, title: r.chapter_title,
+                    seconds: r.total_seconds, last_seen: r.last_seen
+                });
+                m.total_seconds += r.total_seconds;
+                p.total_seconds += r.total_seconds;
+                if (r.total_seconds > 0 && r.total_seconds < FAST_THRESHOLD_SECS) {
+                    m.fast_count++; p.fast_count++;
+                }
+            });
+            const people = Object.keys(byEmail).map(function (e) {
+                const p = byEmail[e];
+                p.modules = Object.keys(p.modules).map(function (k) {
+                    const m = p.modules[k];
+                    m.chapters.sort(function (a, b) {
+                        const na = parseFloat(a.chapter), nb = parseFloat(b.chapter);
+                        if (isFinite(na) && isFinite(nb) && na !== nb) return na - nb;
+                        return a.chapter < b.chapter ? -1 : 1;
+                    });
+                    return m;
+                }).sort(function (a, b) { return a.module_id < b.module_id ? -1 : 1; });
+                return p;
+            });
+            /* Sort by total time descending so the most-engaged people land
+             * at the top — same convention as the compliance matrix. */
+            people.sort(function (a, b) { return b.total_seconds - a.total_seconds; });
+            return people;
+        }
+
+        function chapterRow(c) {
+            const fast = c.seconds > 0 && c.seconds < FAST_THRESHOLD_SECS;
+            return '' +
+                '<tr class="' + (fast ? 'bg-rose-50/40' : '') + '">' +
+                    '<td class="py-1.5 px-3 text-slate-500 font-mono text-[12px] w-12 align-top">' +
+                        escapeHtml(c.chapter) +
+                    '</td>' +
+                    '<td class="py-1.5 px-3 text-slate-800 align-top">' +
+                        escapeHtml(c.title || ('Chapter ' + c.chapter)) +
+                        (fast ? ' <span class="inline-flex items-center gap-1 align-middle text-rose-700 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest ml-1">Fast</span>' : '') +
+                    '</td>' +
+                    '<td class="py-1.5 px-3 text-right tabular-nums font-semibold ' +
+                        (fast ? 'text-rose-700' : 'text-slate-800') + ' align-top w-20">' +
+                        escapeHtml(fmtSecs(c.seconds)) +
+                    '</td>' +
+                '</tr>';
+        }
+
+        function moduleBlock(m) {
+            return '' +
+                '<div class="border-t border-slate-100 first:border-t-0">' +
+                    '<div class="flex items-center justify-between px-4 py-2 bg-slate-50/60">' +
+                        '<p class="font-bold text-slate-800 text-sm">' + escapeHtml(moduleLabel(m.module_id)) + '</p>' +
+                        '<div class="flex items-center gap-3 text-xs">' +
+                            (m.fast_count
+                                ? '<span class="text-rose-700 font-bold">' + m.fast_count + ' fast</span>'
+                                : '') +
+                            '<span class="font-bold text-slate-700">' + escapeHtml(fmtSecs(m.total_seconds)) + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<table class="w-full text-sm">' +
+                        '<tbody>' + m.chapters.map(chapterRow).join('') + '</tbody>' +
+                    '</table>' +
+                '</div>';
+        }
+
+        function personCard(p) {
+            const display = p.name || p.email;
+            const sub = p.name ? p.email : '';
+            return '' +
+                '<details class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">' +
+                    '<summary class="cursor-pointer list-none flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-slate-50/60">' +
+                        '<div class="min-w-0 flex-1">' +
+                            '<p class="font-bold text-slate-900 truncate">' + escapeHtml(display) + '</p>' +
+                            (sub ? '<p class="text-xs text-slate-500 truncate">' + escapeHtml(sub) + '</p>' : '') +
+                        '</div>' +
+                        '<div class="flex items-center gap-3 text-xs shrink-0">' +
+                            (p.fast_count
+                                ? '<span class="inline-flex items-center gap-1 text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full font-bold uppercase tracking-widest text-[10px]">' + p.fast_count + ' fast</span>'
+                                : '') +
+                            '<span class="font-black text-lg tabular-nums text-slate-900">' + escapeHtml(fmtSecs(p.total_seconds)) + '</span>' +
+                            '<svg class="w-4 h-4 text-slate-400 transition-transform" style="transform:rotate(0deg)" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>' +
+                        '</div>' +
+                    '</summary>' +
+                    '<div>' + p.modules.map(moduleBlock).join('') + '</div>' +
+                '</details>';
+        }
+
+        function rerender() {
+            const rows = filterRows();
+            const people = pivot(rows);
+            const wrap = document.getElementById('dwell-people');
+            const empty = document.getElementById('dwell-empty');
+            if (!wrap || !empty) return;
+            if (!people.length) {
+                wrap.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+            wrap.innerHTML = people.map(personCard).join('');
+        }
+
+        window.renderDwell = function (rows) {
+            ALL_ROWS = Array.isArray(rows) ? rows : [];
+            buildModuleFilter(ALL_ROWS);
+            rerender();
+        };
+
+        ['change', 'input'].forEach(function (ev) {
+            const a = document.getElementById('dwell-module-filter');
+            const b = document.getElementById('dwell-search');
+            if (a) a.addEventListener(ev, rerender);
+            if (b) b.addEventListener(ev, rerender);
+        });
+    })();
     </script>
 </body>
 </html>
