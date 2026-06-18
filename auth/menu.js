@@ -64,6 +64,7 @@
 
         /* Admin (filtered to admins only) */
         { title: 'Admin Dashboard',                    desc: 'Staff completion overview and compliance reports',              href: 'admin-dashboard.html',                                                             icon: '\u{1F6E1}',  tag: 'Admin', adminOnly: true },
+        { title: 'Admin Charts',                       desc: 'Hours trend, completion funnel, engagement quality, heatmap',   href: 'admin-charts.html',                                                                icon: '\u{1F4C8}', tag: 'Admin', adminOnly: true },
         { title: 'Send Notifications',                 desc: 'Compose and publish notifications to staff',                    href: 'admin-notifications.html',                                                         icon: '\u{1F4E2}',  tag: 'Admin', adminOnly: true },
 
         /* PD modules */
