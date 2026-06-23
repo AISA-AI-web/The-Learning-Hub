@@ -228,6 +228,80 @@ textarea.pr-text:focus { outline: none; border-color: var(--pr-accent); }
     padding-top: 10px;
 }
 
+/* ---- Dual-column workflow (staff self-reflection ↔ manager evaluation) -- */
+.pr-dual {
+    max-width: 1320px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+    align-items: start;
+}
+.pr-dual .pr-sheet {
+    max-width: none;
+    width: 100%;
+}
+.pr-sheet-label {
+    text-align: center;
+    background: var(--pr-band);
+    color: var(--pr-band-ink);
+    padding: 9px 14px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    margin: 0 0 -2px;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+.pr-sheet-label.is-manager { background: #6366f1; }
+
+/* Read-only styling — applied to either side based on mode. */
+.pr-readonly { background: #fafbfc; }
+.pr-readonly input,
+.pr-readonly textarea {
+    pointer-events: none;
+    color: var(--pr-ink);
+    background: transparent;
+}
+.pr-readonly input[type="radio"] {
+    accent-color: #6b7280;
+    opacity: 0.92;
+}
+.pr-readonly textarea {
+    border-color: var(--pr-line-soft);
+    background: rgba(241, 245, 249, 0.45);
+}
+.pr-readonly .pr-field input {
+    border-bottom-color: var(--pr-line-soft);
+}
+
+@media (max-width: 980px) {
+    /* Below ~980px the side-by-side layout becomes unreadable; stack instead. */
+    .pr-dual {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media print {
+    /* Combined document: each sheet starts on a fresh page so the
+       reader gets a clean self-reflection page followed by a clean
+       manager-evaluation page. */
+    .pr-dual {
+        display: block;
+        max-width: 210mm;
+    }
+    .pr-dual .pr-sheet {
+        page-break-after: always;
+    }
+    .pr-dual .pr-sheet:last-child {
+        page-break-after: auto;
+    }
+    .pr-readonly { background: transparent; }
+    .pr-readonly textarea { background: transparent; }
+}
+
 /* ---- Sticky toolbar (screen only) -------------------------------------
    Sits just below the global app-bar (~60px). The container is transparent
    and lets clicks pass through; only the pill controls are interactive, so

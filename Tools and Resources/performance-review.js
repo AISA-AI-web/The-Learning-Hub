@@ -49,9 +49,16 @@
         return el('header', { class: 'pr-masthead' }, kids);
     }
 
-    function buildHeaderFields(cfg) {
+    /* Every form-building helper now takes an optional `prefix` so we can
+     * render the same form twice with disjoint field names — staff-side
+     * uses 's__', manager-side uses 'm__'. In single mode the prefix is
+     * empty and the names match the legacy shape so older drafts and
+     * older submissions still hydrate correctly. */
+    function pfx(prefix, name) { return (prefix || '') + name; }
+
+    function buildHeaderFields(cfg, prefix) {
         var fields = (cfg.headerFields || []).map(function (f, i) {
-            var id = 'hf-' + i + '-' + slug(f.label);
+            var id = pfx(prefix, 'hf-' + i + '-' + slug(f.label));
             return el('div', { class: 'pr-field' }, [
                 el('label', { for: id, text: f.label }),
                 el('input', { type: 'text', id: id, name: id, autocomplete: 'off' })
@@ -60,7 +67,7 @@
         return el('div', { class: 'pr-header-grid' }, fields);
     }
 
-    function buildRatingTable(section, sIndex) {
+    function buildRatingTable(section, sIndex, prefix) {
         // Header row
         var headCells = [el('th', { class: 'pr-crit-col', html: '&nbsp;' })];
         RATINGS.forEach(function (r) { headCells.push(el('th', { text: r })); });
@@ -68,7 +75,7 @@
 
         // Criterion rows
         var body = section.criteria.map(function (crit, cIndex) {
-            var groupName = 'rate-' + sIndex + '-' + cIndex + '-' + slug(section.name);
+            var groupName = pfx(prefix, 'rate-' + sIndex + '-' + cIndex + '-' + slug(section.name));
             var cells = [el('td', { class: 'pr-crit', text: crit })];
             RATINGS.forEach(function (r, rIndex) {
                 var radio = el('input', {
@@ -86,11 +93,11 @@
         return el('div', { class: 'pr-table-wrap' }, [table]);
     }
 
-    function buildSection(section, sIndex) {
-        var commentName = 'comment-' + sIndex + '-' + slug(section.name);
+    function buildSection(section, sIndex, prefix) {
+        var commentName = pfx(prefix, 'comment-' + sIndex + '-' + slug(section.name));
         return el('section', { class: 'pr-section' }, [
             el('div', { class: 'pr-section-band', text: section.name }),
-            buildRatingTable(section, sIndex),
+            buildRatingTable(section, sIndex, prefix),
             el('div', { class: 'pr-comment' }, [
                 el('label', { for: commentName, text: 'General Comments' }),
                 el('textarea', { class: 'pr-text', id: commentName, name: commentName })
@@ -98,25 +105,66 @@
         ]);
     }
 
-    function buildReflection(cfg) {
+    function buildReflection(cfg, prefix) {
         var r = cfg.reflection;
         if (!r) { return null; }
-        var kids = [el('label', { for: 'reflection', text: r.label })];
+        var id = pfx(prefix, 'reflection');
+        var kids = [el('label', { for: id, text: r.label })];
         if (r.helper) { kids.push(el('p', { class: 'pr-helper', text: r.helper })); }
-        kids.push(el('textarea', { class: 'pr-text', id: 'reflection', name: 'reflection' }));
+        kids.push(el('textarea', { class: 'pr-text', id: id, name: id }));
         return el('div', { class: 'pr-block pr-block-reflection' }, kids);
     }
 
-    function buildGrowth(cfg) {
+    function buildGrowth(cfg, prefix) {
+        var id = pfx(prefix, 'growth');
         var note = cfg.growthNote ||
             'Professional Growth — please identify 3–5 goals you will work on to grow and ' +
             'further develop as an AISA employee in your role. Goals will be discussed with the ' +
             'School Director and reviewed again at your next annual appraisal.';
         return el('div', { class: 'pr-block pr-block-growth' }, [
-            el('label', { for: 'growth', text: 'Professional Growth Goals' }),
+            el('label', { for: id, text: 'Professional Growth Goals' }),
             el('p', { class: 'pr-helper', text: note }),
-            el('textarea', { class: 'pr-text', id: 'growth', name: 'growth' })
+            el('textarea', { class: 'pr-text', id: id, name: id })
         ]);
+    }
+
+    /* Compose a complete "sheet" (one half of the dual workflow, or the
+     * whole thing in single mode). `prefix` namespaces all field names
+     * so the two sides never collide. `opts.label` adds a column header
+     * ("Self-Reflection" / "Manager's Evaluation") above the masthead;
+     * `opts.readOnly` disables all inputs and applies the .pr-readonly
+     * styling. */
+    function buildFormSheet(cfg, prefix, opts) {
+        opts = opts || {};
+        var sheet = el('div', { class: 'pr-sheet' + (opts.readOnly ? ' pr-readonly' : '') });
+        if (opts.label) {
+            sheet.appendChild(el('div', {
+                class: 'pr-sheet-label' + (opts.labelKind === 'manager' ? ' is-manager' : ''),
+                text: opts.label
+            }));
+        }
+        sheet.appendChild(buildHeader(cfg));
+        sheet.appendChild(buildHeaderFields(cfg, prefix));
+        (cfg.sections || []).forEach(function (section, i) {
+            sheet.appendChild(buildSection(section, i, prefix));
+        });
+        var reflection = buildReflection(cfg, prefix);
+        if (reflection) { sheet.appendChild(reflection); }
+        sheet.appendChild(buildGrowth(cfg, prefix));
+        sheet.appendChild(buildSignatures());
+        sheet.appendChild(el('div', { class: 'pr-footnote', text: 'Cc: Personnel File' }));
+        if (opts.readOnly) { applyReadOnly(sheet); }
+        return sheet;
+    }
+
+    /* Lock down a sheet so it shows values but can't be edited. */
+    function applyReadOnly(root) {
+        root.querySelectorAll('input, textarea').forEach(function (node) {
+            node.readOnly = true;
+            if (node.type === 'radio') { node.disabled = true; }
+            node.setAttribute('tabindex', '-1');
+            node.setAttribute('aria-disabled', 'true');
+        });
     }
 
     function buildSignatures() {
@@ -140,28 +188,52 @@
 
     // ---- Draft auto-save (localStorage, client-only) -------------------
     /* Serialize every input + textarea under `root` into a flat map.
-     * Reused by the localStorage draft AND the server-sync workflow. */
-    function collectFormData(root) {
+     *
+     * If a `prefix` is given, only fields starting with that prefix are
+     * collected, and the prefix is stripped from the keys in the returned
+     * map. This lets the renderer build two namespaced forms (s__... and
+     * m__...) but store them as clean unprefixed blobs under
+     * data.staff / data.manager. */
+    function collectFormData(root, prefix) {
         var data = {};
+        var p = prefix || '';
+        var pl = p.length;
         root.querySelectorAll('input, textarea').forEach(function (node) {
+            if (p && node.name.indexOf(p) !== 0) return;
+            var key = p ? node.name.slice(pl) : node.name;
             if (node.type === 'radio') {
-                if (node.checked) { data[node.name] = node.value; }
+                if (node.checked) { data[key] = node.value; }
             } else {
-                data[node.name] = node.value;
+                data[key] = node.value;
             }
         });
         return data;
     }
 
     /* Apply a flat map back onto the form. Missing fields are left alone
-     * (we don't blank fields that aren't in the saved data). */
-    function hydrateFormData(root, data) {
+     * (we don't blank fields that aren't in the saved data). `prefix`
+     * mirrors collectFormData — pass it when hydrating one half of a
+     * dual-form render. */
+    function hydrateFormData(root, data, prefix) {
         if (!data) return;
+        var p = prefix || '';
         root.querySelectorAll('input, textarea').forEach(function (node) {
-            if (!(node.name in data)) { return; }
-            if (node.type === 'radio') { node.checked = (node.value === data[node.name]); }
-            else { node.value = data[node.name]; }
+            var key = p ? (node.name.indexOf(p) === 0 ? node.name.slice(p.length) : null) : node.name;
+            if (key == null || !(key in data)) { return; }
+            if (node.type === 'radio') { node.checked = (node.value === data[key]); }
+            else { node.value = data[key]; }
         });
+    }
+
+    /* Normalise any saved blob into the {staff, manager} shape. Older
+     * submissions written before the dual-canvas refactor stored a flat
+     * map; we treat those as the staff side so they show up where the
+     * staff member would expect them. */
+    function normaliseData(raw) {
+        var d = raw || {};
+        if (d.staff || d.manager) return { staff: d.staff || {}, manager: d.manager || {} };
+        /* Empty object or a legacy flat map. */
+        return { staff: d, manager: {} };
     }
 
     function wireDraft(root, storageKey, savedEl) {
@@ -442,70 +514,117 @@
 
         ensureBaseHelpers();
 
-        var sheet = el('div', { class: 'pr-sheet' });
-        var statusBanner = buildStatusBanner();
-        sheet.appendChild(statusBanner);
-        sheet.appendChild(buildHeader(cfg));
-        sheet.appendChild(buildHeaderFields(cfg));
-        (cfg.sections || []).forEach(function (section, i) {
-            sheet.appendChild(buildSection(section, i));
-        });
-        var reflection = buildReflection(cfg);
-        if (reflection) { sheet.appendChild(reflection); }
-        sheet.appendChild(buildGrowth(cfg));
-        sheet.appendChild(buildSignatures());
-        sheet.appendChild(el('div', { class: 'pr-footnote', text: 'Cc: Personnel File' }));
+        if (cfg.title) { document.title = 'AISA | ' + cfg.title; }
 
+        var statusBanner = buildStatusBanner();
         var sendFooter = buildSendFooter();
         sendFooter.style.display = 'none';
-        sheet.appendChild(sendFooter);
 
-        var draft;
+        /* Container that holds whatever the current mode renders. We
+         * reuse it across renders so the toolbar + status banner + send
+         * footer stay put even when the form below them changes shape
+         * (e.g. single → dual after a submission loads). */
+        var formHost = el('div', { class: 'pr-host' });
+
+        var draft = null;
         var toolbar = buildToolbar(
             function () { window.print(); },
             function () {
                 if (!window.confirm('Clear all entries on this form? This cannot be undone.')) { return; }
-                sheet.querySelectorAll('input, textarea').forEach(function (node) {
-                    if (node.type === 'radio') { node.checked = false; }
-                    else { node.value = ''; }
+                /* Clear only the editable side — never the read-only side. */
+                formHost.querySelectorAll('.pr-sheet:not(.pr-readonly)').forEach(function (s) {
+                    s.querySelectorAll('input, textarea').forEach(function (node) {
+                        if (node.type === 'radio') { node.checked = false; }
+                        else { node.value = ''; }
+                    });
                 });
                 if (draft) { draft.clear(); }
             }
         );
 
         mount.appendChild(toolbar.node);
-        mount.appendChild(sheet);
+        mount.appendChild(statusBanner);
+        mount.appendChild(formHost);
+        mount.appendChild(sendFooter);
 
-        draft = wireDraft(sheet, storageKey, toolbar.saved);
+        /* ---- Mode renderers ----
+         *
+         * Each renderer wipes the form host, builds the appropriate
+         * sheet(s), and returns a `collect` function that gathers the
+         * editable side's data in the {staff,manager} shape we ship to
+         * the backend. */
 
-        if (cfg.title) { document.title = 'AISA | ' + cfg.title; }
+        function renderSingle(initialData) {
+            formHost.innerHTML = '';
+            var sheet = buildFormSheet(cfg, '', { readOnly: false });
+            formHost.appendChild(sheet);
+            hydrateFormData(sheet, (initialData && initialData.staff) || initialData || {}, '');
+            draft = wireDraft(sheet, storageKey, toolbar.saved);
+            return function collectAll() {
+                return { staff: collectFormData(sheet, ''), manager: {} };
+            };
+        }
 
-        /* ---- Round-trip workflow wiring ----
+        function renderDual(opts) {
+            /* opts:
+             *   data:         the loaded submission's normalised data
+             *   editableSide: 'manager' | null  — null means everything is read-only
+             *   labels:       { staff, manager } — column titles
+             */
+            formHost.innerHTML = '';
+            var dual = el('div', { class: 'pr-dual' });
+            var leftReadOnly  = (opts.editableSide !== 'staff');
+            var rightReadOnly = (opts.editableSide !== 'manager');
+            var leftSheet  = buildFormSheet(cfg, 's__', {
+                readOnly:  leftReadOnly,
+                label:     opts.labels.staff,
+                labelKind: 'staff'
+            });
+            var rightSheet = buildFormSheet(cfg, 'm__', {
+                readOnly:  rightReadOnly,
+                label:     opts.labels.manager,
+                labelKind: 'manager'
+            });
+            dual.appendChild(leftSheet);
+            dual.appendChild(rightSheet);
+            formHost.appendChild(dual);
+
+            hydrateFormData(leftSheet,  opts.data.staff   || {}, 's__');
+            hydrateFormData(rightSheet, opts.data.manager || {}, 'm__');
+
+            /* localStorage drafts only on the editable side. */
+            draft = null;
+            if (!rightReadOnly) {
+                draft = wireDraft(rightSheet, storageKey + '_mgr', toolbar.saved);
+            } else if (!leftReadOnly) {
+                draft = wireDraft(leftSheet, storageKey, toolbar.saved);
+            }
+
+            return function collectAll() {
+                return {
+                    staff:   collectFormData(leftSheet,  's__'),
+                    manager: collectFormData(rightSheet, 'm__')
+                };
+            };
+        }
+
+        /* ---- State dispatch ----
          *
-         * Three states the page can be in:
-         *
-         *   A) Standalone (no ?submission, no recently-sent state) —
-         *      show the staff "Send to line manager" footer so anyone
-         *      filling the form locally can hand it off.
-         *
-         *   B) ?submission=ID present — fetch the saved submission,
-         *      pre-fill the form, and show the right footer for whoever
-         *      is signed in (staff sees a "waiting on manager" banner;
-         *      manager sees the "Send back to staff" footer; complete
-         *      shows a green banner with no footer).
-         *
-         *   C) Just submitted from this tab — switch to the pending
-         *      banner and hide the send footer. */
+         *   no ?submission           → renderSingle (fresh self-reflection)
+         *   ?submission complete     → renderDual (combined doc, both read-only)
+         *   ?submission pending      → manager: renderDual w/ manager editable
+         *                              staff:   renderSingle (their submission, read-only-ish)
+         */
 
         var submissionId = readSubmissionId();
 
-        function showStaffFooterStandalone() {
+        function startStandalone() {
+            var collect = renderSingle({});
             renderSendFooter_staff(sendFooter, {
                 formId:  cfg.formId || slug(cfg.title),
                 title:   cfg.title,
-                collect: function () { return collectFormData(sheet); },
+                collect: collect,
                 onSent:  function (sid, email, name) {
-                    /* Update the URL so a refresh keeps the same submission view. */
                     try {
                         var u = new URL(location.href);
                         u.searchParams.set('submission', sid);
@@ -515,28 +634,31 @@
                     setStatus(statusBanner, 'pending',
                         '<span>📨</span><span>Sent to <strong>' +
                         (name || email) + '</strong>. They\'ll get a notification and can fill in their evaluation. ' +
-                        'This page will show their answers once they send it back.</span>');
+                        'You\'ll be notified when they send it back.</span>');
                 }
             });
         }
 
         if (!submissionId) {
-            /* State A — standalone. */
-            showStaffFooterStandalone();
+            startStandalone();
         } else if (window.aisaAuth && window.aisaAuth.getFormSubmission) {
-            /* State B — load existing submission. */
             setStatus(statusBanner, 'info', '<span>⏳</span><span>Loading submission…</span>');
             sendFooter.style.display = 'none';
+            /* Render a single empty form as a placeholder so the layout
+             * doesn't jump when the data arrives. */
+            renderSingle({});
+
             window.aisaAuth.getFormSubmission(submissionId).then(function (r) {
                 if (!r || !r.ok) {
                     setStatus(statusBanner, 'info',
                         '<span>⚠️</span><span>Couldn\'t load this submission (' +
                         ((r && r.error) || 'unknown') + '). You can still fill the form fresh and send it.</span>');
-                    showStaffFooterStandalone();
+                    startStandalone();
                     return;
                 }
-                var sub = r.submission;
-                hydrateFormData(sheet, sub.data || {});
+                var sub  = r.submission;
+                var data = normaliseData(sub.data);
+
                 var meEmail = '';
                 try {
                     var u = window.aisaAuth.getUser && window.aisaAuth.getUser();
@@ -545,25 +667,42 @@
                 var iAmManager = (meEmail && meEmail === String(sub.manager_email || '').toLowerCase());
                 var iAmStaff   = (meEmail && meEmail === String(sub.staff_email   || '').toLowerCase());
 
+                var labels = {
+                    staff:   'Self-Reflection · ' + (sub.staff_name   || sub.staff_email),
+                    manager: 'Manager Evaluation · ' + (sub.manager_name || sub.manager_email)
+                };
+
                 if (sub.status === 'complete') {
+                    /* Combined document — both sides read-only. */
+                    renderDual({ data: data, editableSide: null, labels: labels });
                     setStatus(statusBanner, 'complete',
-                        '<span>✅</span><span>Completed — manager <strong>' +
-                        (sub.manager_name || sub.manager_email) +
-                        '</strong> sent this back to <strong>' +
-                        (sub.staff_name || sub.staff_email) +
-                        '</strong>. Use Print / Save as PDF to keep a copy.</span>');
+                        '<span>✅</span><span>Combined evaluation — <strong>' +
+                        (sub.staff_name || sub.staff_email) + '</strong>\'s self-reflection ' +
+                        'and <strong>' + (sub.manager_name || sub.manager_email) +
+                        '</strong>\'s evaluation, side by side. Use Print / Save as PDF to keep a copy.</span>');
                 } else if (iAmManager) {
+                    /* Manager filling — side-by-side, only manager column editable. */
+                    var collect = renderDual({
+                        data: data, editableSide: 'manager', labels: labels
+                    });
                     setStatus(statusBanner, 'pending',
                         '<span>📝</span><span>You\'re evaluating <strong>' +
                         (sub.staff_name || sub.staff_email) +
-                        '</strong>. Their answers are pre-filled — add your evaluation, then send it back at the bottom.</span>');
+                        '</strong>. Their self-reflection is on the left; fill in your evaluation on the right, then send it back at the bottom.</span>');
                     renderSendFooter_manager(sendFooter, {
                         submissionId: submissionId,
                         staffEmail:   sub.staff_email,
                         staffName:    sub.staff_name,
-                        collect:      function () { return collectFormData(sheet); },
+                        collect:      collect,
                         onComplete:   function () {
                             sendFooter.style.display = 'none';
+                            /* Lock the manager side too. */
+                            formHost.querySelectorAll('.pr-sheet').forEach(function (s) {
+                                if (!s.classList.contains('pr-readonly')) {
+                                    s.classList.add('pr-readonly');
+                                    applyReadOnly(s);
+                                }
+                            });
                             setStatus(statusBanner, 'complete',
                                 '<span>✅</span><span>Sent back to <strong>' +
                                 (sub.staff_name || sub.staff_email) +
@@ -571,23 +710,31 @@
                         }
                     });
                 } else if (iAmStaff) {
+                    /* Staff watching pending — single column of their own
+                     * self-reflection, read-only (it's already sent). */
+                    formHost.innerHTML = '';
+                    var sheet = buildFormSheet(cfg, '', {
+                        readOnly: true,
+                        label: 'Self-Reflection (sent)'
+                    });
+                    formHost.appendChild(sheet);
+                    hydrateFormData(sheet, data.staff || {}, '');
                     setStatus(statusBanner, 'pending',
                         '<span>⏳</span><span>Waiting on <strong>' +
                         (sub.manager_name || sub.manager_email) +
-                        '</strong> to complete their evaluation. You\'ll get a notification when they send it back.</span>');
+                        '</strong> to complete their evaluation. You\'ll get a notification when they send it back, and this page will then show both sides side by side.</span>');
                 } else {
-                    /* Shouldn't happen — backend would have returned not_authorized. */
                     setStatus(statusBanner, 'info',
                         '<span>🔒</span><span>You don\'t have access to this submission.</span>');
                 }
             }).catch(function () {
                 setStatus(statusBanner, 'info',
                     '<span>⚠️</span><span>Couldn\'t reach the server. Showing a blank form — you can fill it and send it fresh.</span>');
-                showStaffFooterStandalone();
+                startStandalone();
             });
         } else {
             /* Auth not configured (e.g. preview page) — degrade. */
-            showStaffFooterStandalone();
+            startStandalone();
         }
     };
 })();
