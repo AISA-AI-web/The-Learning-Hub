@@ -24,7 +24,7 @@
         .fade-in { animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
-    <script src="auth/gate.js?v=13"></script>
+    <script src="auth/gate.js?v=14"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
@@ -87,6 +87,14 @@
             </button>
         </div>
         <section id="dash-modules" class="grid gap-3 mb-10"></section>
+
+        <!-- Pending evaluations — appears only when there's at least one
+             in-flight performance-review form. Hidden by default so the
+             dashboard stays clean for people who haven't used the workflow. -->
+        <section id="dash-evals-wrap" class="hidden mb-10">
+            <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">Performance Review Forms</h3>
+            <div id="dash-evals" class="grid gap-3"></div>
+        </section>
 
         <!-- System items -->
         <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">Onboarding</h3>
@@ -279,7 +287,80 @@
                 }).catch(err => {
                     console.warn('AISA: dashboard could not load completions', err);
                 });
+
+                /* Performance-review submissions where the user is either
+                 * staff (awaiting return) or manager (need to fill).
+                 * Loaded independently so a missing endpoint doesn't break
+                 * the rest of the dashboard. */
+                if (auth.listMySubmissions) {
+                    auth.listMySubmissions().then(r => {
+                        if (r && r.ok) renderEvals(r.submissions || []);
+                    }).catch(() => { /* silent — section just stays hidden */ });
+                }
             });
+        }
+
+        // --- Evaluation form workflow rendering -------------------------
+        function fmtRelDate(iso) {
+            if (!iso) return '';
+            try {
+                const d = new Date(iso);
+                const days = Math.floor((Date.now() - d.getTime()) / 86400000);
+                if (days < 1) return 'today';
+                if (days < 2) return 'yesterday';
+                if (days < 7) return days + ' days ago';
+                return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+            } catch (e) { return ''; }
+        }
+        function evalCard(s) {
+            const isStaff = s.role === 'staff';
+            const isComplete = s.status === 'complete';
+            const link = (s.form_url || '') + (s.form_url ? (s.form_url.indexOf('?') === -1 ? '?' : '&') : '?') + 'submission=' + encodeURIComponent(s.submission_id);
+            let badge, cta, sub, ring;
+            if (isComplete) {
+                ring = 'border-emerald-200';
+                badge = '<span class="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">✓ Complete</span>';
+                cta = isStaff ? 'View &amp; download' : 'View';
+                sub = isStaff
+                    ? 'Returned by ' + (s.manager_name || s.manager_email) + ' · ' + fmtRelDate(s.completed_at_iso || s.updated_at_iso)
+                    : 'You completed this for ' + (s.staff_name || s.staff_email) + ' · ' + fmtRelDate(s.completed_at_iso || s.updated_at_iso);
+            } else if (isStaff) {
+                ring = 'border-amber-200';
+                badge = '<span class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">⏳ Waiting on manager</span>';
+                cta = 'View status';
+                sub = 'Sent to ' + (s.manager_name || s.manager_email) + ' · ' + fmtRelDate(s.created_at_iso);
+            } else {
+                ring = 'border-rose-300';
+                badge = '<span class="inline-flex items-center gap-1 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 px-2.5 py-1 rounded-full">📝 Needs your evaluation</span>';
+                cta = 'Open and fill';
+                sub = 'From ' + (s.staff_name || s.staff_email) + ' · ' + fmtRelDate(s.created_at_iso);
+            }
+            return '<a href="' + link + '" class="bg-white rounded-xl border ' + ring +
+                ' shadow-sm p-4 flex items-center gap-4 fade-in hover:shadow-md hover:-translate-y-0.5 transition-all">' +
+                    '<div class="w-11 h-11 rounded-xl flex items-center justify-center text-xl flex-shrink-0 bg-slate-50">📋</div>' +
+                    '<div class="flex-1 min-w-0">' +
+                        '<div class="flex items-center gap-2 flex-wrap mb-0.5">' + badge + '</div>' +
+                        '<p class="font-bold text-slate-900 leading-tight truncate">' + (s.form_title || s.form_id) + '</p>' +
+                        '<p class="text-xs text-slate-500 truncate">' + sub + '</p>' +
+                    '</div>' +
+                    '<span class="text-sm font-bold text-indigo-700 flex-shrink-0">' + cta +
+                        ' <svg width="15" height="15" class="inline-block -mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>' +
+                '</a>';
+        }
+        function renderEvals(items) {
+            const wrap = document.getElementById('dash-evals-wrap');
+            const list = document.getElementById('dash-evals');
+            if (!wrap || !list) return;
+            if (!items.length) { wrap.classList.add('hidden'); return; }
+            /* Sort "needs your evaluation" first, then "waiting on manager", then complete. */
+            items.sort((a, b) => {
+                const score = s => (s.status !== 'complete' && s.role === 'manager') ? 0
+                                 : (s.status !== 'complete' && s.role === 'staff') ? 1 : 2;
+                const d = score(a) - score(b);
+                return d !== 0 ? d : (a.updated_at_iso < b.updated_at_iso ? 1 : -1);
+            });
+            list.innerHTML = items.map(evalCard).join('');
+            wrap.classList.remove('hidden');
         }
     </script>
 </body>

@@ -760,6 +760,47 @@
                 return apiCall('admin_dwell', {});
             },
 
+            /* ----- Performance-review form workflow -----
+             *
+             * Round-trip eval flow: staff fills, sends to a line manager,
+             * manager completes their portion, sends back. Both parties
+             * can re-open and download the final form. All four endpoints
+             * degrade gracefully when the API isn't configured. */
+
+            /* Populates the "Send to line manager" dropdown on each form. */
+            getLineManagers: function () {
+                if (!API_URL) return Promise.resolve({ ok: true, managers: [] });
+                return apiCall('get_line_managers', {});
+            },
+
+            /* Stage 1 — staff sends the form to a line manager.
+             *   payload: { form_id, form_url, form_title, manager_email,
+             *              manager_name, data: {fieldName: value, ...} }
+             * Returns { ok, submission_id, status: 'pending_manager' }. */
+            submitForm: function (payload) {
+                return apiCall('submit_form', payload || {});
+            },
+
+            /* Fetch a saved submission to pre-fill the form. Only the
+             * staff member or the named line manager can read it. */
+            getFormSubmission: function (submissionId) {
+                return apiCall('get_form_submission', { submission_id: submissionId });
+            },
+
+            /* Stage 2 — line manager submits their portion back to staff.
+             *   payload: { submission_id, data: {...full form state} } */
+            completeForm: function (payload) {
+                return apiCall('complete_form', payload || {});
+            },
+
+            /* Powers the "Pending evaluations" sections on both dashboards.
+             * Returns submissions where the signed-in user is either
+             * staff or manager, sorted most-recently-updated first. */
+            listMySubmissions: function () {
+                if (!API_URL) return Promise.resolve({ ok: true, submissions: [] });
+                return apiCall('list_my_submissions', {});
+            },
+
             /* Fire-and-forget: log one named click to the backend's
              * `clicks` tab. Called automatically when any element with
              * a data-track="..." attribute is clicked. */
