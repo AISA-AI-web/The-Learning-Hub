@@ -22,6 +22,22 @@ fail silently and the dependent UIs stay empty:
   the admin engagement section shows a yellow "needs migration" banner
   and refuses writes so no data ever lands in the wrong shape.
 
+- **Performance-review round-trip workflow** — two new sheets, four new
+  endpoints. Backend creates them lazily on first access; one piece of
+  manual setup is needed:
+  1. After redeploy, open the spreadsheet and find the new
+     `line_managers` tab (or create it if it didn't auto-spawn). Headers:
+     `email | name | division`. Add the line managers staff can pick
+     from the "Send to line manager" dropdown on each eval form.
+     **Intentionally separate from the `admins` tab** — a TA's line
+     manager isn't usually SLT.
+  2. The `form_submissions` tab will auto-fill as staff submit forms.
+     No setup required.
+  3. Endpoints added: `get_line_managers`, `submit_form`,
+     `get_form_submission`, `complete_form`, `list_my_submissions`.
+     Notifications fire automatically via the existing `notifications`
+     sheet when forms move between stages.
+
 ## Next Digital Lion Newsletter — items to include
 
 - **NotebookLM ⇄ Google Drive auto-sync.** Files uploaded to NotebookLM
