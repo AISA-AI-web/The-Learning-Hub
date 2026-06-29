@@ -168,22 +168,16 @@
                         <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Watch: The Safeguarding Briefing</h3>
                     </div>
                     <div class="p-6 lg:p-8 space-y-5">
-                        <!-- VIDEO SLOT: when the file is available, drop "safeguarding-training.mp4" into this
-                             PD Modules folder (or replace the block below with a Drive/YouTube embed). -->
-                        <div id="sg-video-slot" class="rounded-2xl overflow-hidden border border-violet-200 bg-slate-900">
+                        <div class="rounded-2xl overflow-hidden border border-violet-200 bg-slate-900 shadow-lg">
                             <div class="aspect-video relative w-full">
-                                <video id="sg-video" controls preload="metadata" class="absolute inset-0 w-full h-full bg-black" style="display:none;">
-                                    <source src="safeguarding-training.mp4" type="video/mp4">
-                                </video>
-                                <div id="sg-video-placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 bg-gradient-to-br from-indigo-900 via-violet-900 to-purple-900 text-white">
-                                    <span class="text-5xl mb-3">🎬</span>
-                                    <p class="font-heading font-bold text-lg">Safeguarding briefing video</p>
-                                    <p class="text-violet-200 text-sm max-w-md mt-1">The video accompanies this training. Once it's uploaded it will play right here — your DSL will let you know when it's ready.</p>
-                                </div>
+                                <iframe src="https://drive.google.com/file/d/1K_5y0lCrTEn54j50MAzrNcsKejj3dbet/preview"
+                                        class="absolute inset-0 w-full h-full" allow="autoplay; fullscreen"
+                                        allowfullscreen title="AISA safeguarding briefing video" loading="lazy"></iframe>
                             </div>
                         </div>
+                        <p class="text-xs text-gray-500">Video not loading? Make sure you're signed in with your AISA Google account, then <a href="https://drive.google.com/file/d/1K_5y0lCrTEn54j50MAzrNcsKejj3dbet/view" target="_blank" rel="noopener noreferrer" class="text-violet-700 font-semibold underline">open it directly in Google Drive</a>.</p>
                         <div class="bg-violet-50 border border-violet-200 rounded-xl p-4 text-sm text-violet-900">
-                            <strong>While you watch (or read on if the video isn't up yet):</strong> notice <em>how</em> staff are expected to respond to a concern — calmly, without judgement, and by reporting to the DSL. The chapters that follow give you the exact steps.
+                            <strong>As you watch:</strong> notice <em>how</em> staff are expected to respond to a concern — calmly, without judgement, and by reporting to the DSL. The chapters that follow give you the exact steps.
                         </div>
                     </div>
                 </div>
@@ -779,23 +773,6 @@
             }
         }
 
-        // --- Video slot: only show the player if the file actually loads ---
-        (function () {
-            var v = document.getElementById('sg-video');
-            var ph = document.getElementById('sg-video-placeholder');
-            if (!v) return;
-            v.addEventListener('loadeddata', function () {
-                v.style.display = 'block';
-                if (ph) ph.style.display = 'none';
-            });
-            v.addEventListener('error', function () {
-                v.style.display = 'none';
-                if (ph) ph.style.display = 'flex';
-            });
-            // Nudge the browser to try loading the source.
-            try { v.load(); } catch (e) {}
-        })();
-
         // --- AISA backend: record completion + rehydrate on revisit ---
         if (window.aisaReady) {
             window.aisaReady(function (auth) {
@@ -812,7 +789,7 @@
     </script>
 
     <!-- English ↔ Arabic translation -->
-    <script src="safeguarding-ar.js?v=1"></script>
+    <script src="safeguarding-ar.js?v=2"></script>
     <script src="onboarding-i18n.js?v=2"></script>
 </body>
 </html>

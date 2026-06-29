@@ -294,5 +294,9 @@ window.AR_DICT = {
     "Responding: the 5 R's": "التجاوب: خطوات الاستجابة الخمس",
     "Your Team & Counsellors": "فريقك والمرشدون الطلابيون",
     "Complete Your Training": "أكمل تدريبك",
-    "Child Safeguarding & Protection — Annual Staff Training": "حماية الطفل ورعايته — التدريب السنوي للموظفين"
+    "Child Safeguarding & Protection — Annual Staff Training": "حماية الطفل ورعايته — التدريب السنوي للموظفين",
+    "As you watch:": "أثناء المشاهدة:",
+    "Video not loading? Make sure you're signed in with your AISA Google account, then": "الفيديو لا يظهر؟ تأكّد من تسجيل دخولك بحساب AISA على Google، ثم",
+    "open it directly in Google Drive": "افتحه مباشرةً في Google Drive",
+    "AISA safeguarding briefing video": "فيديو الإحاطة بحماية الطفل في AISA"
 };
