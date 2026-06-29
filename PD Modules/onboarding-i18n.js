@@ -88,6 +88,11 @@
     var lang = 'en';
     var observer = null;
 
+    /* Shared, Hub-wide language key — the same one the global menu-bar
+       toggle (auth/menu.js) reads/writes, so the menu's Arabic button and
+       our in-hero toggle stay in sync everywhere. */
+    var LANG_KEY = 'aisa-newsletter-lang';
+
     function setText(node, toAr) {
         if (node.__obEn === undefined) node.__obEn = node.nodeValue;
         node.nodeValue = toAr ? trans(node.__obEn) : node.__obEn;
@@ -181,7 +186,7 @@
         applyTo(document.body, ar);
         document.body.classList.toggle('lang-ar', ar);
         if (ar) startObserver();
-        try { localStorage.setItem('aisa_onboarding_lang', lang); } catch (e) {}
+        try { localStorage.setItem(LANG_KEY, lang); } catch (e) {}
         updateButtons();
         setTimeout(function () { document.body.classList.remove('lang-switching'); }, 450);
     }
@@ -194,6 +199,11 @@
         document.querySelectorAll('.ob-lang').forEach(function (b) {
             b.setAttribute('aria-label', isArabic() ? 'Switch language to English' : 'تبديل اللغة إلى العربية');
             b.setAttribute('title', isArabic() ? 'Click here for English' : 'اضغط هنا للعربية — Click here for Arabic');
+        });
+        /* Keep the global menu-bar toggle's label in sync (it shows the
+           language you'll switch TO) when our in-hero toggle is used. */
+        document.querySelectorAll('.aisa-tb-lang-label').forEach(function (el) {
+            el.textContent = isArabic() ? 'EN' : 'العربية';
         });
     }
 
@@ -220,10 +230,18 @@
     window.AISA_setLang = setLang;
     window.AISA_toggleLang = toggleLang;
 
+    /* The global menu-bar toggle (auth/menu.js) fires this event when the
+       user clicks its Arabic button. Mirror it so that button also
+       translates the page content here. */
+    document.addEventListener('aisa:lang-change', function (e) {
+        var next = (e && e.detail && e.detail.lang === 'ar') ? 'ar' : 'en';
+        if (next !== lang) setLang(next);
+    });
+
     function init() {
         injectButton();
         var saved = null;
-        try { saved = localStorage.getItem('aisa_onboarding_lang'); } catch (e) {}
+        try { saved = localStorage.getItem(LANG_KEY); } catch (e) {}
         if (saved === 'ar') {
             setLang('ar');
         } else {
