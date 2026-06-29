@@ -4,6 +4,10 @@
    Consumed by onboarding-i18n.js via window.AR_DICT. Hand-reviewed.
    ========================================================================= */
 window.AR_DICT = {
+    "Gate 1, Gate 2": "البوابة 1، البوابة 2",
+    "Gate 5A": "البوابة 5A",
+    "Site Guide Plan, ground floor, AISA School Abu Dhabi — a labelled map of the soccer field, swimming pool, gyms, KG building, classrooms, medical and reception, numbered perimeter gates, and red guide arrows from the Main Entrance at Gate 4.": "خريطة الموقع الإرشادية، الطابق الأرضي، مدرسة AISA أبوظبي — خريطة موضّحة لملعب كرة القدم وحمام السباحة والصالات الرياضية ومبنى الروضة والفصول الدراسية والعيادة والاستقبال والبوابات المرقّمة حول المحيط، مع أسهم إرشادية حمراء من المدخل الرئيسي عند البوابة 4.",
+    "Site guide plan (ground floor) — buildings, gyms, numbered gates, entrances and the colour-coded guide routes. You are here at the Main Entrance, Gate 4.": "خريطة الموقع الإرشادية (الطابق الأرضي) — المباني والصالات الرياضية والبوابات المرقّمة والمداخل ومسارات الإرشاد الملوّنة. أنت هنا عند المدخل الرئيسي، البوابة 4.",
     "AISA · New-Staff Onboarding": "AISA · تأهيل الموظفين الجدد",
     "Campus Layout, Safety & Security": "تخطيط الحرم المدرسي والصحة والسلامة والأمن",
     "Know the campus, your safety responsibilities, and what to do in an emergency — AISA is a High-Risk Entity, so safety is shared by everyone.": "تعرّف على الحرم المدرسي ومسؤولياتك المتعلقة بالسلامة وما يجب فعله في حالات الطوارئ — إن AISA منشأة عالية الخطورة، لذا فإن السلامة مسؤولية مشتركة بين الجميع.",
