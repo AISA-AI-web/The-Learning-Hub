@@ -250,6 +250,29 @@
                     </a>
 
                 </div>
+
+                <!-- Combined onboarding certificate — unlocks when all modules above are complete -->
+                <div class="mt-8 max-w-3xl mx-auto">
+                    <div id="ori-cert-card" class="relative overflow-hidden bg-gradient-to-br from-violet-50 via-white to-amber-50 border border-amber-200 rounded-2xl shadow-md p-6 md:p-8 text-center">
+                        <div class="text-4xl mb-2" aria-hidden="true">&#127891;</div>
+                        <h4 class="font-heading font-black text-xl md:text-2xl text-amber-900">AISA Onboarding &mdash; Asynchronous Certificate</h4>
+                        <p class="text-gray-600 text-sm mt-1 max-w-md mx-auto">Finish all of the orientation trainings above to unlock your certificate.</p>
+                        <div class="mt-4 max-w-md mx-auto">
+                            <div class="flex items-center justify-between text-xs font-bold text-amber-800 mb-1">
+                                <span id="ori-cert-progress-label">0 of 4 trainings complete</span>
+                                <span id="ori-cert-progress-pct">0%</span>
+                            </div>
+                            <div class="w-full h-3 bg-amber-100 rounded-full overflow-hidden shadow-inner">
+                                <div id="ori-cert-progress-bar" class="h-full bg-gradient-to-r from-amber-500 to-violet-600 w-0 transition-all duration-700 ease-out"></div>
+                            </div>
+                        </div>
+                        <button id="ori-cert-btn" type="button" disabled
+                            class="mt-5 inline-flex items-center justify-center gap-2 font-bold py-3 px-7 rounded-full transition-all bg-gray-200 text-gray-400 cursor-not-allowed">
+                            <span aria-hidden="true">&#128274;</span> <span id="ori-cert-btn-label">Complete all trainings to download</span>
+                        </button>
+                        <p class="text-xs text-gray-500 mt-3">Your name and today's date are filled in automatically. Print &rarr; Save as PDF to keep it.</p>
+                    </div>
+                </div>
             </section>
 
             <!-- Source PDF -->
@@ -288,22 +311,75 @@
         </div>
     </footer>
 
-    <!-- Mark orientation module cards complete from the shared backend.
+    <!-- Mark orientation module cards complete from the shared backend, and
+         unlock the combined onboarding certificate once all are done.
          Cards link to the same PD-module files, so completion recorded in
          either hub is the same record (same moduleId). -->
     <script>
         (function () {
+            var cards = Array.prototype.slice.call(document.querySelectorAll('.ori-mod[data-module-id]'));
+            var ORI_IDS = cards.map(function (c) { return c.getAttribute('data-module-id'); });
+            var HOURS = { 'payroll-prf': 1, 'visa-emirates-id': 1, 'campus-safety': 1, 'safeguarding': 2 };
+            var TOTAL_HOURS = ORI_IDS.reduce(function (s, id) { return s + (HOURS[id] || 1); }, 0);
+
+            var btn = document.getElementById('ori-cert-btn');
+            var btnLabel = document.getElementById('ori-cert-btn-label');
+            var pLabel = document.getElementById('ori-cert-progress-label');
+            var pPct = document.getElementById('ori-cert-progress-pct');
+            var pBar = document.getElementById('ori-cert-progress-bar');
+            var unlocked = false;
+
+            function setCertState(done, total) {
+                var pct = total ? Math.round((done / total) * 100) : 0;
+                if (pLabel) pLabel.textContent = done + ' of ' + total + ' trainings complete';
+                if (pPct) pPct.textContent = pct + '%';
+                if (pBar) pBar.style.width = pct + '%';
+                unlocked = (done === total && total > 0);
+                if (!btn) return;
+                btn.disabled = !unlocked;
+                if (unlocked) {
+                    btn.className = 'mt-5 inline-flex items-center justify-center gap-2 font-bold py-3 px-7 rounded-full transition-all bg-violet-700 text-white hover:bg-violet-800 cursor-pointer shadow-lg hover:-translate-y-0.5';
+                    btn.querySelector('span[aria-hidden]').textContent = '🎓';
+                    if (btnLabel) btnLabel.textContent = 'Download your certificate';
+                } else {
+                    btn.className = 'mt-5 inline-flex items-center justify-center gap-2 font-bold py-3 px-7 rounded-full transition-all bg-gray-200 text-gray-400 cursor-not-allowed';
+                    btn.querySelector('span[aria-hidden]').textContent = '🔒';
+                    if (btnLabel) btnLabel.textContent = 'Complete all trainings to download';
+                }
+            }
+
             function apply(ids) {
                 var set = new Set(ids);
-                document.querySelectorAll('.ori-mod[data-module-id]').forEach(function (card) {
-                    if (set.has(card.getAttribute('data-module-id'))) {
+                cards.forEach(function (card) {
+                    var done = set.has(card.getAttribute('data-module-id'));
+                    if (done) {
                         card.setAttribute('data-completed', 'true');
-                        card.querySelectorAll('span').forEach(function (s) {
-                            if ((s.textContent || '').trim() === 'Start module') s.firstChild.textContent = 'Review ';
+                        var cta = card.querySelector('span.mt-auto');
+                        if (cta && cta.firstChild && /Start module/.test(cta.firstChild.textContent)) {
+                            cta.firstChild.textContent = 'Review ';
+                        }
+                    } else {
+                        card.removeAttribute('data-completed');
+                    }
+                });
+                var doneCount = ORI_IDS.filter(function (id) { return set.has(id); }).length;
+                setCertState(doneCount, ORI_IDS.length);
+            }
+
+            if (btn) {
+                btn.addEventListener('click', function () {
+                    if (!unlocked) return;
+                    if (window.AisaCertificate && typeof window.AisaCertificate.open === 'function') {
+                        window.AisaCertificate.open({
+                            title: 'AISA Onboarding — Asynchronous Training',
+                            hours: TOTAL_HOURS
                         });
+                    } else {
+                        alert('Certificate generator is still loading — please try again in a moment.');
                     }
                 });
             }
+
             function run(auth) {
                 if (!auth.isConfigured || !auth.isConfigured()) return;
                 var cached = auth.getCompletionsCached && auth.getCompletionsCached();
