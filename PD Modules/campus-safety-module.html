@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Campus Layout, Safety &amp; Security — New Staff Onboarding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: { primary: '#047857', secondary: '#059669', accent: '#10b981' },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .bg-dot-pattern {
+            background-color: #f0fdf4;
+            background-image: radial-gradient(#bbf7d0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .checkbox-custom:checked + div {
+            background-color: #10b981;
+            border-color: #10b981;
+            transform: scale(1.05);
+        }
+        .checkbox-custom:checked + div svg { display: block; }
+        .principle-card { transition: all 0.3s ease; }
+        .principle-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -6px rgba(0,0,0,0.12); }
+        .quiz-option { transition: all 0.2s ease; cursor: pointer; }
+        .quiz-option:hover { transform: scale(1.02); }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .timeline-container { position: relative; }
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            bottom: 2rem;
+            left: 1.25rem;
+            width: 2px;
+            background: #bbf7d0;
+            z-index: 0;
+        }
+        .ref-shot { box-shadow: 0 12px 30px -10px rgba(0,0,0,0.25); }
+        .zone-swatch { width: 1rem; height: 1rem; border-radius: 9999px; display: inline-block; flex-shrink: 0; border: 1px solid rgba(0,0,0,.15); }
+        .gate-table { border-collapse: separate; border-spacing: 0; }
+        .gate-table th, .gate-table td { padding: .6rem .75rem; text-align: left; font-size: .82rem; border-bottom: 1px solid #e5e7eb; }
+        .gate-table thead th { background: #ecfdf5; color: #065f46; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: .68rem; }
+        .gate-table tbody tr:last-child td { border-bottom: none; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #dcfce7; }
+        ::-webkit-scrollbar-thumb { background: #059669; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #047857; }
+    </style>
+    <link rel="stylesheet" href="../auth/training.css?v=5">
+    <script src="../auth/gate.js?v=14"></script>
+    <script src="../auth/training.js?v=5"></script>
+</head>
+<body class="bg-dot-pattern text-gray-800 min-h-screen">
+
+<!-- Main Content -->
+    <div class="max-w-5xl mx-auto px-4 lg:px-6 pt-8 pb-20">
+
+        <!-- Module Header -->
+        <div class="mb-8">
+            <div class="flex items-center gap-2 mb-3 flex-wrap">
+                <span class="inline-block bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full">New Module</span>
+                <span class="inline-block bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full">New-Staff Onboarding</span>
+                <span class="inline-block bg-red-50 text-red-700 border border-red-200 text-xs font-bold px-3 py-1 rounded-full">Health &amp; Safety</span>
+                <span class="inline-block bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1 rounded-full">Self-paced · ~20 min</span>
+            </div>
+            <h1 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">Campus Layout, Safety &amp; Security</h1>
+            <p class="text-emerald-700 font-medium mt-1">Know the campus, your safety responsibilities, and what to do in an emergency — AISA is a High-Risk Entity, so safety is shared by everyone</p>
+        </div>
+
+        <!-- Source / reference banner -->
+        <div class="mb-8 bg-white border border-emerald-200 rounded-2xl shadow-sm p-4 flex items-start gap-3">
+            <div class="bg-emerald-100 text-emerald-700 rounded-lg p-2 flex-shrink-0 text-xl">📎</div>
+            <div class="text-sm">
+                <p class="font-bold text-slate-800">Reference document</p>
+                <p class="text-gray-600">This module is built from the <em>School Layout and Overview</em> health &amp; safety briefing. You can
+                    <a href="async/School%20Layout%20and%20Overview.docx" target="_blank" rel="noopener noreferrer" class="text-emerald-700 font-semibold underline hover:text-emerald-900">download the original document (DOCX)</a>
+                    for the full detail.</p>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="bg-white/85 backdrop-blur-xl border border-emerald-200/80 rounded-2xl shadow-sm mb-10 p-4 flex items-center justify-between gap-4">
+            <span class="font-heading font-extrabold text-slate-900 text-base md:text-lg tracking-tight">Module Progress</span>
+            <div class="flex items-center space-x-4 bg-emerald-50 border border-emerald-200 px-4 py-2 rounded-xl">
+                <span id="progress-text" class="text-xs font-bold text-emerald-700 uppercase tracking-widest">0% Done</span>
+                <div class="w-32 md:w-48 h-3 bg-emerald-100 rounded-full overflow-hidden shadow-inner">
+                    <div id="progress-bar" class="h-full bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 w-0 transition-all duration-700 ease-out"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline-container">
+
+            <!-- Section 1: Campus Overview -->
+            <div class="relative pl-12 mb-16" data-chapter="1" data-chapter-title="Campus Overview">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-700 to-green-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-emerald-200">Section 1</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">The Campus at a Glance</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Before anything else, get oriented. The AISA campus has <strong>nine gates</strong> and a cluster of buildings and facilities. Knowing where things are — and which gate is which — makes everything from arrival to an emergency drill go smoothly.</p>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+                                <h4 class="font-bold text-emerald-900 mb-3 flex items-center gap-2"><span class="text-xl">🚪</span> Gates &amp; access points</h4>
+                                <div class="flex flex-wrap gap-2 text-xs">
+                                    <span class="bg-white border border-emerald-200 text-emerald-800 rounded-full px-3 py-1">Gate&nbsp;01</span>
+                                    <span class="bg-white border border-emerald-200 text-emerald-800 rounded-full px-3 py-1">Gate&nbsp;02</span>
+                                    <span class="bg-white border border-emerald-200 text-emerald-800 rounded-full px-3 py-1">Gate&nbsp;03</span>
+                                    <span class="bg-white border border-emerald-200 text-emerald-800 rounded-full px-3 py-1">Gate&nbsp;3A</span>
+                                    <span class="bg-white border border-emerald-200 text-emerald-800 rounded-full px-3 py-1">Gate&nbsp;04</span>
+                                    <span class="bg-white border border-emerald-200 text-emerald-800 rounded-full px-3 py-1">Gate&nbsp;05</span>
+                                    <span class="bg-white border border-emerald-200 text-emerald-800 rounded-full px-3 py-1">Gate&nbsp;5A</span>
+                                    <span class="bg-white border border-emerald-200 text-emerald-800 rounded-full px-3 py-1">Gate&nbsp;06</span>
+                                    <span class="bg-white border border-emerald-200 text-emerald-800 rounded-full px-3 py-1">Gate&nbsp;07</span>
+                                </div>
+                                <p class="text-xs text-emerald-700 mt-3">We'll cover which gates are used for what — and their speed limits — in Section 5.</p>
+                            </div>
+                            <div class="bg-green-50 border border-green-200 rounded-xl p-5">
+                                <h4 class="font-bold text-green-900 mb-3 flex items-center gap-2"><span class="text-xl">🏫</span> Buildings &amp; facilities</h4>
+                                <ul class="text-sm text-green-900 space-y-1.5">
+                                    <li class="flex items-start"><span class="text-green-600 mr-2">•</span> Main Building — Elementary, Middle School, High School &amp; administration</li>
+                                    <li class="flex items-start"><span class="text-green-600 mr-2">•</span> Grade 5 building · KG building</li>
+                                    <li class="flex items-start"><span class="text-green-600 mr-2">•</span> HS gym · Elementary gym · swimming pool · football pitch · play areas</li>
+                                    <li class="flex items-start"><span class="text-green-600 mr-2">•</span> Canteen · Art room · Transportation &amp; Uniform store</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Risk Classification -->
+            <div class="relative pl-12 mb-16" data-chapter="2" data-chapter-title="High-Risk Entity">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-amber-600 to-orange-600 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Section 2 · Important</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">AISA Is a High-Risk Entity — Safety Is Shared</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Abu Dhabi classifies schools as either <strong>High-Risk</strong> or <strong>Medium-Risk</strong> entities. The classification is based on:</p>
+                        <div class="grid sm:grid-cols-2 gap-2 text-sm">
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-gray-700">Nature &amp; complexity of operations (tasks/activities)</div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-gray-700">Number of employees (excluding contractors)</div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-gray-700">Maximum number of other persons (students &amp; contractors)</div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-gray-700">Use / handling of hazardous materials &amp; wastes</div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-gray-700">Complexity of buildings &amp; associated structures</div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 text-gray-700">Entity land area &amp; number of locations</div>
+                        </div>
+
+                        <div class="bg-amber-50 border-l-4 border-amber-500 rounded-r-xl p-5">
+                            <h4 class="font-bold text-amber-900 mb-2 flex items-center gap-2"><span class="text-lg">🛡️</span> What this means for you</h4>
+                            <p class="text-sm text-amber-900 leading-relaxed mb-2"><strong>AISA is classified as High-Risk.</strong> Being a High-Risk Entity means health and safety is a <strong>shared responsibility</strong> between all staff, students, contractors, and even visitors.</p>
+                            <p class="text-sm text-amber-900 leading-relaxed">During audits, the audit team may approach you to check that you're <strong>aware of your school's High-Risk status</strong>. Now you are.</p>
+                        </div>
+
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+                            <h4 class="font-bold text-emerald-900 mb-2 flex items-center gap-2"><span class="text-lg">📣</span> How OSH responsibilities reach you</h4>
+                            <p class="text-sm text-emerald-900 mb-3">Every employee is responsible for working safely, following procedures, and reporting hazards. HR communicates Occupational Safety &amp; Health (OSH) roles, responsibilities and accountabilities through three channels:</p>
+                            <div class="flex flex-wrap gap-2 text-xs">
+                                <span class="bg-white border border-emerald-200 text-emerald-800 rounded-full px-3 py-1">📅 Meetings</span>
+                                <span class="bg-white border border-emerald-200 text-emerald-800 rounded-full px-3 py-1">📄 Job description</span>
+                                <span class="bg-white border border-emerald-200 text-emerald-800 rounded-full px-3 py-1">✉️ E-mail</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Security & ID -->
+            <div class="relative pl-12 mb-16" data-chapter="3" data-chapter-title="Security &amp; ID">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-green-700 to-emerald-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-green-200">Section 3</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Security Arrangements &amp; Identification</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-5">
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5 flex items-start gap-3">
+                            <span class="text-2xl">🪪</span>
+                            <div>
+                                <h4 class="font-bold text-emerald-900 mb-1">Visible identification</h4>
+                                <p class="text-sm text-emerald-900">All staff must wear their <strong>AISA ID badge visibly at all times</strong> while on campus.</p>
+                            </div>
+                        </div>
+                        <div class="bg-green-50 border border-green-200 rounded-xl p-5 flex items-start gap-3">
+                            <span class="text-2xl">🧍</span>
+                            <div>
+                                <h4 class="font-bold text-green-900 mb-1">Visitor &amp; contractor control</h4>
+                                <p class="text-sm text-green-900">All visitors, parents and external contractors must enter through designated security checkpoints (such as <strong>Gate 4</strong>), <strong>register</strong>, present a valid <strong>Emirates ID</strong>, and wear a <strong>colour-coded visitor lanyard</strong> while on site.</p>
+                            </div>
+                        </div>
+                        <div class="bg-teal-50 border border-teal-200 rounded-xl p-5 flex items-start gap-3">
+                            <span class="text-2xl">📹</span>
+                            <div>
+                                <h4 class="font-bold text-teal-900 mb-1">Campus monitoring</h4>
+                                <p class="text-sm text-teal-900">The campus is monitored <strong>24/7 by CCTV cameras and on-site guard patrols</strong>, in compliance with Abu Dhabi safety regulations.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Check 1 -->
+            <div class="relative pl-12 mb-16" data-chapter="4" data-chapter-title="Knowledge Check 1">
+                <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center shadow-md">
+                    <span class="text-white font-bold text-sm">?</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-emerald-200 overflow-hidden aisa-quiz" id="quiz-1">
+                    <div class="bg-gradient-to-r from-emerald-500 to-green-500 p-5 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-emerald-100">Knowledge Check 1</span>
+                        <h3 class="text-lg font-heading font-bold mt-1">Risk Status &amp; Security</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="font-semibold text-gray-800 mb-4">An auditor stops you in a corridor and asks about your school's safety status. What is the correct, accurate response?</p>
+                        <div class="space-y-3">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
+                                <span class="text-sm text-gray-700">"Safety is handled entirely by the security team, not teaching staff."</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
+                                <span class="text-sm text-gray-700">"AISA is a High-Risk Entity, so health and safety is a shared responsibility across all staff, students, contractors and visitors."</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
+                                <span class="text-sm text-gray-700">"AISA is a Medium-Risk Entity, so the rules are lighter."</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
+                                <span class="text-sm text-gray-700">"I'm not sure — risk classification isn't something staff need to know."</span>
+                            </div>
+                        </div>
+                        <div id="quiz-1-feedback" class="aisa-quiz-feedback mt-4"
+                             data-correct-msg="<strong>Correct.</strong> AISA is a High-Risk Entity, which makes health and safety a shared responsibility for everyone on campus — and auditors may check that you know this."
+                             data-wrong-msg="<strong>Not quite.</strong> AISA is a High-Risk Entity, so health and safety is shared across all staff, students, contractors and visitors — and auditors may check you're aware of it."></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: Traffic & Parking -->
+            <div class="relative pl-12 mb-16" data-chapter="5" data-chapter-title="Traffic &amp; Parking">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-teal-700 to-emerald-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-teal-200">Section 5</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Traffic Management, Parking Zones &amp; Gate Timings</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Arrival and dismissal are the busiest, highest-risk moments of the day. Parking is colour-coded into four zones, and each gate has a defined use, time window and speed limit.</p>
+
+                        <!-- Parking zones -->
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2"><span class="text-lg">🅿️</span> The four parking zones</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                                <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2"><span class="zone-swatch" style="background:#22c55e"></span><span class="text-gray-700"><strong>Green</strong> — Parents</span></div>
+                                <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2"><span class="zone-swatch" style="background:#ef4444"></span><span class="text-gray-700"><strong>Red</strong> — Staff</span></div>
+                                <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2"><span class="zone-swatch" style="background:#eab308"></span><span class="text-gray-700"><strong>Yellow</strong> — Buses</span></div>
+                                <div class="flex items-center gap-2 bg-white border border-slate-200 rounded-lg px-3 py-2"><span class="zone-swatch" style="background:#a855f7"></span><span class="text-gray-700"><strong>Purple</strong> — Overflow</span></div>
+                            </div>
+                        </div>
+
+                        <figure class="rounded-xl overflow-hidden border border-emerald-200">
+                            <img src="async_campus_map.png" alt="Aerial view of the AISA campus with parking allocation overlaid: green zones for parents along the top road, a red zone for staff near the football pitch, yellow zones for buses, and a purple overflow zone on the far left." class="w-full ref-shot" loading="lazy">
+                            <figcaption class="text-xs text-gray-500 bg-emerald-50 px-4 py-2 border-t border-emerald-100"><strong>Campus parking map.</strong> Green = parents, red = staff, yellow = buses, purple = overflow.</figcaption>
+                        </figure>
+
+                        <!-- Drop-off / pick-up flow -->
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-amber-50 border border-amber-200 rounded-xl p-5">
+                                <h4 class="font-bold text-amber-900 mb-2 flex items-center gap-2"><span class="text-lg">🌅</span> Morning drop-off · 7:25–8:00 AM</h4>
+                                <ul class="text-sm text-amber-900 space-y-2">
+                                    <li><strong>Buses</strong> use the Bus Loop / Yellow Zone, drop at the curb and exit immediately. No parents in the Bus Loop.</li>
+                                    <li><strong>Parents</strong> use the Parent Lane / Green Zone as a one-way <em>Kiss-and-Go</em> — drop curb-side, don't park or exit the car, then move on.</li>
+                                    <li><strong>Staff/visitors</strong> use Staff Parking / Red Zone; visitors check in at the main gate first.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-teal-50 border border-teal-200 rounded-xl p-5">
+                                <h4 class="font-bold text-teal-900 mb-2 flex items-center gap-2"><span class="text-lg">🌆</span> Afternoon pick-up · 2:50–3:10 PM</h4>
+                                <ul class="text-sm text-teal-900 space-y-2">
+                                    <li><strong>Buses</strong> load at the Yellow Zone and depart strictly on schedule; missed-bus students go to a safe waiting area.</li>
+                                    <li><strong>Parents</strong> queue in the Green Zone; staff escort students to the car. No student crosses the Parent Lane unattended — slow loads go to Overflow / Purple parking.</li>
+                                    <li><strong>Pedestrians</strong> exit only through supervised pedestrian gates and walkways.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Gate timings table -->
+                        <div class="overflow-x-auto rounded-xl border border-gray-200">
+                            <table class="gate-table w-full bg-white">
+                                <thead>
+                                    <tr><th>Area</th><th>Gate / Location</th><th>Time window</th><th>Users</th><th>Speed limit</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>🏗️ Main entrance</td><td>Gate 4</td><td>All day</td><td>Faculty</td><td>Walking only</td></tr>
+                                    <tr><td>🚌 Bus loop</td><td>Gate 2</td><td>7:25–8:00 AM · 2:50–3:10 PM</td><td>School buses only</td><td>10 km/h</td></tr>
+                                    <tr><td>🚗 Parent drop-off</td><td>Gate 4, Gate 3 / 3A, Gate 5</td><td>7:25–8:00 AM · 2:50–3:10 PM</td><td>Parents + Cycle 3 students</td><td>15 km/h</td></tr>
+                                    <tr><td>🚙 Staff parking</td><td>Gate 5</td><td>All day</td><td>Faculty / staff only</td><td>20 km/h</td></tr>
+                                    <tr><td>🚶 Pedestrian path</td><td>Campus perimeter</td><td>All day</td><td>All students</td><td>Walking only</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 6: General Safety -->
+            <div class="relative pl-12 mb-16" data-chapter="6" data-chapter-title="General Safety">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-green-700 to-teal-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-green-200">Section 6</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">General Safety in Your Classroom &amp; Corridors</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-5">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="principle-card bg-gradient-to-br from-emerald-50 to-white border border-emerald-100 rounded-xl p-5">
+                                <h4 class="font-bold text-emerald-900 mb-1 flex items-center gap-2"><span class="text-lg">🚪</span> Housekeeping</h4>
+                                <p class="text-sm text-gray-600">Corridors, stairwells and fire-exit doors must remain <strong>completely unobstructed</strong> at all times.</p>
+                            </div>
+                            <div class="principle-card bg-gradient-to-br from-amber-50 to-white border border-amber-100 rounded-xl p-5">
+                                <h4 class="font-bold text-amber-900 mb-1 flex items-center gap-2"><span class="text-lg">⚠️</span> Trip &amp; fall prevention</h4>
+                                <p class="text-sm text-gray-600">Report trailing cables, loose mats or damaged flooring immediately. Wet areas during cleaning must be marked with <strong>yellow warning signs</strong>.</p>
+                            </div>
+                            <div class="principle-card bg-gradient-to-br from-rose-50 to-white border border-rose-100 rounded-xl p-5">
+                                <h4 class="font-bold text-rose-900 mb-1 flex items-center gap-2"><span class="text-lg">🪜</span> Working at height</h4>
+                                <p class="text-sm text-gray-600"><strong>Never</strong> stand on student desks, chairs or spinning office chairs to hang decorations. Use an approved step ladder or log a request with maintenance.</p>
+                            </div>
+                            <div class="principle-card bg-gradient-to-br from-sky-50 to-white border border-sky-100 rounded-xl p-5">
+                                <h4 class="font-bold text-sky-900 mb-1 flex items-center gap-2"><span class="text-lg">🔌</span> Electrical &amp; chemical</h4>
+                                <p class="text-sm text-gray-600">Use electrical equipment safely and report damaged items. Where applicable, handle, store and dispose of hazardous substances safely.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-emerald-50 border-l-4 border-emerald-500 rounded-r-xl p-5">
+                            <h4 class="font-bold text-emerald-900 mb-1 flex items-center gap-2"><span class="text-lg">🛠️</span> Work order requests</h4>
+                            <p class="text-sm text-emerald-900">Submit all maintenance, repair, furniture setup, moving and facilities requests through the <strong>Workflow Work Order Request Form</strong> so they're tracked, assigned and completed on time. Avoid verbal-only requests unless it's an emergency.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 7: Emergency Procedures -->
+            <div class="relative pl-12 mb-16" data-chapter="7" data-chapter-title="Emergency Procedures">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-rose-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-rose-600 to-red-600 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-rose-100">Section 7 · Critical</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Emergency Procedures — Fire, Evacuation &amp; Lockdown</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="bg-rose-50 border border-rose-200 rounded-xl p-5">
+                            <h4 class="font-bold text-rose-900 mb-2 flex items-center gap-2"><span class="text-lg">🔥</span> Fire detection &amp; extinguishers</h4>
+                            <p class="text-sm text-rose-900 mb-3">Campus facilities are monitored by automated fire alarms connected directly to Abu Dhabi Civil Defence via the <strong>Hassantuk</strong> framework. Only use a fire extinguisher if <strong>all four</strong> are true:</p>
+                            <div class="grid grid-cols-2 gap-2 text-xs">
+                                <span class="bg-white border border-rose-200 text-rose-800 rounded-lg px-3 py-2">✔ You're trained to do so</span>
+                                <span class="bg-white border border-rose-200 text-rose-800 rounded-lg px-3 py-2">✔ You know the classification</span>
+                                <span class="bg-white border border-rose-200 text-rose-800 rounded-lg px-3 py-2">✔ It is not spreading rapidly</span>
+                                <span class="bg-white border border-rose-200 text-rose-800 rounded-lg px-3 py-2">✔ You have a clear escape path</span>
+                            </div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-orange-50 border border-orange-200 rounded-xl p-5">
+                                <h4 class="font-bold text-orange-900 mb-2 flex items-center gap-2"><span class="text-lg">🚨</span> Evacuation (continuous siren)</h4>
+                                <ul class="text-sm text-orange-900 space-y-1.5">
+                                    <li class="flex items-start"><span class="text-orange-600 mr-2">1.</span> Cease instruction immediately; students <strong>leave bags behind</strong>.</li>
+                                    <li class="flex items-start"><span class="text-orange-600 mr-2">2.</span> Guide the class calmly along the route on the evacuation map.</li>
+                                    <li class="flex items-start"><span class="text-orange-600 mr-2">3.</span> Go to your assigned assembly zone — e.g. the <strong>Football Pitch</strong>.</li>
+                                    <li class="flex items-start"><span class="text-orange-600 mr-2">4.</span> Take a headcount against your roster; signal your sector marshal with status cards — <strong>Green</strong> (all present) or <strong>Red</strong> (missing or extra students).</li>
+                                </ul>
+                            </div>
+                            <div class="bg-slate-100 border border-slate-300 rounded-xl p-5">
+                                <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-2"><span class="text-lg">🔒</span> Lockdown (PA announcement)</h4>
+                                <p class="text-sm text-slate-700 mb-2">For an external campus threat, a lockdown directive is broadcast over the PA. Immediately:</p>
+                                <ul class="text-sm text-slate-700 space-y-1.5">
+                                    <li class="flex items-start"><span class="text-slate-500 mr-2">•</span> Pull students in from corridors</li>
+                                    <li class="flex items-start"><span class="text-slate-500 mr-2">•</span> Lock doors, close blinds, turn off lights</li>
+                                    <li class="flex items-start"><span class="text-slate-500 mr-2">•</span> Have students sit quietly out of sight-lines</li>
+                                    <li class="flex items-start"><span class="text-slate-500 mr-2">•</span> Wait for the official <strong>"All Clear"</strong> announcement</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Check 2 -->
+            <div class="relative pl-12 mb-16" data-chapter="8" data-chapter-title="Knowledge Check 2">
+                <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center shadow-md">
+                    <span class="text-white font-bold text-sm">?</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-emerald-200 overflow-hidden aisa-quiz" id="quiz-2">
+                    <div class="bg-gradient-to-r from-emerald-500 to-green-500 p-5 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-emerald-100">Knowledge Check 2</span>
+                        <h3 class="text-lg font-heading font-bold mt-1">Emergency Response</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="font-semibold text-gray-800 mb-4">A continuous fire-alarm siren sounds mid-lesson. What is the correct sequence?</p>
+                        <div class="space-y-3">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
+                                <span class="text-sm text-gray-700">Let students collect their bags, then find the nearest fire extinguisher and tackle the fire.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
+                                <span class="text-sm text-gray-700">Stop teaching, have students leave bags, guide them along the evacuation route to the assembly point, then take a headcount and signal with the Green/Red status cards.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
+                                <span class="text-sm text-gray-700">Lock the door, close the blinds and keep students sitting quietly out of sight.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
+                                <span class="text-sm text-gray-700">Wait in the classroom for a second announcement before doing anything.</span>
+                            </div>
+                        </div>
+                        <div id="quiz-2-feedback" class="aisa-quiz-feedback mt-4"
+                             data-correct-msg="<strong>Correct.</strong> Evacuate — bags left behind — along the mapped route to the assembly point, then headcount against your roster and signal with the Green/Red status cards. (Locking down is the response to a PA lockdown directive, not a fire siren.)"
+                             data-wrong-msg="<strong>Not quite.</strong> A continuous siren means evacuate: stop teaching, students leave bags, follow the route to the assembly point, then headcount and signal with the Green/Red cards. Locking doors and blinds is the lockdown response to a PA directive — a different scenario."></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 8: First Aid & Quick Reference -->
+            <div class="relative pl-12 mb-16" data-chapter="9" data-chapter-title="First Aid &amp; Quick Reference">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-emerald-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-700 to-green-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-emerald-200">Section 8</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">First Aid, Medical &amp; Quick Reference</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+                                <h4 class="font-bold text-emerald-900 mb-2 flex items-center gap-2"><span class="text-lg">🏥</span> School clinic</h4>
+                                <p class="text-sm text-emerald-900">The campus has a fully equipped clinic staffed by <strong>licensed Department of Health (DoH) medical professionals</strong>.</p>
+                            </div>
+                            <div class="bg-green-50 border border-green-200 rounded-xl p-5">
+                                <h4 class="font-bold text-green-900 mb-2 flex items-center gap-2"><span class="text-lg">🧰</span> Where to find first-aid kits</h4>
+                                <ul class="text-sm text-green-900 space-y-1">
+                                    <li class="flex items-start"><span class="text-green-600 mr-2">•</span> Every building and floor</li>
+                                    <li class="flex items-start"><span class="text-green-600 mr-2">•</span> Every school bus</li>
+                                    <li class="flex items-start"><span class="text-green-600 mr-2">•</span> The clinic</li>
+                                    <li class="flex items-start"><span class="text-green-600 mr-2">•</span> The swimming pool</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h4 class="font-bold text-slate-800 mb-3">Five things to remember</h4>
+                            <div class="grid sm:grid-cols-2 gap-2 text-sm">
+                                <div class="flex items-start gap-2 text-gray-700"><span class="text-emerald-500">✔</span> Wear your AISA ID badge visibly, always.</div>
+                                <div class="flex items-start gap-2 text-gray-700"><span class="text-emerald-500">✔</span> Keep corridors, stairwells and fire exits clear.</div>
+                                <div class="flex items-start gap-2 text-gray-700"><span class="text-emerald-500">✔</span> Never stand on furniture — use a step ladder or log a work order.</div>
+                                <div class="flex items-start gap-2 text-gray-700"><span class="text-emerald-500">✔</span> Continuous siren → evacuate to the assembly point &amp; headcount.</div>
+                                <div class="flex items-start gap-2 text-gray-700"><span class="text-emerald-500">✔</span> PA lockdown → doors locked, blinds closed, out of sight, await All Clear.</div>
+                                <div class="flex items-start gap-2 text-gray-700"><span class="text-emerald-500">✔</span> Report hazards immediately — safety is shared.</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span class="text-lg">📎</span> Keep for reference</h4>
+                            <p class="text-sm text-gray-700"><a href="async/School%20Layout%20and%20Overview.docx" target="_blank" rel="noopener noreferrer" class="text-emerald-700 font-semibold underline hover:text-emerald-900">Download the full School Layout &amp; Overview document (DOCX)</a>, and make sure you've located the evacuation map and assembly point nearest your classroom.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end timeline -->
+
+        <!-- Completion Banner -->
+        <div id="completion-banner" data-cert-title="Campus Layout, Safety &amp; Security — New-Staff Onboarding" data-cert-hours="1" class="hidden bg-gradient-to-r from-emerald-600 via-green-600 to-teal-600 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
+            <span class="text-5xl mb-4 block">🎉</span>
+            <h3 class="text-2xl font-heading font-black mb-2">Module Complete!</h3>
+            <p class="text-emerald-100 max-w-lg mx-auto">You know the campus, your safety responsibilities, and the emergency procedures. As a reminder — AISA is a High-Risk Entity, so safety is everyone's job. Now go find the evacuation route nearest your room.</p>
+        </div>
+
+        <!-- Return Button -->
+        <div class="text-center pb-10">
+            <button onclick="window.location.href='pd.html'" class="bg-emerald-700 text-white py-3 px-8 rounded-full hover:bg-emerald-800 transition-colors shadow-lg font-semibold">
+                Return to Modules
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-emerald-900 text-emerald-200 py-10">
+        <div class="container mx-auto px-6 text-center">
+            <p class="font-bold text-white mb-1 font-heading">AISA — American International School in Abu Dhabi</p>
+            <p class="text-sm text-emerald-300">New-Staff Onboarding | Campus Layout, Safety &amp; Security · Health &amp; Safety</p>
+            <p class="text-xs text-emerald-400 mt-4">Always follow the live instructions of marshals, security and Civil Defence during a real emergency.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Progress Tracking ---
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.module-checkbox');
+            const total = checkboxes.length;
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const pct = total === 0 ? 0 : Math.round((checked / total) * 100);
+
+            document.getElementById('progress-bar').style.width = pct + '%';
+            document.getElementById('progress-text').textContent = pct + '% Done';
+
+            if (pct === 100) {
+                document.getElementById('completion-banner').classList.remove('hidden');
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                }
+            } else {
+                document.getElementById('completion-banner').classList.add('hidden');
+            }
+        }
+
+        // --- AISA backend: record completion + rehydrate on revisit ---
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                auth.wireModule({
+                    moduleId: 'campus-safety',
+                    checkboxSelector: '.module-checkbox',
+                    refreshUI: updateProgress
+                });
+            });
+        }
+
+        // --- Training framework: convert to chapter-by-chapter wizard ---
+        if (window.AisaTraining) {
+            document.addEventListener('DOMContentLoaded', function () {
+                window.AisaTraining.init({ moduleId: 'campus-safety' });
+            });
+        }
+    </script>
+
+</body>
+</html>

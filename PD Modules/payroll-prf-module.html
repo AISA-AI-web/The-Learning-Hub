@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Payroll &amp; Purchase Requisitions — New Staff Onboarding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: { primary: '#b45309', secondary: '#d97706', accent: '#f59e0b' },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .bg-dot-pattern {
+            background-color: #fffbeb;
+            background-image: radial-gradient(#fde68a 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .checkbox-custom:checked + div {
+            background-color: #10b981;
+            border-color: #10b981;
+            transform: scale(1.05);
+        }
+        .checkbox-custom:checked + div svg { display: block; }
+        .principle-card { transition: all 0.3s ease; }
+        .principle-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -6px rgba(0,0,0,0.12); }
+        .quiz-option { transition: all 0.2s ease; cursor: pointer; }
+        .quiz-option:hover { transform: scale(1.02); }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .timeline-container { position: relative; }
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            bottom: 2rem;
+            left: 1.25rem;
+            width: 2px;
+            background: #fde68a;
+            z-index: 0;
+        }
+        .ref-shot { box-shadow: 0 12px 30px -10px rgba(0,0,0,0.25); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #fef3c7; }
+        ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #b45309; }
+    </style>
+    <link rel="stylesheet" href="../auth/training.css?v=5">
+    <script src="../auth/gate.js?v=14"></script>
+    <script src="../auth/training.js?v=5"></script>
+</head>
+<body class="bg-dot-pattern text-gray-800 min-h-screen">
+
+<!-- Main Content -->
+    <div class="max-w-5xl mx-auto px-4 lg:px-6 pt-8 pb-20">
+
+        <!-- Module Header -->
+        <div class="mb-8">
+            <div class="flex items-center gap-2 mb-3 flex-wrap">
+                <span class="inline-block bg-amber-100 text-amber-800 text-xs font-bold px-3 py-1 rounded-full">New Module</span>
+                <span class="inline-block bg-orange-100 text-orange-800 text-xs font-bold px-3 py-1 rounded-full">New-Staff Onboarding</span>
+                <span class="inline-block bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1 rounded-full">Self-paced · ~15 min</span>
+            </div>
+            <h1 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">Payroll &amp; Purchase Requisitions</h1>
+            <p class="text-amber-700 font-medium mt-1">How you get paid at AISA, and how to claim or request a purchase — straight from the Accounts Office</p>
+        </div>
+
+        <!-- Source / reference banner -->
+        <div class="mb-8 bg-white border border-amber-200 rounded-2xl shadow-sm p-4 flex items-start gap-3">
+            <div class="bg-amber-100 text-amber-700 rounded-lg p-2 flex-shrink-0 text-xl">📎</div>
+            <div class="text-sm">
+                <p class="font-bold text-slate-800">Reference presentation</p>
+                <p class="text-gray-600">This module is built from the Accounts Office's <em>New Teacher Orientation (AY26&#8211;27)</em> break-out session. You can
+                    <a href="async/New%20Teacher%20Orientation%20(AY26-27).pptx.pdf" target="_blank" rel="noopener noreferrer" class="text-amber-700 font-semibold underline hover:text-amber-900">open the original slide deck (PDF)</a>
+                    for the full annex forms and timing tables.</p>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="bg-white/85 backdrop-blur-xl border border-amber-200/80 rounded-2xl shadow-sm mb-10 p-4 flex items-center justify-between gap-4">
+            <span class="font-heading font-extrabold text-slate-900 text-base md:text-lg tracking-tight">Module Progress</span>
+            <div class="flex items-center space-x-4 bg-amber-50 border border-amber-200 px-4 py-2 rounded-xl">
+                <span id="progress-text" class="text-xs font-bold text-amber-700 uppercase tracking-widest">0% Done</span>
+                <div class="w-32 md:w-48 h-3 bg-amber-100 rounded-full overflow-hidden shadow-inner">
+                    <div id="progress-bar" class="h-full bg-gradient-to-r from-amber-500 via-yellow-500 to-orange-500 w-0 transition-all duration-700 ease-out"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline-container">
+
+            <!-- Section 1: Overview -->
+            <div class="relative pl-12 mb-16" data-chapter="1" data-chapter-title="What This Covers">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-amber-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-amber-700 to-orange-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-200">Section 1</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Two Things Every New Staff Member Needs to Know</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Welcome to AISA. This short module covers the two Accounts Office processes that affect you from your very first month: how your <strong class="text-amber-800">payroll</strong> works, and how to use a <strong class="text-amber-800">Purchase Requisition Form</strong> when the school buys something for you or reimburses what you've paid.</p>
+
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div class="bg-amber-50 border border-amber-200 rounded-xl p-5">
+                                <h4 class="font-bold text-amber-900 mb-3 flex items-center gap-2"><span class="text-xl">💵</span> Payroll Activities</h4>
+                                <ul class="text-sm text-amber-900 space-y-1.5">
+                                    <li class="flex items-start"><span class="text-amber-600 mr-2">•</span> Submitting your bank account details</li>
+                                    <li class="flex items-start"><span class="text-amber-600 mr-2">•</span> How and when salaries are processed and paid</li>
+                                    <li class="flex items-start"><span class="text-amber-600 mr-2">•</span> Reading your monthly pay slip</li>
+                                </ul>
+                            </div>
+                            <div class="bg-orange-50 border border-orange-200 rounded-xl p-5">
+                                <h4 class="font-bold text-orange-900 mb-3 flex items-center gap-2"><span class="text-xl">🧾</span> Purchase Requisition Form</h4>
+                                <ul class="text-sm text-orange-900 space-y-1.5">
+                                    <li class="flex items-start"><span class="text-orange-600 mr-2">•</span> What a PRF is and who signs it</li>
+                                    <li class="flex items-start"><span class="text-orange-600 mr-2">•</span> What to attach for a direct supplier payment</li>
+                                    <li class="flex items-start"><span class="text-orange-600 mr-2">•</span> What to attach to be reimbursed through payroll</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6">
+                            <div class="flex items-start gap-3">
+                                <div class="bg-amber-100 p-2 rounded-lg flex-shrink-0"><span class="text-xl">🏛️</span></div>
+                                <div>
+                                    <h4 class="font-bold text-amber-900 mb-2">Where this comes from</h4>
+                                    <p class="text-amber-800 text-sm leading-relaxed">Both processes are run by the <strong>AISA Accounts Office</strong>. Everything in this module reflects the orientation given to new staff — including the official forms (Annexes A, B and C) you'll see on the next screens.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Payroll Basics -->
+            <div class="relative pl-12 mb-16" data-chapter="2" data-chapter-title="Payroll Basics">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-amber-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-orange-700 to-amber-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-orange-200">Section 2</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Payroll Basics — Definition &amp; the Three Activities</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="bg-amber-50 border-l-4 border-amber-500 rounded-r-xl p-5">
+                            <h4 class="font-bold text-amber-900 mb-2 flex items-center gap-2"><span class="text-lg">📖</span> What "payroll" means</h4>
+                            <p class="text-sm text-amber-900 leading-relaxed">Payroll is the <strong>net amount of money paid on a monthly basis</strong> to an employee for their earned salaries, allowances, stipends, reimbursements and deductions. As a function, it is the process by which employees receive their salary.</p>
+                        </div>
+
+                        <p class="text-gray-700 leading-relaxed">For you, payroll breaks down into <strong>three operating activities</strong>:</p>
+
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="principle-card bg-gradient-to-br from-amber-50 to-white border border-amber-200 rounded-xl p-5">
+                                <div class="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center text-xl mb-3">🏦</div>
+                                <span class="text-xs font-bold text-amber-500 uppercase tracking-wider">One-time</span>
+                                <h4 class="font-bold text-amber-900 mt-1">1. Submit bank account details</h4>
+                                <p class="text-sm text-gray-600 leading-relaxed mt-1">Done once, as soon as possible after you join.</p>
+                            </div>
+                            <div class="principle-card bg-gradient-to-br from-orange-50 to-white border border-orange-200 rounded-xl p-5">
+                                <div class="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center text-xl mb-3">⚙️</div>
+                                <span class="text-xs font-bold text-orange-500 uppercase tracking-wider">Monthly</span>
+                                <h4 class="font-bold text-orange-900 mt-1">2. Processing &amp; payment</h4>
+                                <p class="text-sm text-gray-600 leading-relaxed mt-1">Your salary is calculated and transferred each month.</p>
+                            </div>
+                            <div class="principle-card bg-gradient-to-br from-yellow-50 to-white border border-yellow-200 rounded-xl p-5">
+                                <div class="w-10 h-10 rounded-lg bg-yellow-100 flex items-center justify-center text-xl mb-3">📨</div>
+                                <span class="text-xs font-bold text-yellow-600 uppercase tracking-wider">Monthly</span>
+                                <h4 class="font-bold text-yellow-800 mt-1">3. Pay slip distribution</h4>
+                                <p class="text-sm text-gray-600 leading-relaxed mt-1">Your pay slip is emailed to you after each pay month.</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 leading-relaxed text-sm">We'll walk through each of these in turn. The only one that needs action from you up front is the first.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Bank Account Details -->
+            <div class="relative pl-12 mb-16" data-chapter="3" data-chapter-title="Submit Bank Details">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-amber-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-amber-600 to-yellow-600 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Section 3 &middot; Your First Action</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Step 1: Submit Your Bank Account Details</h3>
+                        <p class="text-amber-100 text-sm mt-1">A one-time task — do this as soon as possible so your salary can be paid.</p>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="grid sm:grid-cols-2 gap-4">
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Who</p>
+                                <p class="text-sm text-gray-700 mt-1">Completed by <strong>you</strong>, the employee.</p>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">When</p>
+                                <p class="text-sm text-gray-700 mt-1">As soon as possible after joining.</p>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Where</p>
+                                <p class="text-sm text-gray-700 mt-1">To the <strong>HR / Accounts Office</strong>, using the <em>AISA Bank Account Form</em> (Annex A).</p>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">How</p>
+                                <p class="text-sm text-gray-700 mt-1">Submit the completed Bank Account Form to the HR Office.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-amber-50 border-l-4 border-amber-500 rounded-r-xl p-5">
+                            <h4 class="font-bold text-amber-900 mb-2 flex items-center gap-2"><span class="text-lg">⚖️</span> Why it's required</h4>
+                            <p class="text-sm text-amber-900 leading-relaxed">UAE law requires it. Under the Ministry of Human Resources &amp; Emiratisation (MoHRE) <strong>Wages Protection System (WPS)</strong>, salaries must be paid in <strong>dirhams</strong> and transferred to your <strong>UAE bank account</strong>. No valid local account on file means your salary can't be processed.</p>
+                        </div>
+
+                        <div class="bg-white border border-gray-200 rounded-xl p-5">
+                            <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2"><span class="text-lg">🏦</span> What the bank needs to open your account</h4>
+                            <div class="grid sm:grid-cols-3 gap-3 text-sm">
+                                <div class="bg-amber-50 rounded-lg p-3 text-amber-900"><span class="font-bold">1.</span> Bank form(s) for opening the account</div>
+                                <div class="bg-amber-50 rounded-lg p-3 text-amber-900"><span class="font-bold">2.</span> Emirates ID</div>
+                                <div class="bg-amber-50 rounded-lg p-3 text-amber-900"><span class="font-bold">3.</span> Mobile phone number</div>
+                            </div>
+                        </div>
+
+                        <figure class="rounded-xl overflow-hidden border border-amber-200">
+                            <img src="async_payroll_bank_form.png" alt="Annex A — AISA Bank Account Form, addressed to the School Director, with fields for account number, account name, bank name, IBAN, routing number and bank address." class="w-full ref-shot" loading="lazy">
+                            <figcaption class="text-xs text-gray-500 bg-amber-50 px-4 py-2 border-t border-amber-100"><strong>Annex A — Bank Account Form.</strong> Fill in your account number, account name, bank name, IBAN, routing number and bank address, then sign and return it to HR.</figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Check 1 -->
+            <div class="relative pl-12 mb-16" data-chapter="4" data-chapter-title="Knowledge Check 1">
+                <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
+                    <span class="text-white font-bold text-sm">?</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden aisa-quiz" id="quiz-1">
+                    <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 1</span>
+                        <h3 class="text-lg font-heading font-bold mt-1">Getting Paid</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="font-semibold text-gray-800 mb-4">A new teacher hasn't submitted their AISA Bank Account Form yet but expects their first salary at the end of the month. What's the correct understanding?</p>
+                        <div class="space-y-3">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
+                                <span class="text-sm text-gray-700">Salary can be paid in cash until the form is submitted.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
+                                <span class="text-sm text-gray-700">Salaries are paid through the WPS to a UAE bank account in dirhams, so the Bank Account Form must be submitted to HR as soon as possible.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
+                                <span class="text-sm text-gray-700">An overseas bank account is fine as long as it's in dirhams.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
+                                <span class="text-sm text-gray-700">The form only needs to be submitted at the end of the first year.</span>
+                            </div>
+                        </div>
+                        <div id="quiz-1-feedback" class="aisa-quiz-feedback mt-4"
+                             data-correct-msg="<strong>Correct.</strong> WPS requires salaries to be paid in dirhams to a UAE account, so submitting the Bank Account Form to HR early is the one thing you must do up front."
+                             data-wrong-msg="<strong>Not quite.</strong> Salaries are paid through the Wages Protection System (WPS) into a UAE dirham account — so the Bank Account Form needs to reach HR as soon as possible."></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Processing & Payment -->
+            <div class="relative pl-12 mb-16" data-chapter="5" data-chapter-title="Processing &amp; Payment">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-amber-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-orange-700 to-amber-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-orange-200">Section 4</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">How &amp; When Payroll Is Processed and Paid</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Payroll is managed by the <strong>Accounts Office</strong>. The actual transfer of money to your bank account is made through the <strong>WPS by the Central Bank</strong>, based on approved documents and in line with your contract and statutory requirements.</p>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-amber-50 border border-amber-200 rounded-xl p-5">
+                                <h4 class="font-bold text-amber-900 mb-3 flex items-center gap-2"><span class="text-lg">📅</span> Monthly payment timing</h4>
+                                <ul class="text-sm text-amber-900 space-y-2">
+                                    <li><strong>1st year:</strong> August to May — paid at the end of each month.</li>
+                                    <li><strong>2nd year onward:</strong> August to July — paid at the end of each month.</li>
+                                    <li><strong>June:</strong> 50% paid; the rest of July's balance follows.</li>
+                                    <li><strong>July:</strong> paid on the last working day of the year; the July balance is settled by the end of August.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-orange-50 border border-orange-200 rounded-xl p-5">
+                                <h4 class="font-bold text-orange-900 mb-3 flex items-center gap-2"><span class="text-lg">🗂️</span> Document processing windows</h4>
+                                <ul class="text-sm text-orange-900 space-y-2">
+                                    <li><strong>Aug–Nov:</strong> 15th to 22nd of the month.</li>
+                                    <li><strong>December:</strong> 5th to 7th of the month.</li>
+                                    <li><strong>Jan–May:</strong> 15th to 22nd of the month.</li>
+                                    <li><strong>June:</strong> 10th to 12th of the month.</li>
+                                </ul>
+                                <p class="text-xs text-orange-700 mt-3">Any change to your pay (stipend, leave, reimbursement) needs its document in <em>before</em> that month's window to land in the same pay run.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-white border border-gray-200 rounded-xl p-5">
+                            <h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2"><span class="text-lg">🧮</span> What makes up your pay</h4>
+                            <p class="text-sm text-gray-600 mb-3">Each item is processed from an approved source document:</p>
+                            <div class="grid sm:grid-cols-2 gap-2 text-sm">
+                                <div class="flex items-center justify-between bg-emerald-50 rounded-lg px-3 py-2"><span class="text-emerald-900">Normal pay (basic + allowances)</span><span class="text-emerald-700 font-bold">annual rate ÷ 12</span></div>
+                                <div class="flex items-center justify-between bg-emerald-50 rounded-lg px-3 py-2"><span class="text-emerald-900">+ Stipend</span><span class="text-emerald-700 font-bold">stipend document</span></div>
+                                <div class="flex items-center justify-between bg-emerald-50 rounded-lg px-3 py-2"><span class="text-emerald-900">+ No-absence bonus</span><span class="text-emerald-700 font-bold">HR report</span></div>
+                                <div class="flex items-center justify-between bg-emerald-50 rounded-lg px-3 py-2"><span class="text-emerald-900">+ Summer ticket</span><span class="text-emerald-700 font-bold">cash-in-lieu offer</span></div>
+                                <div class="flex items-center justify-between bg-emerald-50 rounded-lg px-3 py-2"><span class="text-emerald-900">+ Housing allowance</span><span class="text-emerald-700 font-bold">housing form</span></div>
+                                <div class="flex items-center justify-between bg-emerald-50 rounded-lg px-3 py-2"><span class="text-emerald-900">+ Reimbursements</span><span class="text-emerald-700 font-bold">purchase requisition form</span></div>
+                                <div class="flex items-center justify-between bg-rose-50 rounded-lg px-3 py-2"><span class="text-rose-900">− Unpaid leave</span><span class="text-rose-700 font-bold">HR report</span></div>
+                                <div class="flex items-center justify-between bg-rose-50 rounded-lg px-3 py-2"><span class="text-rose-900">− Electricity &amp; water</span><span class="text-rose-700 font-bold">ADDC bills</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: Pay Slip -->
+            <div class="relative pl-12 mb-16" data-chapter="6" data-chapter-title="Your Pay Slip">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-amber-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-yellow-600 to-amber-600 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-yellow-100">Section 5</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Your Monthly Pay Slip</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="grid sm:grid-cols-3 gap-3">
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">Handled by</p>
+                                <p class="text-sm text-gray-700 mt-1">Accounts Office, through <strong>Synergetics</strong>.</p>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">When</p>
+                                <p class="text-sm text-gray-700 mt-1">Within <strong>five days</strong> after the pay month (latest).</p>
+                            </div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-slate-500">How</p>
+                                <p class="text-sm text-gray-700 mt-1">Sent electronically from AISA Accounts to your <strong>AISA email</strong>.</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 leading-relaxed">Your pay slip reflects your net pay for the month — your normal (monthly) pay, monthly stipend, reimbursements and deductions. Check it each month against what you expect.</p>
+
+                        <figure class="rounded-xl overflow-hidden border border-amber-200">
+                            <img src="async_payroll_payslip.png" alt="Annex C — Sample AISA pay slip showing Payslip month, Employee ID and name, then Basic, Allowances and Stipend lines adding up to Net Pay in AED." class="w-full ref-shot" loading="lazy">
+                            <figcaption class="text-xs text-gray-500 bg-amber-50 px-4 py-2 border-t border-amber-100"><strong>Annex C — Sample pay slip.</strong> A worked example: Basic + Allowances + Stipend totalling the Net Pay line (figures shown are illustrative only).</figcaption>
+                        </figure>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 6: Purchase Requisition Form -->
+            <div class="relative pl-12 mb-16" data-chapter="7" data-chapter-title="Purchase Requisitions">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-amber-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-amber-700 to-orange-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-200">Section 6</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">The Purchase Requisition Form (PRF)</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">A <strong>Purchase Requisition Form</strong> is an internal control document showing that a particular purchase of goods and/or services is duly authorized. To be valid it must be signed by the <strong>Principal</strong>, the <strong>School Director</strong>, and the <strong>Business Manager</strong> (Annex B).</p>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-amber-50 border border-amber-200 rounded-xl p-5">
+                                <h4 class="font-bold text-amber-900 mb-3 flex items-center gap-2"><span class="text-lg">🏪</span> 1. School pays the supplier directly</h4>
+                                <p class="text-xs text-amber-800 mb-2 uppercase tracking-wide font-bold">Attach to the PRF:</p>
+                                <ul class="text-sm text-amber-900 space-y-1.5">
+                                    <li class="flex items-start"><span class="text-amber-600 mr-2">•</span> The invoice</li>
+                                    <li class="flex items-start"><span class="text-amber-600 mr-2">•</span> The supplier's bank account details</li>
+                                </ul>
+                            </div>
+                            <div class="bg-orange-50 border border-orange-200 rounded-xl p-5">
+                                <h4 class="font-bold text-orange-900 mb-3 flex items-center gap-2"><span class="text-lg">💳</span> 2. Reimbursement through your payroll</h4>
+                                <p class="text-xs text-orange-800 mb-2 uppercase tracking-wide font-bold">Attach to the PRF:</p>
+                                <ul class="text-sm text-orange-900 space-y-1.5">
+                                    <li class="flex items-start"><span class="text-orange-600 mr-2">•</span> The invoice / proof of the charge</li>
+                                    <li class="flex items-start"><span class="text-orange-600 mr-2">•</span> Proof of payment you made</li>
+                                    <li class="flex items-start"><span class="text-orange-600 mr-2">•</span> The AISA PD application form, if using Professional Development money</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <figure class="rounded-xl overflow-hidden border border-amber-200">
+                            <img src="async_payroll_prf.png" alt="Annex B — AISA Purchase Requisition Form with date, requisitioner, department, an itemised table of description, quantity, unit price and amount, plus signature blocks for Principal, Director and Business Manager approval." class="w-full ref-shot" loading="lazy">
+                            <figcaption class="text-xs text-gray-500 bg-amber-50 px-4 py-2 border-t border-amber-100"><strong>Annex B — Purchase Requisition Form.</strong> Note the three approval signature blocks at the bottom: Principal, Director and Business Manager.</figcaption>
+                        </figure>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span class="text-lg">💡</span> Tip</h4>
+                            <p class="text-sm text-gray-700">Reimbursements feed into payroll, so a PRF submitted after the month's document-processing window will be paid in the <em>next</em> pay run. Submit early.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Check 2 -->
+            <div class="relative pl-12 mb-16" data-chapter="8" data-chapter-title="Knowledge Check 2">
+                <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
+                    <span class="text-white font-bold text-sm">?</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-amber-200 overflow-hidden aisa-quiz" id="quiz-2">
+                    <div class="bg-gradient-to-r from-amber-500 to-orange-500 p-5 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-amber-100">Knowledge Check 2</span>
+                        <h3 class="text-lg font-heading font-bold mt-1">Purchase Requisitions</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="font-semibold text-gray-800 mb-4">You paid out of pocket for an approved classroom resource and want to be reimbursed through your salary. Which is correct?</p>
+                        <div class="space-y-3">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
+                                <span class="text-sm text-gray-700">Email the Accounts Office the amount; no form or signatures are needed.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
+                                <span class="text-sm text-gray-700">Submit a PRF signed by the Principal, Director and Business Manager, attaching the invoice/proof of charge and proof of your payment.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
+                                <span class="text-sm text-gray-700">A PRF is only for when the school pays a supplier directly, never for reimbursements.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
+                                <span class="text-sm text-gray-700">Only the proof of payment is needed; the invoice can be skipped.</span>
+                            </div>
+                        </div>
+                        <div id="quiz-2-feedback" class="aisa-quiz-feedback mt-4"
+                             data-correct-msg="<strong>Correct.</strong> Reimbursement through payroll needs a PRF with all three approvals plus the invoice/proof of charge and proof of your payment (and the PD application form if it's PD money)."
+                             data-wrong-msg="<strong>Not quite.</strong> A reimbursement still needs an authorized PRF — signed by the Principal, Director and Business Manager — with the invoice/proof of charge and proof of your own payment attached."></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 7: Quick Reference -->
+            <div class="relative pl-12 mb-16" data-chapter="9" data-chapter-title="Quick Reference">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-amber-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-emerald-700 to-amber-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-emerald-200">Section 7</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Quick Reference &amp; Who to Contact</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-amber-50 border border-amber-200 rounded-xl p-5">
+                                <h4 class="font-bold text-amber-900 mb-3 flex items-center gap-2"><span class="text-xl">✅</span> Do</h4>
+                                <ul class="text-sm text-amber-900 space-y-2">
+                                    <li class="flex items-start"><span class="text-amber-600 mr-2">•</span> Submit your Bank Account Form (Annex A) to HR straight away.</li>
+                                    <li class="flex items-start"><span class="text-amber-600 mr-2">•</span> Use a UAE dirham bank account for WPS.</li>
+                                    <li class="flex items-start"><span class="text-amber-600 mr-2">•</span> Check your pay slip each month against what you expect.</li>
+                                    <li class="flex items-start"><span class="text-amber-600 mr-2">•</span> Get PRF signatures and attachments in before the monthly window.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-rose-50 border border-rose-200 rounded-xl p-5">
+                                <h4 class="font-bold text-rose-900 mb-3 flex items-center gap-2"><span class="text-xl">🚫</span> Don't</h4>
+                                <ul class="text-sm text-rose-900 space-y-2">
+                                    <li class="flex items-start"><span class="text-rose-600 mr-2">•</span> Expect payment before your bank details are on file.</li>
+                                    <li class="flex items-start"><span class="text-rose-600 mr-2">•</span> Submit a PRF without all three approval signatures.</li>
+                                    <li class="flex items-start"><span class="text-rose-600 mr-2">•</span> Forget the invoice <em>and</em> proof of payment on a reimbursement.</li>
+                                    <li class="flex items-start"><span class="text-rose-600 mr-2">•</span> Make verbal-only requests for anything that needs a paper trail.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6">
+                            <h4 class="font-bold text-amber-900 mb-2 flex items-center gap-2"><span class="text-xl">📞</span> Need help?</h4>
+                            <p class="text-sm text-amber-900 leading-relaxed">For any payroll or purchase-requisition question, contact <strong>Sheila Gonzalez</strong> —
+                                <a href="mailto:sgonzalez@aisa.sch.ae" class="text-amber-700 font-semibold underline hover:text-amber-900">sgonzalez@aisa.sch.ae</a> — at the <strong>Accounts Office, Ground Floor, Rotunda Area</strong>.</p>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span class="text-lg">📎</span> Keep for reference</h4>
+                            <p class="text-sm text-gray-700"><a href="async/New%20Teacher%20Orientation%20(AY26-27).pptx.pdf" target="_blank" rel="noopener noreferrer" class="text-amber-700 font-semibold underline hover:text-amber-900">Open the original Accounts Office orientation deck (PDF)</a> for the full Annex A, B and C forms you can print and fill in.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end timeline -->
+
+        <!-- Completion Banner -->
+        <div id="completion-banner" data-cert-title="Payroll &amp; Purchase Requisitions — New-Staff Onboarding" data-cert-hours="1" class="hidden bg-gradient-to-r from-amber-600 via-yellow-600 to-orange-600 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
+            <span class="text-5xl mb-4 block">🎉</span>
+            <h3 class="text-2xl font-heading font-black mb-2">Module Complete!</h3>
+            <p class="text-amber-100 max-w-lg mx-auto">You now know how AISA payroll works and how to use a Purchase Requisition Form. Get your Bank Account Form to HR if you haven't already — that's the one thing to do today.</p>
+        </div>
+
+        <!-- Return Button -->
+        <div class="text-center pb-10">
+            <button onclick="window.location.href='pd.html'" class="bg-amber-700 text-white py-3 px-8 rounded-full hover:bg-amber-800 transition-colors shadow-lg font-semibold">
+                Return to Modules
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-amber-900 text-amber-200 py-10">
+        <div class="container mx-auto px-6 text-center">
+            <p class="font-bold text-white mb-1 font-heading">AISA — American International School in Abu Dhabi</p>
+            <p class="text-sm text-amber-300">New-Staff Onboarding | Payroll &amp; Purchase Requisitions · Accounts Office</p>
+            <p class="text-xs text-amber-400 mt-4">This module summarises Accounts Office orientation. For your specific situation, always confirm with the Accounts Office.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Progress Tracking ---
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.module-checkbox');
+            const total = checkboxes.length;
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const pct = total === 0 ? 0 : Math.round((checked / total) * 100);
+
+            document.getElementById('progress-bar').style.width = pct + '%';
+            document.getElementById('progress-text').textContent = pct + '% Done';
+
+            if (pct === 100) {
+                document.getElementById('completion-banner').classList.remove('hidden');
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                }
+            } else {
+                document.getElementById('completion-banner').classList.add('hidden');
+            }
+        }
+
+        // --- AISA backend: record completion + rehydrate on revisit ---
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                auth.wireModule({
+                    moduleId: 'payroll-prf',
+                    checkboxSelector: '.module-checkbox',
+                    refreshUI: updateProgress
+                });
+            });
+        }
+
+        // --- Training framework: convert to chapter-by-chapter wizard ---
+        if (window.AisaTraining) {
+            document.addEventListener('DOMContentLoaded', function () {
+                window.AisaTraining.init({ moduleId: 'payroll-prf' });
+            });
+        }
+    </script>
+
+</body>
+</html>

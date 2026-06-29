@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Employment Visa &amp; Emirates ID — New Staff Onboarding</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: { primary: '#1d4ed8', secondary: '#0284c7', accent: '#3b82f6' },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .bg-dot-pattern {
+            background-color: #f0f9ff;
+            background-image: radial-gradient(#bae6fd 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .checkbox-custom:checked + div {
+            background-color: #10b981;
+            border-color: #10b981;
+            transform: scale(1.05);
+        }
+        .checkbox-custom:checked + div svg { display: block; }
+        .principle-card { transition: all 0.3s ease; }
+        .principle-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px -6px rgba(0,0,0,0.12); }
+        .quiz-option { transition: all 0.2s ease; cursor: pointer; }
+        .quiz-option:hover { transform: scale(1.02); }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .timeline-container { position: relative; }
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 1rem;
+            bottom: 2rem;
+            left: 1.25rem;
+            width: 2px;
+            background: #bae6fd;
+            z-index: 0;
+        }
+        .step-badge {
+            display:inline-flex; align-items:center; justify-content:center;
+            min-width:2.25rem; height:2.25rem; padding:0 .5rem;
+            border-radius:9999px; font-weight:800; font-size:.8rem;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #e0f2fe; }
+        ::-webkit-scrollbar-thumb { background: #0284c7; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #0369a1; }
+    </style>
+    <link rel="stylesheet" href="../auth/training.css?v=5">
+    <script src="../auth/gate.js?v=14"></script>
+    <script src="../auth/training.js?v=5"></script>
+</head>
+<body class="bg-dot-pattern text-gray-800 min-h-screen">
+
+<!-- Main Content -->
+    <div class="max-w-5xl mx-auto px-4 lg:px-6 pt-8 pb-20">
+
+        <!-- Module Header -->
+        <div class="mb-8">
+            <div class="flex items-center gap-2 mb-3 flex-wrap">
+                <span class="inline-block bg-sky-100 text-sky-800 text-xs font-bold px-3 py-1 rounded-full">New Module</span>
+                <span class="inline-block bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full">New-Staff Onboarding</span>
+                <span class="inline-block bg-slate-100 text-slate-700 text-xs font-bold px-3 py-1 rounded-full">Self-paced · ~12 min</span>
+            </div>
+            <h1 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">Employment Visa &amp; Emirates ID</h1>
+            <p class="text-blue-700 font-medium mt-1">Your step-by-step journey from job offer to UAE residence visa — guided by the AISA Government Relations (PRO) team</p>
+        </div>
+
+        <!-- Source / reference banner -->
+        <div class="mb-8 bg-white border border-sky-200 rounded-2xl shadow-sm p-4 flex items-start gap-3">
+            <div class="bg-sky-100 text-sky-700 rounded-lg p-2 flex-shrink-0 text-xl">📎</div>
+            <div class="text-sm">
+                <p class="font-bold text-slate-800">Reference presentation</p>
+                <p class="text-gray-600">This module follows the Government Relations team's <em>Steps of the Employment Visa and Emirates ID</em> briefing for new teachers. You can
+                    <a href="async/Updated%20Presentation%20new%20Teachers%202026.pdf" target="_blank" rel="noopener noreferrer" class="text-sky-700 font-semibold underline hover:text-sky-900">open the original briefing (PDF)</a>
+                    at any time.</p>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="bg-white/85 backdrop-blur-xl border border-sky-200/80 rounded-2xl shadow-sm mb-10 p-4 flex items-center justify-between gap-4">
+            <span class="font-heading font-extrabold text-slate-900 text-base md:text-lg tracking-tight">Module Progress</span>
+            <div class="flex items-center space-x-4 bg-sky-50 border border-sky-200 px-4 py-2 rounded-xl">
+                <span id="progress-text" class="text-xs font-bold text-sky-700 uppercase tracking-widest">0% Done</span>
+                <div class="w-32 md:w-48 h-3 bg-sky-100 rounded-full overflow-hidden shadow-inner">
+                    <div id="progress-bar" class="h-full bg-gradient-to-r from-sky-500 via-blue-500 to-indigo-500 w-0 transition-all duration-700 ease-out"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline-container">
+
+            <!-- Section 1: Overview -->
+            <div class="relative pl-12 mb-16" data-chapter="1" data-chapter-title="The Journey">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-sky-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-sky-700 to-blue-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-sky-200">Section 1</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">From Job Offer to Residence Visa — the Whole Journey</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Getting your UAE work authorization is a sequence of <strong class="text-blue-800">seven steps</strong>, handled mostly by the AISA Government Relations (PRO) team. This module walks you through each one so you know what's happening, what's needed from you, and roughly how long each step takes.</p>
+
+                        <div class="bg-sky-50 border border-sky-200 rounded-xl p-5">
+                            <h4 class="font-bold text-sky-900 mb-4 flex items-center gap-2"><span class="text-lg">🗺️</span> The seven steps at a glance</h4>
+                            <ol class="space-y-2 text-sm">
+                                <li class="flex items-center gap-3"><span class="step-badge bg-sky-100 text-sky-800">1</span><span class="text-gray-700 flex-1">Ministry of Labour — Job Offer</span><span class="text-xs text-sky-700 font-semibold">2 days</span></li>
+                                <li class="flex items-center gap-3"><span class="step-badge bg-sky-100 text-sky-800">2</span><span class="text-gray-700 flex-1">Ministry of Labour — Approval</span><span class="text-xs text-sky-700 font-semibold">within 4 days</span></li>
+                                <li class="flex items-center gap-3"><span class="step-badge bg-sky-100 text-sky-800">3</span><span class="text-gray-700 flex-1">Ministry of Interior — Immigration (Entry) Visa</span><span class="text-xs text-sky-700 font-semibold">2 days</span></li>
+                                <li class="flex items-center gap-3"><span class="step-badge bg-sky-100 text-sky-800">4</span><span class="text-gray-700 flex-1">Unemployment Insurance (ILOE)</span><span class="text-xs text-sky-700 font-semibold">same day</span></li>
+                                <li class="flex items-center gap-3"><span class="step-badge bg-sky-100 text-sky-800">5</span><span class="text-gray-700 flex-1">Blood Test (clinic truck)</span><span class="text-xs text-sky-700 font-semibold">2 days</span></li>
+                                <li class="flex items-center gap-3"><span class="step-badge bg-sky-100 text-sky-800">6</span><span class="text-gray-700 flex-1">Emirates ID</span><span class="text-xs text-sky-700 font-semibold">5 days after fingerprints</span></li>
+                                <li class="flex items-center gap-3"><span class="step-badge bg-blue-100 text-blue-800">7</span><span class="text-gray-700 flex-1">Employment Visa Sticker</span><span class="text-xs text-blue-700 font-semibold">1 day</span></li>
+                            </ol>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-200 rounded-xl p-6">
+                            <div class="flex items-start gap-3">
+                                <div class="bg-sky-100 p-2 rounded-lg flex-shrink-0"><span class="text-xl">⏳</span></div>
+                                <div>
+                                    <h4 class="font-bold text-sky-900 mb-2">A note on timings</h4>
+                                    <p class="text-sky-800 text-sm leading-relaxed">The day-counts shown are typical processing times for each step under normal conditions — not a promise. Government systems and queues vary. Your PRO will keep you updated as each step clears.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Steps 1-3 -->
+            <div class="relative pl-12 mb-16" data-chapter="2" data-chapter-title="Steps 1–3: Approvals">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-sky-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-700 to-sky-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-blue-200">Section 2 · Steps 1–3</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Ministry of Labour &amp; Immigration Approvals</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-5">
+                        <div class="principle-card border border-sky-100 rounded-xl p-5 bg-gradient-to-br from-sky-50 to-white">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="step-badge bg-sky-600 text-white">1</span>
+                                <h4 class="font-bold text-sky-900 flex-1">Ministry of Labour — Job Offer</h4>
+                                <span class="text-xs font-bold text-sky-700 bg-sky-100 rounded-full px-3 py-1">2 working days</span>
+                            </div>
+                            <p class="text-sm text-gray-700 mb-2">You'll review and sign the official MOL job offer. Read it carefully — it sets out:</p>
+                            <div class="flex flex-wrap gap-2 text-xs">
+                                <span class="bg-sky-50 border border-sky-200 text-sky-800 rounded-full px-3 py-1">Personal information</span>
+                                <span class="bg-sky-50 border border-sky-200 text-sky-800 rounded-full px-3 py-1">Salary &amp; benefits</span>
+                                <span class="bg-sky-50 border border-sky-200 text-sky-800 rounded-full px-3 py-1">Housing</span>
+                                <span class="bg-sky-50 border border-sky-200 text-sky-800 rounded-full px-3 py-1">Summer leave</span>
+                                <span class="bg-sky-50 border border-sky-200 text-sky-800 rounded-full px-3 py-1">Labour articles</span>
+                                <span class="bg-sky-50 border border-sky-200 text-sky-800 rounded-full px-3 py-1">Your signature</span>
+                            </div>
+                        </div>
+
+                        <div class="principle-card border border-sky-100 rounded-xl p-5 bg-gradient-to-br from-blue-50 to-white">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="step-badge bg-blue-600 text-white">2</span>
+                                <h4 class="font-bold text-blue-900 flex-1">Ministry of Labour — Approval</h4>
+                                <span class="text-xs font-bold text-blue-700 bg-blue-100 rounded-full px-3 py-1">within 4 working days</span>
+                            </div>
+                            <p class="text-sm text-gray-700">The Ministry reviews and approves the signed offer. No action needed from you — your PRO submits and tracks this.</p>
+                        </div>
+
+                        <div class="principle-card border border-sky-100 rounded-xl p-5 bg-gradient-to-br from-indigo-50 to-white">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="step-badge bg-indigo-600 text-white">3</span>
+                                <h4 class="font-bold text-indigo-900 flex-1">Ministry of Interior — Immigration (Entry) Visa</h4>
+                                <span class="text-xs font-bold text-indigo-700 bg-indigo-100 rounded-full px-3 py-1">2 working days</span>
+                            </div>
+                            <p class="text-sm text-gray-700">The Ministry of Interior issues your immigration / entry visa approval — the permit that lets your residency process continue inside the UAE.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Step 4 Unemployment Insurance -->
+            <div class="relative pl-12 mb-16" data-chapter="3" data-chapter-title="Step 4: Unemployment Insurance">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-sky-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-sky-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-sky-600 to-cyan-600 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-sky-100">Section 3 · Step 4 · Action needed</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Unemployment Insurance (ILOE)</h3>
+                        <p class="text-sky-100 text-sm mt-1">A mandatory subscription you must complete before the next step.</p>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Unemployment Insurance is a UAE government scheme that provides <strong>temporary financial support</strong> to employees who lose their jobs for reasons beyond their control. It pays <strong class="text-sky-800">60% of your basic salary for up to three months</strong>.</p>
+
+                        <div class="grid sm:grid-cols-3 gap-3">
+                            <div class="bg-sky-50 border border-sky-200 rounded-xl p-4 text-center">
+                                <div class="text-2xl mb-1">💰</div>
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-sky-600">Policy fee</p>
+                                <p class="text-sm text-sky-900 font-bold mt-1">AED 126</p>
+                                <p class="text-[11px] text-gray-500 mt-1">covered by the employee</p>
+                            </div>
+                            <div class="bg-sky-50 border border-sky-200 rounded-xl p-4 text-center">
+                                <div class="text-2xl mb-1">📋</div>
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-sky-600">Status</p>
+                                <p class="text-sm text-sky-900 font-bold mt-1">Mandatory</p>
+                                <p class="text-[11px] text-gray-500 mt-1">required to proceed</p>
+                            </div>
+                            <div class="bg-sky-50 border border-sky-200 rounded-xl p-4 text-center">
+                                <div class="text-2xl mb-1">⏱️</div>
+                                <p class="text-[11px] font-bold uppercase tracking-wider text-sky-600">Timing</p>
+                                <p class="text-sm text-sky-900 font-bold mt-1">Same day</p>
+                                <p class="text-[11px] text-gray-500 mt-1">quick to complete</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-amber-50 border-l-4 border-amber-500 rounded-r-xl p-5">
+                            <h4 class="font-bold text-amber-900 mb-1 flex items-center gap-2"><span class="text-lg">⚠️</span> Why it matters</h4>
+                            <p class="text-sm text-amber-900">This is a <strong>mandatory</strong> subscription — your visa cannot move to the next stage until it's done. The AED 126 fee is paid by you, the employee.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Check 1 -->
+            <div class="relative pl-12 mb-16" data-chapter="4" data-chapter-title="Knowledge Check 1">
+                <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center shadow-md">
+                    <span class="text-white font-bold text-sm">?</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-sky-200 overflow-hidden aisa-quiz" id="quiz-1">
+                    <div class="bg-gradient-to-r from-sky-500 to-blue-500 p-5 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-sky-100">Knowledge Check 1</span>
+                        <h3 class="text-lg font-heading font-bold mt-1">Approvals &amp; Insurance</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="font-semibold text-gray-800 mb-4">Which statement about the Unemployment Insurance (ILOE) step is correct?</p>
+                        <div class="space-y-3">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
+                                <span class="text-sm text-gray-700">It's optional, and the school always pays the fee.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
+                                <span class="text-sm text-gray-700">It's mandatory to proceed, the AED 126 fee is covered by the employee, and it pays 60% of basic salary for up to three months if you lose your job.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
+                                <span class="text-sm text-gray-700">It replaces 100% of your salary indefinitely.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
+                                <span class="text-sm text-gray-700">It only applies after you've worked at AISA for two years.</span>
+                            </div>
+                        </div>
+                        <div id="quiz-1-feedback" class="aisa-quiz-feedback mt-4"
+                             data-correct-msg="<strong>Correct.</strong> ILOE is mandatory to move forward; the AED 126 fee is the employee's; and it provides 60% of basic salary for up to three months of involuntary unemployment."
+                             data-wrong-msg="<strong>Not quite.</strong> Unemployment Insurance is mandatory to proceed, the AED 126 fee is paid by the employee, and it covers 60% of basic salary for up to three months."></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 4: Steps 5-6 -->
+            <div class="relative pl-12 mb-16" data-chapter="5" data-chapter-title="Steps 5–6: Medical &amp; Emirates ID">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-sky-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-blue-700 to-indigo-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-blue-200">Section 4 · Steps 5–6</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Medical Test &amp; Emirates ID</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-5">
+                        <div class="principle-card border border-blue-100 rounded-xl p-5 bg-gradient-to-br from-blue-50 to-white">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="step-badge bg-blue-600 text-white">5</span>
+                                <h4 class="font-bold text-blue-900 flex-1">Blood Test by Clinic Truck</h4>
+                                <span class="text-xs font-bold text-blue-700 bg-blue-100 rounded-full px-3 py-1">2 working days</span>
+                            </div>
+                            <p class="text-sm text-gray-700 mb-2">A mobile clinic visits for the standard UAE residency medical screening, which tests for:</p>
+                            <div class="flex flex-wrap gap-2 text-xs">
+                                <span class="bg-blue-50 border border-blue-200 text-blue-800 rounded-full px-3 py-1">HIV</span>
+                                <span class="bg-blue-50 border border-blue-200 text-blue-800 rounded-full px-3 py-1">Tuberculosis</span>
+                                <span class="bg-blue-50 border border-blue-200 text-blue-800 rounded-full px-3 py-1">Hepatitis C</span>
+                            </div>
+                        </div>
+
+                        <div class="principle-card border border-indigo-100 rounded-xl p-5 bg-gradient-to-br from-indigo-50 to-white">
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="step-badge bg-indigo-600 text-white">6</span>
+                                <h4 class="font-bold text-indigo-900 flex-1">Emirates ID</h4>
+                                <span class="text-xs font-bold text-indigo-700 bg-indigo-100 rounded-full px-3 py-1">5 days after fingerprints</span>
+                            </div>
+                            <p class="text-sm text-gray-700 mb-3">Your Emirates ID is the single most important document in the UAE. You'll give fingerprints, and the card is issued about five working days later. You'll use it for almost everything:</p>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                                <span class="bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-lg px-3 py-1.5 text-center">🏦 Banking</span>
+                                <span class="bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-lg px-3 py-1.5 text-center">🩺 Medical insurance</span>
+                                <span class="bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-lg px-3 py-1.5 text-center">🚗 UAE driving licence</span>
+                                <span class="bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-lg px-3 py-1.5 text-center">📱 Cell phone &amp; WiFi</span>
+                                <span class="bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-lg px-3 py-1.5 text-center">🏛️ Government offices</span>
+                                <span class="bg-indigo-50 border border-indigo-200 text-indigo-800 rounded-lg px-3 py-1.5 text-center">🏨 Clubs &amp; hotels</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 5: Step 7 Visa Sticker -->
+            <div class="relative pl-12 mb-16" data-chapter="6" data-chapter-title="Step 7: Visa Sticker">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-sky-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-blue-200 overflow-hidden">
+                    <div class="bg-gradient-to-r from-indigo-700 to-blue-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-indigo-200">Section 5 · Step 7 · Final step</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Employment Visa Sticker</h3>
+                        <p class="text-indigo-100 text-sm mt-1">The last step — your residency is now complete.</p>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">The visa sticker is the <strong>final step</strong> of the process. A few important things to know about it:</p>
+
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+                                <span class="text-xl">📅</span>
+                                <p class="text-sm text-blue-900">Your visa and Emirates ID are valid for <strong>2 years</strong> and <strong>expire on the same day</strong>.</p>
+                            </div>
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+                                <span class="text-xl">📕</span>
+                                <p class="text-sm text-blue-900">The visa is <strong>not</strong> placed in your passport — it's digital.</p>
+                            </div>
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+                                <span class="text-xl">📲</span>
+                                <p class="text-sm text-blue-900">Install the <strong>ICP UAE app</strong> on your smartphone to access and download your visa sticker copy.</p>
+                            </div>
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
+                                <span class="text-xl">⏱️</span>
+                                <p class="text-sm text-blue-900">This step typically takes about <strong>1 working day</strong>.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-emerald-50 border-l-4 border-emerald-500 rounded-r-xl p-5">
+                            <h4 class="font-bold text-emerald-900 mb-1 flex items-center gap-2"><span class="text-lg">✅</span> You're all set</h4>
+                            <p class="text-sm text-emerald-900">Once the sticker is issued, you're a fully documented UAE resident. Keep your Emirates ID and the ICP app handy — and note both renewal dates two years out.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Knowledge Check 2 -->
+            <div class="relative pl-12 mb-16" data-chapter="7" data-chapter-title="Knowledge Check 2">
+                <div class="absolute left-0 top-0 z-10 w-10 h-10 rounded-full bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center shadow-md">
+                    <span class="text-white font-bold text-sm">?</span>
+                </div>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-sky-200 overflow-hidden aisa-quiz" id="quiz-2">
+                    <div class="bg-gradient-to-r from-sky-500 to-blue-500 p-5 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-sky-100">Knowledge Check 2</span>
+                        <h3 class="text-lg font-heading font-bold mt-1">Emirates ID &amp; Visa Sticker</h3>
+                    </div>
+                    <div class="p-6">
+                        <p class="font-semibold text-gray-800 mb-4">A new colleague asks where to find a copy of their visa sticker and how long their documents last. What do you tell them?</p>
+                        <div class="space-y-3">
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">A</span>
+                                <span class="text-sm text-gray-700">The visa is stamped in the passport and is valid for five years.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">B</span>
+                                <span class="text-sm text-gray-700">The visa sticker copy is in the ICP UAE app, and the visa and Emirates ID are valid for two years and expire on the same day.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">C</span>
+                                <span class="text-sm text-gray-700">There's no digital copy; you must keep the paper visa with you at all times.</span>
+                            </div>
+                            <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500 flex-shrink-0">D</span>
+                                <span class="text-sm text-gray-700">The visa and Emirates ID expire on different days, so track them separately.</span>
+                            </div>
+                        </div>
+                        <div id="quiz-2-feedback" class="aisa-quiz-feedback mt-4"
+                             data-correct-msg="<strong>Correct.</strong> The visa is digital — download the copy from the ICP UAE app — and both the visa and Emirates ID are valid for two years, expiring on the same day."
+                             data-wrong-msg="<strong>Not quite.</strong> The visa isn't placed in the passport; the copy lives in the ICP UAE app, and the visa and Emirates ID are both valid for two years and expire on the same day."></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 6: Your PRO -->
+            <div class="relative pl-12 mb-16" data-chapter="8" data-chapter-title="Your PRO Can Help">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-sky-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-slate-800 to-blue-800 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-slate-300">Section 6</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Your PRO — Duties &amp; How They Can Help</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">The Government Relations Officer (PRO) handles AISA's dealings with government entities — and is your go-to person for visa and residency matters. Beyond your own visa, the PRO can help with:</p>
+
+                        <div class="grid md:grid-cols-2 gap-3 text-sm">
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-3"><span class="text-lg">🏛️</span><span class="text-gray-700">Processing all school-related transactions with government entities</span></div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-3"><span class="text-lg">📜</span><span class="text-gray-700">Renewing school licences with the municipalities</span></div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-3"><span class="text-lg">🪪</span><span class="text-gray-700">Issuing, renewing and cancelling visas</span></div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-3"><span class="text-lg">👨‍👩‍👧</span><span class="text-gray-700">Helping issue family visas (children and nannies)</span></div>
+                            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start gap-3 md:col-span-2"><span class="text-lg">⚖️</span><span class="text-gray-700">Handling procedures at police stations and courts — police cases, marriage procedures, accident reports, car-repair approvals and clearing fines</span></div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-sky-50 to-blue-50 border border-sky-200 rounded-xl p-6">
+                            <h4 class="font-bold text-sky-900 mb-2 flex items-center gap-2"><span class="text-xl">🤝</span> Reach out any time</h4>
+                            <p class="text-sm text-sky-900 leading-relaxed">You may contact the PRO for assistance with <strong>any government-related transaction</strong>. If you're unsure who your PRO is or how to reach them, ask the HR Office — they'll point you to the right person.</p>
+                        </div>
+
+                        <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                            <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span class="text-lg">📎</span> Keep for reference</h4>
+                            <p class="text-sm text-gray-700"><a href="async/Updated%20Presentation%20new%20Teachers%202026.pdf" target="_blank" rel="noopener noreferrer" class="text-sky-700 font-semibold underline hover:text-sky-900">Open the original Government Relations briefing (PDF)</a> to revisit the seven steps any time.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end timeline -->
+
+        <!-- Completion Banner -->
+        <div id="completion-banner" data-cert-title="Employment Visa &amp; Emirates ID — New-Staff Onboarding" data-cert-hours="1" class="hidden bg-gradient-to-r from-sky-600 via-blue-600 to-indigo-600 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
+            <span class="text-5xl mb-4 block">🎉</span>
+            <h3 class="text-2xl font-heading font-black mb-2">Module Complete!</h3>
+            <p class="text-sky-100 max-w-lg mx-auto">You now understand the seven steps from job offer to residence visa. Install the ICP UAE app, keep your Emirates ID safe, and reach out to your PRO for anything government-related.</p>
+        </div>
+
+        <!-- Return Button -->
+        <div class="text-center pb-10">
+            <button onclick="window.location.href='pd.html'" class="bg-blue-700 text-white py-3 px-8 rounded-full hover:bg-blue-800 transition-colors shadow-lg font-semibold">
+                Return to Modules
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-blue-200 py-10">
+        <div class="container mx-auto px-6 text-center">
+            <p class="font-bold text-white mb-1 font-heading">AISA — American International School in Abu Dhabi</p>
+            <p class="text-sm text-blue-300">New-Staff Onboarding | Employment Visa &amp; Emirates ID · Government Relations (PRO)</p>
+            <p class="text-xs text-blue-400 mt-4">Processing times are typical estimates, not guarantees. Your PRO will confirm the status of each step.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Progress Tracking ---
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.module-checkbox');
+            const total = checkboxes.length;
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const pct = total === 0 ? 0 : Math.round((checked / total) * 100);
+
+            document.getElementById('progress-bar').style.width = pct + '%';
+            document.getElementById('progress-text').textContent = pct + '% Done';
+
+            if (pct === 100) {
+                document.getElementById('completion-banner').classList.remove('hidden');
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                }
+            } else {
+                document.getElementById('completion-banner').classList.add('hidden');
+            }
+        }
+
+        // --- AISA backend: record completion + rehydrate on revisit ---
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                auth.wireModule({
+                    moduleId: 'visa-emirates-id',
+                    checkboxSelector: '.module-checkbox',
+                    refreshUI: updateProgress
+                });
+            });
+        }
+
+        // --- Training framework: convert to chapter-by-chapter wizard ---
+        if (window.AisaTraining) {
+            document.addEventListener('DOMContentLoaded', function () {
+                window.AisaTraining.init({ moduleId: 'visa-emirates-id' });
+            });
+        }
+    </script>
+
+</body>
+</html>

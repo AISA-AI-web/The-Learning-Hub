@@ -232,7 +232,7 @@
             <div id="pd-filters" class="flex flex-wrap justify-center gap-2 mb-8" role="tablist" aria-label="Module categories">
                 <button type="button" class="pd-filter active" data-filter="all" role="tab" aria-selected="true">
                     <span>📚 All modules</span>
-                    <span class="pd-filter-count" data-count-for="all">8</span>
+                    <span class="pd-filter-count" data-count-for="all">10</span>
                 </button>
                 <button type="button" class="pd-filter" data-filter="required" role="tab" aria-selected="false">
                     <span class="required-dot" aria-hidden="true"></span>
@@ -246,6 +246,10 @@
                 <button type="button" class="pd-filter" data-filter="pedagogy" role="tab" aria-selected="false">
                     <span>🎯 Pedagogy</span>
                     <span class="pd-filter-count" data-count-for="pedagogy">2</span>
+                </button>
+                <button type="button" class="pd-filter" data-filter="onboarding" role="tab" aria-selected="false">
+                    <span>🧭 New-Staff Onboarding</span>
+                    <span class="pd-filter-count" data-count-for="onboarding">3</span>
                 </button>
                 <button type="button" id="pd-filter-completed" class="pd-filter hidden" data-filter="completed" role="tab" aria-selected="false">
                     <span class="text-emerald-600">✓</span>
@@ -442,6 +446,78 @@
                                 <span class="inline-flex items-center gap-1">✓ Quiz + Planner</span>
                             </div>
                             <span class="block w-full text-center bg-fuchsia-600 group-hover:bg-fuchsia-700 text-white py-2.5 rounded-xl font-bold text-sm transition-colors">
+                                Start module →
+                            </span>
+                        </div>
+                    </a>
+
+                    <!-- Module: Payroll & Purchase Requisitions — ONBOARDING -->
+                    <a href="payroll-prf-module.html" data-module-id="payroll-prf" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="onboarding" data-keywords="payroll purchase requisition prf finance accounts office salary bank account wps mohre wages protection system pay slip stub synergetics reimbursement stipend housing allowance annex new staff onboarding sheila gonzalez">
+                        <div class="h-1.5 bg-gradient-to-r from-amber-500 to-yellow-600"></div>
+                        <div class="p-5 flex flex-col h-full">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="module-icon h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-50 to-yellow-100 border border-amber-200 flex items-center justify-center text-3xl shadow-sm">💵</div>
+                                <div class="flex flex-col items-end gap-1.5">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-widest bg-amber-100 text-amber-800 border border-amber-200 rounded-full px-2.5 py-1">✨ New</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-amber-700">Accounts Office</span>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-gray-900 leading-tight mb-1.5">Payroll &amp; Purchase Requisitions</h4>
+                            <p class="text-sm text-gray-600 leading-snug mb-3 flex-1">How you get paid at AISA — bank details, WPS, pay slips — and how to raise or claim a purchase with a PRF.</p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 mb-3 pt-3 border-t border-gray-100">
+                                <span class="inline-flex items-center gap-1">⏱ ~15 min</span>
+                                <span class="inline-flex items-center gap-1">🧾 Annex forms</span>
+                                <span class="inline-flex items-center gap-1">✓ 2 checks</span>
+                            </div>
+                            <span class="block w-full text-center bg-amber-600 group-hover:bg-amber-700 text-white py-2.5 rounded-xl font-bold text-sm transition-colors">
+                                Start module →
+                            </span>
+                        </div>
+                    </a>
+
+                    <!-- Module: Employment Visa & Emirates ID — ONBOARDING -->
+                    <a href="visa-emirates-id-module.html" data-module-id="visa-emirates-id" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="onboarding" data-keywords="employment visa emirates id residence residency pro government relations ministry of labour mol moi immigration entry visa unemployment insurance iloe blood test medical fingerprints icp uae app visa sticker new staff onboarding">
+                        <div class="h-1.5 bg-gradient-to-r from-sky-500 to-blue-600"></div>
+                        <div class="p-5 flex flex-col h-full">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="module-icon h-14 w-14 rounded-2xl bg-gradient-to-br from-sky-50 to-blue-100 border border-sky-200 flex items-center justify-center text-3xl shadow-sm">🪪</div>
+                                <div class="flex flex-col items-end gap-1.5">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-widest bg-sky-100 text-sky-800 border border-sky-200 rounded-full px-2.5 py-1">✨ New</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-sky-700">Government Relations</span>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-gray-900 leading-tight mb-1.5">Employment Visa &amp; Emirates ID</h4>
+                            <p class="text-sm text-gray-600 leading-snug mb-3 flex-1">The seven steps from job offer to UAE residence visa — approvals, insurance, medical, Emirates ID and the visa sticker.</p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 mb-3 pt-3 border-t border-gray-100">
+                                <span class="inline-flex items-center gap-1">⏱ ~12 min</span>
+                                <span class="inline-flex items-center gap-1">🗺️ 7 steps</span>
+                                <span class="inline-flex items-center gap-1">✓ 2 checks</span>
+                            </div>
+                            <span class="block w-full text-center bg-blue-600 group-hover:bg-blue-700 text-white py-2.5 rounded-xl font-bold text-sm transition-colors">
+                                Start module →
+                            </span>
+                        </div>
+                    </a>
+
+                    <!-- Module: Campus Layout, Safety & Security — ONBOARDING -->
+                    <a href="campus-safety-module.html" data-module-id="campus-safety" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="onboarding" data-keywords="campus layout safety security health osh high risk entity gates parking zones traffic management drop off pick up evacuation fire lockdown assembly point hassantuk first aid clinic doh emergency new staff onboarding map">
+                        <div class="h-1.5 bg-gradient-to-r from-emerald-500 to-green-600"></div>
+                        <div class="p-5 flex flex-col h-full">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="module-icon h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-50 to-green-100 border border-emerald-200 flex items-center justify-center text-3xl shadow-sm">🗺️</div>
+                                <div class="flex flex-col items-end gap-1.5">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-widest bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-full px-2.5 py-1">✨ New</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-emerald-700">Health &amp; Safety</span>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-gray-900 leading-tight mb-1.5">Campus Layout, Safety &amp; Security</h4>
+                            <p class="text-sm text-gray-600 leading-snug mb-3 flex-1">Gates, parking zones, your safety responsibilities as a High-Risk Entity, and what to do in a fire, evacuation or lockdown.</p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 mb-3 pt-3 border-t border-gray-100">
+                                <span class="inline-flex items-center gap-1">⏱ ~20 min</span>
+                                <span class="inline-flex items-center gap-1">🗺️ Campus map</span>
+                                <span class="inline-flex items-center gap-1">✓ 2 checks</span>
+                            </div>
+                            <span class="block w-full text-center bg-emerald-600 group-hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold text-sm transition-colors">
                                 Start module →
                             </span>
                         </div>
