@@ -1481,5 +1481,37 @@
             });
         }
     </script>
+
+    <!-- Randomise quiz answer order so the correct option isn't always 'B'.
+         Correctness travels in each option's onclick(...) argument, so
+         reordering the DOM is safe; the A/B/C badge is relabelled to match. -->
+    <script>
+        (function () {
+            function shuffle(container) {
+                var opts = Array.prototype.slice.call(container.querySelectorAll('.quiz-option'));
+                if (opts.length < 2) return;
+                for (var i = opts.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var t = opts[i]; opts[i] = opts[j]; opts[j] = t;
+                }
+                var letters = 'ABCDEFGH';
+                opts.forEach(function (opt, idx) {
+                    container.appendChild(opt);
+                    var spans = opt.querySelectorAll('span');
+                    for (var k = 0; k < spans.length; k++) {
+                        if (/^[A-H]$/.test((spans[k].textContent || '').trim())) {
+                            spans[k].textContent = letters[idx];
+                            break;
+                        }
+                    }
+                });
+            }
+            function run() {
+                document.querySelectorAll('[id^="quiz-"][id$="-options"]').forEach(shuffle);
+            }
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', run);
+            else run();
+        })();
+    </script>
 </body>
 </html>

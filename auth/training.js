@@ -247,9 +247,37 @@
         refs.btnNext.addEventListener('click', goNext);
     }
 
+    /* Randomise the answer order so the correct option isn't always in the
+     * same slot (modules tend to be authored with the correct answer as B).
+     * Correctness lives on each option's data-correct attribute, so simply
+     * reordering the DOM is safe; we then relabel any A/B/C/D badge to match
+     * the new order. */
+    function shuffleQuizOptions(quiz) {
+        var options = $$('.aisa-quiz-option', quiz);
+        if (options.length < 2) return;
+        var parent = options[0].parentNode;
+        if (!options.every(function (o) { return o.parentNode === parent; })) return;
+        for (var i = options.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var t = options[i]; options[i] = options[j]; options[j] = t;
+        }
+        var letters = 'ABCDEFGH';
+        options.forEach(function (opt, idx) {
+            parent.appendChild(opt);                 // re-append in shuffled order
+            var spans = opt.querySelectorAll('span');
+            for (var k = 0; k < spans.length; k++) { // relabel the first A–H badge
+                if (/^[A-H]$/.test((spans[k].textContent || '').trim())) {
+                    spans[k].textContent = letters[idx];
+                    break;
+                }
+            }
+        });
+    }
+
     function wireQuizzes() {
         chapters.forEach(function (chap) {
             chap.quizzes.forEach(function (quiz) {
+                shuffleQuizOptions(quiz);
                 var feedback = quiz.querySelector('.aisa-quiz-feedback');
                 var options  = $$('.aisa-quiz-option', quiz);
                 options.forEach(function (opt) {
