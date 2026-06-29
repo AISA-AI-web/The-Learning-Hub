@@ -249,6 +249,106 @@ body.ob-scope {
     55%, 100% { left: 130%; }
 }
 
+/* ============ Chapter content polish ============
+   Layered on top of the modules' Tailwind colour utilities — these rules
+   add depth, motion and refinement to the inner content of each chapter.
+   Scoped to [data-chapter] so they never touch the hero or page chrome. */
+
+/* Tinted info / sub-cards lift gently off the surface.
+   div-only + exclusions keep quiz options, principle cards and figures
+   on their own dedicated treatments below. */
+.ob-scope [data-chapter] div[class*="rounded-xl"][class*="border"]:not(.aisa-quiz-option):not(.principle-card) {
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .03), 0 14px 28px -20px rgba(15, 23, 42, .30);
+    transition: transform .2s ease, box-shadow .2s ease;
+}
+.ob-scope [data-chapter] div[class*="rounded-xl"][class*="border"]:not(.aisa-quiz-option):not(.principle-card):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(15, 23, 42, .04), 0 24px 38px -22px rgba(15, 23, 42, .38);
+}
+
+/* Left-accent callouts: round the trailing corners + add depth. */
+.ob-scope [data-chapter] div[class*="border-l-4"] {
+    border-radius: 0 1rem 1rem 0;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .03), 0 16px 32px -22px rgba(15, 23, 42, .32);
+}
+
+/* Feature / step cards (the .principle-card grid tiles). */
+.ob-scope [data-chapter] .principle-card {
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 16px 30px -22px var(--ob-glow, rgba(2, 6, 23, .35));
+}
+.ob-scope [data-chapter] .principle-card:hover {
+    box-shadow: 0 6px 14px rgba(15, 23, 42, .06), 0 28px 46px -22px var(--ob-glow, rgba(2, 6, 23, .5));
+}
+
+/* Reference screenshots: framed, soft, with a gentle hover zoom. */
+.ob-scope [data-chapter] figure {
+    border-radius: 1.1rem !important;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .05), 0 22px 44px -24px rgba(15, 23, 42, .5);
+}
+.ob-scope [data-chapter] figure > img {
+    transition: transform .45s cubic-bezier(.22, 1, .36, 1);
+    display: block;
+}
+.ob-scope [data-chapter] figure:hover > img {
+    transform: scale(1.025);
+}
+
+/* Knowledge-check options: themed hover + slide + reactive letter badge. */
+.ob-scope .aisa-quiz-option {
+    border-radius: .85rem;
+    transition: transform .15s ease, border-color .15s, box-shadow .15s, background .15s;
+}
+.ob-scope .aisa-quiz-option:not(.aisa-quiz-locked):hover {
+    transform: translateX(4px);
+    border-color: var(--ob-from);
+    background: #fff;
+    box-shadow: -3px 0 0 0 var(--ob-from), 0 12px 22px -16px var(--ob-glow, rgba(2, 6, 23, .45));
+}
+.ob-scope .aisa-quiz-option:not(.aisa-quiz-locked):hover > span:first-child {
+    background: var(--ob-from) !important;
+    color: #fff !important;
+}
+
+/* Premium gate-timings table (Campus module). */
+.ob-scope .gate-table {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 18px 36px -24px var(--ob-glow, rgba(2, 6, 23, .4));
+}
+.ob-scope .gate-table thead th {
+    background: linear-gradient(135deg, var(--ob-from), var(--ob-to)) !important;
+    color: #fff !important;
+}
+.ob-scope .gate-table tbody tr { transition: background .15s; }
+.ob-scope .gate-table tbody tr:nth-child(even) td { background: rgba(15, 23, 42, .025); }
+.ob-scope .gate-table tbody tr:hover td { background: var(--ob-page, #f1f5f9); }
+.ob-scope .gate-table td:first-child { font-weight: 700; color: #0f172a; }
+
+/* Coloured zone swatches + step badges get a touch of dimension. */
+.ob-scope [data-chapter] .zone-swatch {
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .25), inset 0 1px 1px rgba(255, 255, 255, .5);
+}
+.ob-scope [data-chapter] .step-badge {
+    box-shadow: 0 4px 10px -4px var(--ob-glow, rgba(2, 6, 23, .45));
+}
+
+/* Subtle entrance: stagger the content blocks of the active chapter. */
+.ob-scope [data-chapter].aisa-current > div > div:last-child > * {
+    animation: ob-rise .5s both cubic-bezier(.22, 1, .36, 1);
+}
+.ob-scope [data-chapter].aisa-current > div > div:last-child > *:nth-child(1) { animation-delay: .02s; }
+.ob-scope [data-chapter].aisa-current > div > div:last-child > *:nth-child(2) { animation-delay: .08s; }
+.ob-scope [data-chapter].aisa-current > div > div:last-child > *:nth-child(3) { animation-delay: .14s; }
+.ob-scope [data-chapter].aisa-current > div > div:last-child > *:nth-child(4) { animation-delay: .20s; }
+.ob-scope [data-chapter].aisa-current > div > div:last-child > *:nth-child(n+5) { animation-delay: .26s; }
+@keyframes ob-rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ============ Theme the injected wizard chrome to match the module ============
    (onboarding.css only loads on the three onboarding pages, so these
    overrides never affect other PD modules.) */
@@ -279,8 +379,10 @@ body.ob-scope {
 @media (prefers-reduced-motion: reduce) {
     .ob-hero-orb,
     .ob-pulse,
-    .ob-complete::after { animation: none !important; }
-    .ob-scope [data-chapter] > .bg-white { transition: none; }
+    .ob-complete::after,
+    .ob-scope [data-chapter].aisa-current > div > div:last-child > * { animation: none !important; }
+    .ob-scope [data-chapter] > .bg-white,
+    .ob-scope [data-chapter] figure > img { transition: none; }
 }
 @media (max-width: 560px) {
     .ob-hero-row { flex-direction: column; align-items: flex-start; gap: .85rem; }
