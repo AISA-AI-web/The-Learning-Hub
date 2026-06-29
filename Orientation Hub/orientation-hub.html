@@ -42,6 +42,16 @@
         .font-heading { font-family: 'Poppins', sans-serif; }
         .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -10px rgba(180, 83, 9, 0.25); }
+        .ori-mod { position: relative; }
+        .ori-mod[data-completed="true"] { border-color: #10b981 !important; }
+        .ori-mod[data-completed="true"]::after {
+            content: '\2713 Completed';
+            position: absolute; top: 10px; right: 10px; z-index: 5;
+            background: #10b981; color: #fff; font-size: 10px; font-weight: 800;
+            letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 9px;
+            border-radius: 9999px; box-shadow: 0 2px 6px -1px rgba(16,185,129,0.45);
+            pointer-events: none;
+        }
         .hero-gradient { background: linear-gradient(135deg, #78350f 0%, #b45309 45%, #f59e0b 100%); }
         .hero-overlay {
             background-image:
@@ -199,6 +209,49 @@
 
             </div>
 
+            <!-- New-Staff Orientation Training Modules -->
+            <section class="mt-16">
+                <div class="text-center mb-8">
+                    <span class="text-amber-700 text-xs font-bold uppercase tracking-widest">Required for new staff</span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900 mt-2">Orientation Training Modules</h3>
+                    <p class="text-gray-600 text-sm md:text-base max-w-2xl mx-auto mt-2">Self-paced trainings to complete during onboarding. Progress is shared with the PD Hub &mdash; finish a module here or there and it counts once. Each is available in English &amp; Arabic.</p>
+                </div>
+                <div id="ori-modules" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                    <a href="../PD%20Modules/payroll-prf-module.html" data-module-id="payroll-prf" class="ori-mod card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-amber-500 p-6 flex flex-col">
+                        <div class="h-12 w-12 rounded-2xl bg-amber-100 flex items-center justify-center text-2xl mb-3" aria-hidden="true">&#128181;</div>
+                        <h4 class="text-lg font-bold font-heading text-amber-900 mb-1.5 leading-tight">Payroll &amp; Purchase Requisitions</h4>
+                        <p class="text-gray-600 text-sm mb-4 flex-grow">Bank details &amp; WPS, pay slips, and how to raise or claim a purchase with a PRF.</p>
+                        <span class="mt-auto inline-flex items-center gap-2 text-amber-700 font-semibold text-sm">Start module <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></span>
+                    </a>
+
+                    <a href="../PD%20Modules/visa-emirates-id-module.html" data-module-id="visa-emirates-id" class="ori-mod card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-sky-500 p-6 flex flex-col">
+                        <div class="h-12 w-12 rounded-2xl bg-sky-100 flex items-center justify-center text-2xl mb-3" aria-hidden="true">&#129534;</div>
+                        <h4 class="text-lg font-bold font-heading text-sky-900 mb-1.5 leading-tight">Employment Visa &amp; Emirates ID</h4>
+                        <p class="text-gray-600 text-sm mb-4 flex-grow">The seven steps from job offer to UAE residence visa, guided by the PRO team.</p>
+                        <span class="mt-auto inline-flex items-center gap-2 text-sky-700 font-semibold text-sm">Start module <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></span>
+                    </a>
+
+                    <a href="../PD%20Modules/campus-safety-module.html" data-module-id="campus-safety" class="ori-mod card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-emerald-500 p-6 flex flex-col">
+                        <div class="h-12 w-12 rounded-2xl bg-emerald-100 flex items-center justify-center text-2xl mb-3" aria-hidden="true">&#128506;</div>
+                        <h4 class="text-lg font-bold font-heading text-emerald-900 mb-1.5 leading-tight">Campus Layout, Safety &amp; Security</h4>
+                        <p class="text-gray-600 text-sm mb-4 flex-grow">Gates, parking, your safety duties, and what to do in a fire, evacuation or lockdown.</p>
+                        <span class="mt-auto inline-flex items-center gap-2 text-emerald-700 font-semibold text-sm">Start module <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></span>
+                    </a>
+
+                    <a href="../PD%20Modules/safeguarding-module.html" data-module-id="safeguarding" class="ori-mod card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-violet-600 p-6 flex flex-col">
+                        <div class="flex items-start justify-between">
+                            <div class="h-12 w-12 rounded-2xl bg-violet-100 flex items-center justify-center text-2xl mb-3" aria-hidden="true">&#128737;</div>
+                            <span class="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-widest bg-red-50 text-red-700 border border-red-200 rounded-full px-2 py-0.5">Required</span>
+                        </div>
+                        <h4 class="text-lg font-bold font-heading text-violet-900 mb-1.5 leading-tight">Child Safeguarding &amp; Protection</h4>
+                        <p class="text-gray-600 text-sm mb-4 flex-grow">Recognise concerns, the 5 R's of responding, and reporting to your DSL. Mandatory annually.</p>
+                        <span class="mt-auto inline-flex items-center gap-2 text-violet-700 font-semibold text-sm">Start module <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></span>
+                    </a>
+
+                </div>
+            </section>
+
             <!-- Source PDF -->
             <section class="mt-12 max-w-4xl mx-auto bg-white rounded-2xl shadow-md border border-amber-100 p-7 md:p-8">
                 <div class="flex flex-col md:flex-row md:items-center gap-5">
@@ -235,5 +288,33 @@
         </div>
     </footer>
 
+    <!-- Mark orientation module cards complete from the shared backend.
+         Cards link to the same PD-module files, so completion recorded in
+         either hub is the same record (same moduleId). -->
+    <script>
+        (function () {
+            function apply(ids) {
+                var set = new Set(ids);
+                document.querySelectorAll('.ori-mod[data-module-id]').forEach(function (card) {
+                    if (set.has(card.getAttribute('data-module-id'))) {
+                        card.setAttribute('data-completed', 'true');
+                        card.querySelectorAll('span').forEach(function (s) {
+                            if ((s.textContent || '').trim() === 'Start module') s.firstChild.textContent = 'Review ';
+                        });
+                    }
+                });
+            }
+            function run(auth) {
+                if (!auth.isConfigured || !auth.isConfigured()) return;
+                var cached = auth.getCompletionsCached && auth.getCompletionsCached();
+                if (cached) apply(cached.map(function (i) { return i.module_id; }));
+                auth.getCompletions().then(function (items) {
+                    apply((items || []).map(function (i) { return i.module_id; }));
+                }).catch(function () {});
+            }
+            if (window.aisaReady) window.aisaReady(run);
+            else if (window.aisaAuth) run(window.aisaAuth);
+        })();
+    </script>
 </body>
 </html>
