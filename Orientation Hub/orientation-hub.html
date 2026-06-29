@@ -266,8 +266,8 @@
                                 <div id="ori-cert-progress-bar" class="h-full bg-gradient-to-r from-amber-500 to-violet-600 w-0 transition-all duration-700 ease-out"></div>
                             </div>
                         </div>
-                        <button id="ori-cert-btn" type="button" disabled
-                            class="mt-5 inline-flex items-center justify-center gap-2 font-bold py-3 px-7 rounded-full transition-all bg-gray-200 text-gray-400 cursor-not-allowed">
+                        <button id="ori-cert-btn" type="button" aria-disabled="true"
+                            class="mt-5 inline-flex items-center justify-center gap-2 font-bold py-3 px-7 rounded-full transition-all border-2 border-violet-300 bg-violet-100 text-violet-800 cursor-not-allowed">
                             <span aria-hidden="true">&#128274;</span> <span id="ori-cert-btn-label">Complete all trainings to download</span>
                         </button>
                         <p class="text-xs text-gray-500 mt-3">Your name and today's date are filled in automatically. Print &rarr; Save as PDF to keep it.</p>
@@ -336,14 +336,15 @@
                 if (pBar) pBar.style.width = pct + '%';
                 unlocked = (done === total && total > 0);
                 if (!btn) return;
-                btn.disabled = !unlocked;
+                btn.setAttribute('aria-disabled', String(!unlocked));
+                var icon = btn.querySelector('span[aria-hidden]');
                 if (unlocked) {
-                    btn.className = 'mt-5 inline-flex items-center justify-center gap-2 font-bold py-3 px-7 rounded-full transition-all bg-violet-700 text-white hover:bg-violet-800 cursor-pointer shadow-lg hover:-translate-y-0.5';
-                    btn.querySelector('span[aria-hidden]').textContent = '🎓';
+                    btn.className = 'mt-5 inline-flex items-center justify-center gap-2 font-bold py-3 px-7 rounded-full transition-all border-2 border-violet-700 bg-violet-700 text-white hover:bg-violet-800 cursor-pointer shadow-lg hover:-translate-y-0.5';
+                    if (icon) icon.textContent = '🎓';
                     if (btnLabel) btnLabel.textContent = 'Download your certificate';
                 } else {
-                    btn.className = 'mt-5 inline-flex items-center justify-center gap-2 font-bold py-3 px-7 rounded-full transition-all bg-gray-200 text-gray-400 cursor-not-allowed';
-                    btn.querySelector('span[aria-hidden]').textContent = '🔒';
+                    btn.className = 'mt-5 inline-flex items-center justify-center gap-2 font-bold py-3 px-7 rounded-full transition-all border-2 border-violet-300 bg-violet-100 text-violet-800 cursor-not-allowed';
+                    if (icon) icon.textContent = '🔒';
                     if (btnLabel) btnLabel.textContent = 'Complete all trainings to download';
                 }
             }
