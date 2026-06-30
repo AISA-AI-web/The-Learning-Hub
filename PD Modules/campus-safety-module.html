@@ -73,7 +73,7 @@
         ::-webkit-scrollbar-thumb:hover { background: #047857; }
     </style>
     <link rel="stylesheet" href="../auth/training.css?v=5">
-    <link rel="stylesheet" href="onboarding.css?v=3">
+    <link rel="stylesheet" href="onboarding.css?v=4">
     <script src="../auth/gate.js?v=14"></script>
     <script src="../auth/training.js?v=6"></script>
 </head>
@@ -570,18 +570,6 @@
     </footer>
 
     <script>
-        // --- Return navigation: opened from the Orientation Hub? Go back there. ---
-        (function () {
-            if (new URLSearchParams(location.search).get('from') !== 'orientation') return;
-            var ORI = '../Orientation%20Hub/orientation-hub.html';
-            window.AISA_MODULES_URL = ORI;
-            document.addEventListener('DOMContentLoaded', function () {
-                document.querySelectorAll('button[onclick*="pd.html"]').forEach(function (b) {
-                    b.setAttribute('onclick', "window.location.href='" + ORI + "'");
-                });
-            });
-        })();
-
         // --- Progress Tracking ---
         function updateProgress() {
             const checkboxes = document.querySelectorAll('.module-checkbox');
@@ -624,5 +612,6 @@
     <!-- English ↔ Arabic translation -->
     <script src="campus-safety-ar.js?v=2"></script>
     <script src="onboarding-i18n.js?v=2"></script>
+    <script src="orientation-nav.js?v=1"></script>
 </body>
 </html>

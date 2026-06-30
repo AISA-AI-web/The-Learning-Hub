@@ -386,6 +386,38 @@ body.ob-scope {
     .ob-scope [data-chapter] figure > img { transition: none; }
 }
 
+/* ============ Orientation completion-banner nav (Next / Back) ============ */
+.ori-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    justify-content: center;
+    margin-top: 1.4rem;
+}
+.ori-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    font-weight: 800;
+    font-size: .92rem;
+    padding: .7rem 1.4rem;
+    border-radius: 9999px;
+    text-decoration: none;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.ori-nav-primary {
+    background: #fff;
+    color: var(--ob-from, #1e3a8a);
+    box-shadow: 0 12px 24px -12px rgba(0, 0, 0, .55);
+}
+.ori-nav-primary:hover { transform: translateY(-1px); box-shadow: 0 16px 28px -12px rgba(0, 0, 0, .6); }
+.ori-nav-ghost {
+    background: rgba(255, 255, 255, .15);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, .55);
+}
+.ori-nav-ghost:hover { background: rgba(255, 255, 255, .25); }
+
 /* ============ Language toggle button ============ */
 .ob-lang {
     display: inline-flex;
