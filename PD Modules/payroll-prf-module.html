@@ -562,6 +562,18 @@
     </footer>
 
     <script>
+        // --- Return navigation: opened from the Orientation Hub? Go back there. ---
+        (function () {
+            if (new URLSearchParams(location.search).get('from') !== 'orientation') return;
+            var ORI = '../Orientation%20Hub/orientation-hub.html';
+            window.AISA_MODULES_URL = ORI;
+            document.addEventListener('DOMContentLoaded', function () {
+                document.querySelectorAll('button[onclick*="pd.html"]').forEach(function (b) {
+                    b.setAttribute('onclick', "window.location.href='" + ORI + "'");
+                });
+            });
+        })();
+
         // --- Progress Tracking ---
         function updateProgress() {
             const checkboxes = document.querySelectorAll('.module-checkbox');
