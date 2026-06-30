@@ -34,6 +34,47 @@
     var TUTORIAL_ID = 'tutorial';
     var SURVEY_ID   = 'survey';
 
+    /* Durable, per-user, write-once record that this device has seen the
+     * user click through the tutorial / confirm the survey. This is
+     * deliberately SEPARATE from gate.js's completions cache, which is
+     * overwritten wholesale on every getCompletions() call — a single
+     * stale or failed server read would otherwise wipe the only memory
+     * that onboarding is done and re-prompt the user. We set this flag
+     * the instant the user finishes, so they are never asked again on
+     * this device regardless of server round-trip hiccups. */
+    var ONB_FLAG_KEY = 'aisa_onboarding_v1';
+
+    function currentEmail() {
+        try {
+            var auth = window.aisaAuth;
+            var user = auth && auth.getUser && auth.getUser();
+            return (user && user.email) || '';
+        } catch (e) { return ''; }
+    }
+
+    function readLocalDone() {
+        try {
+            var email = currentEmail();
+            if (!email) return {};
+            var raw = localStorage.getItem(ONB_FLAG_KEY);
+            if (!raw) return {};
+            var parsed = JSON.parse(raw);
+            if (!parsed || parsed.email !== email) return {};
+            return parsed;
+        } catch (e) { return {}; }
+    }
+
+    function markLocalDone(which) {
+        try {
+            var email = currentEmail();
+            if (!email) return;
+            var cur = readLocalDone();
+            if (cur.email !== email) cur = { email: email };
+            cur[which] = true;
+            localStorage.setItem(ONB_FLAG_KEY, JSON.stringify(cur));
+        } catch (e) {}
+    }
+
     var stylesInjected = false;
     var shownThisLoad  = false;
 
@@ -205,6 +246,10 @@
 
         function finishAndRecord() {
             close();
+            /* Remember locally first, so we never re-prompt on this
+             * device even if the server write below fails or a later
+             * server read comes back stale. */
+            markLocalDone('tutorial');
             if (window.aisaAuth && window.aisaAuth.isConfigured()) {
                 window.aisaAuth.recordEvent(TUTORIAL_ID, 'completed', 100, 'v1').catch(function (err) {
                     console.warn('AISA: could not record tutorial completion', err);
@@ -282,6 +327,8 @@
             }
             doneBtn.disabled = true;
             doneBtn.textContent = 'Saving…';
+            /* Remember locally first — same reasoning as the tutorial. */
+            markLocalDone('survey');
             window.aisaAuth.recordEvent(SURVEY_ID, 'completed', 100, 'v1').then(function () {
                 close();
             }).catch(function (err) {
@@ -305,17 +352,53 @@
 
     /* -------------------- decision logic -------------------- */
 
+    /* Most recent completions we know about (cached, then server). The
+     * tutorial's onFinish callback reads this so its "show the survey
+     * next?" decision uses the freshest data, not a snapshot captured
+     * when the tutorial was first opened from stale cache. */
+    var lastCompletions = [];
+
+    function removeOverlay(id) {
+        var el = document.getElementById(id);
+        if (el && el.parentNode) {
+            el.parentNode.removeChild(el);
+            /* The survey gate locks page scroll while it's up; restore it. */
+            if (id === 'aisa-onb-survey') document.body.style.overflow = '';
+        }
+    }
+
+    function isDone(completions, id, localFlag) {
+        if (localFlag) return true;
+        return completions.some(function (c) { return c.module_id === id; });
+    }
+
     function decide(completions, firstName) {
+        lastCompletions = completions || [];
+        var local   = readLocalDone();
+        var tutDone = isDone(lastCompletions, TUTORIAL_ID, local.tutorial);
+        var surDone = isDone(lastCompletions, SURVEY_ID,   local.survey);
+
+        /* Authoritative "everything's already done" — tear down anything
+         * we may have optimistically shown from stale cache a moment ago.
+         * This is what lets the background server refresh dismiss a
+         * tutorial that the cached snapshot wrongly thought was pending
+         * (e.g. the user finished it on another device). */
+        if (tutDone && surDone) {
+            removeOverlay('aisa-onb-tutorial');
+            removeOverlay('aisa-onb-survey');
+            return;
+        }
+
         if (shownThisLoad) return;
-        var tutDone = completions.some(function (c) { return c.module_id === TUTORIAL_ID; });
-        var surDone = completions.some(function (c) { return c.module_id === SURVEY_ID; });
 
         if (!tutDone) {
             shownThisLoad = true;
             showTutorial(firstName, function () {
                 /* After tutorial (whether completed or dismissed), show
-                 * the survey gate if it's still outstanding. */
-                if (!surDone) showSurveyGate();
+                 * the survey gate if it's still outstanding — re-checked
+                 * against the freshest data and the durable flag. */
+                var l = readLocalDone();
+                if (!isDone(lastCompletions, SURVEY_ID, l.survey)) showSurveyGate();
             });
         } else if (!surDone) {
             shownThisLoad = true;
