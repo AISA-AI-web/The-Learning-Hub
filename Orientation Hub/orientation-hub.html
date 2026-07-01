@@ -256,29 +256,28 @@
                         <span class="mt-auto inline-flex items-center gap-2 text-teal-700 font-semibold text-sm">Start module <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></span>
                     </a>
 
-                </div>
-
-                <!-- Combined onboarding certificate — unlocks when all modules above are complete -->
-                <div class="mt-8 max-w-3xl mx-auto">
-                    <div id="ori-cert-card" class="relative overflow-hidden bg-gradient-to-br from-violet-50 via-white to-amber-50 border border-amber-200 rounded-2xl shadow-md p-6 md:p-8 text-center">
-                        <div class="text-4xl mb-2" aria-hidden="true">&#127891;</div>
-                        <h4 class="font-heading font-black text-xl md:text-2xl text-amber-900">AISA Onboarding &mdash; Asynchronous Certificate</h4>
-                        <p class="text-gray-600 text-sm mt-1 max-w-md mx-auto">Finish all of the orientation trainings above to unlock your certificate.</p>
-                        <div class="mt-4 max-w-md mx-auto">
-                            <div class="flex items-center justify-between text-xs font-bold text-amber-800 mb-1">
+                    <!-- Combined onboarding certificate — fills the grid's last cell, styled as a reward so it's clearly not a training -->
+                    <div id="ori-cert-card" class="relative overflow-hidden rounded-2xl shadow-lg p-6 flex flex-col text-white bg-gradient-to-br from-violet-600 via-violet-700 to-indigo-800">
+                        <span class="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-amber-300 to-amber-400" aria-hidden="true"></span>
+                        <div class="h-12 w-12 rounded-2xl bg-white/15 flex items-center justify-center text-2xl mb-3" aria-hidden="true">&#127891;</div>
+                        <h4 class="text-lg font-bold font-heading mb-1.5 leading-tight">AISA Onboarding Certificate</h4>
+                        <p class="text-violet-100 text-sm mb-4">Unlocks once every orientation training above is complete.</p>
+                        <div class="mb-4">
+                            <div class="flex items-center justify-between text-xs font-bold text-violet-100 mb-1">
                                 <span id="ori-cert-progress-label">0 of 5 trainings complete</span>
                                 <span id="ori-cert-progress-pct">0%</span>
                             </div>
-                            <div class="w-full h-3 bg-amber-100 rounded-full overflow-hidden shadow-inner">
-                                <div id="ori-cert-progress-bar" class="h-full bg-gradient-to-r from-amber-500 to-violet-600 w-0 transition-all duration-700 ease-out"></div>
+                            <div class="w-full h-2.5 bg-white/20 rounded-full overflow-hidden">
+                                <div id="ori-cert-progress-bar" class="h-full bg-gradient-to-r from-amber-300 to-amber-400 w-0 transition-all duration-700 ease-out"></div>
                             </div>
                         </div>
                         <button id="ori-cert-btn" type="button" aria-disabled="true"
-                            class="mt-5 inline-flex items-center justify-center gap-2 font-bold py-3 px-7 rounded-full transition-all border-2 border-violet-300 bg-violet-100 text-violet-800 cursor-not-allowed">
+                            class="mt-auto w-full inline-flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl transition-all border border-white/30 bg-white/15 text-white/80 cursor-not-allowed">
                             <span aria-hidden="true">&#128274;</span> <span id="ori-cert-btn-label">Complete all trainings to download</span>
                         </button>
-                        <p class="text-xs text-gray-500 mt-3">Your name and today's date are filled in automatically. Print &rarr; Save as PDF to keep it.</p>
+                        <p class="text-[11px] text-violet-200 mt-2 text-center">Name &amp; date fill in automatically · Print → Save as PDF.</p>
                     </div>
+
                 </div>
             </section>
 
@@ -346,11 +345,11 @@
                 btn.setAttribute('aria-disabled', String(!unlocked));
                 var icon = btn.querySelector('span[aria-hidden]');
                 if (unlocked) {
-                    btn.className = 'mt-5 inline-flex items-center justify-center gap-2 font-bold py-3 px-7 rounded-full transition-all border-2 border-violet-700 bg-violet-700 text-white hover:bg-violet-800 cursor-pointer shadow-lg hover:-translate-y-0.5';
+                    btn.className = 'mt-auto w-full inline-flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl transition-all bg-white text-violet-800 hover:bg-amber-50 cursor-pointer shadow-lg hover:-translate-y-0.5';
                     if (icon) icon.textContent = '🎓';
                     if (btnLabel) btnLabel.textContent = 'Download your certificate';
                 } else {
-                    btn.className = 'mt-5 inline-flex items-center justify-center gap-2 font-bold py-3 px-7 rounded-full transition-all border-2 border-violet-300 bg-violet-100 text-violet-800 cursor-not-allowed';
+                    btn.className = 'mt-auto w-full inline-flex items-center justify-center gap-2 font-bold py-3 px-5 rounded-xl transition-all border border-white/30 bg-white/15 text-white/80 cursor-not-allowed';
                     if (icon) icon.textContent = '🔒';
                     if (btnLabel) btnLabel.textContent = 'Complete all trainings to download';
                 }
