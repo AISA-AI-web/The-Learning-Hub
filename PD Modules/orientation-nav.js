@@ -20,7 +20,8 @@
         { id: 'payroll-prf',      file: 'payroll-prf-module.html',      title: 'Payroll & Purchase Requisitions' },
         { id: 'visa-emirates-id', file: 'visa-emirates-id-module.html', title: 'Employment Visa & Emirates ID' },
         { id: 'campus-safety',    file: 'campus-safety-module.html',    title: 'Campus Layout, Safety & Security' },
-        { id: 'safeguarding',     file: 'safeguarding-module.html',     title: 'Child Safeguarding & Protection' }
+        { id: 'safeguarding',     file: 'safeguarding-module.html',     title: 'Child Safeguarding & Protection' },
+        { id: 'sharepoint-workflows', file: 'sharepoint-workflows-module.html', title: 'SharePoint WorkFlows' }
     ];
     var currentFile = location.pathname.split('/').pop();
     var currentId = (ORDER.filter(function (m) { return m.file === currentFile; })[0] || {}).id;

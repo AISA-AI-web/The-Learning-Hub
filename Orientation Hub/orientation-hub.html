@@ -216,7 +216,7 @@
                     <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900 mt-2">Orientation Training Modules</h3>
                     <p class="text-gray-600 text-sm md:text-base max-w-2xl mx-auto mt-2">Self-paced trainings to complete during onboarding. Progress is shared with the PD Hub &mdash; finish a module here or there and it counts once. Each is available in English &amp; Arabic.</p>
                 </div>
-                <div id="ori-modules" class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div id="ori-modules" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
                     <a href="../PD%20Modules/payroll-prf-module.html?from=orientation" data-module-id="payroll-prf" class="ori-mod card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-amber-500 p-6 flex flex-col">
                         <div class="h-12 w-12 rounded-2xl bg-amber-100 flex items-center justify-center text-2xl mb-3" aria-hidden="true">&#128181;</div>
@@ -249,6 +249,13 @@
                         <span class="mt-auto inline-flex items-center gap-2 text-violet-700 font-semibold text-sm">Start module <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></span>
                     </a>
 
+                    <a href="../PD%20Modules/sharepoint-workflows-module.html?from=orientation" data-module-id="sharepoint-workflows" class="ori-mod card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-teal-500 p-6 flex flex-col">
+                        <div class="h-12 w-12 rounded-2xl bg-teal-100 flex items-center justify-center text-2xl mb-3" aria-hidden="true">&#128451;</div>
+                        <h4 class="text-lg font-bold font-heading text-teal-900 mb-1.5 leading-tight">SharePoint WorkFlows</h4>
+                        <p class="text-gray-600 text-sm mb-4 flex-grow">The AISA WorkFlows hub — request leave, field trips, work orders, housing maintenance and event equipment.</p>
+                        <span class="mt-auto inline-flex items-center gap-2 text-teal-700 font-semibold text-sm">Start module <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></span>
+                    </a>
+
                 </div>
 
                 <!-- Combined onboarding certificate — unlocks when all modules above are complete -->
@@ -259,7 +266,7 @@
                         <p class="text-gray-600 text-sm mt-1 max-w-md mx-auto">Finish all of the orientation trainings above to unlock your certificate.</p>
                         <div class="mt-4 max-w-md mx-auto">
                             <div class="flex items-center justify-between text-xs font-bold text-amber-800 mb-1">
-                                <span id="ori-cert-progress-label">0 of 4 trainings complete</span>
+                                <span id="ori-cert-progress-label">0 of 5 trainings complete</span>
                                 <span id="ori-cert-progress-pct">0%</span>
                             </div>
                             <div class="w-full h-3 bg-amber-100 rounded-full overflow-hidden shadow-inner">
@@ -319,7 +326,7 @@
         (function () {
             var cards = Array.prototype.slice.call(document.querySelectorAll('.ori-mod[data-module-id]'));
             var ORI_IDS = cards.map(function (c) { return c.getAttribute('data-module-id'); });
-            var HOURS = { 'payroll-prf': 1, 'visa-emirates-id': 1, 'campus-safety': 1, 'safeguarding': 2 };
+            var HOURS = { 'payroll-prf': 1, 'visa-emirates-id': 1, 'campus-safety': 1, 'safeguarding': 2, 'sharepoint-workflows': 1 };
             var TOTAL_HOURS = ORI_IDS.reduce(function (s, id) { return s + (HOURS[id] || 1); }, 0);
 
             var btn = document.getElementById('ori-cert-btn');
