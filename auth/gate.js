@@ -851,20 +851,21 @@
                     return Math.round((checked / boxes.length) * 100);
                 }
 
-                function maybeRecord() {
+                function doRecord(announce) {
                     if (recorded) return;
                     if (currentPct() !== 100) return;
                     if (!api.isConfigured()) return;
                     recorded = true;
                     /* Announce a genuine, user-driven completion so shared
-                     * helpers (the certificate popup) can react. This fires
-                     * once per session and NOT on silent rehydration, because
-                     * applyDone() sets `recorded` without calling maybeRecord. */
-                    try {
-                        document.dispatchEvent(new CustomEvent('aisa:module-completed', {
-                            detail: { moduleId: moduleId, version: version }
-                        }));
-                    } catch (e) {}
+                     * helpers (the certificate popup) can react. Skipped on a
+                     * silent reconcile so revisits don't re-pop the celebration. */
+                    if (announce) {
+                        try {
+                            document.dispatchEvent(new CustomEvent('aisa:module-completed', {
+                                detail: { moduleId: moduleId, version: version }
+                            }));
+                        } catch (e) {}
+                    }
                     api.recordEvent(moduleId, 'completed', 100, version).then(function () {
                         showToast('Completion saved');
                     }).catch(function (err) {
@@ -872,6 +873,23 @@
                         console.warn('AISA: could not record completion for ' + moduleId, err);
                         showToast("Couldn't save your completion. Tick a box to retry.", 'error');
                     });
+                }
+                function maybeRecord() { doRecord(true); }
+
+                /* Has the learner finished this module on this device, even
+                 * if the backend never got the completion event? True when
+                 * every section checkbox is ticked, or the training wizard's
+                 * saved state shows all chapters done. Lets us reconcile a
+                 * completion whose original POST silently failed. */
+                function locallyCompleted() {
+                    if (currentPct() === 100) return true;
+                    try {
+                        var raw = localStorage.getItem('aisa_training_' + moduleId);
+                        if (!raw) return false;
+                        var st = JSON.parse(raw);
+                        var total = document.querySelectorAll('[data-chapter][data-chapter-title]').length;
+                        return !!st && Array.isArray(st.completed) && total > 0 && st.completed.length >= total;
+                    } catch (e) { return false; }
                 }
 
                 function applyDone() {
@@ -900,7 +918,24 @@
                     /* Step 2: refresh from the server in the background. */
                     api.getCompletions().then(function (items) {
                         var done = (items || []).some(function (c) { return c.module_id === moduleId; });
-                        if (done && !recorded) applyDone();
+                        if (done) {
+                            if (!recorded) applyDone();
+                            return;
+                        }
+                        /* The server has no completion for this module. If the
+                         * learner actually finished it here (e.g. the original
+                         * record POST failed and was never retried), record it
+                         * now so the dashboards and certificate catch up. */
+                        if (!recorded && locallyCompleted()) {
+                            var boxes = document.querySelectorAll(selector);
+                            for (var i = 0; i < boxes.length; i++) boxes[i].checked = true;
+                            if (refresh) {
+                                var origConfetti = window.confetti;
+                                window.confetti = function () {};
+                                try { refresh(); } finally { window.confetti = origConfetti; }
+                            }
+                            doRecord(false);
+                        }
                     }).catch(function (err) {
                         console.warn('AISA: could not load completion status for ' + moduleId, err);
                     });
