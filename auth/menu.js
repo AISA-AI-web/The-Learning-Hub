@@ -85,7 +85,7 @@
         { title: 'Meet the AISA team',                 desc: 'Leadership and key staff directory',                            href: 'Orientation%20Hub/meet-the-team.html',                                             icon: '\u{1F465}', tag: 'Onboarding' },
         { title: 'Programs & Curriculum',              desc: 'Academic programs and curriculum overview',                     href: 'Orientation%20Hub/programs-and-curriculum.html',                                   icon: '\u{1F4DA}', tag: 'Onboarding' },
         { title: 'Work matters & policies',            desc: 'HR essentials, professional standards, policies',               href: 'Orientation%20Hub/work-matters.html',                                              icon: '\u{1F4CB}', tag: 'Onboarding' },
-        { title: 'New Teachers Onboarding Guide (PDF)', desc: 'Full onboarding handbook PDF for new staff',                   href: 'Orientation%20Hub/Copy%20of%20AISA%20New%20Teachers%20%20Onbording%20Guide%20.pdf', icon: '\u{1F4C4}', tag: 'Reference' },
+        { title: 'Staff & Faculty Handbook 2026–2027 (PDF)', desc: 'The authoritative staff reference — policies, conduct, leave, safeguarding, appraisal', href: 'Orientation%20Hub/AISA-Staff-Faculty-Handbook-2026-2027.pdf', icon: '\u{1F4D8}', tag: 'Reference' },
 
         /* Tools */
         { title: 'Tools & Resources',                  desc: 'AI tools, templates, and reference materials',                  href: 'Tools%20and%20Resources/tools.html',                                               icon: '\u{1F6E0}', tag: 'Hub' },
