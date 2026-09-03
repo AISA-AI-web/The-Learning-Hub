@@ -47,6 +47,10 @@
         // restore these entries from git history (and the nav link in menu.js).
 
         // === PD modules ===
+        // Admin-only preview — hidden from staff search until released. When the
+        // Sustainability Team approves it, drop `adminOnly` (and un-gate the page +
+        // the pd.html card) to make it visible to everyone.
+        { title: "Sustainability at AISA", desc: "Whole-school staff course — the 2026–2027 vision, the year's initiatives, and small everyday actions. (Admin preview — not yet released.)", url: "PD%20Modules/sustainability-module.html", type: "PD Module", icon: "🌱", keywords: "sustainability sustainable eco environment recycling paper recycling box waste reduction circular economy biodiversity conservation water energy climate action eco committee clothing swap junk kouture earth day single use plastic printing whole school 2026 2027 compulsory staff course green admin preview", adminOnly: true },
         { title: "Objectives & Success Criteria", desc: "Craft clear objectives and tiered success criteria.", url: "PD%20Modules/pd.html#module-objectives", type: "PD Module", icon: "🎯", keywords: "objectives success criteria lesson planning tiered differentiation" },
         { title: "NotebookLM for Presentations", desc: "Generate, resource, and refine slide decks in minutes.", url: "PD%20Modules/notebooklm-module.html", type: "PD Module", icon: "📊", keywords: "notebooklm ai presentations slides deck gemini lesson planning" },
         { title: "Chalkie.ai — A Practical Training Guide", desc: "Drafting partner, not lesson designer. DOK watch-outs, worksheet caveats, plan-then-prompt workflow.", url: "PD%20Modules/chalkie-module.html", type: "PD Module", icon: "🧠", keywords: "chalkie ai teaching assistant lesson planning slides worksheets dok depth of knowledge differentiation success criteria magicschool gemini accountability tool training drafting plan then prompt" },

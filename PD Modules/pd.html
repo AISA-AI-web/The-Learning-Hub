@@ -262,6 +262,34 @@
             <section class="mb-16">
                 <div id="pd-modules-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 mb-12">
 
+                    <!-- Module: Sustainability at AISA — ADMIN PREVIEW (not yet released to staff).
+                         Hidden by default (style="display:none" + .pd-admin-only); revealed only
+                         once isAdmin() resolves true. See the reveal + filter guard in the scripts
+                         below. To release to all staff: remove data-admin-only, the .pd-admin-only
+                         class and the inline display:none, and flip adminOnly in search-index.js. -->
+                    <a href="sustainability-module.html" data-module-id="sustainability" data-admin-only="true" style="display:none;" class="pd-module pd-admin-only group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="required" data-keywords="sustainability sustainable eco environment recycling paper recycling box waste reduction circular economy biodiversity conservation water energy climate action eco committee clothing swap junk kouture earth day single use plastic printing whole school 2026 2027 admin preview compulsory staff course green">
+                        <div class="h-1.5 bg-gradient-to-r from-green-500 to-lime-500"></div>
+                        <div class="p-5 flex flex-col h-full">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="module-icon h-14 w-14 rounded-2xl bg-gradient-to-br from-green-50 to-lime-100 border border-green-200 flex items-center justify-center text-3xl shadow-sm">🌱</div>
+                                <div class="flex flex-col items-end gap-1.5">
+                                    <span class="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest bg-amber-100 text-amber-800 border border-amber-300 rounded-full px-2.5 py-1">🔒 Admin preview</span>
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-green-700">Sustainability</span>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-gray-900 leading-tight mb-1.5">Sustainability at AISA</h4>
+                            <p class="text-sm text-gray-600 leading-snug mb-3 flex-1">Whole-school staff course — the 2026&ndash;2027 vision, the year&rsquo;s initiatives, and the small everyday actions every staff member can take. <span class="font-semibold text-amber-700">Not yet released to staff.</span></p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 mb-3 pt-3 border-t border-gray-100">
+                                <span class="inline-flex items-center gap-1">⏱ ~20–30 min</span>
+                                <span class="inline-flex items-center gap-1">📚 8 chapters</span>
+                                <span class="inline-flex items-center gap-1">✓ Knowledge checks</span>
+                            </div>
+                            <span class="block w-full text-center bg-green-600 group-hover:bg-green-700 text-white py-2.5 rounded-xl font-bold text-sm transition-colors">
+                                Preview module →
+                            </span>
+                        </div>
+                    </a>
+
                     <!-- Module: AI Vision & Ethical Framework — REQUIRED -->
                     <a href="ai-ethics-module.html" data-module-id="ai-ethics" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="required" data-keywords="ai artificial intelligence ethics policy governance principles data protection academic integrity scaffolding approved tools vision framework required">
                         <div class="h-1.5 bg-gradient-to-r from-emerald-500 to-emerald-700"></div>
@@ -728,6 +756,13 @@
                 const q = input.value.trim().toLowerCase();
                 let visible = 0;
                 modules.forEach(card => {
+                    // Admin-only modules (e.g. unreleased previews) stay hidden
+                    // for everyone until isAdmin() reveals them. Guard here so
+                    // the filter never un-hides them for a non-admin.
+                    if (card.dataset.adminOnly === 'true' && !window.__pdAdminRevealed) {
+                        card.style.display = 'none';
+                        return;
+                    }
                     const keywords = (card.getAttribute('data-keywords') || '').toLowerCase();
                     const text = card.innerText.toLowerCase();
                     const cat = (card.getAttribute('data-category') || '').toLowerCase();
@@ -804,6 +839,10 @@
                 const allCards = document.querySelectorAll('.pd-module');
                 const counts = { all: 0, completed: 0 };
                 allCards.forEach(card => {
+                    // Don't count admin-only modules that haven't been revealed
+                    // to this user — otherwise the filter chip totals would leak
+                    // the existence of an unreleased module to non-admins.
+                    if (card.dataset.adminOnly === 'true' && !window.__pdAdminRevealed) return;
                     const cat = (card.getAttribute('data-category') || '').toLowerCase();
                     const done = card.dataset.completed === 'true';
                     if (done) {
@@ -855,6 +894,22 @@
 
             function runSync(auth) {
                 if (!auth.isConfigured()) return;
+
+                // Reveal admin-only preview modules (e.g. unreleased courses)
+                // once we've confirmed this user is an admin. Non-admins never
+                // see them: the card stays display:none and is excluded from
+                // the filter + the chip counts.
+                if (typeof auth.isAdmin === 'function') {
+                    auth.isAdmin().then(function (yes) {
+                        if (!yes) return;
+                        window.__pdAdminRevealed = true;
+                        document.querySelectorAll('.pd-module[data-admin-only="true"]').forEach(function (card) {
+                            card.style.removeProperty('display');
+                        });
+                        recomputeFilterCounts();
+                        if (typeof window.__pdReapplyFilter === 'function') window.__pdReapplyFilter();
+                    }).catch(function () {});
+                }
 
                 // 1. Synchronously apply the cached state so the page
                 //    starts in the correct shape with no flash.
