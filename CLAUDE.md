@@ -38,6 +38,22 @@ fail silently and the dependent UIs stay empty:
      Notifications fire automatically via the existing `notifications`
      sheet when forms move between stages.
 
+- **Reminder emails from the training tracker** — the admin dashboard's
+  "Remind outstanding" button can now send a real, AISA-branded email as
+  well as the in-app bell. This rides on the existing `post_notification`
+  action (no new endpoint, no new sheet): it accepts optional
+  `send_email`, `email_link` and `email_link_label`, and replies with an
+  `email: { sent, failed, skipped }` summary. `MailApp.sendEmail` is used,
+  so the first run after redeploying prompts for the Gmail/send-mail
+  authorisation scope — approve it once as the account that owns the
+  script. One personalised message per recipient (first name pulled from
+  the `sessions` and `roster` tabs), `replyTo` set to the admin who sent
+  it, and sends stop short of both the daily mail quota and the 6-minute
+  execution cap, reporting anything unsent as `skipped`.
+  Unlike the items above this one does **not** fail silently: until the
+  redeploy, the tracker posts the bell notification and then warns the
+  admin in red that no emails went out.
+
 ## Next Digital Lion Newsletter — items to include
 
 - **NotebookLM ⇄ Google Drive auto-sync.** Files uploaded to NotebookLM

@@ -1295,10 +1295,178 @@ function postNotification(claims, body) {
   row[NOTIF_HEADERS.indexOf('target_emails')]  = target_emails.join(',');
   row[NOTIF_HEADERS.indexOf('active')]         = true;
   getNotifsSheet().appendRow(row);
-  return {
+
+  const out = {
     ok: true, id: id,
     target_tags: target_tags, target_emails: target_emails
   };
+
+  // Optional second delivery: real email on top of the in-app bell.
+  // Only ever to an explicit recipient list, so an "everyone" audience
+  // can never turn into a school-wide blast by accident.
+  const wantEmail = body.send_email === true ||
+                    String(body.send_email || '') === '1' ||
+                    String(body.send_email || '').toLowerCase() === 'true';
+  if (wantEmail) {
+    out.email = target_emails.length
+      ? _sendReminderEmails(claims, target_emails, title, text,
+                            String(body.email_link || '').trim(),
+                            String(body.email_link_label || '').trim())
+      : { sent: 0, failed: 0, skipped: 0, reason: 'no_explicit_recipients' };
+  }
+  return out;
+}
+
+// ---------- Reminder emails ----------
+//
+// Reminders post to the in-app bell first (that write always happens);
+// email is an optional second delivery on top, so a mail failure can
+// never lose the notification itself.
+
+/* Display names for a set of addresses, from the sessions tab (everyone
+ * who has signed in) plus the optional roster tab. Lets a reminder open
+ * with "Hi Sara," rather than an email address. */
+function _namesForEmails(emails) {
+  const want = {};
+  emails.forEach(function (e) { want[e] = ''; });
+
+  const sess = getSessionsSheet();
+  const sLast = sess.getLastRow();
+  if (sLast >= 2) {
+    // SESSION_HEADERS: token, email, name, created, expires, last_used, ua
+    const rows = sess.getRange(2, 1, sLast - 1, SESSION_HEADERS.length).getValues();
+    for (let i = 0; i < rows.length; i++) {
+      const e = String(rows[i][1] || '').trim().toLowerCase();
+      if (e in want && !want[e] && rows[i][2]) want[e] = String(rows[i][2]).trim();
+    }
+  }
+
+  const roster = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(ROSTER_SHEET);
+  if (roster) {
+    const rLast = roster.getLastRow();
+    if (rLast >= 2) {
+      const rows = roster.getRange(2, 1, rLast - 1, 2).getValues();
+      for (let i = 0; i < rows.length; i++) {
+        const e = String(rows[i][0] || '').trim().toLowerCase();
+        if (e in want && !want[e] && rows[i][1]) want[e] = String(rows[i][1]).trim();
+      }
+    }
+  }
+  return want;
+}
+
+function _firstName(name) {
+  const n = String(name || '').trim();
+  return n ? n.split(/\s+/)[0] : '';
+}
+
+function _escHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+/* AISA-branded HTML reminder: deep royal purple header, mustard-gold
+ * call-to-action, white body. Table-based and inline-styled because
+ * that is what mail clients reliably render. */
+function _reminderHtml(greeting, bodyText, linkUrl, linkLabel) {
+  // The in-app body carries the link inline; in email the button covers
+  // it, so drop the line that would just repeat the URL.
+  let text = String(bodyText || '');
+  if (linkUrl) {
+    text = text.split('\n')
+      .filter(function (line) { return line.indexOf(linkUrl) === -1; })
+      .join('\n').replace(/\n{3,}/g, '\n\n').trim();
+  }
+
+  const paras = text.split(/\n{2,}/).filter(function (p) { return p.trim(); })
+    .map(function (p) {
+      return '<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#334155;">' +
+        _escHtml(p).replace(/\n/g, '<br>') + '</p>';
+    }).join('');
+
+  const button = linkUrl
+    ? '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 0;">' +
+        '<tr><td style="background:#D8B664;border-radius:8px;">' +
+          '<a href="' + _escHtml(linkUrl) + '" ' +
+             'style="display:inline-block;padding:13px 26px;font-size:15px;font-weight:700;' +
+             'color:#21076C;text-decoration:none;">' +
+            _escHtml(linkLabel || 'Open the training') +
+          '</a>' +
+        '</td></tr></table>'
+    : '';
+
+  return '<!DOCTYPE html><html><body style="margin:0;padding:0;background:#f8fafc;">' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" ' +
+           'style="background:#f8fafc;padding:24px 12px;"><tr><td align="center">' +
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" ' +
+             'style="max-width:560px;background:#ffffff;border-radius:14px;overflow:hidden;' +
+             'font-family:\'DM Sans\',\'Segoe UI\',Arial,sans-serif;">' +
+        '<tr><td style="background:#21076C;padding:20px 28px;">' +
+          '<p style="margin:0;color:#ffffff;font-size:17px;font-weight:700;">AISA Learning Hub</p>' +
+          '<p style="margin:3px 0 0;color:#D8B664;font-size:11px;font-weight:700;' +
+             'letter-spacing:.09em;text-transform:uppercase;">Professional Development</p>' +
+        '</td></tr>' +
+        '<tr><td style="padding:28px;">' +
+          (greeting ? '<p style="margin:0 0 16px;font-size:16px;font-weight:700;color:#21076C;">' +
+             _escHtml(greeting) + '</p>' : '') +
+          paras + button +
+        '</td></tr>' +
+        '<tr><td style="padding:16px 28px 24px;border-top:1px solid #eef2f7;">' +
+          '<p style="margin:0;font-size:12px;line-height:1.5;color:#94a3b8;">' +
+            'Sent from the AISA Learning Hub. This reminder is also waiting ' +
+            'in your notifications the next time you sign in.' +
+          '</p>' +
+        '</td></tr>' +
+      '</table>' +
+    '</td></tr></table></body></html>';
+}
+
+/* One personalised email per recipient. Never throws: a mail problem is
+ * reported back as counts so the caller can tell the admin exactly what
+ * happened, while the in-app notification stands regardless. */
+function _sendReminderEmails(claims, emails, title, bodyText, linkUrl, linkLabel) {
+  const out = { sent: 0, failed: 0, skipped: 0, quota_left: 0, errors: [] };
+  if (!emails.length) return out;
+
+  let quota = 0;
+  try { quota = MailApp.getRemainingDailyQuota(); } catch (e) { quota = 0; }
+  out.quota_left = quota;
+  if (quota <= 0) { out.skipped = emails.length; return out; }
+
+  const names   = _namesForEmails(emails);
+  const subject = title || 'A reminder from the AISA Learning Hub';
+  const replyTo = String(claims && claims.email || '').trim();
+  const started = Date.now();
+
+  for (let i = 0; i < emails.length; i++) {
+    // Stop short of the web app's 6-minute execution cap and of the daily
+    // mail quota; whatever is left is reported as skipped, not lost.
+    if (Date.now() - started > 240000 || out.sent >= quota) {
+      out.skipped += emails.length - i;
+      break;
+    }
+    const to    = emails[i];
+    const first = _firstName(names[to]);
+    const greet = first ? ('Hi ' + first + ',') : 'Hi,';
+    const opts  = {
+      to:       to,
+      subject:  subject,
+      body:     greet + '\n\n' + bodyText + (linkUrl ? '\n\n' + linkUrl : ''),
+      htmlBody: _reminderHtml(greet, bodyText, linkUrl, linkLabel),
+      name:     'AISA Learning Hub'
+    };
+    if (replyTo) opts.replyTo = replyTo;
+
+    try {
+      MailApp.sendEmail(opts);
+      out.sent++;
+    } catch (err) {
+      out.failed++;
+      if (out.errors.length < 5) out.errors.push(String(err));
+    }
+  }
+  return out;
 }
 
 function markNotificationRead(claims, body) {

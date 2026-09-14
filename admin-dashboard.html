@@ -325,9 +325,13 @@
                     <textarea id="notify-body" rows="6" maxlength="4000"
                               class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-300"></textarea>
                 </div>
-                <p class="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 leading-snug">
-                    This posts to each person's notification bell in the Learning Hub — it does not send an email.
-                </p>
+                <label for="notify-email" class="flex items-start gap-2.5 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 cursor-pointer hover:border-amber-300 transition-colors">
+                    <input type="checkbox" id="notify-email" checked class="mt-0.5 rounded">
+                    <span class="text-xs leading-snug min-w-0">
+                        <span class="font-bold text-slate-800 block">Also send as an email</span>
+                        <span id="notify-delivery-note" class="text-slate-500"></span>
+                    </span>
+                </label>
                 <p id="notify-status" class="text-sm font-semibold"></p>
             </div>
 
@@ -639,6 +643,30 @@
             };
         }
 
+        /* Where the email's call-to-action button points. One training in
+         * scope links straight to it; a wider scope lands on the staff PD
+         * dashboard, which lists everything outstanding. */
+        function notifyLinkFor(mods) {
+            if (mods.length === 1) {
+                const u = moduleUrl(mods[0]);
+                if (u) return { url: u, label: 'Open the training' };
+            }
+            try {
+                const u = new URL('dashboard.html', location.href).href;
+                if (/^https?:/i.test(u)) return { url: u, label: 'Open the Learning Hub' };
+            } catch (e) { /* falls through */ }
+            return { url: '', label: '' };
+        }
+
+        function updateDeliveryNote() {
+            const n = outstanding().length;
+            const who = n + (n === 1 ? ' person' : ' people');
+            document.getElementById('notify-delivery-note').textContent =
+                document.getElementById('notify-email').checked
+                    ? 'Emails ' + who + ' now, and posts to their notification bell.'
+                    : 'Posts to their notification bell only — they see it next time they sign in.';
+        }
+
         function setNotifyStatus(text, kind) {
             const el = document.getElementById('notify-status');
             el.textContent = text || '';
@@ -670,6 +698,11 @@
                     Math.ceil(targets.length / NOTIFY_BATCH) + ' batches.';
             }
 
+            /* Always reopen with email on. A sticky opt-out is the wrong
+             * failure mode: an admin who unchecked it once would go on
+             * sending bell-only reminders without noticing. */
+            document.getElementById('notify-email').checked = true;
+            updateDeliveryNote();
             setNotifyStatus('');
             document.getElementById('notify-send').disabled = false;
             document.getElementById('notify-modal').classList.remove('hidden');
@@ -685,8 +718,15 @@
             const body  = document.getElementById('notify-body').value.trim();
             if (!title && !body) { setNotifyStatus('Add a title or a message first.', 'error'); return; }
 
-            const emails = outstanding().map(p => p.email);
+            const targets = outstanding();
+            const emails = targets.map(p => p.email);
             if (!emails.length) { setNotifyStatus('Nobody left to remind.', 'error'); return; }
+
+            const wantEmail = document.getElementById('notify-email').checked;
+            const link = notifyLinkFor(scopeModules());
+            const opts = wantEmail
+                ? { sendEmail: true, emailLink: link.url, emailLinkLabel: link.label }
+                : null;
 
             const batches = [];
             for (let i = 0; i < emails.length; i += NOTIFY_BATCH) {
@@ -695,19 +735,46 @@
 
             const btn = document.getElementById('notify-send');
             btn.disabled = true;
-            setNotifyStatus('Sending…');
+            setNotifyStatus(wantEmail ? 'Sending emails…' : 'Sending…');
+
+            // Tally what the server reports back across every batch.
+            const tally = { sent: 0, failed: 0, skipped: 0, supported: true };
 
             batches.reduce((chain, batch) => chain.then(() => {
-                return AUTH.postNotification(title, body, [], batch).then(res => {
+                return AUTH.postNotification(title, body, [], batch, opts).then(res => {
                     // The backend answers { ok:false, error } in-band rather
                     // than rejecting, so surface that as a real failure.
                     if (res && res.ok === false) throw new Error(res.error || 'post_failed');
+                    if (wantEmail) {
+                        // A backend that predates email support simply omits
+                        // `email` — that means the bell fired but no mail did.
+                        if (res && res.email) {
+                            tally.sent    += res.email.sent    || 0;
+                            tally.failed  += res.email.failed  || 0;
+                            tally.skipped += res.email.skipped || 0;
+                        } else {
+                            tally.supported = false;
+                        }
+                    }
                     return res;
                 });
             }), Promise.resolve()).then(() => {
-                setNotifyStatus('Reminder sent to ' + emails.length +
-                    (emails.length === 1 ? ' person.' : ' people.'), 'ok');
-                setTimeout(closeNotify, 1600);
+                const who = emails.length + (emails.length === 1 ? ' person' : ' people');
+                if (!wantEmail) {
+                    setNotifyStatus('Posted to ' + who + '\u2019s notification bell.', 'ok');
+                } else if (!tally.supported) {
+                    // Loud on purpose: the admin asked for email and didn't get it.
+                    setNotifyStatus('Posted to ' + who + '\u2019s notification bell, but NO emails were sent — ' +
+                        'the Apps Script backend needs redeploying.', 'error');
+                    btn.disabled = false;
+                    return;   // leave the modal open so the warning is read
+                } else {
+                    let msg = 'Reminder sent to ' + who + ' — ' + tally.sent + ' emailed';
+                    if (tally.failed)  msg += ', ' + tally.failed + ' failed';
+                    if (tally.skipped) msg += ', ' + tally.skipped + ' skipped (daily email quota)';
+                    setNotifyStatus(msg + '.', tally.failed || tally.skipped ? 'error' : 'ok');
+                }
+                setTimeout(closeNotify, tally.failed || tally.skipped ? 4000 : 1600);
             }).catch(err => {
                 console.warn('AISA: reminder failed', err);
                 setNotifyStatus('Could not send the reminder. Please try again.', 'error');
@@ -819,6 +886,7 @@
         document.getElementById('notify-cancel').addEventListener('click', closeNotify);
         document.getElementById('notify-backdrop').addEventListener('click', closeNotify);
         document.getElementById('notify-send').addEventListener('click', sendNotify);
+        document.getElementById('notify-email').addEventListener('change', updateDeliveryNote);
         document.addEventListener('keydown', function (ev) {
             if (ev.key === 'Escape') closeNotify();
         });

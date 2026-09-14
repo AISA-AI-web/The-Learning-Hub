@@ -639,13 +639,26 @@
             markAllNotificationsRead: function () {
                 return apiCall('mark_all_notifications_read');
             },
-            postNotification: function (title, body, targetTags, targetEmails) {
-                return apiCall('post_notification', {
+            /* `options` is optional and backwards compatible:
+             *   { sendEmail: true, emailLink: '<absolute url>',
+             *     emailLinkLabel: 'Open the training' }
+             * With sendEmail the server also delivers a real email to the
+             * explicit recipient list, on top of the in-app bell, and the
+             * response carries an `email` summary { sent, failed, skipped }. */
+            postNotification: function (title, body, targetTags, targetEmails, options) {
+                var o = options || {};
+                var payload = {
                     title:         title || '',
                     body:          body  || '',
                     target_tags:   Array.isArray(targetTags)   ? targetTags.join(',')   : (targetTags   || ''),
                     target_emails: Array.isArray(targetEmails) ? targetEmails.join(',') : (targetEmails || '')
-                });
+                };
+                if (o.sendEmail) {
+                    payload.send_email = '1';
+                    if (o.emailLink)      payload.email_link       = o.emailLink;
+                    if (o.emailLinkLabel) payload.email_link_label = o.emailLinkLabel;
+                }
+                return apiCall('post_notification', payload);
             },
             deleteNotification: function (id) {
                 return apiCall('delete_notification', { notification_id: id });
