@@ -74,10 +74,24 @@ fail silently and the dependent UIs stay empty:
   sign-in gate is client-side only, so anything committed is
   world-readable regardless of what `gate.js` renders.
 
-## AI Literacy module — outstanding before it can go live
+## AI Literacy module — admin preview, not released
 
-`PD Modules/ai-curriculum-readiness-module.html` is built and
-registered, but must not be announced to staff until:
+`PD Modules/ai-curriculum-readiness-module.html` is on `main` and live,
+but gated to admins exactly the way the Sustainability module is: an
+`#admin-gate` overlay on the page (fails closed), `data-admin-only` on
+the pd.html card, `adminOnly: true` in search-index.js, and no listing
+at all in dashboard.html, menu.js, admin-dashboard.html or
+admin-charts.html. Access is whoever is on the `admins` tab — it is not
+per-person.
+
+**That gate hides the module; it does not protect it.** The GitHub repo
+is public with Pages enabled, so the HTML is readable by anyone with the
+URL whatever the client-side gate renders. Don't put anything in a
+module page that would be a problem to publish.
+
+To release: see the checklist in the pd.html card comment.
+
+Outstanding before it can be announced to staff:
 
 1. **The escalation route is written.** Segment 6 carries a dashed gold
    `.needs-content` block where AISA's real DSL name, channel and

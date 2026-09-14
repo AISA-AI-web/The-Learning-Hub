@@ -290,8 +290,13 @@
                         </div>
                     </a>
 
-                    <!-- Module: AI Literacy — Teacher Readiness — REQUIRED for assigned AI Literacy teachers -->
-                    <a href="ai-curriculum-readiness-module.html" data-module-id="ai-curriculum-readiness" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="required" data-keywords="adek ai literacy curriculum teacher readiness cascade internal training instructwin phases strands facilitation moves prompt inquiry critique practice reflect ms hana who is doing the thinking delivery plan proficient tiers responsible use escalation notice record report act review 21 september required">
+                    <!-- Module: AI Literacy — Teacher Readiness — ADMIN PREVIEW (not yet released to staff).
+                         Hidden by default (style="display:none" + .pd-admin-only); revealed only
+                         once isAdmin() resolves true. To release: remove data-admin-only, the
+                         .pd-admin-only class and the inline display:none, flip adminOnly in
+                         search-index.js, remove the #admin-gate from the module page, and add it
+                         back to dashboard.html / menu.js / admin-dashboard.html / admin-charts.html. -->
+                    <a href="ai-curriculum-readiness-module.html" data-module-id="ai-curriculum-readiness" data-admin-only="true" style="display:none;" class="pd-module pd-admin-only group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="required" data-keywords="adek ai literacy curriculum teacher readiness cascade internal training instructwin phases strands facilitation moves prompt inquiry critique practice reflect ms hana who is doing the thinking delivery plan proficient tiers responsible use escalation notice record report act review 21 september required">
                         <div class="h-1.5 bg-gradient-to-r from-indigo-600 to-amber-400"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">

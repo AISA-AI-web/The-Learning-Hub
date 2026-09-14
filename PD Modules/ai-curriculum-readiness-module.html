@@ -304,12 +304,90 @@
             position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
             overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
         }
+
+        /* ---- Admin access gate (pre-release) ---- */
+        #admin-gate {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--aisa-purple);
+            display: grid; place-items: center; padding: 1.5rem;
+        }
+        #admin-gate .ag-card {
+            max-width: 30rem; text-align: center; color: var(--aisa-white);
+        }
+        #admin-gate h1 { color: var(--aisa-white); font-size: 1.6rem; margin: .5rem 0; }
+        #admin-gate p { color: var(--aisa-white); opacity: .9; }
+        #admin-gate .ag-spinner {
+            width: 2rem; height: 2rem; margin: 0 auto 1rem;
+            border: 3px solid var(--aisa-border);
+            border-top-color: var(--aisa-gold);
+            border-radius: 50%;
+            animation: ag-spin .8s linear infinite;
+        }
+        @keyframes ag-spin { to { transform: rotate(360deg); } }
+        #admin-gate .ag-btn {
+            display: inline-block; margin-top: 1rem;
+            background: var(--aisa-gold); color: var(--aisa-purple);
+            font-weight: 700; text-decoration: none;
+            padding: .65rem 1.3rem; border-radius: var(--radius-sm);
+        }
+
+        #admin-preview-banner {
+            background: var(--aisa-gold-wash);
+            border: 2px solid var(--aisa-gold);
+            border-radius: var(--radius);
+            padding: 1rem 1.15rem;
+            margin: 1.5rem auto 0;
+            max-width: var(--maxw);
+            font-size: .92rem;
+        }
+        #admin-preview-banner .apb-tag {
+            display: inline-block;
+            background: var(--aisa-purple); color: var(--aisa-white);
+            font-size: .7rem; font-weight: 700; letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: .2rem .6rem; border-radius: 999px; margin-right: .5rem;
+        }
     </style>
 
     <script src="../auth/gate.js?v=17"></script>
     <script src="../auth/training.js?v=6"></script>
 </head>
 <body>
+
+<!-- ============================================================= -->
+<!-- ADMIN ACCESS GATE                                              -->
+<!-- Pre-release. The overlay covers the page until isAdmin()       -->
+<!-- resolves: admins get the module plus a preview ribbon,         -->
+<!-- everyone else gets a "coming soon" screen. Fails closed.       -->
+<!--                                                                -->
+<!-- This hides the module from staff browsing the Hub. It is NOT   -->
+<!-- access control: the repository is public, so the HTML is       -->
+<!-- readable by anyone who has the URL regardless of this gate.    -->
+<!-- ============================================================= -->
+<div id="admin-gate" role="dialog" aria-modal="true" aria-label="Access check">
+    <div class="ag-card">
+        <div data-gate-checking>
+            <div class="ag-spinner" aria-hidden="true"></div>
+            <p>Checking access&hellip;</p>
+        </div>
+        <div data-gate-denied hidden>
+            <div style="font-size:3rem;line-height:1" aria-hidden="true">&#127891;</div>
+            <h1>Coming soon</h1>
+            <p>The <strong>AI Literacy: Teacher Readiness</strong> module is still being
+               prepared and isn&rsquo;t available yet. It will appear in your PD Modules
+               once it&rsquo;s released.</p>
+            <a class="ag-btn" href="pd.html">&larr; Back to PD Modules</a>
+        </div>
+    </div>
+</div>
+
+<div id="admin-preview-banner" style="display:none" role="note">
+    <span class="apb-tag">Admin preview</span>
+    <span><strong>Not yet released to staff.</strong> Two things are outstanding: the
+    AISA escalation route in segment 6 is still blank, and the Apps Script redeploy
+    has not been confirmed &mdash; until it is, saving an answer will show a red
+    banner rather than store anything.</span>
+</div>
 
 <header class="masthead">
     <div class="masthead-inner">
@@ -1038,6 +1116,37 @@
 
     var MODULE_ID = 'ai-curriculum-readiness';
 
+    /* ---- Pre-release admin gate ----
+     * Fails closed: anything other than a confirmed admin gets the
+     * "coming soon" screen. Note this hides the page, it does not
+     * protect it — the repo is public, so the markup is readable by
+     * anyone with the URL. It keeps staff from stumbling in early;
+     * it is not a security boundary. */
+    (function () {
+        function revealPreview() {
+            var gate = document.getElementById('admin-gate');
+            if (gate) gate.remove();
+            var banner = document.getElementById('admin-preview-banner');
+            if (banner) banner.style.removeProperty('display');
+        }
+        function showDenied() {
+            var gate = document.getElementById('admin-gate');
+            if (!gate) return;
+            var checking = gate.querySelector('[data-gate-checking]');
+            var denied   = gate.querySelector('[data-gate-denied]');
+            if (checking) checking.hidden = true;
+            if (denied)   denied.hidden   = false;
+        }
+        if (!window.aisaReady) { showDenied(); return; }
+        window.aisaReady(function (auth) {
+            /* No backend means no way to verify admin status. */
+            if (!auth.isConfigured || !auth.isConfigured()) { showDenied(); return; }
+            auth.isAdmin().then(function (yes) {
+                yes ? revealPreview() : showDenied();
+            }).catch(function () { showDenied(); });
+        });
+    })();
+
     /* Segment id -> the capture prefix its fields use. Saves are grouped
      * by segment so a teacher who does three segments today and four
      * tomorrow never overwrites the earlier ones. */
@@ -1161,20 +1270,23 @@
 
     hydrate(readLocal());
 
-    if (window.aisaReady && window.aisaAuth && window.aisaAuth.getModuleResponse) {
-        window.aisaReady.then(function () {
-            return window.aisaAuth.getModuleResponse(MODULE_ID);
-        }).then(function (r) {
-            if (r && r.found && r.data) {
-                /* Server wins on conflict: it is the record, and it is
-                 * what survives a device change. */
-                hydrate(r.data);
-                var local = readLocal();
-                Object.keys(r.data).forEach(function (s) { local[s] = r.data[s]; });
-                writeLocal(local);
-            }
-        }).catch(function (err) {
-            showCaptureAlert(err);
+    /* aisaReady takes a callback — aisaAuth does not exist yet at parse
+     * time, which is the whole reason the helper exists. */
+    if (window.aisaReady) {
+        window.aisaReady(function (auth) {
+            if (!auth || !auth.getModuleResponse) return;
+            auth.getModuleResponse(MODULE_ID).then(function (r) {
+                if (r && r.found && r.data) {
+                    /* Server wins on conflict: it is the record, and it
+                     * is what survives a device change. */
+                    hydrate(r.data);
+                    var local = readLocal();
+                    Object.keys(r.data).forEach(function (s) { local[s] = r.data[s]; });
+                    writeLocal(local);
+                }
+            }).catch(function (err) {
+                showCaptureAlert(err);
+            });
         });
     }
 
@@ -1250,8 +1362,12 @@
         if (window.AisaTraining && window.AisaTraining.init) {
             window.AisaTraining.init({ moduleId: MODULE_ID });
         }
-        if (window.aisaAuth && window.aisaAuth.wireModule) {
-            window.aisaAuth.wireModule({ moduleId: MODULE_ID, version: 'v1' });
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                if (auth && auth.wireModule) {
+                    auth.wireModule({ moduleId: MODULE_ID, version: 'v1' });
+                }
+            });
         }
     }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
