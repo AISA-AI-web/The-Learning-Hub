@@ -76,10 +76,8 @@ fail silently and the dependent UIs stay empty:
 
 ## AI Literacy module — admin preview, not released
 
-`PD Modules/ai-curriculum-readiness-module.html` is **not on `main`
-yet** — it sits on `claude/admiring-bardeen-fr6hnp`, pending
-[PR #100](https://github.com/AISA-AI-web/The-Learning-Hub/pull/100).
-Merging that PR publishes it to the live site.
+`PD Modules/ai-curriculum-readiness-module.html` is on `main` and live
+(PR #100, merged 14 Sept 2026), but **not released to staff**.
 
 It is gated to admins exactly the way the Sustainability module is: an
 `#admin-gate` overlay on the page (fails closed), `data-admin-only` on
@@ -121,7 +119,9 @@ Outstanding before it can be announced to staff:
    ("notice–record–report–act–review is a memory aid, not an official
    school reporting route"), so it was left blank rather than filled
    with something plausible. Search `data-editor-block="escalation-route"`.
-2. **The Apps Script redeploy happens**, or teachers hit the red banner.
+2. ~~The Apps Script redeploy~~ — done 14 Sept 2026. If the readiness
+   section in the admin dashboard ever shows its red "no endpoints"
+   banner, the deployed version has been rolled back.
 3. **Videos, if wanted.** Three `.video-slot` elements (segments 1, 3, 4)
    render a "to follow" note until given a `data-src`. The written
    content stands alone, so shipping without them is fine.
