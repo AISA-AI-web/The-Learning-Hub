@@ -120,7 +120,7 @@
                             <div class="w-11 h-11 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-xl flex-shrink-0">⬇️</div>
                             <div class="flex-1 min-w-0">
                                 <p class="font-bold text-slate-900 leading-tight">Export CSV</p>
-                                <p class="text-sm text-slate-500 mt-0.5 leading-snug">Download the full compliance matrix for spreadsheet review.</p>
+                                <p class="text-sm text-slate-500 mt-0.5 leading-snug">Download the tracker exactly as you've filtered and sorted it.</p>
                                 <span class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 mt-2 group-hover:translate-x-0.5 transition-transform">
                                     Download
                                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
@@ -184,17 +184,56 @@
             <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">By module</h3>
             <section id="module-bars" class="grid sm:grid-cols-2 gap-3 mb-10"></section>
 
-            <!-- People matrix -->
-            <div class="flex items-center justify-between gap-4 mb-3 px-1 flex-wrap">
-                <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">By person</h3>
-                <div class="flex items-center gap-3">
-                    <label class="flex items-center gap-2 text-sm font-semibold text-slate-600 cursor-pointer">
-                        <input type="checkbox" id="filter-incomplete" class="rounded"> Only incomplete
-                    </label>
-                    <input id="filter-text" type="search" placeholder="Search name or email…"
-                           class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+            <!-- ==========================================================
+                 Training tracker — "who has done what".
+                 Pick a training (or a group of them), filter by status,
+                 sort any column, then send a reminder to whoever is still
+                 outstanding. The reminder goes out as an in-app
+                 notification via the existing post_notification endpoint.
+                 ========================================================== -->
+            <div class="flex items-start justify-between gap-4 mb-3 px-1 flex-wrap">
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">By person &middot; training tracker</h3>
+                    <p class="text-xs text-slate-500 mt-1 max-w-2xl">
+                        Choose a training to see exactly who has and hasn't completed it. Click any column heading to sort,
+                        then nudge everyone still outstanding with a reminder.
+                    </p>
                 </div>
             </div>
+
+            <!-- Controls -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-3">
+                <div class="flex flex-wrap items-end gap-3">
+                    <div class="flex-1 min-w-[240px]">
+                        <label for="tracker-module" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">Training</label>
+                        <select id="tracker-module" class="w-full text-sm font-semibold border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300"></select>
+                    </div>
+                    <div class="min-w-[160px]">
+                        <label for="tracker-status" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">Status</label>
+                        <select id="tracker-status" class="w-full text-sm font-semibold border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                            <option value="">Any status</option>
+                            <option value="done">Completed</option>
+                            <option value="pending">Not completed</option>
+                        </select>
+                    </div>
+                    <div class="flex-1 min-w-[200px]">
+                        <label for="filter-text" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">Search</label>
+                        <input id="filter-text" type="search" placeholder="Name or email…"
+                               class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                    </div>
+                    <button id="notify-btn" type="button"
+                            class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-300 whitespace-nowrap">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        <span id="notify-btn-label">Remind outstanding</span>
+                    </button>
+                    <button id="tracker-reset" type="button"
+                            class="text-sm font-bold text-slate-500 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-300 whitespace-nowrap">
+                        Reset
+                    </button>
+                </div>
+                <p id="tracker-count" class="text-xs font-semibold text-slate-500 mt-3"></p>
+            </div>
+
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
                 <table class="matrix w-full text-sm">
                     <thead><tr id="matrix-head"></tr></thead>
@@ -251,32 +290,85 @@
         </div>
     </main>
 
+    <!-- ==============================================================
+         Reminder composer. Opens from the tracker's "Remind outstanding"
+         button, pre-filled for whichever training is in view. Recipients
+         are the people currently visible in the table who have NOT
+         completed that training, so what you filter is what you send.
+         ============================================================== -->
+    <div id="notify-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div id="notify-backdrop" class="absolute inset-0 bg-slate-900/50"></div>
+        <div role="dialog" aria-modal="true" aria-labelledby="notify-modal-title"
+             class="relative bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col">
+            <div class="px-5 py-4 border-b border-slate-100 flex items-start justify-between gap-3">
+                <div>
+                    <h3 id="notify-modal-title" class="font-heading font-black text-slate-900 text-lg leading-tight">Send a reminder</h3>
+                    <p id="notify-modal-sub" class="text-sm text-slate-500 mt-0.5"></p>
+                </div>
+                <button id="notify-close" type="button" aria-label="Close"
+                        class="text-slate-400 hover:text-slate-900 text-2xl leading-none px-1 focus:outline-none focus:ring-2 focus:ring-slate-300 rounded">&times;</button>
+            </div>
+
+            <div class="px-5 py-4 overflow-y-auto space-y-4">
+                <div>
+                    <p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Recipients</p>
+                    <div id="notify-recipients" class="max-h-32 overflow-y-auto bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs space-y-1"></div>
+                    <p id="notify-cap" class="hidden text-[11px] font-semibold text-amber-700 mt-1.5"></p>
+                </div>
+                <div>
+                    <label for="notify-title" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Title</label>
+                    <input id="notify-title" type="text" maxlength="200"
+                           class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-300">
+                </div>
+                <div>
+                    <label for="notify-body" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1.5">Message</label>
+                    <textarea id="notify-body" rows="6" maxlength="4000"
+                              class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-300"></textarea>
+                </div>
+                <p class="text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 leading-snug">
+                    This posts to each person's notification bell in the Learning Hub — it does not send an email.
+                </p>
+                <p id="notify-status" class="text-sm font-semibold"></p>
+            </div>
+
+            <div class="px-5 py-4 border-t border-slate-100 flex items-center justify-end gap-2">
+                <button id="notify-cancel" type="button"
+                        class="text-sm font-bold text-slate-600 hover:text-slate-900 px-4 py-2 rounded-lg hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-300">Cancel</button>
+                <button id="notify-send" type="button"
+                        class="bg-amber-500 hover:bg-amber-600 disabled:bg-slate-200 disabled:text-slate-400 text-white font-bold text-sm px-5 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-300">Send reminder</button>
+            </div>
+        </div>
+    </div>
+
     <script>
-        // Module registry — keep `hours` in sync with dashboard.html
-        // (the same numbers go on the certificate's "PD Hours" badge).
+        // Module registry — keep `hours` and `file` in sync with dashboard.html
+        // (the same numbers go on the certificate's "PD Hours" badge, and
+        // `file` is what a "complete your training" reminder deep-links to).
         const MODULES = [
-            { id: 'ai-ethics',         short: 'AI Ethics',        title: 'AI Vision & Ethical Framework',         required: true,  hours: 1 },
-            { id: 'return-to-school',  short: 'Return to School', title: 'Return to School — Emergency Protocol', required: true,  hours: 2 },
-            { id: 'safeguarding',      short: 'Safeguarding',     title: 'Child Safeguarding & Protection',       required: true,  hours: 2 },
-            { id: 'ai-and-assessment', short: 'Assessment',       title: 'Assessment Design in the Age of AI',    required: false, hours: 1 },
-            { id: 'success-criteria',  short: 'Objectives',       title: 'Objectives & Success Criteria',         required: false, hours: 1 },
-            { id: 'notebooklm',        short: 'NotebookLM',       title: 'NotebookLM Masterclass',                required: false, hours: 1 },
-            { id: 'chalkie',           short: 'Chalkie',          title: 'Chalkie.ai Training',                   required: false, hours: 1 },
-            { id: 'workspace-studio',  short: 'Workspace Studio', title: 'Google Workspace Studio',               required: false, hours: 1 },
-            { id: 'payroll-prf',       short: 'Payroll & PRF',    title: 'Payroll & Purchase Requisitions',       required: false, hours: 1 },
-            { id: 'visa-emirates-id',  short: 'Visa & E-ID',      title: 'Employment Visa & Emirates ID',         required: false, hours: 1 },
-            { id: 'campus-safety',     short: 'Campus Safety',    title: 'Campus Layout, Safety & Security',      required: false, hours: 1 },
-            { id: 'sharepoint-workflows', short: 'SharePoint',    title: 'SharePoint WorkFlows',                  required: false, hours: 1 }
+            { id: 'ai-ethics',         short: 'AI Ethics',        title: 'AI Vision & Ethical Framework',         required: true,  hours: 1, file: 'PD%20Modules/ai-ethics-module.html' },
+            { id: 'return-to-school',  short: 'Return to School', title: 'Return to School — Emergency Protocol', required: true,  hours: 2, file: 'PD%20Modules/return-to-school.html' },
+            { id: 'safeguarding',      short: 'Safeguarding',     title: 'Child Safeguarding & Protection',       required: true,  hours: 2, file: 'PD%20Modules/safeguarding-module.html' },
+            { id: 'ai-and-assessment', short: 'Assessment',       title: 'Assessment Design in the Age of AI',    required: false, hours: 1, file: 'PD%20Modules/ai-and-assessment.html' },
+            { id: 'success-criteria',  short: 'Objectives',       title: 'Objectives & Success Criteria',         required: false, hours: 1, file: 'PD%20Modules/pd.html#module-objectives' },
+            { id: 'notebooklm',        short: 'NotebookLM',       title: 'NotebookLM Masterclass',                required: false, hours: 1, file: 'PD%20Modules/notebooklm-module.html' },
+            { id: 'chalkie',           short: 'Chalkie',          title: 'Chalkie.ai Training',                   required: false, hours: 1, file: 'PD%20Modules/chalkie-module.html' },
+            { id: 'workspace-studio',  short: 'Workspace Studio', title: 'Google Workspace Studio',               required: false, hours: 1, file: 'PD%20Modules/workspace-studio-module.html' },
+            { id: 'payroll-prf',       short: 'Payroll & PRF',    title: 'Payroll & Purchase Requisitions',       required: false, hours: 1, file: 'PD%20Modules/payroll-prf-module.html' },
+            { id: 'visa-emirates-id',  short: 'Visa & E-ID',      title: 'Employment Visa & Emirates ID',         required: false, hours: 1, file: 'PD%20Modules/visa-emirates-id-module.html' },
+            { id: 'campus-safety',     short: 'Campus Safety',    title: 'Campus Layout, Safety & Security',      required: false, hours: 1, file: 'PD%20Modules/campus-safety-module.html' },
+            { id: 'sharepoint-workflows', short: 'SharePoint',    title: 'SharePoint WorkFlows',                  required: false, hours: 1, file: 'PD%20Modules/sharepoint-workflows-module.html' }
         ];
-        // Extra compliance columns tracked the same way.
+        // Extra compliance columns tracked the same way. No `file` — these
+        // aren't PD modules, so reminders for them link nowhere.
         const EXTRA = [
-            { id: 'survey',   short: 'Survey' },
-            { id: 'tutorial', short: 'Tutorial' }
+            { id: 'survey',   short: 'Survey',   title: 'AI & Innovation Survey' },
+            { id: 'tutorial', short: 'Tutorial', title: 'Welcome Tutorial' }
         ];
         const COLUMNS = MODULES.concat(EXTRA);
         const REQUIRED = MODULES.filter(m => m.required);
 
         let DATA = null;       // { people, completions, byEmail }
+        let AUTH = null;       // the gate.js auth handle, once aisaReady fires
         let rendered = false;
 
         function fmtDate(iso) {
@@ -354,61 +446,293 @@
             document.getElementById('module-bars').innerHTML = html;
         }
 
-        function renderMatrix() {
-            const filterText = (document.getElementById('filter-text').value || '').toLowerCase().trim();
-            const onlyIncomplete = document.getElementById('filter-incomplete').checked;
+        /* ==========================================================
+         * Training tracker
+         *
+         * The view is defined by a *scope* (which trainings we're
+         * judging against) crossed with a *status* filter. "Complete"
+         * always means "has finished every training in the scope", so
+         * the same rule reads sensibly for one module, the required
+         * three, or all of them.
+         * ========================================================== */
 
-            // Header
-            let head = '<th class="sticky-col text-left font-bold text-slate-500 px-4 py-3">Staff member</th>';
-            COLUMNS.forEach(c => {
-                head += '<th class="rot text-center text-xs font-bold text-slate-500"><div><span>' + c.short + '</span></div></th>';
+        const ALL_SCOPE = '__all__';
+        const REQUIRED_SCOPE = '__required__';
+        const NOTIFY_BATCH = 200;   // post_notification caps target_emails at 200
+
+        let sortKey = 'name';   // 'name' | 'done' | 'seen' | 'status' | 'completed' | 'mod:<id>'
+        let sortDir = 'asc';
+
+        function escapeHtml(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function buildTrackerOptions() {
+            const opt = m => '<option value="' + escapeHtml(m.id) + '">' + escapeHtml(m.title) + '</option>';
+            document.getElementById('tracker-module').innerHTML =
+                '<option value="' + ALL_SCOPE + '">All trainings (' + MODULES.length + ')</option>' +
+                '<option value="' + REQUIRED_SCOPE + '">Required only (' + REQUIRED.length + ')</option>' +
+                '<optgroup label="Required">' + MODULES.filter(m => m.required).map(opt).join('') + '</optgroup>' +
+                '<optgroup label="Recommended">' + MODULES.filter(m => !m.required).map(opt).join('') + '</optgroup>' +
+                '<optgroup label="Other">' + EXTRA.map(opt).join('') + '</optgroup>';
+        }
+
+        function scopeValue() {
+            return document.getElementById('tracker-module').value || ALL_SCOPE;
+        }
+
+        function scopeModules() {
+            const v = scopeValue();
+            if (v === ALL_SCOPE) return MODULES.slice();
+            if (v === REQUIRED_SCOPE) return REQUIRED.slice();
+            const one = COLUMNS.filter(c => c.id === v);
+            return one.length ? one : MODULES.slice();
+        }
+
+        function scopeLabel() {
+            const v = scopeValue();
+            if (v === ALL_SCOPE) return 'all trainings';
+            if (v === REQUIRED_SCOPE) return 'all required trainings';
+            const m = COLUMNS.filter(c => c.id === v)[0];
+            return m ? m.title : 'all trainings';
+        }
+
+        function isCompleteFor(p, mods) {
+            return mods.every(m => !!p.done[m.id]);
+        }
+
+        function filteredPeople(mods) {
+            const q = (document.getElementById('filter-text').value || '').toLowerCase().trim();
+            const status = document.getElementById('tracker-status').value || '';
+            return DATA.list.filter(p => {
+                if (q && ((p.name || '') + ' ' + p.email).toLowerCase().indexOf(q) === -1) return false;
+                if (status) {
+                    const done = isCompleteFor(p, mods);
+                    if (status === 'done' && !done) return false;
+                    if (status === 'pending' && done) return false;
+                }
+                return true;
             });
-            head += '<th class="text-center font-bold text-slate-500 px-3">Done</th>';
-            head += '<th class="text-right font-bold text-slate-500 px-4">Last seen</th>';
+        }
+
+        /* People in the current view who still owe the scoped training —
+         * exactly the set the reminder button targets. Sorted the same way
+         * as the table so the recipient list reads in the order on screen. */
+        function outstanding() {
+            const mods = scopeModules();
+            return sortPeople(filteredPeople(mods).filter(p => !isCompleteFor(p, mods)), mods);
+        }
+
+        function sortValue(p, mods) {
+            if (sortKey.indexOf('mod:') === 0) return p.done[sortKey.slice(4)] ? 1 : 0;
+            switch (sortKey) {
+                case 'seen':      return p.last_seen ? (Date.parse(p.last_seen) || 0) : 0;
+                case 'done':      return mods.filter(m => p.done[m.id]).length;
+                case 'status':    return isCompleteFor(p, mods) ? 1 : 0;
+                case 'completed': return p.done[mods[0].id] ? (Date.parse(p.done[mods[0].id]) || 0) : 0;
+                default:          return (p.name || p.email || '').toLowerCase();
+            }
+        }
+
+        function sortPeople(list, mods) {
+            const dir = sortDir === 'asc' ? 1 : -1;
+            return list.slice().sort((a, b) => {
+                const va = sortValue(a, mods), vb = sortValue(b, mods);
+                if (va < vb) return -1 * dir;
+                if (va > vb) return  1 * dir;
+                // Name tie-break keeps equal rows from jittering between sorts.
+                return (a.name || a.email || '').localeCompare(b.name || b.email || '');
+            });
+        }
+
+        function sortArrow(key) {
+            return key === sortKey ? (sortDir === 'asc' ? ' ▲' : ' ▼') : '';
+        }
+
+        function renderMatrix() {
+            const mods = scopeModules();
+            // One training in scope → swap the checkbox matrix for a
+            // focused status + completion-date view.
+            const single = mods.length === 1 ? mods[0] : null;
+            const people = sortPeople(filteredPeople(mods), mods);
+
+            let head = '<th data-sort="name" class="sticky-col text-left font-bold text-slate-500 px-4 py-3 cursor-pointer hover:text-slate-900 whitespace-nowrap">Staff member' + sortArrow('name') + '</th>';
+            if (single) {
+                head += '<th data-sort="status" class="text-left font-bold text-slate-500 px-4 cursor-pointer hover:text-slate-900 whitespace-nowrap">Status' + sortArrow('status') + '</th>' +
+                        '<th data-sort="completed" class="text-left font-bold text-slate-500 px-4 cursor-pointer hover:text-slate-900 whitespace-nowrap">Completed on' + sortArrow('completed') + '</th>';
+            } else {
+                mods.forEach(c => {
+                    head += '<th data-sort="mod:' + escapeHtml(c.id) + '" class="rot text-center text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-900"><div><span>' + escapeHtml(c.short) + sortArrow('mod:' + c.id) + '</span></div></th>';
+                });
+                head += '<th data-sort="done" class="text-center font-bold text-slate-500 px-3 cursor-pointer hover:text-slate-900 whitespace-nowrap">Done' + sortArrow('done') + '</th>';
+            }
+            head += '<th data-sort="seen" class="text-right font-bold text-slate-500 px-4 cursor-pointer hover:text-slate-900 whitespace-nowrap">Last seen' + sortArrow('seen') + '</th>';
             document.getElementById('matrix-head').innerHTML = head;
 
-            // Rows
-            let people = DATA.list.slice();
-            people.sort((a, b) => {
-                const na = MODULES.filter(m => a.done[m.id]).length;
-                const nb = MODULES.filter(m => b.done[m.id]).length;
-                if (nb !== na) return nb - na;
-                return (a.name || a.email).localeCompare(b.name || b.email);
-            });
-
-            let shown = 0;
             const body = people.map(p => {
-                const modsDone = MODULES.filter(m => p.done[m.id]).length;
-                if (onlyIncomplete && modsDone === MODULES.length) return '';
-                const hay = (p.name + ' ' + p.email).toLowerCase();
-                if (filterText && hay.indexOf(filterText) === -1) return '';
-                shown++;
-                const cells = COLUMNS.map(c => '<td class="text-center py-2.5">' + check(!!p.done[c.id]) + '</td>').join('');
                 const nameCell = '<td class="sticky-col px-4 py-2.5">' +
-                    '<div class="font-semibold text-slate-900 leading-tight">' + (p.name || '—') + '</div>' +
-                    '<div class="text-xs text-slate-400">' + p.email + '</div></td>';
-                const doneCell = '<td class="text-center px-3 font-bold ' + (modsDone === MODULES.length ? 'text-emerald-600' : 'text-slate-700') + '">' + modsDone + '/' + MODULES.length + '</td>';
+                    '<div class="font-semibold text-slate-900 leading-tight">' + escapeHtml(p.name || '—') + '</div>' +
+                    '<div class="text-xs text-slate-400">' + escapeHtml(p.email) + '</div></td>';
+                let mid;
+                if (single) {
+                    const at = p.done[single.id];
+                    mid = '<td class="px-4 py-2.5">' + (at
+                            ? '<span class="inline-block text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest">Completed</span>'
+                            : '<span class="inline-block text-rose-700 bg-rose-50 border border-rose-200 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest">Not yet</span>') +
+                        '</td><td class="px-4 py-2.5 text-slate-600 whitespace-nowrap">' + (fmtDate(at) || '—') + '</td>';
+                } else {
+                    const n = mods.filter(m => p.done[m.id]).length;
+                    mid = mods.map(c => '<td class="text-center py-2.5">' + check(!!p.done[c.id]) + '</td>').join('') +
+                        '<td class="text-center px-3 font-bold ' + (n === mods.length ? 'text-emerald-600' : 'text-slate-700') + '">' + n + '/' + mods.length + '</td>';
+                }
                 const seenCell = '<td class="text-right px-4 text-xs text-slate-400 whitespace-nowrap">' + (fmtDate(p.last_seen) || '—') + '</td>';
-                return '<tr class="hover:bg-slate-50">' + nameCell + cells + doneCell + seenCell + '</tr>';
+                return '<tr class="hover:bg-slate-50">' + nameCell + mid + seenCell + '</tr>';
             }).join('');
 
             document.getElementById('matrix-body').innerHTML = body;
-            document.getElementById('matrix-empty').classList.toggle('hidden', shown > 0);
+            document.getElementById('matrix-empty').classList.toggle('hidden', people.length > 0);
+            updateTrackerSummary(people, mods);
         }
 
+        function updateTrackerSummary(people, mods) {
+            const done = people.filter(p => isCompleteFor(p, mods)).length;
+            const pending = people.length - done;
+            document.getElementById('tracker-count').innerHTML =
+                'Showing <strong class="text-slate-900">' + people.length + '</strong> of ' + DATA.list.length + ' staff · ' +
+                '<strong class="text-emerald-600">' + done + '</strong> completed · ' +
+                '<strong class="' + (pending ? 'text-rose-600' : 'text-slate-400') + '">' + pending + '</strong> outstanding ' +
+                '<span class="text-slate-400">(' + escapeHtml(scopeLabel()) + ')</span>';
+
+            document.getElementById('notify-btn').disabled = pending === 0;
+            document.getElementById('notify-btn-label').textContent =
+                pending ? ('Remind ' + pending + ' outstanding') : 'Nobody outstanding';
+        }
+
+        /* ---------- Reminder composer ---------- */
+
+        function moduleUrl(m) {
+            if (!m || !m.file) return '';
+            try {
+                const u = new URL(m.file, location.href).href;
+                // renderRichText only linkifies http(s), so skip file:// etc.
+                return /^https?:/i.test(u) ? u : '';
+            } catch (e) { return ''; }
+        }
+
+        function defaultMessage(mods) {
+            if (mods.length === 1) {
+                const m = mods[0], url = moduleUrl(m);
+                return {
+                    title: 'Reminder: complete ' + m.title,
+                    body: 'Our records show you haven\'t completed "' + m.title + '" yet.\n\n' +
+                          (url ? 'Open the training here: ' + url + '\n\n' : '') +
+                          'Please complete it as soon as you can — thank you!'
+                };
+            }
+            return {
+                title: 'Reminder: outstanding PD training',
+                body: 'Our records show you still have training to complete:\n\n' +
+                      mods.map(m => '• ' + m.title).join('\n') +
+                      '\n\nOpen the Learning Hub to finish up — thank you!'
+            };
+        }
+
+        function setNotifyStatus(text, kind) {
+            const el = document.getElementById('notify-status');
+            el.textContent = text || '';
+            el.className = 'text-sm font-semibold ' + (
+                kind === 'error' ? 'text-rose-600' :
+                kind === 'ok'    ? 'text-emerald-600' : 'text-slate-500');
+        }
+
+        function openNotify() {
+            const targets = outstanding();
+            if (!targets.length) return;
+
+            const msg = defaultMessage(scopeModules());
+            document.getElementById('notify-title').value = msg.title;
+            document.getElementById('notify-body').value = msg.body;
+            document.getElementById('notify-modal-sub').textContent =
+                targets.length + (targets.length === 1 ? ' person has' : ' people have') +
+                ' not completed ' + scopeLabel() + '.';
+            document.getElementById('notify-recipients').innerHTML = targets.map(p =>
+                '<div class="flex items-baseline gap-2 min-w-0">' +
+                    '<span class="font-semibold text-slate-800 flex-shrink-0">' + escapeHtml(p.name || '—') + '</span>' +
+                    '<span class="text-slate-400 truncate">' + escapeHtml(p.email) + '</span>' +
+                '</div>').join('');
+
+            const cap = document.getElementById('notify-cap');
+            cap.classList.toggle('hidden', targets.length <= NOTIFY_BATCH);
+            if (targets.length > NOTIFY_BATCH) {
+                cap.textContent = 'Over ' + NOTIFY_BATCH + ' recipients — this will go out in ' +
+                    Math.ceil(targets.length / NOTIFY_BATCH) + ' batches.';
+            }
+
+            setNotifyStatus('');
+            document.getElementById('notify-send').disabled = false;
+            document.getElementById('notify-modal').classList.remove('hidden');
+            document.getElementById('notify-title').focus();
+        }
+
+        function closeNotify() {
+            document.getElementById('notify-modal').classList.add('hidden');
+        }
+
+        function sendNotify() {
+            const title = document.getElementById('notify-title').value.trim();
+            const body  = document.getElementById('notify-body').value.trim();
+            if (!title && !body) { setNotifyStatus('Add a title or a message first.', 'error'); return; }
+
+            const emails = outstanding().map(p => p.email);
+            if (!emails.length) { setNotifyStatus('Nobody left to remind.', 'error'); return; }
+
+            const batches = [];
+            for (let i = 0; i < emails.length; i += NOTIFY_BATCH) {
+                batches.push(emails.slice(i, i + NOTIFY_BATCH));
+            }
+
+            const btn = document.getElementById('notify-send');
+            btn.disabled = true;
+            setNotifyStatus('Sending…');
+
+            batches.reduce((chain, batch) => chain.then(() => {
+                return AUTH.postNotification(title, body, [], batch).then(res => {
+                    // The backend answers { ok:false, error } in-band rather
+                    // than rejecting, so surface that as a real failure.
+                    if (res && res.ok === false) throw new Error(res.error || 'post_failed');
+                    return res;
+                });
+            }), Promise.resolve()).then(() => {
+                setNotifyStatus('Reminder sent to ' + emails.length +
+                    (emails.length === 1 ? ' person.' : ' people.'), 'ok');
+                setTimeout(closeNotify, 1600);
+            }).catch(err => {
+                console.warn('AISA: reminder failed', err);
+                setNotifyStatus('Could not send the reminder. Please try again.', 'error');
+                btn.disabled = false;
+            });
+        }
+
+        function csvCell(v) {
+            return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+        }
+
+        /* Exports what's on screen — same scope, filters and sort — so a
+         * filtered view and its CSV never disagree. */
         function exportCsv() {
-            const cols = COLUMNS.map(c => c.short);
-            const header = ['Name', 'Email', 'Last seen'].concat(cols).concat(['Modules done']);
-            const lines = [header.join(',')];
-            DATA.list.forEach(p => {
-                const modsDone = MODULES.filter(m => p.done[m.id]).length;
-                const row = [
-                    '"' + (p.name || '').replace(/"/g, '""') + '"',
-                    p.email,
-                    fmtDate(p.last_seen)
-                ].concat(COLUMNS.map(c => p.done[c.id] ? 'Yes' : 'No'))
-                 .concat([modsDone + '/' + MODULES.length]);
-                lines.push(row.join(','));
+            const mods = scopeModules();
+            const people = sortPeople(filteredPeople(mods), mods);
+            const header = ['Name', 'Email', 'Last seen']
+                .concat(mods.map(c => c.short)).concat(['Completed']);
+            const lines = [header.map(csvCell).join(',')];
+            people.forEach(p => {
+                const n = mods.filter(m => p.done[m.id]).length;
+                const row = [p.name || '', p.email, fmtDate(p.last_seen)]
+                    .concat(mods.map(c => p.done[c.id] ? 'Yes' : 'No'))
+                    .concat([n + '/' + mods.length]);
+                lines.push(row.map(csvCell).join(','));
             });
             const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
             const a = document.createElement('a');
@@ -429,6 +753,7 @@
             DATA = { byEmail: byEmail, list: Object.keys(byEmail).map(k => byEmail[k]) };
             renderSummary(DATA.list);
             renderModuleBars(DATA.list);
+            buildTrackerOptions();
             renderMatrix();
             if (payload.generated_at) {
                 document.getElementById('generated-at').textContent =
@@ -444,13 +769,64 @@
             rendered = true;
         }
 
-        document.getElementById('filter-text').addEventListener('input', function () { if (rendered) renderMatrix(); });
-        document.getElementById('filter-incomplete').addEventListener('change', function () { if (rendered) renderMatrix(); });
+        /* ---------- Tracker wiring ---------- */
+
+        function refresh() { if (rendered) renderMatrix(); }
+
+        document.getElementById('filter-text').addEventListener('input', refresh);
+        document.getElementById('tracker-status').addEventListener('change', refresh);
+
+        /* Changing scope reshapes the table, so a sort pinned to a column
+         * that no longer exists ("Completed on", a specific module) would
+         * silently sort by something invisible. Reset to name order. */
+        document.getElementById('tracker-module').addEventListener('change', function () {
+            sortKey = 'name';
+            sortDir = 'asc';
+            refresh();
+        });
+
+        document.getElementById('tracker-reset').addEventListener('click', function () {
+            document.getElementById('tracker-module').value = ALL_SCOPE;
+            document.getElementById('tracker-status').value = '';
+            document.getElementById('filter-text').value = '';
+            sortKey = 'name';
+            sortDir = 'asc';
+            refresh();
+        });
+
+        /* Click any heading to sort; click again to flip direction.
+         * Counts and dates start on the "most interesting" end (desc),
+         * names read naturally A→Z. */
+        document.getElementById('matrix-head').addEventListener('click', function (ev) {
+            const th = ev.target && ev.target.closest && ev.target.closest('th[data-sort]');
+            if (!th || !rendered) return;
+            const next = th.getAttribute('data-sort');
+            if (next === sortKey) {
+                sortDir = (sortDir === 'asc') ? 'desc' : 'asc';
+            } else {
+                sortKey = next;
+                sortDir = (next === 'name') ? 'asc' : 'desc';
+            }
+            renderMatrix();
+        });
+
         document.getElementById('export-btn').addEventListener('click', exportCsv);
+
+        /* ---------- Reminder modal wiring ---------- */
+
+        document.getElementById('notify-btn').addEventListener('click', openNotify);
+        document.getElementById('notify-close').addEventListener('click', closeNotify);
+        document.getElementById('notify-cancel').addEventListener('click', closeNotify);
+        document.getElementById('notify-backdrop').addEventListener('click', closeNotify);
+        document.getElementById('notify-send').addEventListener('click', sendNotify);
+        document.addEventListener('keydown', function (ev) {
+            if (ev.key === 'Escape') closeNotify();
+        });
 
         if (window.aisaReady) {
             window.aisaReady(function (auth) {
                 if (!auth.isConfigured()) { showState('state-denied'); return; }
+                AUTH = auth;
                 auth.adminOverview().then(function (payload) {
                     render(payload);
                 }).catch(function (err) {
