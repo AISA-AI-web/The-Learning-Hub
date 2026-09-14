@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | AI Literacy — Teacher Readiness</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../auth/training.css?v=5">
+
+    <style>
+        /* ---- AISA brand tokens. Nothing below hardcodes a hex. ---- */
+        :root {
+            --aisa-purple:       #21076C;
+            --aisa-purple-soft:  #4A2E9B;
+            --aisa-gold:         #D8B664;
+            --aisa-gold-wash:    #FBF5E6;
+            --aisa-white:        #FFFFFF;
+            --aisa-tint:         #F2EFFA;
+            --aisa-border:       #C8BEE8;
+            --aisa-body:         #1A1A1A;
+            --aisa-muted:        #555555;
+
+            --radius:     10px;
+            --radius-sm:  6px;
+            --gap:        1.5rem;
+            --maxw:       58rem;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: 'DM Sans', sans-serif;
+            color: var(--aisa-body);
+            background: var(--aisa-white);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4 { font-weight: 700; color: var(--aisa-purple); line-height: 1.25; margin: 0 0 .6rem; }
+        h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); }
+        h2 { font-size: clamp(1.4rem, 3vw, 1.9rem); }
+        h3 { font-size: 1.15rem; }
+        h4 { font-size: 1rem; }
+        p  { margin: 0 0 1rem; }
+        a  { color: var(--aisa-purple); text-underline-offset: 2px; }
+
+        .eyebrow {
+            text-transform: uppercase;
+            letter-spacing: .12em;
+            font-size: .75rem;
+            font-weight: 700;
+            color: var(--aisa-gold);
+            margin-bottom: .4rem;
+        }
+        .eyebrow-muted { color: var(--aisa-muted); }
+
+        /* ---- Page masthead ---- */
+        .masthead {
+            background: var(--aisa-purple);
+            color: var(--aisa-white);
+            padding: 2.5rem 1.25rem 2.75rem;
+        }
+        .masthead-inner { max-width: var(--maxw); margin: 0 auto; }
+        .masthead h1 { color: var(--aisa-white); margin-bottom: .75rem; }
+        .masthead .eyebrow { color: var(--aisa-gold); }
+        .masthead p { color: var(--aisa-white); opacity: .92; margin-bottom: 0; max-width: 46rem; }
+        .masthead-meta {
+            margin-top: 1.5rem;
+            display: flex; flex-wrap: wrap; gap: .5rem .75rem;
+        }
+        .chip {
+            display: inline-block;
+            border: 1px solid var(--aisa-gold);
+            color: var(--aisa-gold);
+            border-radius: 999px;
+            padding: .25rem .8rem;
+            font-size: .8rem;
+            font-weight: 500;
+        }
+
+        /* ---- Chapter shell ---- */
+        .timeline-container {
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+        .chapter { margin-bottom: 3rem; }
+        .chapter-head { margin-bottom: 1.25rem; }
+        .chapter-time {
+            font-size: .8rem; font-weight: 700; color: var(--aisa-muted);
+            text-transform: uppercase; letter-spacing: .08em;
+        }
+
+        /* ---- Content blocks ---- */
+        .card {
+            background: var(--aisa-tint);
+            border: 1px solid var(--aisa-border);
+            border-radius: var(--radius);
+            padding: 1.25rem 1.35rem;
+            margin: 0 0 1.25rem;
+        }
+        .card-plain { background: var(--aisa-white); }
+        .card h3:first-child, .card h4:first-child { margin-top: 0; }
+        .card > :last-child { margin-bottom: 0; }
+
+        .callout {
+            border-left: 4px solid var(--aisa-gold);
+            background: var(--aisa-gold-wash);
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            padding: 1rem 1.15rem;
+            margin: 0 0 1.25rem;
+        }
+        .callout > :last-child { margin-bottom: 0; }
+        .callout strong { color: var(--aisa-purple); }
+
+        .source-note {
+            font-size: .82rem;
+            color: var(--aisa-muted);
+            font-style: italic;
+            margin-top: .5rem;
+        }
+
+        /* Editor-facing block: visible, loud, and impossible to ship by
+         * accident. Used where AISA-specific facts are still missing. */
+        .needs-content {
+            border: 2px dashed var(--aisa-gold);
+            background: var(--aisa-gold-wash);
+            border-radius: var(--radius);
+            padding: 1.15rem 1.25rem;
+            margin: 0 0 1.25rem;
+        }
+        .needs-content .eyebrow { color: var(--aisa-purple); }
+
+        /* ---- Tables ---- */
+        .table-wrap { overflow-x: auto; margin: 0 0 1.25rem; -webkit-overflow-scrolling: touch; }
+        table { border-collapse: collapse; width: 100%; min-width: 34rem; font-size: .92rem; }
+        caption {
+            caption-side: top; text-align: left; font-weight: 700;
+            color: var(--aisa-purple); padding-bottom: .5rem;
+        }
+        th, td {
+            border: 1px solid var(--aisa-border);
+            padding: .6rem .7rem;
+            text-align: left;
+            vertical-align: top;
+        }
+        thead th { background: var(--aisa-purple); color: var(--aisa-white); font-weight: 700; }
+        tbody tr:nth-child(even) { background: var(--aisa-tint); }
+
+        /* ---- Numbered move list ---- */
+        .moves { list-style: none; padding: 0; margin: 0 0 1.25rem; counter-reset: move; }
+        .moves li {
+            counter-increment: move;
+            display: flex; gap: .85rem;
+            padding: .8rem 0;
+            border-bottom: 1px solid var(--aisa-border);
+        }
+        .moves li:last-child { border-bottom: 0; }
+        .moves li::before {
+            content: counter(move);
+            flex: 0 0 1.9rem; height: 1.9rem;
+            display: grid; place-items: center;
+            background: var(--aisa-purple); color: var(--aisa-white);
+            border-radius: 50%; font-weight: 700; font-size: .85rem;
+        }
+        .moves b { color: var(--aisa-purple); display: block; }
+
+        /* ---- Free-text capture ---- */
+        .field { margin: 0 0 1.15rem; }
+        .field label {
+            display: block; font-weight: 700; color: var(--aisa-purple);
+            margin-bottom: .35rem; font-size: .95rem;
+        }
+        .field .hint { display: block; font-weight: 400; color: var(--aisa-muted); font-size: .85rem; margin-top: .15rem; }
+        textarea, input[type="text"] {
+            width: 100%;
+            font-family: inherit; font-size: 1rem; color: var(--aisa-body);
+            padding: .65rem .75rem;
+            border: 1px solid var(--aisa-border);
+            border-radius: var(--radius-sm);
+            background: var(--aisa-white);
+            resize: vertical;
+        }
+        textarea:focus, input[type="text"]:focus {
+            outline: 2px solid var(--aisa-purple);
+            outline-offset: 1px;
+            border-color: var(--aisa-purple);
+        }
+        textarea { min-height: 4.5rem; }
+
+        .save-state {
+            font-size: .82rem; color: var(--aisa-muted);
+            min-height: 1.2rem; margin-top: .35rem;
+        }
+        .save-state.is-saved   { color: var(--aisa-purple); font-weight: 500; }
+        .save-state.is-error   { color: var(--aisa-purple); font-weight: 700; }
+
+        /* Loud, unmissable failure. A teacher must never think their
+         * work was stored when it wasn't. */
+        .capture-alert {
+            display: none;
+            border: 2px solid var(--aisa-purple);
+            background: var(--aisa-tint);
+            border-radius: var(--radius);
+            padding: 1rem 1.15rem;
+            margin: 0 0 1.25rem;
+        }
+        .capture-alert.show { display: block; }
+        .capture-alert strong { color: var(--aisa-purple); }
+
+        .checkline { display: flex; gap: .6rem; align-items: flex-start; margin: 0 0 1rem; }
+        .checkline input { margin-top: .3rem; flex: 0 0 auto; width: 1.05rem; height: 1.05rem; accent-color: var(--aisa-purple); }
+        .checkline label { font-size: .95rem; }
+
+        /* ---- Buttons ---- */
+        .btn {
+            display: inline-block;
+            font-family: inherit; font-size: .95rem; font-weight: 700;
+            padding: .65rem 1.3rem;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--aisa-purple);
+            background: var(--aisa-purple); color: var(--aisa-white);
+            cursor: pointer; text-decoration: none;
+        }
+        .btn:hover { background: var(--aisa-purple-soft); border-color: var(--aisa-purple-soft); }
+        .btn-secondary { background: var(--aisa-white); color: var(--aisa-purple); }
+        .btn-secondary:hover { background: var(--aisa-tint); }
+        .btn[disabled] { opacity: .5; cursor: not-allowed; }
+
+        /* ---- Sample comparison ---- */
+        .samples { display: grid; gap: var(--gap); grid-template-columns: 1fr; margin: 0 0 1.25rem; }
+        @media (min-width: 46rem) { .samples { grid-template-columns: 1fr 1fr; } }
+        .sample {
+            border: 1px solid var(--aisa-border);
+            border-radius: var(--radius);
+            padding: 1.1rem 1.2rem;
+            background: var(--aisa-white);
+        }
+        .sample-label {
+            font-size: .75rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: .1em; color: var(--aisa-muted); margin-bottom: .5rem;
+        }
+        .sample blockquote {
+            margin: 0; font-style: italic; color: var(--aisa-body);
+            border-left: 3px solid var(--aisa-gold); padding-left: .85rem;
+        }
+
+        /* ---- Completion ---- */
+        .completion-banner {
+            display: none;
+            background: var(--aisa-purple); color: var(--aisa-white);
+            border-radius: var(--radius);
+            padding: 1.75rem;
+            margin-top: 2rem;
+        }
+        .completion-banner.show { display: block; }
+        .completion-banner h2 { color: var(--aisa-white); }
+        .completion-banner p { opacity: .93; }
+        .completion-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.25rem; }
+        .completion-actions .btn {
+            background: var(--aisa-gold); border-color: var(--aisa-gold); color: var(--aisa-purple);
+        }
+        .completion-actions .btn:hover { background: var(--aisa-white); border-color: var(--aisa-white); }
+
+        /* ---- The printable one-pager ---- */
+        #onepager { display: none; }
+
+        @media print {
+            body > *:not(#onepager) { display: none !important; }
+            #onepager { display: block !important; }
+            @page { margin: 14mm; }
+            #onepager h1 { font-size: 18pt; }
+            #onepager h2 { font-size: 12pt; margin-top: 1rem; }
+            #onepager { font-size: 10pt; color: var(--aisa-body); }
+            #onepager .op-block {
+                border: 1px solid var(--aisa-border);
+                border-radius: var(--radius-sm);
+                padding: .5rem .6rem; margin-bottom: .5rem;
+            }
+            #onepager .op-label { font-weight: 700; color: var(--aisa-purple); font-size: 9pt; }
+            #onepager ol, #onepager ul { margin: .25rem 0 .5rem 1.1rem; padding: 0; }
+            #onepager li { margin-bottom: .15rem; }
+        }
+
+        /* ---- Video slot ---- */
+        .video-slot {
+            border: 1px solid var(--aisa-border);
+            background: var(--aisa-tint);
+            border-radius: var(--radius);
+            padding: 1.1rem 1.2rem;
+            margin: 0 0 1.25rem;
+        }
+        .video-slot video { width: 100%; border-radius: var(--radius-sm); display: block; }
+        .video-slot[data-state="empty"] .video-empty { display: block; }
+        .video-slot[data-state="empty"] video { display: none; }
+        .video-empty { display: none; font-size: .9rem; color: var(--aisa-muted); }
+
+        .sr-only {
+            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+            overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+        }
+
+        /* ---- Admin access gate (pre-release) ---- */
+        #admin-gate {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--aisa-purple);
+            display: grid; place-items: center; padding: 1.5rem;
+        }
+        #admin-gate .ag-card {
+            max-width: 30rem; text-align: center; color: var(--aisa-white);
+        }
+        #admin-gate h1 { color: var(--aisa-white); font-size: 1.6rem; margin: .5rem 0; }
+        #admin-gate p { color: var(--aisa-white); opacity: .9; }
+        #admin-gate .ag-spinner {
+            width: 2rem; height: 2rem; margin: 0 auto 1rem;
+            border: 3px solid var(--aisa-border);
+            border-top-color: var(--aisa-gold);
+            border-radius: 50%;
+            animation: ag-spin .8s linear infinite;
+        }
+        @keyframes ag-spin { to { transform: rotate(360deg); } }
+        #admin-gate .ag-btn {
+            display: inline-block; margin-top: 1rem;
+            background: var(--aisa-gold); color: var(--aisa-purple);
+            font-weight: 700; text-decoration: none;
+            padding: .65rem 1.3rem; border-radius: var(--radius-sm);
+        }
+
+        #admin-preview-banner {
+            background: var(--aisa-gold-wash);
+            border: 2px solid var(--aisa-gold);
+            border-radius: var(--radius);
+            padding: 1rem 1.15rem;
+            margin: 1.5rem auto 0;
+            max-width: var(--maxw);
+            font-size: .92rem;
+        }
+        #admin-preview-banner .apb-tag {
+            display: inline-block;
+            background: var(--aisa-purple); color: var(--aisa-white);
+            font-size: .7rem; font-weight: 700; letter-spacing: .1em;
+            text-transform: uppercase;
+            padding: .2rem .6rem; border-radius: 999px; margin-right: .5rem;
+        }
+    </style>
+
+    <script src="../auth/gate.js?v=17"></script>
+    <script src="../auth/training.js?v=6"></script>
+</head>
+<body>
+
+<!-- ============================================================= -->
+<!-- ADMIN ACCESS GATE                                              -->
+<!-- Pre-release. The overlay covers the page until isAdmin()       -->
+<!-- resolves: admins get the module plus a preview ribbon,         -->
+<!-- everyone else gets a "coming soon" screen. Fails closed.       -->
+<!--                                                                -->
+<!-- This hides the module from staff browsing the Hub. It is NOT   -->
+<!-- access control: the repository is public, so the HTML is       -->
+<!-- readable by anyone who has the URL regardless of this gate.    -->
+<!-- ============================================================= -->
+<div id="admin-gate" role="dialog" aria-modal="true" aria-label="Access check">
+    <div class="ag-card">
+        <div data-gate-checking>
+            <div class="ag-spinner" aria-hidden="true"></div>
+            <p>Checking access&hellip;</p>
+        </div>
+        <div data-gate-denied hidden>
+            <div style="font-size:3rem;line-height:1" aria-hidden="true">&#127891;</div>
+            <h1>Coming soon</h1>
+            <p>The <strong>AI Literacy: Teacher Readiness</strong> module is still being
+               prepared and isn&rsquo;t available yet. It will appear in your PD Modules
+               once it&rsquo;s released.</p>
+            <a class="ag-btn" href="pd.html">&larr; Back to PD Modules</a>
+        </div>
+    </div>
+</div>
+
+<div id="admin-preview-banner" style="display:none" role="note">
+    <span class="apb-tag">Admin preview</span>
+    <span><strong>Not yet released to staff.</strong> Two things are outstanding: the
+    AISA escalation route in segment 6 is still blank, and the Apps Script redeploy
+    has not been confirmed &mdash; until it is, saving an answer will show a red
+    banner rather than store anything.</span>
+</div>
+
+<header class="masthead">
+    <div class="masthead-inner">
+        <div class="eyebrow">Internal cascade training</div>
+        <h1>AI Literacy Curriculum: Teacher Readiness</h1>
+        <p>
+            Sixty minutes, one sitting. By the end you will have a written delivery plan for
+            your first AI Literacy lesson, and we will both know what you still need before
+            you teach it.
+        </p>
+        <div class="masthead-meta">
+            <span class="chip">Complete by 20 September 2026</span>
+            <span class="chip">Teaching begins 21 September</span>
+            <span class="chip">In person, 21 September</span>
+        </div>
+    </div>
+</header>
+
+<div class="timeline-container">
+
+    <!-- Loud failure surface. Shown only if the backend can't store answers. -->
+    <div class="capture-alert" id="capture-alert" role="alert" aria-live="assertive">
+        <strong>Your answers are not being saved.</strong>
+        <p id="capture-alert-text" style="margin:.5rem 0 0;"></p>
+    </div>
+
+    <!-- ================= 1 · HOOK ================= -->
+    <section class="chapter" data-chapter="1" data-chapter-id="why" data-chapter-title="Why you, why now">
+        <input type="checkbox" class="sr-only module-checkbox" aria-hidden="true" tabindex="-1">
+        <div class="chapter-head">
+            <div class="chapter-time">Segment 1 · 4 minutes</div>
+            <h2>Why you, why now</h2>
+        </div>
+
+        <div class="video-slot" data-state="empty" data-slot="segment-1">
+            <video controls preload="none" playsinline></video>
+            <div class="video-empty">
+                <strong>Video to follow.</strong> The written version below carries the same
+                content — nothing in this module depends on the video.
+            </div>
+        </div>
+
+        <div class="callout">
+            <p>
+                A student hands in a paragraph that is better than anything they have written
+                all year. In class, they cannot explain a single sentence of it. It has happened
+                several times now.
+            </p>
+            <p style="margin-bottom:0;">
+                That is not a discipline problem, and it is not going away. It is the problem
+                this curriculum exists to solve, and it is already in your room.
+            </p>
+        </div>
+
+        <p class="source-note">
+            That scenario is ADEK's own — "The Perfect Homework", from the Train-the-Trainer
+            safeguarding lab.
+        </p>
+
+        <h3>The plain facts</h3>
+        <ul>
+            <li>AI literacy is a <strong>mandatory entitlement for every student, KG to Grade 12</strong> — not an elective, and not only for ICT.</li>
+            <li>Teaching begins <strong>21 September 2026</strong>. The full curriculum, lesson plans and teacher toolkits are already on InstrucTwin.</li>
+            <li>This module is the sixty minutes that gets you to your first lesson.</li>
+            <li>We meet in person on <strong>21 September</strong> to rehearse — moderation, micro-teach, and the questions you raise here.</li>
+        </ul>
+
+        <div class="card">
+            <h4>Why this module is shaped the way it is</h4>
+            <p style="margin-bottom:0;">
+                Hook, model, practice, commit. That is the shape of a good AI lesson, and it is
+                the shape of the next fifty-six minutes. The format is part of the message.
+            </p>
+        </div>
+    </section>
+
+    <!-- ================= 2 · MODEL ================= -->
+    <section class="chapter" data-chapter="2" data-chapter-id="architecture" data-chapter-title="What you're actually teaching">
+        <input type="checkbox" class="sr-only module-checkbox" aria-hidden="true" tabindex="-1">
+        <div class="chapter-head">
+            <div class="chapter-time">Segment 2 · 7 minutes</div>
+            <h2>What you're actually teaching</h2>
+        </div>
+
+        <p>
+            One spiral curriculum, KG to Grade 12: <strong>four phases</strong>, <strong>four strands</strong>
+            running through every grade, and <strong>three proficiency tiers</strong>. Read the whole
+            table once, then read your own band properly.
+        </p>
+
+        <div class="table-wrap">
+            <table>
+                <caption>The four phases</caption>
+                <thead>
+                    <tr><th>Phase</th><th>Grades</th><th>Learner profile</th><th>Pedagogical signature</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1 / KG</td><td>KG1–KG2<br><span style="color:var(--aisa-muted)">Ages 4–5</span></td>
+                        <td>AI Aware Explorer</td>
+                        <td>Play → explore → understand<br><strong>Unplugged; no direct AI tool use</strong></td>
+                    </tr>
+                    <tr>
+                        <td>2 / Cycle 1</td><td>Grades 1–5<br><span style="color:var(--aisa-muted)">Ages 6–10</span></td>
+                        <td>AI Literate Thinker</td>
+                        <td>Reason → interact → refine<br>Rules, logic and data; begins interacting with AI tools</td>
+                    </tr>
+                    <tr>
+                        <td>3 / Cycle 2</td><td>Grades 6–8<br><span style="color:var(--aisa-muted)">Ages 11–13</span></td>
+                        <td>AI Solution Builder</td>
+                        <td>Build → evaluate → improve<br>Data, models and workflows</td>
+                    </tr>
+                    <tr>
+                        <td>4 / Cycle 3</td><td>Grades 9–12<br><span style="color:var(--aisa-muted)">Ages 14–18</span></td>
+                        <td>AI Systems &amp; Solutions Designer</td>
+                        <td>Design → integrate → govern<br>Integrated AI systems</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="callout">
+            <p style="margin-bottom:0;">
+                <strong>The most commonly assumed-wrong thing in the framework:</strong> KG uses
+                <em>no</em> AI tools at all. Phase 1 is entirely unplugged. Tool use begins in
+                Phase 2, Grade 1 and up.
+            </p>
+        </div>
+
+        <h3>The four strands</h3>
+        <p>These run through <em>every</em> grade, gaining complexity as the phases climb.</p>
+        <ol>
+            <li><strong>AI Conceptual Understanding</strong></li>
+            <li><strong>Critical Evaluation and Informed Interaction</strong></li>
+            <li><strong>AI Creation, Engineering and System Design</strong></li>
+            <li><strong>Responsible Governance, Data Privacy and Societal Impact</strong></li>
+        </ol>
+
+        <div class="card">
+            <h4>Time allocation</h4>
+            <p style="margin-bottom:0;">
+                KG and Grades 1–5: <strong>one period per week</strong>.
+                Grades 6–8 and 9–12: <strong>two periods per week</strong>.
+            </p>
+        </div>
+
+        <h3>Place three outcomes</h3>
+        <p>
+            Not an exam on the architecture — the point is that you can place your own lessons.
+            Pick the strand each outcome belongs to.
+        </p>
+
+        <div class="aisa-quiz" id="q-strand-1">
+            <p><strong>1.</strong> "Learners classify each claim in an AI summary as supported, misleading or not established, citing evidence." Which strand?</p>
+            <div>
+                <div class="aisa-quiz-option" data-correct="false">AI Conceptual Understanding</div>
+                <div class="aisa-quiz-option" data-correct="true">Critical Evaluation and Informed Interaction</div>
+                <div class="aisa-quiz-option" data-correct="false">AI Creation, Engineering and System Design</div>
+                <div class="aisa-quiz-option" data-correct="false">Responsible Governance, Data Privacy and Societal Impact</div>
+            </div>
+            <div class="aisa-quiz-feedback"
+                 data-correct-msg="<strong>Yes.</strong> Checking, classifying, comparing and justifying against evidence is the heart of strand 2.">
+            </div>
+        </div>
+
+        <div class="aisa-quiz" id="q-strand-2">
+            <p><strong>2.</strong> "Learners recognise personal information and identify trusted adults." Which strand?</p>
+            <div>
+                <div class="aisa-quiz-option" data-correct="false">AI Conceptual Understanding</div>
+                <div class="aisa-quiz-option" data-correct="false">Critical Evaluation and Informed Interaction</div>
+                <div class="aisa-quiz-option" data-correct="false">AI Creation, Engineering and System Design</div>
+                <div class="aisa-quiz-option" data-correct="true">Responsible Governance, Data Privacy and Societal Impact</div>
+            </div>
+            <div class="aisa-quiz-feedback"
+                 data-correct-msg="<strong>Yes.</strong> This is the KG1 ethics focus — strand 4 starts on day one, it is not bolted on at the top of the school.">
+            </div>
+        </div>
+
+        <div class="aisa-quiz" id="q-strand-3">
+            <p><strong>3.</strong> "Learners distinguish between human senses and basic machine inputs through unplugged play." Which phase?</p>
+            <div>
+                <div class="aisa-quiz-option" data-correct="true">Phase 1 — AI Aware Explorer (KG1–KG2)</div>
+                <div class="aisa-quiz-option" data-correct="false">Phase 2 — AI Literate Thinker (Grades 1–5)</div>
+                <div class="aisa-quiz-option" data-correct="false">Phase 3 — AI Solution Builder (Grades 6–8)</div>
+                <div class="aisa-quiz-option" data-correct="false">Phase 4 — AI Systems &amp; Solutions Designer (Grades 9–12)</div>
+            </div>
+            <div class="aisa-quiz-feedback"
+                 data-correct-msg="<strong>Yes.</strong> Human senses versus machine inputs, unplugged, is the Phase 1 core milestone.">
+            </div>
+        </div>
+
+        <div class="field" style="margin-top:1.5rem;">
+            <label for="f-band">Which band will you be teaching?
+                <span class="hint">So the 21 September session can be grouped properly.</span>
+            </label>
+            <input type="text" id="f-band" data-capture="architecture.band"
+                   placeholder="e.g. Grade 3, or Grades 9–12 Computer Science" autocomplete="off">
+            <div class="save-state" data-save-for="f-band"></div>
+        </div>
+    </section>
+
+    <!-- ================= 3 · THE CORE IDEA ================= -->
+    <section class="chapter" data-chapter="3" data-chapter-id="thinking" data-chapter-title="Who is doing the thinking?">
+        <input type="checkbox" class="sr-only module-checkbox" aria-hidden="true" tabindex="-1">
+        <div class="chapter-head">
+            <div class="chapter-time">Segment 3 · 14 minutes</div>
+            <h2>Who is doing the thinking?</h2>
+        </div>
+
+        <p>
+            This is the one idea that most changes what happens in your room. Everything else in
+            the module is arrangement; this is the substance.
+        </p>
+
+        <div class="card">
+            <h4>Two words that are not the same thing</h4>
+            <p><strong>Instructional approach</strong> — how the learning experience is designed.
+               ADEK names five: opening, warm-up, inquiry, practice, reflect.</p>
+            <p style="margin-bottom:0;"><strong>Facilitation move</strong> — what you do in the moment.
+               Also five, and they are what this segment is about.</p>
+        </div>
+
+        <h3>The five facilitation moves</h3>
+        <ol class="moves">
+            <li><span><b>Prompt</b> Frame a task that leaves thinking to do.</span></li>
+            <li><span><b>Inquiry</b> Identify claims, questions and evidence needs.</span></li>
+            <li><span><b>Critique &amp; evaluate</b> Check, classify, compare and justify.</span></li>
+            <li><span><b>Practice</b> Repeat the skill with less support.</span></li>
+            <li><span><b>Reflect</b> Explain the learning and transfer it.</span></li>
+        </ol>
+        <p class="source-note">
+            The five moves are a repertoire, not a formula. They mark five moments where a
+            teacher can either protect or take over a learner's thinking.
+        </p>
+
+        <div class="video-slot" data-state="empty" data-slot="segment-3">
+            <video controls preload="none" playsinline></video>
+            <div class="video-empty">
+                <strong>Modelling clip to follow.</strong> The worked example below stands on its own.
+            </div>
+        </div>
+
+        <h3>Ms Hana's lesson</h3>
+        <div class="callout">
+            <p style="margin-bottom:0;">
+                This case is set in <strong>Grade 7</strong>. The five moves are identical at every
+                band — read it for the decisions, not the grade. What Ms Hana gets wrong here is
+                exactly what is easiest to get wrong in a Grade 2 classroom.
+            </p>
+        </div>
+
+        <div class="card card-plain">
+            <p><strong>The case.</strong> Grade 7, 32 learners, 45 minutes.
+               <em>Learning outcome:</em> learners evaluate how faithfully an AI summary represents
+               a source, classify its claims, justify decisions with evidence and revise misleading wording.</p>
+            <p style="margin-bottom:0;"><strong>The problem.</strong> Ms Hana's first instinct is to tell
+               them the summary is wrong, underline every error and show a corrected version. The books
+               would look accurate — but she would have performed the evaluation.</p>
+        </div>
+
+        <div class="card">
+            <h4>The source text given to learners</h4>
+            <p style="margin-bottom:0;">
+                During a fictional two-week Grade 7 trial, students kept phones away during lunch.
+                Of 84 students who answered a follow-up survey, 56 said they talked with classmates
+                more, 18 noticed no difference and 10 felt less comfortable. Board-game borrowing
+                rose from 40 in the previous two weeks to 73 during the trial. The school did not
+                measure learning or academic results. The student council recommended a longer trial
+                before any permanent decision and requested a quiet-space option.
+            </p>
+        </div>
+
+        <div class="card" style="background:var(--aisa-gold-wash); border-color:var(--aisa-gold);">
+            <h4>The faulty AI summary</h4>
+            <p style="margin-bottom:0; font-style:italic;">
+                "The phone-free lunch was preferred by nearly every Grade 7 student. It doubled
+                social interaction and improved academic learning. No students were negatively
+                affected, so the school should immediately make the phone ban permanent."
+            </p>
+        </div>
+
+        <div class="card card-plain">
+            <h4>Use these to judge each option</h4>
+            <ul style="margin-bottom:0;">
+                <li>The AI response must not finish the task.</li>
+                <li>Learners must select, check, compare, justify or revise.</li>
+                <li>Teacher questions should probe rather than reveal.</li>
+                <li>Practice fades support; reflection transfers the method.</li>
+            </ul>
+        </div>
+
+        <h3>Choose the strongest move at each moment</h3>
+
+        <div class="aisa-quiz" id="q-hana-1">
+            <p><strong>1 · Prompt.</strong> How should Ms Hana launch the evaluation?</p>
+            <div>
+                <div class="aisa-quiz-option" data-correct="false">"This AI summary is wrong. Find the five mistakes I noticed."</div>
+                <div class="aisa-quiz-option" data-correct="true">"How faithfully does this summary represent the source? Mark one claim you currently trust and one you would check. Do not decide overall yet."</div>
+                <div class="aisa-quiz-option" data-correct="false">"Ask an AI tool to rewrite the summary more accurately."</div>
+            </div>
+            <div class="aisa-quiz-feedback"
+                 data-correct-msg="<strong>Yes.</strong> It leaves the judgement open and gives learners something to do. Announcing that it is wrong hands them the answer; asking AI to rewrite it removes the task altogether.">
+            </div>
+        </div>
+
+        <div class="aisa-quiz" id="q-hana-2">
+            <p><strong>2 · Inquiry.</strong> How should learners decide what needs investigating?</p>
+            <div>
+                <div class="aisa-quiz-option" data-correct="false">Ms Hana underlines four claims and writes the matching source evidence beside each one.</div>
+                <div class="aisa-quiz-option" data-correct="false">"Which version sounds more professional? Vote for the one you prefer."</div>
+                <div class="aisa-quiz-option" data-correct="true">"Choose the claim that would matter most if it were wrong. Turn it into a checking question and name the evidence you need."</div>
+            </div>
+            <div class="aisa-quiz-feedback"
+                 data-correct-msg="<strong>Yes.</strong> Learners select the claim and name the evidence. Doing the underlining for them is the trap — it looks like modelling and is actually substitution.">
+            </div>
+        </div>
+
+        <div class="aisa-quiz" id="q-hana-3">
+            <p><strong>3 · Critique &amp; evaluate.</strong> What should learners do with the source and summary?</p>
+            <div>
+                <div class="aisa-quiz-option" data-correct="true">Classify each claim as supported, misleading or not established; cite an exact sentence or number, justify the decision and revise one claim.</div>
+                <div class="aisa-quiz-option" data-correct="false">Ms Hana reveals a colour-coded answer slide and learners copy the correct classifications.</div>
+                <div class="aisa-quiz-option" data-correct="false">Learners vote by show of hands on whether the whole summary is accurate.</div>
+            </div>
+            <div class="aisa-quiz-feedback"
+                 data-correct-msg="<strong>Yes.</strong> Classify, cite, justify, revise — four verbs, all of them the learner's. A vote produces an opinion with no evidence behind it.">
+            </div>
+        </div>
+
+        <div class="card card-plain">
+            <h4>Practice summary — same source text</h4>
+            <p style="margin-bottom:0; font-style:italic;">
+                "Two-thirds of surveyed students talked more during the trial, and board-game
+                borrowing increased. These results prove phone-free lunches improve every student's
+                wellbeing, so a permanent ban is the only reasonable option."
+            </p>
+        </div>
+
+        <div class="aisa-quiz" id="q-hana-4">
+            <p><strong>4 · Practice.</strong> How should Ms Hana test whether learners can apply the skill with less support?</p>
+            <div>
+                <div class="aisa-quiz-option" data-correct="false">Give the same checklist, matched evidence, colour labels and sentence stems used in the first task.</div>
+                <div class="aisa-quiz-option" data-correct="false">Ask the chatbot to correct its own summary, then discuss whether the new version sounds better.</div>
+                <div class="aisa-quiz-option" data-correct="true">Individually select the most consequential weakness, cite evidence, justify a classification and revise it — without category prompts or a teacher-selected claim.</div>
+            </div>
+            <div class="aisa-quiz-feedback"
+                 data-correct-msg="<strong>Yes.</strong> Practice means <em>less</em> scaffolding, not the same scaffolding again. Repeating the full support structure tests recall, not transfer.">
+            </div>
+        </div>
+
+        <div class="aisa-quiz" id="q-hana-5">
+            <p><strong>5 · Reflect.</strong> How should Ms Hana help learners transfer the checking method?</p>
+            <div>
+                <div class="aisa-quiz-option" data-correct="false">"Write definitions for supported, misleading and not established."</div>
+                <div class="aisa-quiz-option" data-correct="true">"The next time an AI summary sounds confident, what will you check first, and why?"</div>
+                <div class="aisa-quiz-option" data-correct="false">"Did you enjoy evaluating the AI summary?"</div>
+            </div>
+            <div class="aisa-quiz-feedback"
+                 data-correct-msg="<strong>Yes.</strong> Reflection has to point forwards to be transfer. Definitions test vocabulary; enjoyment tells you nothing about the learning.">
+            </div>
+        </div>
+
+        <h3>Now repair one</h3>
+        <div class="field">
+            <label for="f-repair">Pick one weak option above and rewrite it as the exact words you would say.
+                <span class="hint">Exact words, not a description of them. The important learner decision must stay open.</span>
+            </label>
+            <textarea id="f-repair" data-capture="thinking.repair" rows="4"
+                      placeholder="Instead of &quot;This AI summary is wrong…&quot;, I would say: …"></textarea>
+            <div class="save-state" data-save-for="f-repair"></div>
+        </div>
+
+        <div class="callout">
+            <p style="margin-bottom:0;">
+                <strong>The takeaway, in one line:</strong> the teacher frames and probes; learners
+                select, check, justify and revise.
+            </p>
+        </div>
+    </section>
+
+    <!-- ================= 4 · THE LOAD-BEARING SEGMENT ================= -->
+    <section class="chapter" data-chapter="4" data-chapter-id="lesson" data-chapter-title="Your 21 September lesson">
+        <input type="checkbox" class="sr-only module-checkbox" aria-hidden="true" tabindex="-1">
+        <div class="chapter-head">
+            <div class="chapter-time">Segment 4 · 13 minutes</div>
+            <h2>Your 21 September lesson</h2>
+        </div>
+
+        <p>
+            Everything so far has been preparation for this. Open
+            <a href="https://schools.instructwin.com/" target="_blank" rel="noopener">InstrucTwin</a>
+            in a second tab and work on your actual first lesson.
+        </p>
+
+        <div class="video-slot" data-state="empty" data-slot="segment-4">
+            <video controls preload="none" playsinline></video>
+            <div class="video-empty">
+                <strong>Screencast to follow.</strong> The written steps below cover the same ground.
+            </div>
+        </div>
+
+        <div class="card">
+            <h4>Finding your lesson</h4>
+            <ol style="margin-bottom:0;">
+                <li>Sign in at <a href="https://schools.instructwin.com/" target="_blank" rel="noopener">schools.instructwin.com</a> with your school username and password.</li>
+                <li>Find your grade, then your unit.</li>
+                <li>Open the lesson scheduled for 21 September.</li>
+                <li>Read the lesson template through once — note what each section is for.</li>
+                <li>Locate the student-facing materials before the lesson, not during it.</li>
+            </ol>
+        </div>
+
+        <div class="callout">
+            <p style="margin-bottom:0;">
+                <strong>Can't get in?</strong> Don't stall. Tick the box at the bottom of this
+                segment, fill in what you can, and finish the module. A login problem is mine to
+                fix and I would rather know today than on the 20th.
+            </p>
+        </div>
+
+        <h3>Your six-line delivery plan</h3>
+        <p>This is the thing that will be on your desk when the lesson starts.</p>
+
+        <div class="field">
+            <label for="f-outcome">1 · The outcome this lesson is heading for</label>
+            <textarea id="f-outcome" data-capture="lesson.outcome" rows="2"></textarea>
+            <div class="save-state" data-save-for="f-outcome"></div>
+        </div>
+
+        <div class="field">
+            <label for="f-hook">2 · The hook — what you open with</label>
+            <textarea id="f-hook" data-capture="lesson.hook" rows="2"></textarea>
+            <div class="save-state" data-save-for="f-hook"></div>
+        </div>
+
+        <div class="field">
+            <label for="f-moves">3 · Two facilitation moves you'll use, and where
+                <span class="hint">Prompt · inquiry · critique &amp; evaluate · practice · reflect</span>
+            </label>
+            <textarea id="f-moves" data-capture="lesson.moves" rows="2"></textarea>
+            <div class="save-state" data-save-for="f-moves"></div>
+        </div>
+
+        <div class="field">
+            <label for="f-evidence">4 · What students will produce that shows their thinking</label>
+            <textarea id="f-evidence" data-capture="lesson.evidence" rows="2"></textarea>
+            <div class="save-state" data-save-for="f-evidence"></div>
+        </div>
+
+        <div class="field">
+            <label for="f-unsure">5 · The one part you're least sure about
+                <span class="hint">This sets the agenda for 21 September. Be honest — it is more useful than being tidy.</span>
+            </label>
+            <textarea id="f-unsure" data-capture="lesson.unsure" rows="2"></textarea>
+            <div class="save-state" data-save-for="f-unsure"></div>
+        </div>
+
+        <div class="field">
+            <label for="f-needs">6 · What you need from Brandon before the 21st
+                <span class="hint">This one reaches me as soon as you save it.</span>
+            </label>
+            <textarea id="f-needs" data-capture="lesson.needs_before" rows="2"></textarea>
+            <div class="save-state" data-save-for="f-needs"></div>
+        </div>
+
+        <div class="checkline">
+            <input type="checkbox" id="f-blocked" data-capture="lesson.blocked">
+            <label for="f-blocked">I could not get into InstrucTwin, so this plan is incomplete.</label>
+        </div>
+    </section>
+
+    <!-- ================= 5 · QUALITY ================= -->
+    <section class="chapter" data-chapter="5" data-chapter-id="quality" data-chapter-title="What good work looks like">
+        <input type="checkbox" class="sr-only module-checkbox" aria-hidden="true" tabindex="-1">
+        <div class="chapter-head">
+            <div class="chapter-time">Segment 5 · 8 minutes</div>
+            <h2>What good work looks like</h2>
+        </div>
+
+        <p>
+            Every criterion is described at three tiers: <strong>Emerging</strong>,
+            <strong>Proficient</strong>, <strong>Advanced</strong>.
+        </p>
+
+        <div class="callout">
+            <p style="margin-bottom:0;">
+                <strong>Proficient is the entitlement.</strong> It is the baseline every student is
+                owed — not the ceiling, and not a grade to aspire to. Design for it.
+            </p>
+        </div>
+
+        <div class="card">
+            <h4>Three things student work has to do</h4>
+            <ol style="margin-bottom:0;">
+                <li><strong>Explain</strong> the output</li>
+                <li><strong>Evaluate and improve</strong> it</li>
+                <li><strong>Justify</strong> the choices</li>
+            </ol>
+        </div>
+
+        <div class="callout">
+            <p style="margin-bottom:0; font-size:1.05rem;">
+                <strong>A polished AI output is not proof of learning. Assess the thinking behind it.</strong>
+            </p>
+        </div>
+
+        <h3>Two pieces of work</h3>
+        <p class="source-note">
+            Both samples below are invented for this module — they are illustrations, not real
+            student work.
+        </p>
+
+        <div class="samples">
+            <div class="sample">
+                <div class="sample-label">Sample A</div>
+                <blockquote>
+                    "The phone-free lunch trial demonstrates a significant positive correlation
+                    between device restriction and peer socialisation. The data indicates a marked
+                    increase in collaborative engagement, with board-game circulation rising
+                    substantially. These findings suggest that a permanent policy would yield
+                    sustained benefits for student wellbeing and community cohesion."
+                </blockquote>
+            </div>
+            <div class="sample">
+                <div class="sample-label">Sample B</div>
+                <blockquote>
+                    "56 out of 84 said they talked more. That's most but not all — 10 felt worse
+                    and the summary didn't say that. I checked the board game number (40 → 73) and
+                    that one is in the source. But 'improved academic learning' is not, because it
+                    says they didn't measure learning. So I'd call that one not established. I'd
+                    want a longer trial too, like the council said."
+                </blockquote>
+            </div>
+        </div>
+
+        <div class="field">
+            <label for="f-which">Which shows more learning — and what is your evidence?</label>
+            <textarea id="f-which" data-capture="quality.which" rows="3"></textarea>
+            <div class="save-state" data-save-for="f-which"></div>
+        </div>
+
+        <div class="field">
+            <label for="f-question">Name the one question you would ask the author of Sample A to find out what they actually understand.</label>
+            <textarea id="f-question" data-capture="quality.question" rows="2"></textarea>
+            <div class="save-state" data-save-for="f-question"></div>
+        </div>
+
+        <div class="card card-plain">
+            <p style="margin-bottom:0;">
+                <strong>We are not moderating yet.</strong> Agreeing what Proficient means, so it
+                means the same thing in every classroom, needs other people's judgements in the
+                room. That is the anchor session on 21 September.
+            </p>
+        </div>
+    </section>
+
+    <!-- ================= 6 · RESPONSIBLE AI ================= -->
+    <section class="chapter" data-chapter="6" data-chapter-id="responsible" data-chapter-title="Responsible AI and the AISA route">
+        <input type="checkbox" class="sr-only module-checkbox" aria-hidden="true" tabindex="-1">
+        <div class="chapter-head">
+            <div class="chapter-time">Segment 6 · 10 minutes</div>
+            <h2>Responsible AI and the AISA route</h2>
+        </div>
+
+        <p>
+            This is the highest-stakes part of the module. ADEK's responsible-use framework is its
+            own thing — it is not a restatement of AISA's AI Vision and Ethical Framework, and you
+            need both.
+        </p>
+
+        <h3>The five principles, and what each looks like in a classroom</h3>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Principle</th><th>In practice</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Human oversight</strong></td><td>AI assists; people decide and stay accountable.</td></tr>
+                    <tr><td><strong>Data privacy</strong></td><td>Never put personal or sensitive data into a prompt.</td></tr>
+                    <tr><td><strong>Wellbeing and safeguarding</strong></td><td>Protect students from harmful or age-inappropriate content.</td></tr>
+                    <tr><td><strong>Honesty and integrity</strong></td><td>Cite sources, no invented facts, and no passing AI work off as your own.</td></tr>
+                    <tr><td><strong>Fairness</strong></td><td>Check outputs for bias and unfair assumptions.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>The five everyday risks</h3>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Risk</th><th>What it looks like</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Over-reliance</strong></td><td>Critical thinking fades.</td></tr>
+                    <tr><td><strong>Misinformation</strong></td><td>Invented facts and no sources.</td></tr>
+                    <tr><td><strong>Bias</strong></td><td>Unfair or skewed outputs.</td></tr>
+                    <tr><td><strong>Privacy</strong></td><td>Personal data exposed in prompts.</td></tr>
+                    <tr><td><strong>Wellbeing</strong></td><td>Harmful or age-inappropriate content.</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="callout">
+            <p><strong>Notice → Record → Report → Act → Review.</strong></p>
+            <p style="margin-bottom:0;">
+                ADEK is explicit that this is <em>a memory aid, not an official school reporting
+                route</em>. It helps you hold the shape of a response in your head. It does not
+                tell you who to call. That is what the next box is for.
+            </p>
+        </div>
+
+        <h3>The AISA route</h3>
+
+        <div class="needs-content" data-editor-block="escalation-route">
+            <div class="eyebrow">Not yet written — do not publish this module without it</div>
+            <p>
+                This section must name AISA's real people, real channels and real timescales:
+                the Designated Safeguarding Lead by name, how to reach them, within what
+                timeframe, and what a teacher does in the first ten minutes. ADEK explicitly
+                forbids inventing a reporting route, so it has been left blank rather than
+                filled with something plausible.
+            </p>
+            <p style="margin-bottom:0;">
+                It sits alongside the ADEK Safeguarding and Student Protection policies and
+                Federal Decree-Law No. 26 of 2025 on Child Digital Safety. Until it is written,
+                teachers should follow the route in the existing
+                <a href="safeguarding-module.html">AISA Safeguarding module</a>.
+            </p>
+        </div>
+
+        <h3>Acknowledgement</h3>
+        <div class="checkline">
+            <input type="checkbox" id="f-ack" data-capture="responsible.acknowledged">
+            <label for="f-ack">
+                I have read the responsible-use principles, the five risks and the escalation
+                route above.
+            </label>
+        </div>
+        <p class="source-note">
+            This records that you have read it, with a timestamp. It is not a test of understanding —
+            that is confirmed face to face on 21 September, with two live scenarios.
+        </p>
+        <div class="save-state" data-save-for="f-ack"></div>
+    </section>
+
+    <!-- ================= 7 · COMMIT ================= -->
+    <section class="chapter" data-chapter="7" data-chapter-id="commit" data-chapter-title="Commit">
+        <input type="checkbox" class="sr-only module-checkbox" aria-hidden="true" tabindex="-1">
+        <div class="chapter-head">
+            <div class="chapter-time">Segment 7 · 4 minutes</div>
+            <h2>Commit</h2>
+        </div>
+
+        <div class="field">
+            <label for="f-will-do">The one thing I will do in my first lesson that I would not have done before this module</label>
+            <textarea id="f-will-do" data-capture="commit.will_do" rows="3"></textarea>
+            <div class="save-state" data-save-for="f-will-do"></div>
+        </div>
+
+        <div class="field">
+            <label for="f-question-21">The one question I'm bringing to 21 September</label>
+            <textarea id="f-question-21" data-capture="commit.question" rows="3"></textarea>
+            <div class="save-state" data-save-for="f-question-21"></div>
+        </div>
+
+        <p>
+            <button type="button" class="btn" id="finish-btn">Finish and record my completion</button>
+        </p>
+
+        <div class="completion-banner" id="completion-banner"
+             data-cert-title="AI Literacy Curriculum: Teacher Readiness"
+             data-cert-hours="1">
+            <h2>Done — and on the record.</h2>
+            <p>
+                Your completion is logged against the ADEK internal-training requirement, and your
+                delivery plan is saved. I will read every line 5 and line 6 before we meet.
+            </p>
+            <p style="margin-bottom:0;"><strong>We meet on 21 September.</strong>
+                <span id="f2f-details">Time and room to be confirmed.</span></p>
+            <div class="completion-actions">
+                <button type="button" class="btn" id="print-btn">Print my one-pager</button>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- ============ PRINTABLE ONE-PAGER ============ -->
+<div id="onepager" aria-hidden="true">
+    <h1>AI Literacy — my first lesson</h1>
+    <p id="op-who"></p>
+
+    <h2>My delivery plan</h2>
+    <div class="op-block"><div class="op-label">Outcome</div><div id="op-outcome"></div></div>
+    <div class="op-block"><div class="op-label">Hook</div><div id="op-hook"></div></div>
+    <div class="op-block"><div class="op-label">Facilitation moves</div><div id="op-moves"></div></div>
+    <div class="op-block"><div class="op-label">Evidence of thinking</div><div id="op-evidence"></div></div>
+    <div class="op-block"><div class="op-label">Least sure about</div><div id="op-unsure"></div></div>
+
+    <h2>The five facilitation moves</h2>
+    <ol>
+        <li><strong>Prompt</strong> — frame a task that leaves thinking to do.</li>
+        <li><strong>Inquiry</strong> — identify claims, questions and evidence needs.</li>
+        <li><strong>Critique &amp; evaluate</strong> — check, classify, compare and justify.</li>
+        <li><strong>Practice</strong> — repeat the skill with less support.</li>
+        <li><strong>Reflect</strong> — explain the learning and transfer it.</li>
+    </ol>
+    <p><em>The teacher frames and probes; learners select, check, justify and revise.</em></p>
+
+    <h2>Responsible use — the five principles</h2>
+    <ul>
+        <li><strong>Human oversight</strong> — AI assists; people decide and stay accountable.</li>
+        <li><strong>Data privacy</strong> — never put personal or sensitive data into a prompt.</li>
+        <li><strong>Wellbeing and safeguarding</strong> — protect students from harmful or age-inappropriate content.</li>
+        <li><strong>Honesty and integrity</strong> — cite sources, no invented facts, no passing AI work off as your own.</li>
+        <li><strong>Fairness</strong> — check outputs for bias and unfair assumptions.</li>
+    </ul>
+
+    <h2>If something goes wrong</h2>
+    <p><strong>Notice → Record → Report → Act → Review.</strong>
+       A memory aid for the shape of a response — not the reporting route.</p>
+    <div class="op-block"><div class="op-label">AISA escalation route</div>
+        <div id="op-escalation">To be confirmed — follow the AISA Safeguarding module until this is issued.</div>
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    var MODULE_ID = 'ai-curriculum-readiness';
+
+    /* ---- Pre-release admin gate ----
+     * Fails closed: anything other than a confirmed admin gets the
+     * "coming soon" screen. Note this hides the page, it does not
+     * protect it — the repo is public, so the markup is readable by
+     * anyone with the URL. It keeps staff from stumbling in early;
+     * it is not a security boundary. */
+    (function () {
+        function revealPreview() {
+            var gate = document.getElementById('admin-gate');
+            if (gate) gate.remove();
+            var banner = document.getElementById('admin-preview-banner');
+            if (banner) banner.style.removeProperty('display');
+        }
+        function showDenied() {
+            var gate = document.getElementById('admin-gate');
+            if (!gate) return;
+            var checking = gate.querySelector('[data-gate-checking]');
+            var denied   = gate.querySelector('[data-gate-denied]');
+            if (checking) checking.hidden = true;
+            if (denied)   denied.hidden   = false;
+        }
+        if (!window.aisaReady) { showDenied(); return; }
+        window.aisaReady(function (auth) {
+            /* No backend means no way to verify admin status. */
+            if (!auth.isConfigured || !auth.isConfigured()) { showDenied(); return; }
+            auth.isAdmin().then(function (yes) {
+                yes ? revealPreview() : showDenied();
+            }).catch(function () { showDenied(); });
+        });
+    })();
+
+    /* Segment id -> the capture prefix its fields use. Saves are grouped
+     * by segment so a teacher who does three segments today and four
+     * tomorrow never overwrites the earlier ones. */
+    var SEGMENTS = ['architecture', 'thinking', 'lesson', 'quality', 'responsible', 'commit'];
+
+    var fields = Array.prototype.slice.call(document.querySelectorAll('[data-capture]'));
+    var alertBox = document.getElementById('capture-alert');
+    var alertText = document.getElementById('capture-alert-text');
+
+    /* Local mirror, so a network failure never costs someone their
+     * typing. Server is the record; this is the safety net. */
+    var LS_KEY = 'aisa_module_draft_' + MODULE_ID;
+
+    function readLocal() {
+        try { return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); } catch (e) { return {}; }
+    }
+    function writeLocal(obj) {
+        try { localStorage.setItem(LS_KEY, JSON.stringify(obj)); } catch (e) { /* quota or private mode */ }
+    }
+
+    function fieldValue(el) {
+        return el.type === 'checkbox' ? !!el.checked : el.value;
+    }
+    function setFieldValue(el, v) {
+        if (el.type === 'checkbox') el.checked = !!v;
+        else if (v != null) el.value = v;
+    }
+
+    function parseKey(el) {
+        var parts = String(el.getAttribute('data-capture')).split('.');
+        return { segment: parts[0], key: parts.slice(1).join('.') };
+    }
+
+    function collectSegment(segment) {
+        var out = {};
+        fields.forEach(function (el) {
+            var k = parseKey(el);
+            if (k.segment === segment) out[k.key] = fieldValue(el);
+        });
+        return out;
+    }
+
+    function showSaveState(el, text, cls) {
+        var target = document.querySelector('[data-save-for="' + el.id + '"]');
+        if (!target) return;
+        target.textContent = text;
+        target.className = 'save-state' + (cls ? ' ' + cls : '');
+    }
+
+    function showCaptureAlert(err) {
+        alertText.textContent = (err && err.userMessage) ||
+            'Your answers could not be saved. Please tell Brandon before continuing.';
+        alertBox.classList.add('show');
+        /* Setup problems are permanent until someone fixes them — don't
+         * let the teacher scroll past it. */
+        if (err && err.isSetupProblem) alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function saveSegment(segment, el, opts) {
+        opts = opts || {};
+        var data = collectSegment(segment);
+
+        var local = readLocal();
+        local[segment] = data;
+        writeLocal(local);
+
+        if (!window.aisaAuth || !window.aisaAuth.saveModuleResponse) {
+            if (el) showSaveState(el, 'Saved on this device only — not signed in.', 'is-error');
+            return Promise.resolve();
+        }
+
+        if (el) showSaveState(el, 'Saving…');
+
+        return window.aisaAuth.saveModuleResponse(MODULE_ID, segment, data, {
+            completed:     !!opts.completed,
+            /* Only segment 4's line 6 is urgent enough to interrupt anyone. */
+            notifyAdmins:  segment === 'lesson'
+        }).then(function () {
+            if (el) showSaveState(el, 'Saved', 'is-saved');
+            alertBox.classList.remove('show');
+        }).catch(function (err) {
+            if (el) showSaveState(el, 'Not saved', 'is-error');
+            showCaptureAlert(err);
+            throw err;
+        });
+    }
+
+    /* Debounce per segment: typing shouldn't fire a write per keystroke,
+     * but leaving a field should commit immediately. */
+    var timers = {};
+    function scheduleSave(segment, el) {
+        clearTimeout(timers[segment]);
+        timers[segment] = setTimeout(function () {
+            saveSegment(segment, el).catch(function () {});
+        }, 1200);
+    }
+
+    fields.forEach(function (el) {
+        var segment = parseKey(el).segment;
+        var evt = el.type === 'checkbox' ? 'change' : 'input';
+        el.addEventListener(evt, function () {
+            if (el.type === 'checkbox') saveSegment(segment, el).catch(function () {});
+            else scheduleSave(segment, el);
+        });
+        el.addEventListener('blur', function () {
+            clearTimeout(timers[segment]);
+            saveSegment(segment, el).catch(function () {});
+        });
+    });
+
+    /* ---- Resume ---- */
+    function hydrate(blob) {
+        fields.forEach(function (el) {
+            var k = parseKey(el);
+            var seg = blob[k.segment];
+            if (seg && Object.prototype.hasOwnProperty.call(seg, k.key)) {
+                setFieldValue(el, seg[k.key]);
+            }
+        });
+    }
+
+    hydrate(readLocal());
+
+    /* aisaReady takes a callback — aisaAuth does not exist yet at parse
+     * time, which is the whole reason the helper exists. */
+    if (window.aisaReady) {
+        window.aisaReady(function (auth) {
+            if (!auth || !auth.getModuleResponse) return;
+            auth.getModuleResponse(MODULE_ID).then(function (r) {
+                if (r && r.found && r.data) {
+                    /* Server wins on conflict: it is the record, and it
+                     * is what survives a device change. */
+                    hydrate(r.data);
+                    var local = readLocal();
+                    Object.keys(r.data).forEach(function (s) { local[s] = r.data[s]; });
+                    writeLocal(local);
+                }
+            }).catch(function (err) {
+                showCaptureAlert(err);
+            });
+        });
+    }
+
+    /* ---- Video slots: reveal only when a source exists ---- */
+    Array.prototype.forEach.call(document.querySelectorAll('.video-slot'), function (slot) {
+        var src = slot.getAttribute('data-src');
+        if (!src) return;
+        var v = slot.querySelector('video');
+        v.src = src;
+        slot.setAttribute('data-state', 'ready');
+    });
+
+    /* ---- One-pager ---- */
+    function fillOnePager() {
+        function put(id, val) {
+            var el = document.getElementById(id);
+            if (el) el.textContent = val && String(val).trim() ? val : '—';
+        }
+        var user = (window.aisaAuth && window.aisaAuth.getUser) ? window.aisaAuth.getUser() : null;
+        var name = (user && user.name && user.name.trim()) ? user.name.trim() : '';
+        var band = document.getElementById('f-band').value;
+        document.getElementById('op-who').textContent =
+            [name, band].filter(Boolean).join(' · ') + (name || band ? ' · ' : '') + '21 September 2026';
+
+        put('op-outcome',  document.getElementById('f-outcome').value);
+        put('op-hook',     document.getElementById('f-hook').value);
+        put('op-moves',    document.getElementById('f-moves').value);
+        put('op-evidence', document.getElementById('f-evidence').value);
+        put('op-unsure',   document.getElementById('f-unsure').value);
+    }
+
+    var printBtn = document.getElementById('print-btn');
+    if (printBtn) {
+        printBtn.addEventListener('click', function () {
+            fillOnePager();
+            window.print();
+        });
+    }
+
+    /* ---- Finish ---- */
+    var finishBtn = document.getElementById('finish-btn');
+    finishBtn.addEventListener('click', function () {
+        finishBtn.disabled = true;
+        finishBtn.textContent = 'Recording…';
+
+        /* Flush every segment, then mark complete. Sequential rather
+         * than parallel: the server merges into one row, and parallel
+         * writes would contend on the same lock. */
+        var chain = Promise.resolve();
+        SEGMENTS.forEach(function (segment) {
+            chain = chain.then(function () {
+                return saveSegment(segment, null, { completed: segment === 'commit' });
+            });
+        });
+
+        chain.then(function () {
+            document.getElementById('completion-banner').classList.add('show');
+            document.getElementById('completion-banner').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            finishBtn.textContent = 'Recorded';
+            /* Tick every chapter box so gate.js's wireModule fires the
+             * 'completed' event and the certificate becomes available. */
+            Array.prototype.forEach.call(document.querySelectorAll('.module-checkbox'), function (cb) {
+                if (!cb.checked) { cb.checked = true; cb.dispatchEvent(new Event('change', { bubbles: true })); }
+            });
+        }).catch(function () {
+            finishBtn.disabled = false;
+            finishBtn.textContent = 'Try again';
+        });
+    });
+
+    /* ---- Framework wiring ---- */
+    function start() {
+        if (window.AisaTraining && window.AisaTraining.init) {
+            window.AisaTraining.init({ moduleId: MODULE_ID });
+        }
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                if (auth && auth.wireModule) {
+                    auth.wireModule({ moduleId: MODULE_ID, version: 'v1' });
+                }
+            });
+        }
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+    else start();
+})();
+</script>
+
+</body>
+</html>

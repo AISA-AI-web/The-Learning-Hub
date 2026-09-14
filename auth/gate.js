@@ -477,6 +477,31 @@
         });
     }
 
+    /* Turn an apiCall rejection into something a teacher can act on.
+     * The common cause of 'unknown_action' is a module shipping ahead
+     * of the Apps Script redeploy — say that plainly rather than
+     * letting a page render an empty box and look like it worked. */
+    function describeCaptureError(err) {
+        var code = (err && err.message) || 'api_error';
+        var friendly = {
+            unknown_action:
+                'The Learning Hub backend has not been updated yet, so your answers ' +
+                'cannot be saved. Please tell Brandon before you go any further — ' +
+                'this is a setup problem, not something you did.',
+            busy_try_again:
+                'Someone else was saving at the same moment. Your answer was not ' +
+                'saved — please try again.',
+            missing_module_id:  'This page is misconfigured and cannot save. Please report it.',
+            missing_segment_id: 'This page is misconfigured and cannot save. Please report it.'
+        }[code];
+        var e = new Error(code);
+        e.userMessage = friendly ||
+            'Your answers could not be saved just now. Check your connection and try again — ' +
+            'your typing is still on this device until you close the tab.';
+        e.isSetupProblem = (code === 'unknown_action');
+        return e;
+    }
+
     /* ------------------------------------------------------------------
      * Completions cache.
      *
@@ -614,6 +639,44 @@
              * the cache in the background. */
             getCompletionsCached: function () {
                 return readCachedCompletions();
+            },
+
+            /* ---- Free-text capture inside a training module ----
+             *
+             * Unlike the analytics calls above these carry work a
+             * teacher has typed, so a failure must never be swallowed:
+             * losing a delivery plan silently is worse than showing an
+             * error. Both reject on failure and the caller is expected
+             * to surface it. An 'unknown_action' here means the Apps
+             * Script redeploy hasn't happened yet — the one failure
+             * mode most likely to bite, so it gets its own message. */
+            saveModuleResponse: function (moduleId, segmentId, data, opts) {
+                opts = opts || {};
+                return apiCall('save_module_response', {
+                    module_id:     moduleId,
+                    segment_id:    segmentId,
+                    data:          data || {},
+                    completed:     !!opts.completed,
+                    notify_admins: !!opts.notifyAdmins,
+                    user_agent:    (typeof navigator !== 'undefined' && navigator.userAgent) || ''
+                }).catch(function (err) {
+                    throw describeCaptureError(err);
+                });
+            },
+
+            /* Read this user's own saved answers back, for resume. */
+            getModuleResponse: function (moduleId) {
+                return apiCall('get_module_response', { module_id: moduleId })
+                    .catch(function (err) {
+                        throw describeCaptureError(err);
+                    });
+            },
+
+            /* Admin-only: every response for one module (ADEK evidence
+             * export, and the pre-session read of what teachers asked
+             * for). Rejects with not_admin for everyone else. */
+            adminModuleResponses: function (moduleId) {
+                return apiCall('admin_module_responses', { module_id: moduleId });
             },
 
             /* Round-trip health check: confirms the server can verify

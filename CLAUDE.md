@@ -54,6 +54,64 @@ fail silently and the dependent UIs stay empty:
   redeploy, the tracker posts the bell notification and then warns the
   admin in red that no emails went out.
 
+- **Module free-text capture** — three new endpoints
+  (`save_module_response`, `get_module_response`,
+  `admin_module_responses`) and one new sheet, `module_responses`,
+  created lazily on first write. No manual setup needed. Backs the
+  AI Literacy Teacher Readiness module, which is the first thing on the
+  Hub to store a teacher's typed answers server-side.
+
+  Unlike the other pending items this one does **not** fail silently:
+  `gate.js` maps `unknown_action` to a visible red banner telling the
+  teacher the backend hasn't been updated and to report it. That was
+  deliberate — a silently-dropped delivery plan is worse than an error.
+
+  **Privacy:** `module_responses` rows are personal data under UAE
+  Federal Decree-Law No. 45 of 2021 — named staff writing about what
+  they're unsure of. Reads are admin-gated; a teacher can only ever
+  read back their own row. Don't widen that, and don't mirror this
+  sheet anywhere public — **the GitHub repo is public**, and the
+  sign-in gate is client-side only, so anything committed is
+  world-readable regardless of what `gate.js` renders.
+
+## AI Literacy module — admin preview, not released
+
+`PD Modules/ai-curriculum-readiness-module.html` is **not on `main`
+yet** — it sits on `claude/admiring-bardeen-fr6hnp`, pending
+[PR #100](https://github.com/AISA-AI-web/The-Learning-Hub/pull/100).
+Merging that PR publishes it to the live site.
+
+It is gated to admins exactly the way the Sustainability module is: an
+`#admin-gate` overlay on the page (fails closed), `data-admin-only` on
+the pd.html card, `adminOnly: true` in search-index.js, and no listing
+at all in dashboard.html, menu.js, admin-dashboard.html or
+admin-charts.html. Access is whoever is on the `admins` tab — it is not
+per-person.
+
+**That gate hides the module; it does not protect it.** The GitHub repo
+is public with Pages enabled, so the HTML is readable by anyone with the
+URL whatever the client-side gate renders. Don't put anything in a
+module page that would be a problem to publish.
+
+To release: see the checklist in the pd.html card comment.
+
+Outstanding before it can be announced to staff:
+
+1. **The escalation route is written.** Segment 6 carries a dashed gold
+   `.needs-content` block where AISA's real DSL name, channel and
+   timescale go. ADEK explicitly forbids inventing a reporting route
+   ("notice–record–report–act–review is a memory aid, not an official
+   school reporting route"), so it was left blank rather than filled
+   with something plausible. Search `data-editor-block="escalation-route"`.
+2. **The Apps Script redeploy happens**, or teachers hit the red banner.
+3. **Videos, if wanted.** Three `.video-slot` elements (segments 1, 3, 4)
+   render a "to follow" note until given a `data-src`. The written
+   content stands alone, so shipping without them is fine.
+
+Content sourced verbatim from ADEK's Train-the-Trainer Day 1 deck and
+Participant Worksheet Packet — the Ms Hana case in segment 3 is
+Worksheet 3 unaltered, including its Grade 7 setting.
+
 ## Next Digital Lion Newsletter — items to include
 
 - **NotebookLM ⇄ Google Drive auto-sync.** Files uploaded to NotebookLM
