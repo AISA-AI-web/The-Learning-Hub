@@ -76,8 +76,12 @@ fail silently and the dependent UIs stay empty:
 
 ## AI Literacy module — admin preview, not released
 
-`PD Modules/ai-curriculum-readiness-module.html` is on `main` and live,
-but gated to admins exactly the way the Sustainability module is: an
+`PD Modules/ai-curriculum-readiness-module.html` is **not on `main`
+yet** — it sits on `claude/admiring-bardeen-fr6hnp`, pending
+[PR #100](https://github.com/AISA-AI-web/The-Learning-Hub/pull/100).
+Merging that PR publishes it to the live site.
+
+It is gated to admins exactly the way the Sustainability module is: an
 `#admin-gate` overlay on the page (fails closed), `data-admin-only` on
 the pd.html card, `adminOnly: true` in search-index.js, and no listing
 at all in dashboard.html, menu.js, admin-dashboard.html or
