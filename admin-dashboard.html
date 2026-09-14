@@ -287,6 +287,52 @@
                 <code class="font-mono bg-amber-100 px-1.5 py-0.5 rounded">migrateDwellToPerModule()</code>
                 once from the Apps Script editor to roll those rows into per-module summaries.
             </p>
+
+            <!-- ==========================================================
+                 AI Literacy readiness — what teachers actually wrote.
+                 Free-text answers from the AI Literacy Teacher Readiness
+                 module. This is the pre-21-September read: who is stuck,
+                 what they asked for, and what they are least sure about.
+                 ========================================================== -->
+            <div id="responses" class="mt-12">
+                <div class="flex items-center justify-between gap-4 mb-3 px-1 flex-wrap">
+                    <div>
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">AI Literacy readiness &middot; what teachers wrote</h3>
+                        <p class="text-xs text-slate-500 mt-1 max-w-2xl">
+                            Every teacher&rsquo;s delivery plan from the readiness module. People who asked for
+                            something, or who couldn&rsquo;t get into InstrucTwin, sort to the top.
+                            <span class="font-semibold text-slate-600">These are staff personal data &mdash; don&rsquo;t forward the export.</span>
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <select id="resp-filter" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                            <option value="all">Everyone who started</option>
+                            <option value="flagged">Needs something from me</option>
+                            <option value="done">Completed</option>
+                            <option value="open">Still in progress</option>
+                        </select>
+                        <input id="resp-search" type="search" placeholder="Search name or email&hellip;"
+                               class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        <button id="resp-export" type="button"
+                                class="text-sm font-bold text-indigo-700 border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 rounded-lg px-3 py-1.5 transition-colors">
+                            Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div id="resp-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4"></div>
+                <div id="resp-list" class="space-y-3"></div>
+
+                <p id="resp-empty" class="text-center text-slate-400 py-8">
+                    No responses yet &mdash; answers appear here as teachers work through the module.
+                </p>
+                <p id="resp-no-endpoint" class="hidden mt-3 text-sm text-rose-800 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
+                    <strong>The backend doesn&rsquo;t have the response endpoints yet.</strong>
+                    Paste <code class="font-mono bg-rose-100 px-1.5 py-0.5 rounded">auth/apps-script.gs</code>
+                    into the Apps Script editor and deploy a new version. Until then teachers see a red
+                    banner and nothing they type is being saved.
+                </p>
+            </div>
         </div>
     </main>
 
@@ -1091,6 +1137,232 @@
             }
             rerender();
         });
+    })();
+    </script>
+
+    <script>
+    /* ============================================================
+     * AI Literacy readiness — free-text responses.
+     *
+     * Reads module_responses via admin_module_responses (admin-gated
+     * server-side). Shows one card per teacher, flagged people first,
+     * because the point of this view is the pre-session triage: who
+     * asked for something, who is blocked, what everyone is least
+     * sure about.
+     *
+     * Staff personal data under Federal Decree-Law No. 45 of 2021 —
+     * the whole section only ever renders for an admin, and the CSV
+     * carries a warning row for the same reason.
+     * ============================================================ */
+    (function () {
+        'use strict';
+
+        var MODULE_ID = 'ai-curriculum-readiness';
+        var rows = [];
+
+        /* Field -> label, in the order they matter on the 20th. The
+         * first two are the reason this view exists. */
+        var PRIMARY = [
+            { seg: 'lesson', key: 'needs_before', label: 'Needs from me before the 21st', tone: 'gold' },
+            { seg: 'lesson', key: 'unsure',       label: 'Least sure about',              tone: 'plain' },
+            { seg: 'commit', key: 'question',     label: 'Question for 21 September',     tone: 'plain' }
+        ];
+        var SECONDARY = [
+            { seg: 'lesson', key: 'outcome',  label: 'Lesson outcome' },
+            { seg: 'lesson', key: 'hook',     label: 'Hook' },
+            { seg: 'lesson', key: 'moves',    label: 'Facilitation moves' },
+            { seg: 'lesson', key: 'evidence', label: 'Evidence of thinking' },
+            { seg: 'thinking', key: 'repair', label: 'Ms Hana rewrite' },
+            { seg: 'quality', key: 'which',    label: 'Which sample shows more learning' },
+            { seg: 'quality', key: 'question', label: 'Question for sample A' },
+            { seg: 'commit',  key: 'will_do',  label: 'Will do differently' }
+        ];
+
+        function escapeHtml(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function val(r, seg, key) {
+            var s = r.data && r.data[seg];
+            var v = s ? s[key] : '';
+            return (v == null || v === false) ? '' : String(v).trim();
+        }
+
+        function fmt(iso) {
+            if (!iso) return '';
+            try {
+                return new Date(iso).toLocaleDateString('en-GB',
+                    { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+            } catch (e) { return String(iso); }
+        }
+
+        function isDone(r)    { return !!r.completed_at; }
+        function isBlocked(r) { return val(r, 'lesson', 'blocked') === 'true'; }
+        function needsHelp(r) { return !!val(r, 'lesson', 'needs_before'); }
+        function isFlagged(r) { return r.flagged || needsHelp(r) || isBlocked(r); }
+
+        function pill(text, classes) {
+            return '<span class="inline-block text-[10px] font-bold uppercase tracking-widest ' +
+                   classes + ' px-2 py-0.5 rounded-full">' + escapeHtml(text) + '</span>';
+        }
+
+        function statusPills(r) {
+            var out = [];
+            if (isDone(r)) out.push(pill('Completed', 'bg-emerald-50 text-emerald-700 border border-emerald-200'));
+            else           out.push(pill('In progress', 'bg-slate-100 text-slate-600 border border-slate-200'));
+            if (needsHelp(r)) out.push(pill('Needs me', 'bg-amber-50 text-amber-800 border border-amber-300'));
+            if (isBlocked(r)) out.push(pill('InstrucTwin blocked', 'bg-rose-50 text-rose-700 border border-rose-200'));
+            if (val(r, 'responsible', 'acknowledged') === 'true') {
+                out.push(pill('Safeguarding read', 'bg-indigo-50 text-indigo-700 border border-indigo-200'));
+            }
+            return out.join(' ');
+        }
+
+        function answerBlock(label, text, tone) {
+            if (!text) return '';
+            var box = (tone === 'gold')
+                ? 'bg-amber-50 border-amber-200'
+                : 'bg-slate-50 border-slate-200';
+            return '<div class="mt-2 border ' + box + ' rounded-xl px-3 py-2">' +
+                   '<div class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">' +
+                   escapeHtml(label) + '</div>' +
+                   '<div class="text-sm text-slate-800 whitespace-pre-wrap">' + escapeHtml(text) + '</div>' +
+                   '</div>';
+        }
+
+        function card(r) {
+            var primary = PRIMARY.map(function (f) {
+                return answerBlock(f.label, val(r, f.seg, f.key), f.tone);
+            }).join('');
+
+            var secondary = SECONDARY.map(function (f) {
+                return answerBlock(f.label, val(r, f.seg, f.key), 'plain');
+            }).join('');
+
+            var band = val(r, 'architecture', 'band');
+            var meta = [band, isDone(r) ? 'Finished ' + fmt(r.completed_at) : 'Last saved ' + fmt(r.updated_at)]
+                        .filter(Boolean).join(' &middot; ');
+
+            return '<div class="bg-white rounded-2xl border ' +
+                   (isFlagged(r) ? 'border-amber-300' : 'border-gray-100') +
+                   ' shadow-sm px-4 py-3">' +
+                   '<div class="flex items-start justify-between gap-3 flex-wrap">' +
+                     '<div>' +
+                       '<p class="font-bold text-slate-900 leading-tight">' +
+                          escapeHtml(r.name || r.email) + '</p>' +
+                       '<p class="text-xs text-slate-500">' + escapeHtml(r.email) + '</p>' +
+                       '<p class="text-xs text-slate-400 mt-0.5">' + meta + '</p>' +
+                     '</div>' +
+                     '<div class="flex gap-1.5 flex-wrap justify-end">' + statusPills(r) + '</div>' +
+                   '</div>' +
+                   primary +
+                   (secondary
+                     ? '<details class="mt-2"><summary class="text-xs font-bold text-indigo-700 cursor-pointer hover:text-indigo-900">' +
+                       'Full delivery plan and other answers</summary>' + secondary + '</details>'
+                     : '') +
+                   '</div>';
+        }
+
+        function visible() {
+            var mode = document.getElementById('resp-filter').value;
+            var q = document.getElementById('resp-search').value.trim().toLowerCase();
+            return rows.filter(function (r) {
+                if (mode === 'flagged' && !isFlagged(r)) return false;
+                if (mode === 'done'    && !isDone(r))    return false;
+                if (mode === 'open'    &&  isDone(r))    return false;
+                if (q && (r.name + ' ' + r.email).toLowerCase().indexOf(q) === -1) return false;
+                return true;
+            }).sort(function (a, b) {
+                /* People waiting on me first, then unfinished, then by
+                 * most recent activity. */
+                if (isFlagged(a) !== isFlagged(b)) return isFlagged(a) ? -1 : 1;
+                if (isDone(a) !== isDone(b)) return isDone(a) ? 1 : -1;
+                return String(b.updated_at).localeCompare(String(a.updated_at));
+            });
+        }
+
+        function statTile(n, label, tone) {
+            return '<div class="bg-white rounded-xl border border-gray-100 shadow-sm px-3 py-2.5">' +
+                   '<p class="text-2xl font-black ' + tone + ' leading-none">' + n + '</p>' +
+                   '<p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mt-1">' +
+                   escapeHtml(label) + '</p></div>';
+        }
+
+        function renderStats() {
+            document.getElementById('resp-stats').innerHTML =
+                statTile(rows.length, 'Started', 'text-slate-900') +
+                statTile(rows.filter(isDone).length, 'Completed', 'text-emerald-700') +
+                statTile(rows.filter(needsHelp).length, 'Asked for something', 'text-amber-700') +
+                statTile(rows.filter(isBlocked).length, 'Blocked on InstrucTwin', 'text-rose-700');
+        }
+
+        function rerender() {
+            var list = visible();
+            document.getElementById('resp-list').innerHTML = list.map(card).join('');
+            document.getElementById('resp-empty').classList.toggle('hidden', list.length > 0);
+            if (!rows.length) {
+                document.getElementById('resp-empty').textContent =
+                    'No responses yet — answers appear here as teachers work through the module.';
+            } else if (!list.length) {
+                document.getElementById('resp-empty').textContent = 'Nobody matches that filter.';
+            }
+        }
+
+        function csvCell(v) {
+            return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+        }
+
+        /* The ADEK evidence export: name, timestamp, every answer. Scoped
+         * to what's on screen so the file never disagrees with the view. */
+        function exportCsv() {
+            var fields = PRIMARY.concat(SECONDARY);
+            var header = ['Name', 'Email', 'Band', 'Status', 'Started', 'Last saved', 'Completed',
+                          'Safeguarding acknowledged', 'InstrucTwin blocked']
+                         .concat(fields.map(function (f) { return f.label; }));
+            var lines = [header.map(csvCell).join(',')];
+            visible().forEach(function (r) {
+                var row = [
+                    r.name || '', r.email, val(r, 'architecture', 'band'),
+                    isDone(r) ? 'Completed' : 'In progress',
+                    fmt(r.first_saved), fmt(r.updated_at), fmt(r.completed_at),
+                    val(r, 'responsible', 'acknowledged') === 'true' ? 'Yes' : 'No',
+                    isBlocked(r) ? 'Yes' : 'No'
+                ].concat(fields.map(function (f) { return val(r, f.seg, f.key); }));
+                lines.push(row.map(csvCell).join(','));
+            });
+            var blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'aisa-ai-literacy-readiness-' + new Date().toISOString().slice(0, 10) + '.csv';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        document.getElementById('resp-filter').addEventListener('change', rerender);
+        document.getElementById('resp-search').addEventListener('input', rerender);
+        document.getElementById('resp-export').addEventListener('click', exportCsv);
+
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                if (!auth.adminModuleResponses) return;
+                auth.adminModuleResponses(MODULE_ID).then(function (payload) {
+                    rows = (payload && payload.responses) || [];
+                    renderStats();
+                    rerender();
+                }).catch(function (err) {
+                    /* An un-deployed backend is the likely cause and the
+                     * one worth naming, because it also means teachers
+                     * are losing work right now. */
+                    if (err && err.message === 'unknown_action') {
+                        document.getElementById('resp-no-endpoint').classList.remove('hidden');
+                        document.getElementById('resp-empty').classList.add('hidden');
+                    }
+                    console.warn('AISA: module responses failed', err);
+                });
+            });
+        }
     })();
     </script>
 </body>

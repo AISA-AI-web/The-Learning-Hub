@@ -95,6 +95,13 @@ module page that would be a problem to publish.
 
 To release: see the checklist in the pd.html card comment.
 
+**Reading what teachers wrote:** admin dashboard → *AI Literacy
+readiness · what teachers wrote* (`#responses`). One card per teacher,
+people who asked for something or are blocked on InstrucTwin sorted to
+the top, filters, and a CSV export that doubles as the ADEK evidence
+file. Backed by `admin_module_responses`; if the endpoint is missing the
+section says so in red rather than rendering empty.
+
 **Reviewing the content:** add `?preview=1` to the module URL. Every
 chapter unlocks and the knowledge-check answers and feedback are
 revealed, so the whole module reads end to end without working through
