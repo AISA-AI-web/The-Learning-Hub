@@ -40,6 +40,7 @@ const NOTIF_READS_SHEET      = 'notification_reads';
 const DWELL_SHEET            = 'dwell';   // per-person × module × chapter dwell totals
 const LINE_MANAGERS_SHEET    = 'line_managers';   // dropdown for "send to" on eval forms
 const FORM_SUBMISSIONS_SHEET = 'form_submissions'; // round-trip eval-form state
+const MODULE_RESPONSES_SHEET = 'module_responses';  // free-text answers inside a training module
 const SESSION_DURATION_DAYS  = 365;
 
 const NOTIF_HEADERS = [
@@ -103,6 +104,28 @@ const FORM_SUBMISSION_HEADERS = [
   'manager_email', 'manager_name',
   'data_json', 'staff_snapshot_json',
   'completed_at_iso'
+];
+
+/* Free-text answers captured inside a training module.
+ *
+ * One row per (email × module_id) — the whole module's answers live in a
+ * single JSON blob, merged segment by segment as the teacher types. That
+ * keeps the row count bounded at staff × modules and makes resume a
+ * single read.
+ *
+ * This is PERSONAL DATA under UAE Federal Decree-Law No. 45 of 2021 —
+ * named staff writing about their own uncertainty. Reads are admin-only
+ * (`admin_module_responses`); a teacher can only ever read back their own
+ * row. Do not widen that without a reason.
+ *
+ *   segments_done : comma-separated segment ids that have been saved
+ *   data_json     : { <segment_id>: { ...answers, _saved_at } }
+ *   flagged       : TRUE once the teacher asks for something they need
+ *                   before go-live, so the admin sheet can be filtered
+ */
+const MODULE_RESPONSE_HEADERS = [
+  'first_saved_iso', 'updated_at_iso', 'email', 'name', 'module_id',
+  'segments_done', 'data_json', 'flagged', 'completed_at_iso', 'user_agent'
 ];
 
 /* Dwell rows hold per-module engagement summaries — one row per person
@@ -196,6 +219,15 @@ function doPost(e) {
         return jsonOut(completeForm(claims, body));
       case 'list_my_submissions':
         return jsonOut(listMySubmissions(claims));
+
+      // ----- Free-text capture inside training modules -----
+      case 'save_module_response':
+        return jsonOut(saveModuleResponse(claims, body));
+      case 'get_module_response':
+        return jsonOut(getModuleResponse(claims, body));
+      case 'admin_module_responses':
+        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
+        return jsonOut(adminModuleResponses(body));
       case 'whoami':
         return jsonOut({
           ok: true,
@@ -738,6 +770,197 @@ function getFormSubmissionsSheet() {
     sheet.getRange(1, 1, 1, FORM_SUBMISSION_HEADERS.length).setFontWeight('bold');
   }
   return sheet;
+}
+
+// ---------- Module free-text responses ----------
+
+function getModuleResponsesSheet() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(MODULE_RESPONSES_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(MODULE_RESPONSES_SHEET);
+    sheet.appendRow(MODULE_RESPONSE_HEADERS);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, MODULE_RESPONSE_HEADERS.length).setFontWeight('bold');
+  }
+  return sheet;
+}
+
+/* Find the row index (1-based, including the header row) for this
+ * person's row in this module, or 0 if they have never saved. */
+function _findModuleResponseRow(sheet, email, moduleId) {
+  const last = sheet.getLastRow();
+  if (last < 2) return 0;
+  const emailCol  = MODULE_RESPONSE_HEADERS.indexOf('email') + 1;
+  const moduleCol = MODULE_RESPONSE_HEADERS.indexOf('module_id') + 1;
+  const emails  = sheet.getRange(2, emailCol,  last - 1, 1).getValues();
+  const modules = sheet.getRange(2, moduleCol, last - 1, 1).getValues();
+  for (let i = 0; i < emails.length; i++) {
+    if (String(emails[i][0]).trim().toLowerCase() === email &&
+        String(modules[i][0]).trim() === moduleId) {
+      return i + 2;
+    }
+  }
+  return 0;
+}
+
+/**
+ * Merge one segment's answers into this person's row for this module.
+ * Called as the teacher types (debounced client-side), so it must be
+ * cheap and must never lose a segment that isn't in this payload.
+ */
+function saveModuleResponse(claims, body) {
+  const moduleId  = String(body.module_id  || '').slice(0, 80).trim();
+  const segmentId = String(body.segment_id || '').slice(0, 80).trim();
+  if (!moduleId)  return { ok: false, error: 'missing_module_id' };
+  if (!segmentId) return { ok: false, error: 'missing_segment_id' };
+
+  const email = String(claims.email || '').trim().toLowerCase();
+  const data  = (body.data && typeof body.data === 'object') ? body.data : {};
+  const now   = nowIsoLocal();
+
+  const sheet = getModuleResponsesSheet();
+  const lock  = LockService.getScriptLock();
+  /* Two tabs open, or a debounced save racing a Next click, would
+   * otherwise read-modify-write the same blob and drop a segment. */
+  try { lock.waitLock(10000); } catch (e) { return { ok: false, error: 'busy_try_again' }; }
+
+  try {
+    const rowIdx = _findModuleResponseRow(sheet, email, moduleId);
+    let blob = {};
+    let firstSaved = now;
+    let completedAt = '';
+
+    if (rowIdx) {
+      const existing = sheet.getRange(rowIdx, 1, 1, MODULE_RESPONSE_HEADERS.length).getValues()[0];
+      const rawJson  = String(existing[MODULE_RESPONSE_HEADERS.indexOf('data_json')] || '');
+      try { blob = rawJson ? JSON.parse(rawJson) : {}; } catch (e) { blob = {}; }
+      firstSaved  = existing[MODULE_RESPONSE_HEADERS.indexOf('first_saved_iso')] || now;
+      completedAt = existing[MODULE_RESPONSE_HEADERS.indexOf('completed_at_iso')] || '';
+    }
+
+    data._saved_at = now;
+    blob[segmentId] = data;
+
+    if (body.completed) completedAt = completedAt || now;
+
+    const segmentsDone = Object.keys(blob).join(',');
+    const dataJson = JSON.stringify(blob).slice(0, 90000);
+    const flagged = _moduleResponseIsFlagged(blob);
+
+    const row = new Array(MODULE_RESPONSE_HEADERS.length).fill('');
+    function set(h, v) { row[MODULE_RESPONSE_HEADERS.indexOf(h)] = v; }
+    set('first_saved_iso',  firstSaved);
+    set('updated_at_iso',   now);
+    set('email',            email);
+    set('name',             claims.name || '');
+    set('module_id',        moduleId);
+    set('segments_done',    segmentsDone);
+    set('data_json',        dataJson);
+    set('flagged',          flagged);
+    set('completed_at_iso', completedAt);
+    set('user_agent',       String(body.user_agent || '').slice(0, 300));
+
+    if (rowIdx) {
+      sheet.getRange(rowIdx, 1, 1, MODULE_RESPONSE_HEADERS.length).setValues([row]);
+    } else {
+      sheet.appendRow(row);
+    }
+
+    /* "What do you need before go-live?" is the one answer that is
+     * useless if it sits unread until after the deadline — push it at
+     * the admins the moment it lands, once per person per module. */
+    if (body.notify_admins && data.needs_before && String(data.needs_before).trim()) {
+      _notifyAdminsOfModuleRequest(claims, moduleId, String(data.needs_before).trim());
+    }
+
+    return { ok: true, segments_done: segmentsDone.split(','), updated_at: now };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/* True when any saved segment carries an unresolved ask or blocker. */
+function _moduleResponseIsFlagged(blob) {
+  for (const k in blob) {
+    if (!Object.prototype.hasOwnProperty.call(blob, k)) continue;
+    const seg = blob[k];
+    if (!seg || typeof seg !== 'object') continue;
+    if (seg.needs_before && String(seg.needs_before).trim()) return true;
+    if (seg.blocked === true) return true;
+  }
+  return false;
+}
+
+function _notifyAdminsOfModuleRequest(claims, moduleId, text) {
+  const admins = Object.keys(getAdminEmailSet());
+  if (!admins.length) return;
+  _fireSystemNotification(
+    claims.email,
+    claims.name || '',
+    'Module request — ' + moduleId,
+    (claims.name || claims.email) + ' needs something before they can teach:\n\n' + text.slice(0, 1500),
+    admins
+  );
+}
+
+/** A teacher reading back their own answers, for resume. Own row only. */
+function getModuleResponse(claims, body) {
+  const moduleId = String(body.module_id || '').slice(0, 80).trim();
+  if (!moduleId) return { ok: false, error: 'missing_module_id' };
+
+  const email  = String(claims.email || '').trim().toLowerCase();
+  const sheet  = getModuleResponsesSheet();
+  const rowIdx = _findModuleResponseRow(sheet, email, moduleId);
+  if (!rowIdx) return { ok: true, found: false, data: {} };
+
+  const r = sheet.getRange(rowIdx, 1, 1, MODULE_RESPONSE_HEADERS.length).getValues()[0];
+  let blob = {};
+  try { blob = JSON.parse(String(r[MODULE_RESPONSE_HEADERS.indexOf('data_json')] || '') || '{}'); }
+  catch (e) { blob = {}; }
+
+  return {
+    ok: true,
+    found: true,
+    data: blob,
+    updated_at:   r[MODULE_RESPONSE_HEADERS.indexOf('updated_at_iso')]   || '',
+    completed_at: r[MODULE_RESPONSE_HEADERS.indexOf('completed_at_iso')] || ''
+  };
+}
+
+/**
+ * Every response for one module — the ADEK evidence export and the
+ * pre-session read. Admin-gated by the router.
+ */
+function adminModuleResponses(body) {
+  const moduleId = String(body.module_id || '').slice(0, 80).trim();
+  const sheet = getModuleResponsesSheet();
+  const last  = sheet.getLastRow();
+  if (last < 2) return { ok: true, responses: [] };
+
+  const rows = sheet.getRange(2, 1, last - 1, MODULE_RESPONSE_HEADERS.length).getValues();
+  const idx = {};
+  MODULE_RESPONSE_HEADERS.forEach(function (h, i) { idx[h] = i; });
+
+  const out = [];
+  rows.forEach(function (r) {
+    if (moduleId && String(r[idx.module_id]).trim() !== moduleId) return;
+    let blob = {};
+    try { blob = JSON.parse(String(r[idx.data_json] || '') || '{}'); } catch (e) { blob = {}; }
+    out.push({
+      email:        String(r[idx.email] || ''),
+      name:         String(r[idx.name]  || ''),
+      module_id:    String(r[idx.module_id] || ''),
+      first_saved:  r[idx.first_saved_iso]  || '',
+      updated_at:   r[idx.updated_at_iso]   || '',
+      completed_at: r[idx.completed_at_iso] || '',
+      segments_done: String(r[idx.segments_done] || '').split(',').filter(Boolean),
+      flagged:      r[idx.flagged] === true || String(r[idx.flagged]).toUpperCase() === 'TRUE',
+      data:         blob
+    });
+  });
+
+  return { ok: true, responses: out };
 }
 
 /* System-fired notification — used when the form workflow needs to

@@ -69,6 +69,7 @@
 
         /* PD modules */
         { title: 'PD Modules',                         desc: 'All professional development modules',                          href: 'PD%20Modules/pd.html',                                                             icon: '\u{1F393}', tag: 'Hub' },
+        { title: 'AI Literacy: Teacher Readiness',      desc: 'Required by 20 Sept: teach your first ADEK AI lesson',        href: 'PD%20Modules/ai-curriculum-readiness-module.html',                                 icon: '\u{1F393}', tag: 'Module' },
         { title: 'AI Ethics & Policy',                 desc: 'Required: AISA AI vision, principles, approved tools',          href: 'PD%20Modules/ai-ethics-module.html',                                               icon: '\u{1F9ED}', tag: 'Module' },
         { title: 'Return to School',                   desc: 'Required: ADEK protocols, drills, safety',                      href: 'PD%20Modules/return-to-school.html',                                               icon: '\u{1F6A8}', tag: 'Module' },
         { title: 'Workspace Studio',                   desc: 'Build Flows + Skills for everyday tasks in Google Workspace',   href: 'PD%20Modules/workspace-studio-module.html',                                        icon: '\u{1F6E0}', tag: 'Module' },
