@@ -95,6 +95,17 @@ module page that would be a problem to publish.
 
 To release: see the checklist in the pd.html card comment.
 
+**Reviewing the content:** add `?preview=1` to the module URL. Every
+chapter unlocks and the knowledge-check answers and feedback are
+revealed, so the whole module reads end to end without working through
+it. Without the flag it behaves normally.
+
+**Gotcha worth remembering:** `training.js` inserts the Previous/Next
+bar immediately before `#completion-banner`, so that banner has to live
+*outside* every `[data-chapter]` section. Nested inside one, the nav
+inherits `display:none` on every other chapter and the module cannot be
+advanced at all. This module shipped with exactly that bug once.
+
 Outstanding before it can be announced to staff:
 
 1. **The escalation route is written.** Segment 6 carries a dashed gold

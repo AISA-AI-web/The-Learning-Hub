@@ -1053,21 +1053,26 @@
             <button type="button" class="btn" id="finish-btn">Finish and record my completion</button>
         </p>
 
-        <div class="completion-banner" id="completion-banner"
-             data-cert-title="AI Literacy Curriculum: Teacher Readiness"
-             data-cert-hours="1">
-            <h2>Done — and on the record.</h2>
-            <p>
-                Your completion is logged against the ADEK internal-training requirement, and your
-                delivery plan is saved. I will read every line 5 and line 6 before we meet.
-            </p>
-            <p style="margin-bottom:0;"><strong>We meet on 21 September.</strong>
-                <span id="f2f-details">Time and room to be confirmed.</span></p>
-            <div class="completion-actions">
-                <button type="button" class="btn" id="print-btn">Print my one-pager</button>
-            </div>
-        </div>
     </section>
+
+    <!-- The completion banner MUST stay outside every [data-chapter] section.
+         training.js inserts the Previous/Next bar immediately before it, so
+         nesting it inside a chapter buries the nav in a display:none section
+         and the module becomes impossible to advance through. -->
+    <div class="completion-banner" id="completion-banner"
+         data-cert-title="AI Literacy Curriculum: Teacher Readiness"
+         data-cert-hours="1">
+        <h2>Done — and on the record.</h2>
+        <p>
+            Your completion is logged against the ADEK internal-training requirement, and your
+            delivery plan is saved. I will read every line 5 and line 6 before we meet.
+        </p>
+        <p style="margin-bottom:0;"><strong>We meet on 21 September.</strong>
+            <span id="f2f-details">Time and room to be confirmed.</span></p>
+        <div class="completion-actions">
+            <button type="button" class="btn" id="print-btn">Print my one-pager</button>
+        </div>
+    </div>
 
 </div>
 
@@ -1357,8 +1362,45 @@
         });
     });
 
+    /* ---- Review mode: ?preview=1 ----
+     * Opens every chapter for reading by pre-passing the knowledge
+     * checks and revealing their answers and feedback, so the whole
+     * module can be read end to end without working through it. This
+     * is for reviewing content, not for teachers: without the flag the
+     * module behaves normally. */
+    var PREVIEW = /[?&]preview=1(?:&|$)/.test(window.location.search);
+
+    function openEverythingForReview() {
+        Array.prototype.forEach.call(document.querySelectorAll('.aisa-quiz'), function (quiz) {
+            /* Set before AisaTraining.init() so the very first render
+             * already treats each chapter as ready. */
+            quiz.dataset.passed = 'true';
+            var opts = quiz.querySelectorAll('.aisa-quiz-option');
+            Array.prototype.forEach.call(opts, function (o) {
+                if (o.getAttribute('data-correct') === 'true') o.classList.add('is-correct');
+                o.classList.add('aisa-quiz-locked');
+            });
+            var fb = quiz.querySelector('.aisa-quiz-feedback');
+            if (fb) {
+                fb.classList.add('correct', 'show');
+                fb.innerHTML = fb.getAttribute('data-correct-msg') || '';
+            }
+        });
+
+        var banner = document.getElementById('admin-preview-banner');
+        if (banner) {
+            var note = document.createElement('div');
+            note.style.marginTop = '.6rem';
+            note.innerHTML = '<strong>Review mode is on.</strong> Every chapter is unlocked and ' +
+                'the knowledge-check answers are revealed. Drop <code>?preview=1</code> from the ' +
+                'URL to see what a teacher actually sees.';
+            banner.appendChild(note);
+        }
+    }
+
     /* ---- Framework wiring ---- */
     function start() {
+        if (PREVIEW) openEverythingForReview();
         if (window.AisaTraining && window.AisaTraining.init) {
             window.AisaTraining.init({ moduleId: MODULE_ID });
         }
