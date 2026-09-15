@@ -7,7 +7,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="../auth/training.css?v=5">
 
@@ -299,6 +299,57 @@
             overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
         }
 
+        /* ---- Language toggle ---- */
+        .lang-toggle {
+            display: inline-flex; align-items: center; gap: .45rem;
+            font-family: inherit; font-size: .85rem; font-weight: 700;
+            background: transparent; color: var(--aisa-gold);
+            border: 1px solid var(--aisa-gold); border-radius: 999px;
+            padding: .35rem .9rem; cursor: pointer;
+        }
+        .lang-toggle:hover { background: var(--aisa-gold); color: var(--aisa-purple); }
+        .lang-toggle svg { width: 14px; height: 14px; }
+
+        /* Brief dip while the swap happens, so it reads as deliberate. */
+        body.lang-switching .timeline-container,
+        body.lang-switching .masthead { transition: opacity .25s ease; opacity: .45; }
+
+        /* ---- Arabic / RTL ----
+         * Everything below only applies once the toggle sets .lang-ar,
+         * so the English rendering is untouched. */
+        body.lang-ar {
+            direction: rtl;
+            font-family: 'Tajawal', 'DM Sans', sans-serif;
+        }
+        body.lang-ar h1, body.lang-ar h2, body.lang-ar h3, body.lang-ar h4,
+        body.lang-ar .btn, body.lang-ar .lang-toggle {
+            font-family: 'Tajawal', 'DM Sans', sans-serif;
+        }
+        body.lang-ar .eyebrow { letter-spacing: 0; }
+
+        /* Mirror every directional border and alignment. */
+        body.lang-ar .callout {
+            border-left: 0; border-right: 4px solid var(--aisa-gold);
+            border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+        }
+        body.lang-ar .sample blockquote {
+            border-left: 0; border-right: 3px solid var(--aisa-gold);
+            padding-left: 0; padding-right: .85rem;
+        }
+        body.lang-ar th, body.lang-ar td,
+        body.lang-ar caption, body.lang-ar .field label,
+        body.lang-ar textarea, body.lang-ar input[type="text"] { text-align: right; }
+        body.lang-ar ol, body.lang-ar ul { padding-left: 0; padding-right: 1.4rem; }
+        body.lang-ar .checkline input { margin-right: 0; }
+
+        /* Training-wizard chrome injected by training.js. */
+        body.lang-ar .aisa-train-nav svg { transform: scaleX(-1); }
+        body.lang-ar .aisa-train-btn.primary { margin-left: 0; margin-right: auto; }
+
+        /* Latin-script names, emails and product names stay LTR inside
+         * an RTL paragraph, or the punctuation jumps to the wrong end. */
+        body.lang-ar .ltr { direction: ltr; unicode-bidi: embed; display: inline-block; }
+
         /* ---- Admin access gate (pre-release) ---- */
         #admin-gate {
             position: fixed; inset: 0; z-index: 9999;
@@ -375,7 +426,7 @@
     </div>
 </div>
 
-<div id="admin-preview-banner" style="display:none" role="note">
+<div id="admin-preview-banner" style="display:none" role="note" data-no-translate>
     <span class="apb-tag">Admin preview</span>
     <span><strong>Not yet released to staff.</strong> Content is complete and the backend
     is deployed. Outstanding: the three videos in segments 1, 3 and 4 are optional and
@@ -393,6 +444,16 @@
             you teach it.
         </p>
         <div class="masthead-meta">
+            <button type="button" class="lang-toggle ob-lang" onclick="AISA_toggleLang()"
+                    data-no-translate aria-label="تبديل اللغة إلى العربية"
+                    title="Click here for Arabic — اضغط هنا للعربية">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/>
+                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                <span class="ob-lang-text">العربية</span>
+            </button>
             <span class="chip">Complete by 20 September 2026</span>
             <span class="chip">Teaching begins 21 September</span>
             <span class="chip">In person, 21 September</span>
@@ -417,7 +478,8 @@
         </div>
 
         <div class="video-slot" data-state="empty" data-slot="segment-1"
-             data-src="assets/ai-literacy/segment-1-why.mp4">
+             data-src="assets/ai-literacy/segment-1-why.mp4"
+             data-src-ar="assets/ai-literacy/segment-1-why.ar.mp4">
             <video controls preload="metadata" playsinline></video>
             <div class="video-empty">
                 <strong>Video to follow.</strong> The written version below carries the same
@@ -730,7 +792,7 @@
                 <div class="aisa-quiz-option" data-correct="true">Individually select the most consequential weakness, cite evidence, justify a classification and revise it — without category prompts or a teacher-selected claim.</div>
             </div>
             <div class="aisa-quiz-feedback"
-                 data-correct-msg="<strong>Yes.</strong> Practice means <em>less</em> scaffolding, not the same scaffolding again. Repeating the full support structure tests recall, not transfer.">
+                 data-correct-msg="<strong>Yes.</strong> Practice means less scaffolding, not the same scaffolding again. Repeating the full support structure tests recall, not transfer.">
             </div>
         </div>
 
@@ -1369,10 +1431,8 @@
             return;
         }
 
-        var src = slot.getAttribute('data-src');
-        if (!src) return;
         var v = slot.querySelector('video');
-        if (!v) return;
+        if (!v || !slot.getAttribute('data-src')) return;
         v.addEventListener('loadedmetadata', function () {
             slot.setAttribute('data-state', 'ready');
         });
@@ -1382,8 +1442,47 @@
              * note in place. */
             slot.setAttribute('data-state', 'empty');
         });
-        v.src = src;
+        loadSlotForLang(slot);
     });
+
+    /* Point a slot at the cut matching the current language. A slot with
+     * no Arabic cut falls back to the English one rather than going
+     * blank — a video in the wrong language is still more use than an
+     * empty box, and the written content beneath it is translated. */
+    function loadSlotForLang(slot) {
+        var v = slot.querySelector('video');
+        if (!v) return;
+        var want = (isArabic() && slot.getAttribute('data-src-ar'))
+            ? slot.getAttribute('data-src-ar')
+            : slot.getAttribute('data-src');
+        if (!want) return;
+        /* Compare against the resolved URL, so we don't tear down and
+         * reload a video that is already the right one (and already
+         * playing). */
+        var current = v.getAttribute('src');
+        if (current === want) return;
+        var wasPlaying = !v.paused && !v.ended;
+        v.setAttribute('src', want);
+        v.load();
+        if (wasPlaying) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
+    }
+
+    function isArabic() {
+        return document.body.classList.contains('lang-ar');
+    }
+
+    /* The engine toggles .lang-ar on <body> for both entry points — the
+     * button on this page and the Hub-wide one in the menu bar — so
+     * watching the class covers both without reaching into its internals. */
+    (function watchLanguage() {
+        var last = isArabic();
+        new MutationObserver(function () {
+            var now = isArabic();
+            if (now === last) return;
+            last = now;
+            Array.prototype.forEach.call(document.querySelectorAll('.video-slot'), loadSlotForLang);
+        }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+    })();
 
     /* ---- One-pager ---- */
     function fillOnePager() {
@@ -1471,6 +1570,7 @@
         var banner = document.getElementById('admin-preview-banner');
         if (banner) {
             var note = document.createElement('div');
+            note.setAttribute('data-no-translate', '');
             note.style.marginTop = '.6rem';
             note.innerHTML = '<strong>Review mode is on.</strong> Every chapter is unlocked and ' +
                 'the knowledge-check answers are revealed. Drop <code>?preview=1</code> from the ' +
@@ -1497,6 +1597,9 @@
     else start();
 })();
 </script>
+
+<script src="ai-curriculum-readiness-ar.js?v=1"></script>
+<script src="onboarding-i18n.js?v=3"></script>
 
 </body>
 </html>

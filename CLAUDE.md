@@ -100,6 +100,28 @@ the top, filters, and a CSV export that doubles as the ADEK evidence
 file. Backed by `admin_module_responses`; if the endpoint is missing the
 section says so in red rather than rendering empty.
 
+**Arabic:** the module is bilingual. `ai-curriculum-readiness-ar.js`
+holds every translation and is the only file to edit for wording.
+It has two halves — `AR_DICT` for whole text nodes, and `AR_BLOCKS` for
+sentences broken up by inline `<strong>`/`<em>`/`<a>`, which are stamped
+onto elements as `data-ar` and swapped whole so Arabic word order
+survives. If an English string is edited and its AR_BLOCKS key stops
+matching, the console warns by name — it does not silently stay English.
+
+Videos follow the language: a slot's `data-src-ar` is used in Arabic and
+falls back to `data-src` when there is no Arabic cut. Segment 1 has both.
+
+**⚠ The ADEK framework terminology in the Arabic is not official.** Phase
+names, strand names and the proficiency tiers are faithful translations,
+not ADEK's published Arabic. ADEK issues this curriculum in Arabic too —
+check these before releasing to Arabic-reading staff. The header of the
+`-ar.js` file repeats this warning.
+
+Two additions were made to the shared `onboarding-i18n.js` for this, both
+opt-in and inert for the modules that predate them: `data-ar` block
+translation, and a whitespace-normalised dictionary fallback so keys can
+be written on one line.
+
 **Reviewing the content:** add `?preview=1` to the module URL. Every
 chapter unlocks and the knowledge-check answers and feedback are
 revealed, so the whole module reads end to end without working through
@@ -124,7 +146,8 @@ Outstanding before it can be announced to staff:
 2. ~~The Apps Script redeploy~~ — done 14 Sept 2026. If the readiness
    section in the admin dashboard ever shows its red "no endpoints"
    banner, the deployed version has been rolled back.
-3. **Videos, if wanted.** Self-wiring: each slot names the file it
+3. **Videos** — segment 1 is done, in English and Arabic. Segments 3 and
+   4 are still optional and unrecorded. Self-wiring: each slot names the file it
    expects under `PD Modules/assets/ai-literacy/`, probes for it, and
    keeps its "to follow" note until the file actually loads. Dropping a
    file in is the only step — no code change. `data-embed` on a slot

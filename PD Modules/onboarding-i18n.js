@@ -77,6 +77,13 @@
         var trimmed = en.trim();
         if (!trimmed) return en;
         var ar = DICT[trimmed];
+        /* A paragraph wrapped across source lines arrives with its HTML
+         * indentation intact. Fall back to a whitespace-normalised
+         * lookup so a dictionary key can be written as one clean line
+         * instead of having to reproduce the indentation exactly.
+         * Exact matches still win, so existing dictionaries are
+         * unaffected. */
+        if (ar === undefined && /\s{2,}|\n/.test(trimmed)) ar = DICT[trimmed.replace(/\s+/g, ' ')];
         if (ar === undefined) { var p = patternTranslate(trimmed); if (p !== null) ar = p; }
         if (ar === undefined) return en;            // keep English
         var lead = en.match(/^\s*/)[0], trail = en.match(/\s*$/)[0];
@@ -112,6 +119,9 @@
                 if (!p) return NodeFilter.FILTER_REJECT;
                 if (SKIP[p.tagName]) return NodeFilter.FILTER_REJECT;
                 if (p.closest('[data-no-translate]')) return NodeFilter.FILTER_REJECT;
+                /* Inside a data-ar block the whole subtree is swapped
+                 * wholesale; leave its text nodes alone. */
+                if (p.closest('[data-ar]')) return NodeFilter.FILTER_REJECT;
                 if (!n.nodeValue || !n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
                 return NodeFilter.FILTER_ACCEPT;
             }
@@ -132,7 +142,33 @@
             });
         });
     }
+    /* Opt-in whole-block translation.
+     *
+     * The dictionary matches one text node at a time, which breaks down
+     * when a sentence is split by inline markup: "AI literacy is a" +
+     * <strong>mandatory entitlement</strong> + "for every student" are
+     * three separate keys, and Arabic word order will not survive being
+     * translated a third of a sentence at a time.
+     *
+     * An element carrying data-ar has its entire innerHTML swapped
+     * instead, so the sentence stays one translatable unit and the
+     * Arabic is free to order itself — and to carry its own <strong>.
+     * Elements without the attribute are untouched, so pages that
+     * predate this behave exactly as they did. */
+    function applyBlocks(root, toAr) {
+        var blocks = [];
+        if (root.nodeType === 1 && root.hasAttribute && root.hasAttribute('data-ar')) blocks.push(root);
+        if (root.querySelectorAll) blocks = blocks.concat([].slice.call(root.querySelectorAll('[data-ar]')));
+        blocks.forEach(function (el) {
+            if (el.__obEnHTML === undefined) el.__obEnHTML = el.innerHTML;
+            var ar = el.getAttribute('data-ar');
+            var next = (toAr && ar) ? ar : el.__obEnHTML;
+            if (el.innerHTML !== next) el.innerHTML = next;
+        });
+    }
+
     function applyTo(root, toAr) {
+        applyBlocks(root, toAr);
         eachTextNode(root, function (n) { setText(n, toAr); });
         eachAttr(root, function (el, a) { setAttr(el, a, toAr); });
     }
