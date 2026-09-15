@@ -4,11 +4,18 @@ Drop a file here and it appears in the module automatically — the page
 probes for each path and keeps its "video to follow" note until the file
 really loads. No code change, no redeploy.
 
-| Segment | Filename | What it is |
-|---|---|---|
-| 1 | `segment-1-why.mp4` | ~2 min, on camera. Why this, why now. |
-| 3 | `segment-3-critique.mp4` | ~90 sec. Modelling the critique move on a real AI output, thinking aloud. |
-| 4 | `segment-4-walkthrough.mp4` | ~6 min screencast. InstrucTwin: log in → find your grade → your unit → the lesson → the template → student materials → what to do if the tool is down. |
+The module is bilingual: `<name>.mp4` is played in English and
+`<name>.ar.mp4` in Arabic. A slot with no `.ar` file falls back to the
+English cut rather than going blank.
+
+| Segment | English | Arabic | What it is |
+|---|---|---|---|
+| 1 | `segment-1-why.mp4` ✅ | `segment-1-why.ar.mp4` ✅ | ~2 min. Why this, why now. |
+| 3 | `segment-3-critique.mp4` ✅ | `segment-3-critique.ar.mp4` ✅ | ~90 sec. Modelling the critique move on a real AI output, thinking aloud. |
+| 4 | `segment-4-walkthrough.mp4` | `segment-4-walkthrough.ar.mp4` | ~6 min screencast. InstrucTwin: log in → find your grade → your unit → the lesson → the template → student materials → what to do if the tool is down. |
+
+✅ = present. Segment 4 is still unrecorded in both languages; its slot
+shows a "to follow" note and the written steps carry the content.
 
 ## Two things to know before committing a video here
 

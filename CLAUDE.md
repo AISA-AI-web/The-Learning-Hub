@@ -109,7 +109,8 @@ survives. If an English string is edited and its AR_BLOCKS key stops
 matching, the console warns by name — it does not silently stay English.
 
 Videos follow the language: a slot's `data-src-ar` is used in Arabic and
-falls back to `data-src` when there is no Arabic cut. Segment 1 has both.
+falls back to `data-src` when there is no Arabic cut. Segments 1 and 3
+have both cuts; segment 4 has neither.
 
 **⚠ The ADEK framework terminology in the Arabic is not official.** Phase
 names, strand names and the proficiency tiers are faithful translations,
@@ -146,8 +147,9 @@ Outstanding before it can be announced to staff:
 2. ~~The Apps Script redeploy~~ — done 14 Sept 2026. If the readiness
    section in the admin dashboard ever shows its red "no endpoints"
    banner, the deployed version has been rolled back.
-3. **Videos** — segment 1 is done, in English and Arabic. Segments 3 and
-   4 are still optional and unrecorded. Self-wiring: each slot names the file it
+3. **Videos** — segments 1 and 3 are done, in English and Arabic. Only
+   segment 4 (the InstrucTwin screencast) is still unrecorded, and it
+   stays optional. Self-wiring: each slot names the file it
    expects under `PD Modules/assets/ai-literacy/`, probes for it, and
    keeps its "to follow" note until the file actually loads. Dropping a
    file in is the only step — no code change. `data-embed` on a slot
