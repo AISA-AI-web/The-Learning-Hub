@@ -125,17 +125,6 @@
             margin-top: .5rem;
         }
 
-        /* Editor-facing block: visible, loud, and impossible to ship by
-         * accident. Used where AISA-specific facts are still missing. */
-        .needs-content {
-            border: 2px dashed var(--aisa-gold);
-            background: var(--aisa-gold-wash);
-            border-radius: var(--radius);
-            padding: 1.15rem 1.25rem;
-            margin: 0 0 1.25rem;
-        }
-        .needs-content .eyebrow { color: var(--aisa-purple); }
-
         /* ---- Tables ---- */
         .table-wrap { overflow-x: auto; margin: 0 0 1.25rem; -webkit-overflow-scrolling: touch; }
         table { border-collapse: collapse; width: 100%; min-width: 34rem; font-size: .92rem; }
@@ -233,8 +222,10 @@
         .btn[disabled] { opacity: .5; cursor: not-allowed; }
 
         /* ---- Sample comparison ---- */
-        .samples { display: grid; gap: var(--gap); grid-template-columns: 1fr; margin: 0 0 1.25rem; }
-        @media (min-width: 46rem) { .samples { grid-template-columns: 1fr 1fr; } }
+        .samples, .duo { display: grid; gap: var(--gap); grid-template-columns: 1fr; margin: 0 0 1.25rem; }
+        @media (min-width: 46rem) {
+            .samples, .duo { grid-template-columns: 1fr 1fr; }
+        }
         .sample {
             border: 1px solid var(--aisa-border);
             border-radius: var(--radius);
@@ -383,10 +374,10 @@
 
 <div id="admin-preview-banner" style="display:none" role="note">
     <span class="apb-tag">Admin preview</span>
-    <span><strong>Not yet released to staff.</strong> Two things are outstanding: the
-    AISA escalation route in segment 6 is still blank, and the Apps Script redeploy
-    has not been confirmed &mdash; until it is, saving an answer will show a red
-    banner rather than store anything.</span>
+    <span><strong>Not yet released to staff.</strong> Content is complete and the backend
+    is deployed. Outstanding: the three videos in segments 1, 3 and 4 are optional and
+    not yet recorded, and the cohort has not been confirmed. Release by following the
+    checklist in the pd.html card comment.</span>
 </div>
 
 <header class="masthead">
@@ -997,22 +988,72 @@
 
         <h3>The AISA route</h3>
 
-        <div class="needs-content" data-editor-block="escalation-route">
-            <div class="eyebrow">Not yet written — do not publish this module without it</div>
-            <p>
-                This section must name AISA's real people, real channels and real timescales:
-                the Designated Safeguarding Lead by name, how to reach them, within what
-                timeframe, and what a teacher does in the first ten minutes. ADEK explicitly
-                forbids inventing a reporting route, so it has been left blank rather than
-                filled with something plausible.
-            </p>
+        <p>
+            An AI-related concern is a safeguarding concern. It goes down the same route as any
+            other — to your Safeguarding Lead, not to the IT team and not to the tool's support desk.
+        </p>
+
+        <div class="duo">
+            <div class="card">
+                <div class="eyebrow eyebrow-muted">Elementary</div>
+                <h4 style="margin-bottom:.4rem;">Alia Nejdawi</h4>
+                <p style="margin-bottom:.5rem;">Assistant Principal &middot; <strong>Safeguarding Lead (DSL)</strong><br>
+                    <a href="mailto:anejdawi@aisa.sch.ae">anejdawi@aisa.sch.ae</a></p>
+                <p style="margin-bottom:0; font-size:.9rem; color:var(--aisa-muted);">
+                    Counsellors: Laylin Chong &middot; Sara AlBeainy
+                </p>
+            </div>
+            <div class="card">
+                <div class="eyebrow eyebrow-muted">Secondary</div>
+                <h4 style="margin-bottom:.4rem;">Savvas Largatzis</h4>
+                <p style="margin-bottom:.5rem;">MS Assistant Principal &middot; <strong>Safeguarding Lead (DSL)</strong><br>
+                    <a href="mailto:slargatzis@aisa.sch.ae">slargatzis@aisa.sch.ae</a></p>
+                <p style="margin-bottom:0; font-size:.9rem; color:var(--aisa-muted);">
+                    Counsellors: Naiema Zaki (HS) &middot; Jenn Guss (HS) &middot; Joel Hunter (MS)
+                </p>
+            </div>
+        </div>
+
+        <div class="callout">
             <p style="margin-bottom:0;">
-                It sits alongside the ADEK Safeguarding and Student Protection policies and
-                Federal Decree-Law No. 26 of 2025 on Child Digital Safety. Until it is written,
-                teachers should follow the route in the existing
-                <a href="safeguarding-module.html">AISA Safeguarding module</a>.
+                <strong>The timescale.</strong> Report every safeguarding concern to your DSL
+                <strong>within 24 hours</strong>. If a child may be at immediate risk, contact
+                them <strong>straight away</strong> &mdash; do not wait for the end of the lesson
+                or the end of the day. Never promise a student secrecy, and never investigate
+                it yourself.
             </p>
         </div>
+
+        <h4>The first ten minutes — a worked example</h4>
+        <div class="card card-plain">
+            <p><em>During an approved classroom activity, an AI tool unexpectedly generates
+                disturbing or age-inappropriate content. A student is visibly upset and shows
+                you the response.</em></p>
+            <ol style="margin-bottom:0;">
+                <li><strong>Attend to the student first.</strong> Calm, matter-of-fact: they have
+                    done nothing wrong. Move them away from the screen.</li>
+                <li><strong>Don't delete it.</strong> Leave the response on screen or screenshot it.
+                    It is the evidence, and the DSL will need to see exactly what appeared.</li>
+                <li><strong>Stop that activity</strong> for the whole class &mdash; not just the one
+                    device. Move to the unplugged alternative.</li>
+                <li><strong>Record it factually</strong> while it is fresh: what the student
+                    entered, what appeared, what the student said, what you did, and the time.
+                    What happened, not what you think it means.</li>
+                <li><strong>Contact your Safeguarding Lead the same lesson.</strong> If the student
+                    is distressed or the content concerns them personally, contact the DSL
+                    immediately rather than waiting.</li>
+                <li><strong>The DSL decides what happens next</strong> &mdash; including whether
+                    parents are contacted and whether the tool is withdrawn. That call is not yours
+                    to make, and neither is reassuring the student that nothing will come of it.</li>
+            </ol>
+        </div>
+
+        <p class="source-note">
+            This sits alongside the ADEK Safeguarding and Student Protection policies and Federal
+            Decree-Law No. 26 of 2025 on Child Digital Safety. The full route, including
+            whistleblowing and the counsellor referral process, is in the
+            <a href="safeguarding-module.html">AISA Safeguarding module</a>.
+        </p>
 
         <h3>Acknowledgement</h3>
         <div class="checkline">

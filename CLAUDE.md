@@ -113,18 +113,30 @@ advanced at all. This module shipped with exactly that bug once.
 
 Outstanding before it can be announced to staff:
 
-1. **The escalation route is written.** Segment 6 carries a dashed gold
-   `.needs-content` block where AISA's real DSL name, channel and
-   timescale go. ADEK explicitly forbids inventing a reporting route
-   ("notice–record–report–act–review is a memory aid, not an official
-   school reporting route"), so it was left blank rather than filled
-   with something plausible. Search `data-editor-block="escalation-route"`.
+1. ~~The escalation route~~ — written 15 Sept 2026. Segment 6 names both
+   Safeguarding Leads (Alia Nejdawi / elementary, Savvas Largatzis /
+   secondary) with their emails, the 24-hour reporting timescale, and a
+   first-ten-minutes worked example built on ADEK's "Unexpected Response"
+   scenario. **Wording and contacts are copied from
+   `safeguarding-module.html` rather than written fresh** — if the DSLs
+   or the timescale change, update both files together or they will
+   drift.
 2. ~~The Apps Script redeploy~~ — done 14 Sept 2026. If the readiness
    section in the admin dashboard ever shows its red "no endpoints"
    banner, the deployed version has been rolled back.
 3. **Videos, if wanted.** Three `.video-slot` elements (segments 1, 3, 4)
    render a "to follow" note until given a `data-src`. The written
    content stands alone, so shipping without them is fine.
+4. **Confirm the cohort** — who has to complete it, per the ADEK
+   Implementation Form. That list drives the tracker's "outstanding".
+
+**Known discrepancy (15 Sept 2026):** the Elementary Safeguarding Team
+slide lists the elementary nurses as **Dinesh Muragan · Kaviya
+Sasikumar**, but `safeguarding-module.html` lists them as **Jothi Vinod ·
+Kaviya Sasikumar**. Secondary matches (Jothi Vinod · Kaviya Sasikumar) on
+both. Unresolved — the safeguarding module may name the wrong elementary
+nurse. Nurses are not on the escalation path, so the AI module is
+unaffected, but the safeguarding module should be checked.
 
 Content sourced verbatim from ADEK's Train-the-Trainer Day 1 deck and
 Participant Worksheet Packet — the Ms Hana case in segment 3 is
