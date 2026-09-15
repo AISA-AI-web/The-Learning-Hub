@@ -286,9 +286,12 @@
             padding: 1.1rem 1.2rem;
             margin: 0 0 1.25rem;
         }
-        .video-slot video { width: 100%; border-radius: var(--radius-sm); display: block; }
+        .video-slot video,
+        .video-slot iframe { width: 100%; aspect-ratio: 16 / 9; max-width: 100%;
+                             border: 0; border-radius: var(--radius-sm); display: block; }
         .video-slot[data-state="empty"] .video-empty { display: block; }
-        .video-slot[data-state="empty"] video { display: none; }
+        .video-slot[data-state="empty"] video,
+        .video-slot[data-state="empty"] iframe { display: none; }
         .video-empty { display: none; font-size: .9rem; color: var(--aisa-muted); }
 
         .sr-only {
@@ -413,8 +416,9 @@
             <h2>Why you, why now</h2>
         </div>
 
-        <div class="video-slot" data-state="empty" data-slot="segment-1">
-            <video controls preload="none" playsinline></video>
+        <div class="video-slot" data-state="empty" data-slot="segment-1"
+             data-src="assets/ai-literacy/segment-1-why.mp4">
+            <video controls preload="metadata" playsinline></video>
             <div class="video-empty">
                 <strong>Video to follow.</strong> The written version below carries the same
                 content — nothing in this module depends on the video.
@@ -614,8 +618,9 @@
             teacher can either protect or take over a learner's thinking.
         </p>
 
-        <div class="video-slot" data-state="empty" data-slot="segment-3">
-            <video controls preload="none" playsinline></video>
+        <div class="video-slot" data-state="empty" data-slot="segment-3"
+             data-src="assets/ai-literacy/segment-3-critique.mp4">
+            <video controls preload="metadata" playsinline></video>
             <div class="video-empty">
                 <strong>Modelling clip to follow.</strong> The worked example below stands on its own.
             </div>
@@ -773,8 +778,9 @@
             in a second tab and work on your actual first lesson.
         </p>
 
-        <div class="video-slot" data-state="empty" data-slot="segment-4">
-            <video controls preload="none" playsinline></video>
+        <div class="video-slot" data-state="empty" data-slot="segment-4"
+             data-src="assets/ai-literacy/segment-4-walkthrough.mp4">
+            <video controls preload="metadata" playsinline></video>
             <div class="video-empty">
                 <strong>Screencast to follow.</strong> The written steps below cover the same ground.
             </div>
@@ -1336,13 +1342,47 @@
         });
     }
 
-    /* ---- Video slots: reveal only when a source exists ---- */
+    /* ---- Video slots ----
+     * Each slot names the file it expects. We try to load it and only
+     * reveal the player once the browser confirms it is really there,
+     * so a slot whose video hasn't been recorded yet keeps showing the
+     * "to follow" note instead of a broken player. Adding a video is
+     * therefore just dropping the file at the named path — no code
+     * change, no redeploy.
+     *
+     * data-embed instead of data-src renders an iframe, for anything
+     * hosted outside the repo (an unlisted YouTube video, a Drive
+     * preview link). Large screencasts are better off there than in
+     * git, which keeps every version of a binary forever. */
     Array.prototype.forEach.call(document.querySelectorAll('.video-slot'), function (slot) {
+        var embed = slot.getAttribute('data-embed');
+        if (embed) {
+            var frame = document.createElement('iframe');
+            frame.src = embed;
+            frame.allow = 'accelerometer; clipboard-write; encrypted-media; picture-in-picture';
+            frame.allowFullscreen = true;
+            frame.title = 'Module video';
+            slot.insertBefore(frame, slot.firstChild);
+            var vid = slot.querySelector('video');
+            if (vid) vid.remove();
+            slot.setAttribute('data-state', 'ready');
+            return;
+        }
+
         var src = slot.getAttribute('data-src');
         if (!src) return;
         var v = slot.querySelector('video');
+        if (!v) return;
+        v.addEventListener('loadedmetadata', function () {
+            slot.setAttribute('data-state', 'ready');
+        });
+        v.addEventListener('error', function () {
+            /* Not recorded yet, or the path is wrong. Either way the
+             * written content stands alone — say nothing and leave the
+             * note in place. */
+            slot.setAttribute('data-state', 'empty');
+        });
         v.src = src;
-        slot.setAttribute('data-state', 'ready');
     });
 
     /* ---- One-pager ---- */

@@ -124,19 +124,25 @@ Outstanding before it can be announced to staff:
 2. ~~The Apps Script redeploy~~ — done 14 Sept 2026. If the readiness
    section in the admin dashboard ever shows its red "no endpoints"
    banner, the deployed version has been rolled back.
-3. **Videos, if wanted.** Three `.video-slot` elements (segments 1, 3, 4)
-   render a "to follow" note until given a `data-src`. The written
-   content stands alone, so shipping without them is fine.
+3. **Videos, if wanted.** Self-wiring: each slot names the file it
+   expects under `PD Modules/assets/ai-literacy/`, probes for it, and
+   keeps its "to follow" note until the file actually loads. Dropping a
+   file in is the only step — no code change. `data-embed` on a slot
+   renders an iframe instead, for anything hosted outside the repo.
+   See that folder's README, which also covers why a screencast of
+   InstrucTwin may not belong in a public repo. The written content
+   stands alone, so shipping without videos is fine.
 4. **Confirm the cohort** — who has to complete it, per the ADEK
    Implementation Form. That list drives the tracker's "outstanding".
 
-**Known discrepancy (15 Sept 2026):** the Elementary Safeguarding Team
-slide lists the elementary nurses as **Dinesh Muragan · Kaviya
-Sasikumar**, but `safeguarding-module.html` lists them as **Jothi Vinod ·
-Kaviya Sasikumar**. Secondary matches (Jothi Vinod · Kaviya Sasikumar) on
-both. Unresolved — the safeguarding module may name the wrong elementary
-nurse. Nurses are not on the escalation path, so the AI module is
-unaffected, but the safeguarding module should be checked.
+**Resolved 15 Sept 2026:** `safeguarding-module.html` had the wrong
+elementary nurse — it listed Jothi Vinod, who is secondary. Corrected to
+**Dinesh Muragan · Kaviya Sasikumar** for elementary; secondary stays
+**Jothi Vinod · Kaviya Sasikumar**. Both teams previously shared one
+Arabic dictionary key because the English strings were identical;
+`safeguarding-ar.js` now has a separate key for each, so changing one
+team's nurses again means adding its key there too or the Arabic view
+silently falls back to English.
 
 Content sourced verbatim from ADEK's Train-the-Trainer Day 1 deck and
 Participant Worksheet Packet — the Ms Hana case in segment 3 is

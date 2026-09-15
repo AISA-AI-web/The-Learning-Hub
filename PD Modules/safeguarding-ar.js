@@ -255,6 +255,7 @@ window.AR_DICT = {
     "— Assistant Principal,": "— مساعد مدير المدرسة،",
     "Safeguarding Lead (DSL)": "مسؤول حماية الطفل (DSL)",
     "Counsellors: Laylin Chong · Sara AlBeainy": "المرشدون الطلابيون: Laylin Chong · Sara AlBeainy",
+    "Nurses: Dinesh Muragan · Kaviya Sasikumar": "الممرضات: Dinesh Muragan · Kaviya Sasikumar",
     "Nurses: Jothi Vinod · Kaviya Sasikumar": "الممرضات: Jothi Vinod · Kaviya Sasikumar",
     "Secondary Safeguarding Team": "فريق حماية الطفل للمرحلة الثانوية",
     "— MS Assistant Principal,": "— مساعد مدير المرحلة المتوسطة،",
