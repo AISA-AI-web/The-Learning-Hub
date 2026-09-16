@@ -636,14 +636,6 @@
             </div>
         </div>
 
-        <div class="field" style="margin-top:1.5rem;">
-            <label for="f-band">Which band will you be teaching?
-                <span class="hint">So the 21 September session can be grouped properly.</span>
-            </label>
-            <input type="text" id="f-band" data-capture="architecture.band"
-                   placeholder="e.g. Grade 3, or Grades 9–12 Computer Science" autocomplete="off">
-            <div class="save-state" data-save-for="f-band"></div>
-        </div>
     </section>
 
     <!-- ================= 3 · THE CORE IDEA ================= -->
@@ -836,40 +828,24 @@
         </div>
 
         <p>
-            Everything so far has been preparation for this. Open
-            <a href="https://schools.instructwin.com/" target="_blank" rel="noopener">InstrucTwin</a>
-            in a second tab and work on your actual first lesson.
+            Everything so far has been preparation for this. Pick your grade and write the plan
+            you will teach from. You do not need InstrucTwin open to do it — the curriculum focus
+            for your grade is below.
         </p>
 
-        <div class="video-slot" data-state="empty" data-slot="segment-4"
-             data-src="assets/ai-literacy/segment-4-walkthrough.mp4">
-            <video controls preload="metadata" playsinline></video>
-            <div class="video-empty">
-                <strong>Screencast to follow.</strong> The written steps below cover the same ground.
-            </div>
+        <div class="field">
+            <label for="f-grade">Which grade are you teaching?</label>
+            <select id="f-grade" data-capture="lesson.grade">
+                <option value="">Choose your grade&hellip;</option>
+            </select>
+            <div class="save-state" data-save-for="f-grade"></div>
         </div>
 
-        <div class="card">
-            <h4>Finding your lesson</h4>
-            <ol style="margin-bottom:0;">
-                <li>Sign in at <a href="https://schools.instructwin.com/" target="_blank" rel="noopener">schools.instructwin.com</a> with your school username and password.</li>
-                <li>Find your grade, then your unit.</li>
-                <li>Open the lesson scheduled for 21 September.</li>
-                <li>Read the lesson template through once — note what each section is for.</li>
-                <li>Locate the student-facing materials before the lesson, not during it.</li>
-            </ol>
-        </div>
-
-        <div class="callout">
-            <p style="margin-bottom:0;">
-                <strong>Can't get in?</strong> Don't stall. Tick the box at the bottom of this
-                segment, fill in what you can, and finish the module. A login problem is mine to
-                fix and I would rather know today than on the 20th.
-            </p>
-        </div>
+        <div id="grade-focus" hidden></div>
 
         <h3>Your six-line delivery plan</h3>
-        <p>This is the thing that will be on your desk when the lesson starts.</p>
+        <p>This is the thing that will be on your desk when the lesson starts. Write it against
+           the focus above — it is what your grade's lesson is actually for.</p>
 
         <div class="field">
             <label for="f-outcome">1 · The outcome this lesson is heading for</label>
@@ -913,9 +889,45 @@
             <div class="save-state" data-save-for="f-needs"></div>
         </div>
 
+        <h3>Then: the lesson itself on InstrucTwin</h3>
+        <p>
+            ADEK has published the full lesson plans and student materials on
+            <a href="https://schools.instructwin.com/" target="_blank" rel="noopener">InstrucTwin</a>.
+            Open your lesson before Monday and read it against the plan you just wrote.
+        </p>
+
+        <div class="video-slot" data-state="empty" data-slot="segment-4"
+             data-src="assets/ai-literacy/segment-4-walkthrough.mp4"
+             data-src-ar="assets/ai-literacy/segment-4-walkthrough.ar.mp4">
+            <video controls preload="metadata" playsinline></video>
+            <div class="video-empty">
+                <strong>Screencast to follow.</strong> The written steps below cover the same ground.
+            </div>
+        </div>
+
+        <div class="card">
+            <h4>When you have access</h4>
+            <ol style="margin-bottom:0;">
+                <li>Sign in at <a href="https://schools.instructwin.com/" target="_blank" rel="noopener">schools.instructwin.com</a> with your school username and password.</li>
+                <li>Find your grade, then your unit.</li>
+                <li>Open the lesson scheduled for 21 September.</li>
+                <li>Read the lesson template through once — note what each section is for.</li>
+                <li>Locate the student-facing materials before the lesson, not during it.</li>
+            </ol>
+        </div>
+
+        <div class="callout">
+            <p style="margin-bottom:0;">
+                <strong>Can't get in?</strong> You have not lost anything — your plan above is the
+                part that matters, and it is already saved. Tick the box below so I know, and
+                finish the module. Access is mine to chase, and I would rather know today than
+                on the 20th.
+            </p>
+        </div>
+
         <div class="checkline">
             <input type="checkbox" id="f-blocked" data-capture="lesson.blocked">
-            <label for="f-blocked">I could not get into InstrucTwin, so this plan is incomplete.</label>
+            <label for="f-blocked">I could not get into InstrucTwin.</label>
         </div>
     </section>
 
@@ -1192,6 +1204,7 @@
     <p id="op-who"></p>
 
     <h2>My delivery plan</h2>
+    <div class="op-block"><div class="op-label">This grade is learning</div><div id="op-focus"></div></div>
     <div class="op-block"><div class="op-label">Outcome</div><div id="op-outcome"></div></div>
     <div class="op-block"><div class="op-label">Hook</div><div id="op-hook"></div></div>
     <div class="op-block"><div class="op-label">Facilitation moves</div><div id="op-moves"></div></div>
@@ -1230,6 +1243,100 @@
     'use strict';
 
     var MODULE_ID = 'ai-curriculum-readiness';
+
+    /* ---- Per-grade curriculum focus ----
+     * ADEK's Scope and Sequence, verbatim from the K-12 AI Literacy
+     * Framework: for every grade, the Conceptual, Technical, Creation
+     * and Ethics focus.
+     *
+     * This is here so a teacher can write a real delivery plan without
+     * InstrucTwin open. Platform access has already been unreliable,
+     * and the plan is the part of this segment that has to survive
+     * that — the lesson materials can be read later, the plan is what
+     * they teach from. */
+    var FOCUS_LABELS = {
+        en: ['Conceptual focus', 'Technical focus', 'Creation focus', 'Ethics focus'],
+        ar: ['المحور المفاهيمي', 'المحور التقني', 'محور الإبداع', 'المحور الأخلاقي']
+    };
+    var GRADES = {
+        "KG1": { phase: "Phase 1", en: ["Understanding physical cause and effect and the role of sensors.", "Using physical sequencing (unplugged).", "Following 1-step verbal instructions (unplugged).", "Recognising personal information and trusted adults."], ar: ["فهم السبب والنتيجة في العالم المادي ودور المستشعرات.", "استخدام التسلسل المادي (بلا أجهزة).", "اتّباع تعليمات شفهية من خطوة واحدة (بلا أجهزة).", "التعرّف على المعلومات الشخصية وعلى البالغين الموثوقين."] },
+        "KG2": { phase: "Phase 1", en: ["Understanding that digital tools use information.", "Using multi-attribute grouping (unplugged).", "Following 2–3 step verbal instructions (unplugged).", "Recognising privacy basics and differences between human and machine communication."], ar: ["فهم أن الأدوات الرقمية تستخدم المعلومات.", "استخدام التجميع متعدّد الخصائص (بلا أجهزة).", "اتّباع تعليمات شفهية من 2–3 خطوات (بلا أجهزة).", "التعرّف على أساسيات الخصوصية وعلى الفرق بين تواصل البشر وتواصل الآلة."] },
+        "Grade 1": { phase: "Phase 2", en: ["Understanding that machines follow rules using inputs and outputs.", "Using basic logic sequences.", "Completing guided digital tasks to solve simple problems.", "Practising safe information sharing and following class rules."], ar: ["فهم أن الآلات تتّبع قواعد باستخدام المدخلات والمخرجات.", "استخدام تسلسلات منطقية أساسية.", "إنجاز مهام رقمية موجَّهة لحل مشكلات بسيطة.", "ممارسة المشاركة الآمنة للمعلومات واتّباع قواعد الصف."] },
+        "Grade 2": { phase: "Phase 2", en: ["Understanding rules and choices in digital systems.", "Using simple decision logic.", "Creating simple rule-based solutions to automate tasks.", "Recognising fairness and unfairness in simple digital examples."], ar: ["فهم القواعد والخيارات في الأنظمة الرقمية.", "استخدام منطق اتخاذ قرار بسيط.", "إنشاء حلول بسيطة قائمة على القواعد لأتمتة المهام.", "التعرّف على العدل وعدم العدل في أمثلة رقمية بسيطة."] },
+        "Grade 3": { phase: "Phase 2", en: ["Understanding how rules can be combined to make more complex decisions.", "Applying multi-step decision logic (sequencing and simple conditions).", "Creating multi-step rule-based solutions to solve problems.", "Recognising how rules affect outcomes and identifying potential unfairness."], ar: ["فهم كيف تُدمج القواعد لاتخاذ قرارات أكثر تعقيدًا.", "تطبيق منطق قرار متعدّد الخطوات (التسلسل والشروط البسيطة).", "إنشاء حلول متعدّدة الخطوات قائمة على القواعد لحل المشكلات.", "إدراك أثر القواعد في النتائج وتحديد أوجه عدم العدل المحتملة."] },
+        "Grade 4": { phase: "Phase 2", en: ["Understanding how data is represented and used in digital systems.", "Using pattern recognition and simple data labelling.", "Creating solutions using block-based code to simulate decision logic.", "Evaluating output fairness based on input data."], ar: ["فهم كيفية تمثيل البيانات واستخدامها في الأنظمة الرقمية.", "استخدام التعرّف على الأنماط ووسم البيانات البسيط.", "إنشاء حلول باستخدام البرمجة بالكتل لمحاكاة منطق القرار.", "تقييم عدالة المخرجات استنادًا إلى بيانات المدخلات."] },
+        "Grade 5": { phase: "Phase 2", en: ["Understanding how data is used to generate outputs in learning systems.", "Using prompting and output checking to interact with AI tools.", "Creating and refining outputs using structured prompts.", "Evaluating information reliability and recognising misinformation."], ar: ["فهم كيفية استخدام البيانات لتوليد المخرجات في الأنظمة المتعلّمة.", "استخدام التوجيه وفحص المخرجات للتفاعل مع أدوات الذكاء الاصطناعي.", "إنشاء المخرجات وتحسينها باستخدام مُوجَّهات منظَّمة.", "تقييم موثوقية المعلومات والتعرّف على المعلومات المضلّلة."] },
+        "Grade 6": { phase: "Phase 3", en: ["Understanding the difference between rule-based and learning systems.", "Applying introductory ML concepts, including training and testing datasets.", "Building structured AI solutions and simple model training tasks.", "Recognising bias in outputs and identifying privacy and safety risks."], ar: ["فهم الفرق بين الأنظمة القائمة على القواعد والأنظمة المتعلّمة.", "تطبيق مفاهيم تمهيدية في تعلّم الآلة، بما فيها بيانات التدريب والاختبار.", "بناء حلول ذكاء اصطناعي منظَّمة ومهام تدريب نماذج بسيطة.", "التعرّف على التحيّز في المخرجات وتحديد مخاطر الخصوصية والسلامة."] },
+        "Grade 7": { phase: "Phase 3", en: ["Understanding how AI systems are structured as workflows.", "Developing workflow design using input, process, and output structures.", "Developing simple AI solutions using structured workflows.", "Analysing risks in AI system responses."], ar: ["فهم كيفية بناء أنظمة الذكاء الاصطناعي على هيئة سير عمل.", "تطوير تصميم سير العمل باستخدام بنى المدخلات والمعالجة والمخرجات.", "تطوير حلول ذكاء اصطناعي بسيطة باستخدام سير عمل منظَّم.", "تحليل المخاطر في استجابات أنظمة الذكاء الاصطناعي."] },
+        "Grade 8": { phase: "Phase 3", en: ["Understanding how AI models are evaluated and improved.", "Applying iterative refinement techniques.", "Designing and refining AI solutions based on performance.", "Applying strategies to mitigate bias and risk."], ar: ["فهم كيفية تقييم نماذج الذكاء الاصطناعي وتحسينها.", "تطبيق تقنيات التحسين التكراري.", "تصميم حلول الذكاء الاصطناعي وتحسينها استنادًا إلى الأداء.", "تطبيق استراتيجيات للحد من التحيّز والمخاطر."] },
+        "Grade 9": { phase: "Phase 4", en: ["Understanding how AI system components interact.", "Applying input-output modelling.", "Designing structured AI workflows.", "Analysing ethical risks in AI applications."], ar: ["فهم كيفية تفاعل مكوّنات نظام الذكاء الاصطناعي.", "تطبيق نمذجة المدخلات والمخرجات.", "تصميم سير عمل منظَّم للذكاء الاصطناعي.", "تحليل المخاطر الأخلاقية في تطبيقات الذكاء الاصطناعي."] },
+        "Grade 10": { phase: "Phase 4", en: ["Understanding how AI systems operate as integrated solutions.", "Applying systems thinking to combine tools and data.", "Designing multi-step AI solutions.", "Evaluating bias and fairness in AI systems."], ar: ["فهم كيفية عمل أنظمة الذكاء الاصطناعي كحلول متكاملة.", "تطبيق التفكير النُّظُمي لدمج الأدوات والبيانات.", "تصميم حلول ذكاء اصطناعي متعدّدة الخطوات.", "تقييم التحيّز والعدالة في أنظمة الذكاء الاصطناعي."] },
+        "Grade 11": { phase: "Phase 4", en: ["Understanding how AI solutions are optimised for performance.", "Applying performance evaluation techniques.", "Improving AI solutions for efficiency and usability.", "Analysing the impact of AI solutions."], ar: ["فهم كيفية تحسين حلول الذكاء الاصطناعي لأجل الأداء.", "تطبيق تقنيات تقييم الأداء.", "تحسين حلول الذكاء الاصطناعي من حيث الكفاءة وسهولة الاستخدام.", "تحليل أثر حلول الذكاء الاصطناعي."] },
+        "Grade 12": { phase: "Phase 4", en: ["Understanding how AI systems are designed for strategic use.", "Applying evaluation and decision-making frameworks.", "Designing and refining multi-component AI systems.", "Evaluating governance and societal impact."], ar: ["فهم كيفية تصميم أنظمة الذكاء الاصطناعي للاستخدام الاستراتيجي.", "تطبيق أطر التقييم واتخاذ القرار.", "تصميم أنظمة ذكاء اصطناعي متعدّدة المكوّنات وتحسينها.", "تقييم الحوكمة والأثر المجتمعي."] }
+    };
+
+    /* "Grade 3" / "Phase 2" are data keys, not display strings — the
+     * capture keeps the English value while the caption reads in the
+     * viewer's language. */
+    function gradeLabel(name, ar) {
+        if (!ar) return name;
+        if (name === 'KG1') return 'روضة 1';
+        if (name === 'KG2') return 'روضة 2';
+        var m = /^Grade (\d+)$/.exec(name);
+        return m ? ('الصف ' + m[1]) : name;
+    }
+    function phaseLabel(phase, ar) {
+        var m = ar && /^Phase (\d+)$/.exec(phase);
+        return m ? ('المرحلة ' + m[1]) : phase;
+    }
+
+    function renderGradeFocus() {
+        var sel  = document.getElementById('f-grade');
+        var host = document.getElementById('grade-focus');
+        if (!sel || !host) return;
+        var g = GRADES[sel.value];
+        if (!g) { host.hidden = true; host.innerHTML = ''; return; }
+
+        var ar = isArabic();
+        var focus  = ar ? g.ar : g.en;
+        var labels = ar ? FOCUS_LABELS.ar : FOCUS_LABELS.en;
+        var gName = gradeLabel(sel.value, ar), pName = phaseLabel(g.phase, ar);
+        var heading = ar
+            ? ('ما الذي يتعلّمه ' + gName + ' — ' + pName)
+            : ('What ' + gName + ' is learning — ' + pName);
+        var source = ar
+            ? 'إطار الثقافة في الذكاء الاصطناعي من الروضة إلى الصف 12، نطاق المحتوى وتسلسله'
+            : 'ADEK K-12 AI Literacy Framework, Scope and Sequence';
+
+        var rows = focus.map(function (text, i) {
+            return '<tr><th scope="row">' + escapeHtml(labels[i]) + '</th>' +
+                   '<td>' + escapeHtml(text) + '</td></tr>';
+        }).join('');
+
+        host.innerHTML =
+            '<div class="table-wrap"><table><caption>' + escapeHtml(heading) + '</caption>' +
+            '<tbody>' + rows + '</tbody></table></div>' +
+            '<p class="source-note">' + escapeHtml(source) + '</p>';
+        host.hidden = false;
+    }
+
+    function escapeHtml(t) {
+        return String(t == null ? '' : t)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
+    (function buildGradeOptions() {
+        var sel = document.getElementById('f-grade');
+        if (!sel) return;
+        Object.keys(GRADES).forEach(function (name) {
+            var o = document.createElement('option');
+            o.value = name; o.textContent = name;
+            sel.appendChild(o);
+        });
+        sel.addEventListener('change', renderGradeFocus);
+    })();
+
 
     /* ---- Pre-release admin gate ----
      * Fails closed: anything other than a confirmed admin gets the
@@ -1384,6 +1491,7 @@
     }
 
     hydrate(readLocal());
+    renderGradeFocus();
 
     /* aisaReady takes a callback — aisaAuth does not exist yet at parse
      * time, which is the whole reason the helper exists. */
@@ -1395,6 +1503,7 @@
                     /* Server wins on conflict: it is the record, and it
                      * is what survives a device change. */
                     hydrate(r.data);
+                    renderGradeFocus();
                     var local = readLocal();
                     Object.keys(r.data).forEach(function (s) { local[s] = r.data[s]; });
                     writeLocal(local);
@@ -1482,6 +1591,7 @@
             if (now === last) return;
             last = now;
             Array.prototype.forEach.call(document.querySelectorAll('.video-slot'), loadSlotForLang);
+            renderGradeFocus();
         }).observe(document.body, { attributes: true, attributeFilter: ['class'] });
     })();
 
@@ -1493,10 +1603,15 @@
         }
         var user = (window.aisaAuth && window.aisaAuth.getUser) ? window.aisaAuth.getUser() : null;
         var name = (user && user.name && user.name.trim()) ? user.name.trim() : '';
-        var band = document.getElementById('f-band').value;
+        var band = gradeLabel(document.getElementById('f-grade').value, isArabic());
         document.getElementById('op-who').textContent =
             [name, band].filter(Boolean).join(' · ') + (name || band ? ' · ' : '') + '21 September 2026';
 
+        var g = GRADES[document.getElementById('f-grade').value];
+        var labels = isArabic() ? FOCUS_LABELS.ar : FOCUS_LABELS.en;
+        put('op-focus', g
+            ? (isArabic() ? g.ar : g.en).map(function (t, i) { return labels[i] + ': ' + t; }).join('  ·  ')
+            : '');
         put('op-outcome',  document.getElementById('f-outcome').value);
         put('op-hook',     document.getElementById('f-hook').value);
         put('op-moves',    document.getElementById('f-moves').value);
@@ -1542,6 +1657,7 @@
             finishBtn.textContent = 'Try again';
         });
     });
+
 
     /* ---- Review mode: ?preview=1 ----
      * Opens every chapter for reading by pre-passing the knowledge

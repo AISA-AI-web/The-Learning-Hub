@@ -178,6 +178,16 @@ chapter unlocks and the knowledge-check answers and feedback are
 revealed, so the whole module reads end to end without working through
 it. Without the flag it behaves normally.
 
+**Segment 4 does not depend on InstrucTwin.** A teacher picks their
+grade and sees that grade's Conceptual / Technical / Creation / Ethics
+focus — ADEK's own Scope and Sequence, held bilingually in the `GRADES`
+object in the module script — then writes the six-line plan against it.
+InstrucTwin comes after, framed as "when you have access", because
+platform access has already proved unreliable and the plan is the part
+that has to survive that. The grade is captured as `lesson.grade`; it
+replaced a free-text band question in segment 2, so the admin dashboard
+and the CSV read `lesson.grade`, not `architecture.band`.
+
 **Gotcha worth remembering:** `training.js` inserts the Previous/Next
 bar immediately before `#completion-banner`, so that banner has to live
 *outside* every `[data-chapter]` section. Nested inside one, the nav

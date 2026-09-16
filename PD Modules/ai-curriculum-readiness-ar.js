@@ -415,6 +415,50 @@ window.AR_DICT = {
         "التطبيق يعني تقليل الدعم، لا تكرار الدعم نفسه. فإعادة بنية الدعم كاملةً تختبر الاستدعاء لا النقل إلى سياق جديد.",
     "Reflection has to point forwards to be transfer. Definitions test vocabulary; enjoyment tells you nothing about the learning.":
         "على التأمّل أن يتّجه إلى الأمام ليكون نقلًا إلى سياق جديد. فالتعريفات تختبر المفردات؛ والاستمتاع لا يخبرك بشيء عن التعلّم.",
+    "Everything so far has been preparation for this. Pick your grade and write the plan you will teach from. You do not need InstrucTwin open to do it — the curriculum focus for your grade is below.":
+        "كل ما سبق كان تمهيدًا لهذا. اختر صفّك واكتب الخطة التي ستُدرّس منها. ولستَ بحاجة إلى فتح InstrucTwin لتفعل ذلك — فمحاور المنهج الخاصة بصفّك مذكورة أدناه.",
+    "Which grade are you teaching?":
+        "أي صف تُدرّس؟",
+    "Choose your grade…":
+        "اختر صفّك…",
+    "This is the thing that will be on your desk when the lesson starts. Write it against the focus above — it is what your grade's lesson is actually for.":
+        "هذه هي الورقة التي ستكون على مكتبك عند بدء الدرس. اكتبها في ضوء المحاور أعلاه — فهي ما يهدف إليه درس صفّك فعلًا.",
+    "Then: the lesson itself on InstrucTwin":
+        "ثم: الدرس نفسه على InstrucTwin",
+    "When you have access":
+        "عندما يتوفّر لك الدخول",
+    "I could not get into InstrucTwin.":
+        "لم أتمكّن من الدخول إلى InstrucTwin.",
+    "This grade is learning":
+        "ما يتعلّمه هذا الصف",
+    "KG1":
+        "روضة 1",
+    "KG2":
+        "روضة 2",
+    "Grade 1":
+        "الصف 1",
+    "Grade 2":
+        "الصف 2",
+    "Grade 3":
+        "الصف 3",
+    "Grade 4":
+        "الصف 4",
+    "Grade 5":
+        "الصف 5",
+    "Grade 6":
+        "الصف 6",
+    "Grade 7":
+        "الصف 7",
+    "Grade 8":
+        "الصف 8",
+    "Grade 9":
+        "الصف 9",
+    "Grade 10":
+        "الصف 10",
+    "Grade 11":
+        "الصف 11",
+    "Grade 12":
+        "الصف 12",
 };
 
 /* Sentence-level translations for blocks containing inline markup. */
@@ -457,8 +501,6 @@ window.AR_BLOCKS = {
         "<strong>2.</strong> «يتعرّف المتعلمون على المعلومات الشخصية ويحدّدون البالغين الموثوقين.» أي محور؟",
     "<strong>3.</strong> \"Learners distinguish between human senses and basic machine inputs through unplugged play.\" Which phase?":
         "<strong>3.</strong> «يميّز المتعلمون بين الحواس البشرية ومدخلات الآلة الأساسية من خلال اللعب بلا أجهزة.» أي مرحلة؟",
-    "Which band will you be teaching? <span class=\"hint\">So the 21 September session can be grouped properly.</span>":
-        "أي نطاق ستُدرّس؟ <span class=\"hint\">حتى يمكن تقسيم جلسة 21 سبتمبر إلى مجموعات مناسبة.</span>",
     "<strong>Instructional approach</strong> — how the learning experience is designed. ADEK names five: opening, warm-up, inquiry, practice, reflect.":
         "<strong>المقاربة التدريسية</strong> — كيف تُصمَّم خبرة التعلّم. وتذكر دائرة التعليم والمعرفة خمسًا: الافتتاح، والتهيئة، والاستقصاء، والتطبيق، والتأمّل.",
     "<strong>Facilitation move</strong> — what you do in the moment. Also five, and they are what this segment is about.":
@@ -485,14 +527,10 @@ window.AR_BLOCKS = {
         "اختر خيارًا ضعيفًا مما سبق وأعد صياغته بالكلمات التي ستقولها بالضبط. <span class=\"hint\">الكلمات نفسها، لا وصفًا لها. ويجب أن يبقى قرار المتعلّم المهم مفتوحًا.</span>",
     "<strong>The takeaway, in one line:</strong> the teacher frames and probes; learners select, check, justify and revise.":
         "<strong>الخلاصة في سطر واحد:</strong> المعلّم يصوغ ويستقصي؛ والمتعلمون يختارون ويتحقّقون ويبرّرون ويُنقّحون.",
-    "Everything so far has been preparation for this. Open <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\">InstrucTwin</a> in a second tab and work on your actual first lesson.":
-        "كل ما سبق كان تمهيدًا لهذا. افتح <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\" class=\"ltr\">InstrucTwin</a> في علامة تبويب ثانية واعمل على درسك الأول الحقيقي.",
     "<strong>Screencast to follow.</strong> The written steps below cover the same ground.":
         "<strong>تسجيل الشاشة سيُضاف لاحقًا.</strong> والخطوات المكتوبة أدناه تغطي المحتوى نفسه.",
     "Sign in at <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\">schools.instructwin.com</a> with your school username and password.":
         "سجّل الدخول عبر <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\" class=\"ltr\">schools.instructwin.com</a> باسم المستخدم وكلمة المرور الخاصين بالمدرسة.",
-    "<strong>Can't get in?</strong> Don't stall. Tick the box at the bottom of this segment, fill in what you can, and finish the module. A login problem is mine to fix and I would rather know today than on the 20th.":
-        "<strong>لا تستطيع الدخول؟</strong> لا تتوقف. ضع علامة في المربع أسفل هذا الجزء، واملأ ما تستطيع، وأكمل الوحدة. فمشكلة تسجيل الدخول مسؤوليتي أنا، وأفضّل أن أعرف اليوم لا في العشرين.",
     "3 · Two facilitation moves you'll use, and where <span class=\"hint\">Prompt · inquiry · critique &amp; evaluate · practice · reflect</span>":
         "3 · حركتا تيسير ستستخدمهما، وأين <span class=\"hint\">التوجيه · الاستقصاء · النقد والتقييم · التطبيق · التأمّل</span>",
     "5 · The one part you're least sure about <span class=\"hint\">This sets the agenda for 21 September. Be honest — it is more useful than being tidy.</span>":
@@ -554,7 +592,11 @@ window.AR_BLOCKS = {
     "<strong>Fairness</strong> — check outputs for bias and unfair assumptions.":
         "<strong>العدالة</strong> — افحص المخرجات بحثًا عن التحيّز والافتراضات غير العادلة.",
     "<strong>Notice → Record → Report → Act → Review.</strong> A memory aid for the shape of a response — not the reporting route.":
-        "<strong>لاحِظ ← سجّل ← أبلِغ ← تصرّف ← راجِع.</strong> وسيلة تذكّر لشكل الاستجابة — لا مسار الإبلاغ.",};
+        "<strong>لاحِظ ← سجّل ← أبلِغ ← تصرّف ← راجِع.</strong> وسيلة تذكّر لشكل الاستجابة — لا مسار الإبلاغ.",    "ADEK has published the full lesson plans and student materials on <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\">InstrucTwin</a>. Open your lesson before Monday and read it against the plan you just wrote.":
+        "نشرت دائرة التعليم والمعرفة خطط الدروس الكاملة ومواد الطلاب على <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\" class=\"ltr\">InstrucTwin</a>. افتح درسك قبل يوم الاثنين واقرأه في ضوء الخطة التي كتبتَها للتو.",
+    "<strong>Can't get in?</strong> You have not lost anything — your plan above is the part that matters, and it is already saved. Tick the box below so I know, and finish the module. Access is mine to chase, and I would rather know today than on the 20th.":
+        "<strong>لا تستطيع الدخول؟</strong> لم تخسر شيئًا — فخطتك أعلاه هي الجزء المهم، وقد حُفظت بالفعل. ضع علامة في المربع أدناه لأعرف، وأكمل الوحدة. فمتابعة الدخول مسؤوليتي أنا، وأفضّل أن أعرف اليوم لا في العشرين.",
+};
 
 /* Stamp data-ar onto the elements AR_BLOCKS names, keyed by their
  * normalised English innerHTML. Runs before onboarding-i18n.js's own
