@@ -1241,7 +1241,7 @@
                 return answerBlock(f.label, val(r, f.seg, f.key), 'plain');
             }).join('');
 
-            var band = val(r, 'architecture', 'band');
+            var band = val(r, 'lesson', 'grade');
             var meta = [band, isDone(r) ? 'Finished ' + fmt(r.completed_at) : 'Last saved ' + fmt(r.updated_at)]
                         .filter(Boolean).join(' &middot; ');
 
@@ -1318,13 +1318,13 @@
          * to what's on screen so the file never disagrees with the view. */
         function exportCsv() {
             var fields = PRIMARY.concat(SECONDARY);
-            var header = ['Name', 'Email', 'Band', 'Status', 'Started', 'Last saved', 'Completed',
+            var header = ['Name', 'Email', 'Grade', 'Status', 'Started', 'Last saved', 'Completed',
                           'Safeguarding acknowledged', 'InstrucTwin blocked']
                          .concat(fields.map(function (f) { return f.label; }));
             var lines = [header.map(csvCell).join(',')];
             visible().forEach(function (r) {
                 var row = [
-                    r.name || '', r.email, val(r, 'architecture', 'band'),
+                    r.name || '', r.email, val(r, 'lesson', 'grade'),
                     isDone(r) ? 'Completed' : 'In progress',
                     fmt(r.first_saved), fmt(r.updated_at), fmt(r.completed_at),
                     val(r, 'responsible', 'acknowledged') === 'true' ? 'Yes' : 'No',
