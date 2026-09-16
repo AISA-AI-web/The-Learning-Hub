@@ -112,6 +112,16 @@ fail silently and the dependent UIs stay empty:
      that tag exists. Without tags it falls back to the whole roster;
      staff not on the roster at all never appear as outstanding.
 
+  The form is six steps. A seventh — a returning-teacher look-back page
+  shown only to staff who were here last year — was removed on 16 Sept
+  2026 as pointless: it asked nothing and only told people to go and
+  re-read last year's appraisal. Nothing in the form is conditional any
+  more; the `when` predicate that made a step optional went with it.
+  **"Were you at AISA last year?" stays** even though it no longer
+  branches to anything — it is still required, and it drives the "New to
+  AISA" badge on the admin cards and a column in the CSV. Don't tidy it
+  away as unused.
+
   One row per (email × survey), upserted — a teacher reopening the form
   edits their goal rather than filing a second one, and `revision`
   counts the edits while `submitted_at` stays at the first commitment.

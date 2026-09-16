@@ -7,16 +7,15 @@
  * area chosen, a draft that survives a closed tab, and the responses
  * landing somewhere the Hub can track and chase.
  *
- * Shape of the form (the branching is the point):
+ * Shape of the form:
  *
  *   1  Teacher information            all required
- *   2  Returning-teacher look-back    only when "at AISA last year" = Yes
- *   3  Choose your focus area         required; picks which section 4 is
- *   4  <the chosen area>              guidance for that area + 2 required
+ *   2  Choose your focus area         required; picks which section 3 is
+ *   3  <the chosen area>              guidance for that area + 2 required
  *                                     answers. All ten routes rejoin here.
- *   5  Professional learning          optional
- *   6  Sign-off                       optional
- *   7  Review everything, then submit
+ *   4  Professional learning          optional
+ *   5  Sign-off                       optional
+ *   6  Review everything, then submit
  *
  * Storage: one response per person per survey, upserted server-side, so
  * coming back is an edit rather than a second entry. Answers autosave as
@@ -178,29 +177,24 @@
         return null;
     }
 
-    function isReturning() { return answers.at_aisa_last_year === 'Yes'; }
-
     /* ------------------------------------------------------------------
      * Steps.
      *
-     * `when` makes a step conditional — that is the whole branching
-     * mechanism. The look-back is skipped for teachers new to AISA, and
-     * the focus-area step can't be reached until an area is chosen, so
-     * there is never a step showing guidance for nothing.
+     * The list is fixed. It used to carry a `when` predicate so a
+     * returning-teacher look-back page could appear only for staff who
+     * were here last year, but that page asked nothing and has been
+     * removed, so nothing is conditional any more. The only branching
+     * left is inside the goal step, which renders guidance for whichever
+     * focus area was chosen.
      * ------------------------------------------------------------------ */
     var STEPS = [
         { id: 'info',     label: 'Your details',       render: renderInfo,     required: ['name', 'email', 'department', 'at_aisa_last_year'] },
-        { id: 'lookback', label: 'Last year',          render: renderLookback, required: [], when: isReturning },
         { id: 'focus',    label: 'Focus area',         render: renderFocus,    required: ['focus_area'] },
         { id: 'goal',     label: 'Your goal',          render: renderGoal,     required: ['goal', 'if_then'] },
         { id: 'pl',       label: 'Support',            render: renderPl,       required: [] },
         { id: 'signoff',  label: 'Sign-off',           render: renderSignoff,  required: [] },
         { id: 'review',   label: 'Review & submit',    render: renderReview,   required: [] }
     ];
-
-    function activeSteps() {
-        return STEPS.filter(function (s) { return !s.when || s.when(); });
-    }
 
     /* ------------------------------------------------------------------
      * Persistence
@@ -303,7 +297,7 @@
      * exactly which question is empty. */
     function missingEverywhere() {
         var out = [];
-        activeSteps().forEach(function (s) {
+        STEPS.forEach(function (s) {
             missingIn(s).forEach(function (k) { out.push({ key: k, step: s.id }); });
         });
         return out;
@@ -413,28 +407,6 @@
                 '<div data-field="at_aisa_last_year" class="flex gap-3 max-w-sm rounded-xl">' + yesNo + '</div>' +
                 errorSlot('at_aisa_last_year', 'Please choose Yes or No.') +
             '</div>';
-    }
-
-    function renderLookback() {
-        return stepHeading('Before you write this year’s goal') +
-            '<div class="bg-amber-50 border border-amber-200 rounded-2xl p-5 sm:p-6">' +
-                '<p class="text-sm text-amber-950 leading-relaxed">' +
-                    'Pull up two things before you write this year’s goal: your <strong>appraisal feedback ' +
-                    'from last year</strong>, and <strong>the goal you wrote for this year</strong> at that time.' +
-                '</p>' +
-                '<p class="text-sm text-amber-950 leading-relaxed mt-3">' +
-                    'Ask yourself honestly: <strong>did that goal happen?</strong>' +
-                '</p>' +
-                '<ul class="mt-3 space-y-2 text-sm text-amber-950 leading-relaxed">' +
-                    '<li class="flex gap-2"><span aria-hidden="true">•</span><span>If it did, this year’s goal should ' +
-                        'push further in the same area or move to a new one <em>on purpose</em> — not repeat last ' +
-                        'year’s in different words.</span></li>' +
-                    '<li class="flex gap-2"><span aria-hidden="true">•</span><span>If it didn’t happen, ask <em>why</em> ' +
-                        'before writing another one just like it.</span></li>' +
-                '</ul>' +
-            '</div>' +
-            '<p class="text-xs text-slate-500 mt-4">Nothing to fill in here — this page is for you. ' +
-             'Carry on when you’ve had that think.</p>';
     }
 
     function renderFocus() {
@@ -776,7 +748,7 @@
         return null;
     }
     function indexOfStep(id) {
-        var list = activeSteps();
+        var list = STEPS;
         for (var i = 0; i < list.length; i++) if (list[i].id === id) return i;
         return 0;
     }
@@ -786,7 +758,7 @@
      * ------------------------------------------------------------------ */
 
     function renderRail() {
-        var list = activeSteps();
+        var list = STEPS;
         $('step-rail').innerHTML = list.map(function (s, i) {
             var done    = i < stepIndex;
             var current = i === stepIndex;
@@ -809,7 +781,7 @@
     }
 
     function renderNav() {
-        var list = activeSteps();
+        var list = STEPS;
         var last = stepIndex === list.length - 1;
         $('nav-bar').innerHTML =
             '<button type="button" id="back-btn" ' + (stepIndex === 0 ? 'disabled ' : '') +
@@ -833,7 +805,7 @@
     }
 
     function onNext() {
-        var step = activeSteps()[stepIndex];
+        var step = STEPS[stepIndex];
         var gaps = missingIn(step);
         if (gaps.length) { markInvalid(gaps); return; }
         flushSave();
@@ -841,16 +813,16 @@
     }
 
     function goTo(i) {
-        var list = activeSteps();
+        var list = STEPS;
         stepIndex = Math.max(0, Math.min(i, list.length - 1));
         render();
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function render() {
-        var list = activeSteps();
-        /* The look-back step appears and disappears with the Yes/No
-         * answer, so a stored index can point past the end. */
+        var list = STEPS;
+        /* A stored index from an older version of this form could point
+         * past the end — the step list has been shorter and longer. */
         if (stepIndex > list.length - 1) stepIndex = list.length - 1;
         var step = list[stepIndex];
 
@@ -897,7 +869,7 @@
                 answers[key] = btn.getAttribute('data-value');
                 clearInvalid(key);
                 scheduleSave();
-                render();       // Yes/No changes which steps exist
+                render();       // redraw so the chosen button reads as selected
             });
         });
 
@@ -966,7 +938,7 @@
             /* Going back is always allowed; going forward past an
              * unanswered required question is not. */
             if (target > stepIndex) {
-                var list = activeSteps();
+                var list = STEPS;
                 for (var i = stepIndex; i < target; i++) {
                     var gaps = missingIn(list[i]);
                     if (gaps.length) { goTo(i); markInvalid(gaps); return; }
