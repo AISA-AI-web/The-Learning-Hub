@@ -28,7 +28,7 @@
         .sticky-col { position: sticky; left: 0; background: #fff; z-index: 1; }
         .matrix thead .sticky-col { z-index: 2; background:#fff; }
     </style>
-    <script src="auth/gate.js?v=16"></script>
+    <script src="auth/gate.js?v=18"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
@@ -109,7 +109,24 @@
                             </div>
                         </div>
                     </a>
-                    <!-- Export CSV: the on-click handler lives in the script
+                    <a href="#goals" class="group block bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-violet-200 hover:-translate-y-0.5 transition-all p-5 focus:outline-none focus:ring-2 focus:ring-violet-300">
+                        <div class="flex items-start gap-4">
+                            <div class="w-11 h-11 rounded-xl bg-violet-50 border border-violet-100 flex items-center justify-center text-xl flex-shrink-0">🎯</div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-slate-900 leading-tight">Personal Goals &mdash; Secondary</p>
+                                <p class="text-sm text-slate-500 mt-0.5 leading-snug">Every teacher&rsquo;s 2026&ndash;27 goal and if-then plan, what the cohort chose to focus on, and who still owes one.</p>
+                                <span class="inline-flex items-center gap-1 text-xs font-bold text-violet-700 mt-2 group-hover:translate-x-0.5 transition-transform">
+                                    Jump to the tracker
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                                </span>
+                                <div class="mt-1.5 flex flex-wrap gap-2 text-[11px] font-bold">
+                                    <span class="text-slate-400">Teachers fill it in at</span>
+                                    <span class="text-slate-500 underline">Tools &amp; Resources &rarr; My Personal Goal</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                                        <!-- Export CSV: the on-click handler lives in the script
                          block below. The whole card IS the button so it
                          matches the visual weight of the other tool cards.
                          Hidden until adminOverview() resolves with data
@@ -287,6 +304,91 @@
                 <code class="font-mono bg-amber-100 px-1.5 py-0.5 rounded">migrateDwellToPerModule()</code>
                 once from the Apps Script editor to roll those rows into per-module summaries.
             </p>
+
+            <!-- ==========================================================
+                 Secondary Teacher Personal Goals, 2026-27.
+
+                 The survey view. Reads survey_responses through
+                 admin_survey_responses (admin-gated server-side) and
+                 answers the two questions the principal actually has:
+                 what did people choose to work on, and who still owes
+                 a goal. "Outstanding" is the roster minus the people
+                 who have submitted, narrowed by roster tag — set the
+                 tag to `secondary` once the roster is tagged and this
+                 becomes a real chase list.
+                 ========================================================== -->
+            <div id="goals" class="mt-12 scroll-mt-24">
+                <div class="flex items-center justify-between gap-4 mb-3 px-1 flex-wrap">
+                    <div>
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">Personal goals &middot; secondary 2026&ndash;27</h3>
+                        <p class="text-xs text-slate-500 mt-1 max-w-2xl">
+                            One goal per teacher for the year, with the if-then plan they named for actually
+                            doing it. Come back to these at mid-year and end-of-year check-ins.
+                            <span class="font-semibold text-slate-600">These are staff personal data &mdash; don&rsquo;t forward the export.</span>
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <select id="goal-tag" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300" title="Which roster tag counts as the cohort">
+                            <option value="">Cohort: whole roster</option>
+                        </select>
+                        <select id="goal-filter" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                            <option value="submitted">Submitted</option>
+                            <option value="all">Everyone who started</option>
+                            <option value="draft">Started, not submitted</option>
+                        </select>
+                        <select id="goal-area" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                            <option value="">All focus areas</option>
+                        </select>
+                        <input id="goal-search" type="search" placeholder="Search name, email or department&hellip;"
+                               class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        <button id="goal-export" type="button"
+                                class="text-sm font-bold text-indigo-700 border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 rounded-lg px-3 py-1.5 transition-colors">
+                            Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div id="goal-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4"></div>
+
+                <!-- What the cohort chose to work on. The one view that is
+                     about the group rather than the individual, so it drives
+                     what PD gets planned. -->
+                <div id="goal-focus-wrap" class="hidden bg-white rounded-2xl border border-gray-100 shadow-sm px-4 py-4 mb-4">
+                    <p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-3">Where the cohort is focusing</p>
+                    <div id="goal-focus" class="space-y-2"></div>
+                </div>
+
+                <div id="goal-list" class="space-y-3"></div>
+
+                <p id="goal-empty" class="text-center text-slate-400 py-8">
+                    No goals yet &mdash; they appear here as teachers submit them.
+                </p>
+
+                <!-- Who still owes one, and a one-click nudge. -->
+                <details id="goal-outstanding-wrap" class="hidden mt-4 bg-white rounded-2xl border border-amber-200 shadow-sm px-4 py-3">
+                    <summary class="text-sm font-bold text-amber-800 cursor-pointer hover:text-amber-900 select-none">
+                        <span id="goal-outstanding-count">0</span> still to submit
+                    </summary>
+                    <div id="goal-outstanding" class="mt-3 grid sm:grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-1 text-sm"></div>
+                    <div class="mt-4 flex items-center gap-3 flex-wrap">
+                        <button id="goal-remind" type="button"
+                                class="text-sm font-bold text-white bg-amber-500 hover:bg-amber-600 rounded-lg px-4 py-1.5 transition-colors">
+                            Remind everyone outstanding
+                        </button>
+                        <span id="goal-remind-status" class="text-xs font-semibold text-slate-500"></span>
+                    </div>
+                    <p class="text-[11px] text-slate-400 mt-2">
+                        Sends the in-app bell <em>and</em> an AISA-branded email linking straight to the form.
+                    </p>
+                </details>
+
+                <p id="goal-no-endpoint" class="hidden mt-3 text-sm text-rose-800 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
+                    <strong>The backend doesn&rsquo;t have the survey endpoints yet.</strong>
+                    Paste <code class="font-mono bg-rose-100 px-1.5 py-0.5 rounded">auth/apps-script.gs</code>
+                    into the Apps Script editor and deploy a new version. Until then the goal form tells
+                    teachers it isn&rsquo;t switched on, and nothing they write is being saved.
+                </p>
+            </div>
 
             <!-- ==========================================================
                  AI Literacy readiness — what teachers actually wrote.
@@ -1365,5 +1467,398 @@
         }
     })();
     </script>
+
+    <script>
+    /* ============================================================
+     * Secondary Teacher Personal Goals — 2026-27.
+     *
+     * Backed by admin_survey_responses (admin-gated server-side), so
+     * the whole section only ever renders for an admin. Staff personal
+     * data under Federal Decree-Law No. 45 of 2021 — same handling as
+     * the module responses above: admin-only, and the export is not
+     * for forwarding.
+     *
+     * `outstanding` is computed server-side from the roster tab minus
+     * whoever has submitted, narrowed to a roster tag. Nothing here
+     * invents a cohort: staff who aren't on the roster simply don't
+     * appear as outstanding.
+     * ============================================================ */
+    (function () {
+        'use strict';
+
+        var SURVEY_ID = 'secondary-teacher-goal-2026-27';
+        var FORM_URL  = 'Tools%20and%20Resources/secondary-teacher-goal.html';
+
+        var rows = [];
+        var outstanding = [];
+        var fields = [];
+        var rosterTag = '';
+
+        function escapeHtml(s) {
+            return String(s == null ? '' : s)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        function val(r, key) {
+            var v = r.data ? r.data[key] : '';
+            if (Array.isArray(v)) return v.join(', ');
+            return (v == null || v === false) ? '' : String(v).trim();
+        }
+
+        function fmt(iso) {
+            if (!iso) return '';
+            try {
+                return new Date(iso).toLocaleDateString('en-GB',
+                    { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+            } catch (e) { return String(iso); }
+        }
+
+        function isSubmitted(r) { return r.status === 'submitted'; }
+
+        function pill(text, classes) {
+            return '<span class="inline-block text-[10px] font-bold uppercase tracking-widest ' +
+                   classes + ' px-2 py-0.5 rounded-full">' + escapeHtml(text) + '</span>';
+        }
+
+        function answerBlock(label, text, tone) {
+            if (!text) return '';
+            var box = tone === 'gold' ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200';
+            return '<div class="mt-2 border ' + box + ' rounded-xl px-3 py-2">' +
+                   '<div class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-0.5">' +
+                   escapeHtml(label) + '</div>' +
+                   '<div class="text-sm text-slate-800 whitespace-pre-wrap">' + escapeHtml(text) + '</div>' +
+                   '</div>';
+        }
+
+        function card(r) {
+            var pills = [];
+            pills.push(isSubmitted(r)
+                ? pill('Submitted', 'bg-emerald-50 text-emerald-700 border border-emerald-200')
+                : pill('Draft', 'bg-slate-100 text-slate-600 border border-slate-200'));
+            if (val(r, 'at_aisa_last_year') === 'No') {
+                pills.push(pill('New to AISA', 'bg-sky-50 text-sky-700 border border-sky-200'));
+            }
+            if (r.revision > 1) {
+                pills.push(pill('Edited ×' + r.revision, 'bg-indigo-50 text-indigo-700 border border-indigo-200'));
+            }
+
+            var meta = [
+                val(r, 'department'),
+                isSubmitted(r) ? 'Submitted ' + fmt(r.submitted_at) : 'Last saved ' + fmt(r.updated_at)
+            ].filter(Boolean).join(' · ');
+
+            var extras =
+                answerBlock('Professional learning wanted',
+                    [val(r, 'pl_supports'), val(r, 'pl_other') ? 'Other: ' + val(r, 'pl_other') : '']
+                        .filter(Boolean).join(', '), 'plain') +
+                answerBlock('What would make that support most useful', val(r, 'pl_detail'), 'plain') +
+                answerBlock('Beyond the classroom', val(r, 'beyond_classroom'), 'plain');
+
+            return '<div class="bg-white rounded-2xl border ' +
+                   (isSubmitted(r) ? 'border-gray-100' : 'border-amber-200') +
+                   ' shadow-sm px-4 py-3">' +
+                   '<div class="flex items-start justify-between gap-3 flex-wrap">' +
+                     '<div>' +
+                       '<p class="font-bold text-slate-900 leading-tight">' +
+                          escapeHtml(val(r, 'name') || r.name || r.email) + '</p>' +
+                       '<p class="text-xs text-slate-500">' + escapeHtml(r.email) + '</p>' +
+                       '<p class="text-xs text-slate-400 mt-0.5">' + escapeHtml(meta) + '</p>' +
+                     '</div>' +
+                     '<div class="flex gap-1.5 flex-wrap justify-end">' + pills.join(' ') + '</div>' +
+                   '</div>' +
+                   (val(r, 'focus_area')
+                     ? '<p class="mt-2 text-xs font-bold text-indigo-700">' +
+                       escapeHtml(val(r, 'focus_area')) + '</p>' : '') +
+                   answerBlock('Goal', val(r, 'goal'), 'gold') +
+                   answerBlock('If-then plan', val(r, 'if_then'), 'plain') +
+                   (extras
+                     ? '<details class="mt-2"><summary class="text-xs font-bold text-indigo-700 cursor-pointer hover:text-indigo-900">' +
+                       'Support asked for, and the rest</summary>' + extras + '</details>'
+                     : '') +
+                   '</div>';
+        }
+
+        function visible() {
+            var mode = document.getElementById('goal-filter').value;
+            var area = document.getElementById('goal-area').value;
+            var q = document.getElementById('goal-search').value.trim().toLowerCase();
+            return rows.filter(function (r) {
+                if (mode === 'submitted' && !isSubmitted(r)) return false;
+                if (mode === 'draft'     &&  isSubmitted(r)) return false;
+                if (area && val(r, 'focus_area') !== area) return false;
+                if (q) {
+                    var hay = (val(r, 'name') + ' ' + r.name + ' ' + r.email + ' ' +
+                               val(r, 'department')).toLowerCase();
+                    if (hay.indexOf(q) === -1) return false;
+                }
+                return true;
+            }).sort(function (a, b) {
+                /* Submitted first, then most recent. Drafts are a chase
+                 * list, not a read, so they sit below the finished ones. */
+                if (isSubmitted(a) !== isSubmitted(b)) return isSubmitted(a) ? -1 : 1;
+                return String(b.submitted_at || b.updated_at)
+                       .localeCompare(String(a.submitted_at || a.updated_at));
+            });
+        }
+
+        function statTile(n, label, tone) {
+            return '<div class="bg-white rounded-xl border border-gray-100 shadow-sm px-3 py-2.5">' +
+                   '<p class="text-2xl font-black ' + tone + ' leading-none">' + escapeHtml(String(n)) + '</p>' +
+                   '<p class="text-[11px] font-bold uppercase tracking-widest text-slate-400 mt-1">' +
+                   escapeHtml(label) + '</p></div>';
+        }
+
+        /* Count by focus area across SUBMITTED goals only — a draft's
+         * half-chosen area would skew what PD gets planned. */
+        function areaCounts() {
+            var counts = {};
+            rows.filter(isSubmitted).forEach(function (r) {
+                var a = val(r, 'focus_area');
+                if (!a) return;
+                counts[a] = (counts[a] || 0) + 1;
+            });
+            return Object.keys(counts).map(function (k) {
+                return { area: k, n: counts[k] };
+            }).sort(function (a, b) { return b.n - a.n; });
+        }
+
+        function renderStats() {
+            var subs = rows.filter(isSubmitted).length;
+            var drafts = rows.length - subs;
+            var top = areaCounts()[0];
+            document.getElementById('goal-stats').innerHTML =
+                statTile(subs, 'Goals submitted', 'text-emerald-700') +
+                statTile(drafts, 'Started, not submitted', 'text-amber-700') +
+                statTile(outstanding.length, 'Still to submit', 'text-rose-700') +
+                statTile(top ? top.n : 0, top ? 'Top area: ' + top.area : 'Top area', 'text-indigo-700');
+        }
+
+        function renderFocus() {
+            var list = areaCounts();
+            var wrap = document.getElementById('goal-focus-wrap');
+            wrap.classList.toggle('hidden', list.length === 0);
+            if (!list.length) return;
+            var max = list[0].n || 1;
+            document.getElementById('goal-focus').innerHTML = list.map(function (item) {
+                var pct = Math.round((item.n / max) * 100);
+                return '<button type="button" data-area="' + escapeHtml(item.area) + '" ' +
+                       'class="w-full text-left group focus:outline-none">' +
+                    '<div class="flex items-center gap-3">' +
+                        '<span class="text-xs text-slate-600 w-60 flex-shrink-0 truncate group-hover:text-indigo-700">' +
+                            escapeHtml(item.area) + '</span>' +
+                        '<span class="flex-1 h-2.5 bg-slate-100 rounded-full overflow-hidden">' +
+                            '<span class="block h-full bg-indigo-500 rounded-full" style="width:' + pct + '%"></span>' +
+                        '</span>' +
+                        '<span class="text-xs font-bold text-slate-700 w-6 text-right">' + item.n + '</span>' +
+                    '</div>' +
+                '</button>';
+            }).join('');
+        }
+
+        function renderOutstanding() {
+            var wrap = document.getElementById('goal-outstanding-wrap');
+            wrap.classList.toggle('hidden', outstanding.length === 0);
+            document.getElementById('goal-outstanding-count').textContent = outstanding.length;
+            document.getElementById('goal-outstanding').innerHTML = outstanding.map(function (p) {
+                return '<div class="flex items-baseline gap-2 min-w-0">' +
+                    '<span class="font-semibold text-slate-800 flex-shrink-0">' +
+                        escapeHtml(p.name || '—') + '</span>' +
+                    '<span class="text-slate-400 truncate">' + escapeHtml(p.email) + '</span>' +
+                '</div>';
+            }).join('');
+        }
+
+        function rerender() {
+            var list = visible();
+            document.getElementById('goal-list').innerHTML = list.map(card).join('');
+            document.getElementById('goal-empty').classList.toggle('hidden', list.length > 0);
+            if (!rows.length) {
+                document.getElementById('goal-empty').textContent =
+                    'No goals yet — they appear here as teachers submit them.';
+            } else if (!list.length) {
+                document.getElementById('goal-empty').textContent = 'Nobody matches that filter.';
+            }
+            renderStats();
+            renderFocus();
+            renderOutstanding();
+        }
+
+        function csvCell(v) {
+            return '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+        }
+
+        /* Scoped to what's on screen so the file never disagrees with
+         * the view. Columns come from the server's field list, which is
+         * the same list the form and the emailed copy use. */
+        function exportCsv() {
+            var cols = fields.length ? fields : [
+                { key: 'name', label: 'Name' }, { key: 'email', label: 'Email' },
+                { key: 'department', label: 'Department / Subject' },
+                { key: 'focus_area', label: 'Focus area' },
+                { key: 'goal', label: 'Goal' }, { key: 'if_then', label: 'If-then plan' }
+            ];
+            var header = ['Account email', 'Status', 'Submitted', 'Last saved', 'Revisions']
+                         .concat(cols.map(function (f) { return f.label; }));
+            var lines = [header.map(csvCell).join(',')];
+            visible().forEach(function (r) {
+                lines.push([
+                    r.email,
+                    isSubmitted(r) ? 'Submitted' : 'Draft',
+                    fmt(r.submitted_at), fmt(r.updated_at), r.revision || 0
+                ].concat(cols.map(function (f) { return val(r, f.key); }))
+                 .map(csvCell).join(','));
+            });
+            var blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'aisa-secondary-goals-' + new Date().toISOString().slice(0, 10) + '.csv';
+            a.click();
+            URL.revokeObjectURL(a.href);
+        }
+
+        function setRemindStatus(text, kind) {
+            var el = document.getElementById('goal-remind-status');
+            el.textContent = text || '';
+            el.className = 'text-xs font-semibold ' + (
+                kind === 'error' ? 'text-rose-600' :
+                kind === 'ok'    ? 'text-emerald-600' : 'text-slate-500');
+        }
+
+        /* Deliberately NOT the PD tracker's reminder composer above —
+         * that one is wired to module completions and its recipient list
+         * is whatever the tracker table is filtered to. This sends to the
+         * goal cohort only. */
+        function remindOutstanding() {
+            if (!outstanding.length) return;
+            var emails = outstanding.map(function (p) { return p.email; });
+            if (!window.confirm('Send a reminder to ' + emails.length +
+                    ' ' + (emails.length === 1 ? 'person' : 'people') +
+                    ' who haven’t submitted a goal?\n\nThey get the in-app bell and an email.')) return;
+
+            var btn = document.getElementById('goal-remind');
+            btn.disabled = true;
+            btn.classList.add('opacity-60');
+            setRemindStatus('Sending…');
+
+            var link = location.origin +
+                location.pathname.replace(/[^/]*$/, '') + FORM_URL;
+
+            window.aisaAuth.postNotification(
+                'Your personal goal for 2026-27',
+                'You haven’t set your personal goal for this year yet. It takes about ten ' +
+                'minutes: pick the area of your practice you most want to grow in, and write one ' +
+                'goal plus an if-then plan for actually doing it.\n\n' +
+                'We’ll come back to it at your mid-year and end-of-year check-ins.',
+                [], emails,
+                { sendEmail: true, emailLink: link, emailLinkLabel: 'Set your goal' }
+            ).then(function (r) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-60');
+                var e = r && r.email;
+                if (e && e.sent) {
+                    setRemindStatus('Sent to ' + e.sent + ' by email, and posted to everyone’s bell.', 'ok');
+                } else if (e && (e.failed || e.skipped)) {
+                    setRemindStatus('Bell notification posted, but ' +
+                        ((e.failed || 0) + (e.skipped || 0)) + ' email(s) did not go out.', 'error');
+                } else {
+                    /* No `email` block at all means the deployed backend
+                     * predates email support — the bell still worked. */
+                    setRemindStatus('Bell notification posted. No emails were sent — ' +
+                        'the backend needs redeploying for that.', 'error');
+                }
+            }).catch(function (err) {
+                btn.disabled = false;
+                btn.classList.remove('opacity-60');
+                setRemindStatus('Could not send: ' + ((err && err.message) || 'unknown error'), 'error');
+                console.warn('AISA: goal reminder failed', err);
+            });
+        }
+
+        function load(auth) {
+            return auth.adminSurveyResponses(SURVEY_ID, { rosterTag: rosterTag })
+                .then(function (payload) {
+                    rows        = (payload && payload.responses)   || [];
+                    outstanding = (payload && payload.outstanding) || [];
+                    fields      = (payload && payload.fields)      || [];
+
+                    /* Populate the two directories the server owns: the
+                     * roster tags (so the cohort can be narrowed) and the
+                     * focus areas actually chosen. */
+                    var tagSel = document.getElementById('goal-tag');
+                    if (tagSel.options.length === 1) {
+                        ((payload && payload.roster_tags) || []).forEach(function (t) {
+                            var o = document.createElement('option');
+                            o.value = t;
+                            o.textContent = 'Cohort: ' + t;
+                            tagSel.appendChild(o);
+                        });
+                        /* Default to `secondary` when the roster has it —
+                         * this is a secondary form, so that is the cohort
+                         * the principal means by "outstanding". */
+                        if (!rosterTag && tagSel.querySelector('option[value="secondary"]')) {
+                            tagSel.value = 'secondary';
+                            rosterTag = 'secondary';
+                            return load(auth);
+                        }
+                    }
+                    tagSel.value = rosterTag;
+
+                    var areaSel = document.getElementById('goal-area');
+                    var chosen = areaSel.value;
+                    areaSel.innerHTML = '<option value="">All focus areas</option>';
+                    areaCounts().forEach(function (item) {
+                        var o = document.createElement('option');
+                        o.value = item.area;
+                        o.textContent = item.area + ' (' + item.n + ')';
+                        areaSel.appendChild(o);
+                    });
+                    areaSel.value = chosen;
+
+                    rerender();
+                });
+        }
+
+        document.getElementById('goal-filter').addEventListener('change', rerender);
+        document.getElementById('goal-area').addEventListener('change', rerender);
+        document.getElementById('goal-search').addEventListener('input', rerender);
+        document.getElementById('goal-export').addEventListener('click', exportCsv);
+        document.getElementById('goal-remind').addEventListener('click', remindOutstanding);
+
+        /* Clicking a bar filters to that area — the distribution is a
+         * way in to the goals, not just a picture. */
+        document.getElementById('goal-focus').addEventListener('click', function (e) {
+            var btn = e.target.closest('[data-area]');
+            if (!btn) return;
+            var sel = document.getElementById('goal-area');
+            var area = btn.getAttribute('data-area');
+            sel.value = (sel.value === area) ? '' : area;
+            rerender();
+        });
+
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                if (!auth.adminSurveyResponses) return;
+
+                document.getElementById('goal-tag').addEventListener('change', function (e) {
+                    rosterTag = e.target.value;
+                    load(auth).catch(function () {});
+                });
+
+                load(auth).catch(function (err) {
+                    /* An un-deployed backend is the likely cause and the
+                     * one worth naming, because it also means the form is
+                     * turning teachers away right now. */
+                    if (err && (err.message === 'unknown_action' || err.message === 'unknown_survey')) {
+                        document.getElementById('goal-no-endpoint').classList.remove('hidden');
+                        document.getElementById('goal-empty').classList.add('hidden');
+                    }
+                    console.warn('AISA: survey responses failed', err);
+                });
+            });
+        }
+    })();
+    </script>
+
 </body>
 </html>

@@ -118,7 +118,7 @@
         if (auxLoaded) return;
         auxLoaded = true;
         if (!GATE_SCRIPT_SRC) return;
-        ['onboarding.js?v=2', 'certificate.js?v=7', 'search-index.js?v=7', 'menu.js?v=13', 'dwell.js?v=2'].forEach(function (name) {
+        ['onboarding.js?v=2', 'certificate.js?v=7', 'search-index.js?v=8', 'menu.js?v=14', 'dwell.js?v=2'].forEach(function (name) {
             var url = GATE_SCRIPT_SRC.replace(/gate\.js(\?.*)?$/, name);
             if (url === GATE_SCRIPT_SRC) return;  // pattern didn't match — skip safely
             var s = document.createElement('script');
@@ -473,7 +473,16 @@
                 clearSession();
                 return triggerReAuth().then(function () { return apiCall(action, extra); });
             }
-            throw new Error((json && json.error) || 'api_error');
+            /* Carry the server's extra detail on the Error. Validation
+             * failures answer with the field keys that are missing or
+             * invalid, and a bare Error message would throw that away —
+             * leaving the form able to say "something's wrong" but not
+             * which question. */
+            var err = new Error((json && json.error) || 'api_error');
+            err.detail = json || null;
+            if (json && json.missing) err.missing = json.missing;
+            if (json && json.invalid) err.invalid = json.invalid;
+            throw err;
         });
     }
 
@@ -492,7 +501,14 @@
                 'Someone else was saving at the same moment. Your answer was not ' +
                 'saved — please try again.',
             missing_module_id:  'This page is misconfigured and cannot save. Please report it.',
-            missing_segment_id: 'This page is misconfigured and cannot save. Please report it.'
+            missing_segment_id: 'This page is misconfigured and cannot save. Please report it.',
+            missing_survey_id:  'This page is misconfigured and cannot save. Please report it.',
+            unknown_survey:
+                'This form is not switched on in the Learning Hub backend yet. ' +
+                'Please tell Brandon \u2014 nothing you type is being saved.',
+            missing_required:
+                'Some required answers are still empty, so the form was not ' +
+                'submitted. Every question marked Required needs an answer.'
         }[code];
         var e = new Error(code);
         e.userMessage = friendly ||
@@ -677,6 +693,60 @@
              * for). Rejects with not_admin for everyone else. */
             adminModuleResponses: function (moduleId) {
                 return apiCall('admin_module_responses', { module_id: moduleId });
+            },
+
+            /* ----- Surveys -----
+             *
+             * Required-entry forms filled in on the Hub (the Secondary
+             * Teacher Personal Goal is the first). One stored response
+             * per person per survey: saving repeatedly is an edit, not
+             * a second entry.
+             *
+             * Like the module-response calls above, these carry work a
+             * teacher has typed, so failures reject loudly instead of
+             * being swallowed. */
+
+            /* Save a response. `opts.submit` marks it final, which is
+             * what triggers server-side required-field validation and
+             * the emailed copy; without it this is an autosaved draft.
+             *
+             * A rejection with message 'missing_required' carries the
+             * offending field keys on err.missing / err.invalid so the
+             * page can point at the questions rather than shrug. */
+            saveSurveyResponse: function (surveyId, data, opts) {
+                opts = opts || {};
+                return apiCall('save_survey_response', {
+                    survey_id:  surveyId,
+                    data:       data || {},
+                    submit:     !!opts.submit,
+                    email_copy: opts.emailCopy !== false,
+                    user_agent: (typeof navigator !== 'undefined' && navigator.userAgent) || ''
+                }).catch(function (err) {
+                    var friendly = describeCaptureError(err);
+                    friendly.missing = (err && err.missing) || [];
+                    friendly.invalid = (err && err.invalid) || [];
+                    throw friendly;
+                });
+            },
+
+            /* Read this user's own response back, to resume a draft or
+             * edit a submitted one. Own row only, enforced server-side. */
+            getSurveyResponse: function (surveyId) {
+                return apiCall('get_survey_response', { survey_id: surveyId })
+                    .catch(function (err) {
+                        throw describeCaptureError(err);
+                    });
+            },
+
+            /* Admin-only: every response to one survey, plus the roster
+             * members who still owe one (narrow with opts.rosterTag).
+             * Rejects with not_admin for everyone else. */
+            adminSurveyResponses: function (surveyId, opts) {
+                opts = opts || {};
+                return apiCall('admin_survey_responses', {
+                    survey_id:  surveyId,
+                    roster_tag: opts.rosterTag || ''
+                });
             },
 
             /* Round-trip health check: confirms the server can verify

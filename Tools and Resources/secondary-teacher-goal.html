@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Secondary Teacher Personal Goal 2026-27</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = { theme: { extend: { fontFamily: { heading: ['Poppins', 'sans-serif'] } } } };
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .bg-dot-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        /* The step rail scrolls sideways on a phone rather than wrapping
+           into three ragged lines. */
+        #step-rail { scrollbar-width: none; }
+        #step-rail::-webkit-scrollbar { display: none; }
+
+        /* Printing is the teacher's own copy of their goal, so the page
+           furniture goes and the hidden summary comes back. */
+        @media print {
+            .no-print, #step-rail, #nav-bar { display: none !important; }
+            body { background: #fff !important; }
+            #form-card { border: 0 !important; box-shadow: none !important; padding: 0 !important; }
+            #print-copy { display: block !important; }
+        }
+    </style>
+    <script src="../auth/gate.js?v=18"></script>
+</head>
+<body class="bg-dot-pattern text-slate-800 min-h-screen">
+
+<main class="max-w-3xl mx-auto px-4 sm:px-6 pt-8 pb-24">
+
+    <!-- Masthead -->
+    <header class="mb-7">
+        <div class="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-800 text-[11px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mb-3 no-print">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6m0 8v6M2 12h6m8 0h6"/><circle cx="12" cy="12" r="3"/></svg>
+            Secondary &middot; 2026&ndash;27
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-heading font-black text-slate-900 leading-tight">
+            Your Personal Goal for the Year
+        </h1>
+        <p class="text-sm text-slate-600 mt-3 leading-relaxed max-w-2xl">
+            This is your personal goal for the year &mdash; <strong>one goal is required</strong>, and it works
+            better with your full attention than two would with half of it, so a second is optional and only
+            worth adding if you genuinely want one.
+        </p>
+        <p class="text-sm text-slate-600 mt-3 leading-relaxed max-w-2xl">
+            <strong>Before you begin:</strong> review your Self-Assessment. Pick the area of your practice you
+            most want to grow in below. You&rsquo;ll get guidance and real strategies for that area, then write
+            your goal in the required format and name one specific if-then plan for actually doing it.
+        </p>
+        <p class="text-sm text-slate-600 mt-3 leading-relaxed max-w-2xl">
+            A copy of your response will be emailed to you. We&rsquo;ll come back to this goal at your
+            mid-year and end-of-year check-ins, and in your appraisal conversation.
+        </p>
+    </header>
+
+    <!-- Already submitted: shown once the server confirms a submitted
+         response exists, so a returning teacher knows this is an edit
+         and not a second entry. -->
+    <div id="resubmit-note" class="hidden mb-5 bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3 no-print">
+        <p class="text-sm font-bold text-emerald-900">You&rsquo;ve already submitted this goal.</p>
+        <p class="text-sm text-emerald-800 mt-0.5">
+            Anything you change here updates it &mdash; it doesn&rsquo;t create a second one. Press
+            <strong>Save my changes</strong> on the last step to commit an edit.
+        </p>
+    </div>
+
+    <!-- Save / setup failures. Anything that means typing isn't reaching
+         the server surfaces here rather than failing quietly. -->
+    <div id="form-alert" class="hidden mb-5 bg-rose-50 border border-rose-200 text-rose-800 rounded-2xl px-4 py-3 text-sm leading-relaxed no-print"></div>
+
+    <!-- Progress -->
+    <div class="mb-4 no-print">
+        <div class="flex items-center justify-between mb-2">
+            <span id="progress-text" class="text-[11px] font-bold uppercase tracking-widest text-slate-400">Step 1</span>
+            <span class="text-[11px] font-bold uppercase tracking-widest text-slate-400">Required entries are marked</span>
+        </div>
+        <div class="h-1.5 bg-slate-200 rounded-full overflow-hidden">
+            <div id="progress-bar" class="h-full bg-indigo-600 rounded-full transition-all duration-300" style="width:0%"></div>
+        </div>
+    </div>
+
+    <!-- Step rail -->
+    <ol id="step-rail" class="flex items-center gap-2 mb-5 overflow-x-auto pb-1 no-print"></ol>
+
+    <!-- The current step renders in here -->
+    <section id="form-card" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-7"></section>
+
+    <!-- Back / Next -->
+    <div id="nav-bar" class="flex items-center justify-between gap-4 mt-5 no-print"></div>
+
+    <p class="text-[11px] text-slate-400 mt-8 leading-relaxed no-print">
+        Your answers are saved as you type and are visible to secondary SLT for appraisal and
+        professional-learning planning. They are not shared more widely than that.
+    </p>
+
+</main>
+
+<script src="secondary-teacher-goal.js?v=1"></script>
+</body>
+</html>
