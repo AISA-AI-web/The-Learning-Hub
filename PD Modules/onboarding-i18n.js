@@ -68,6 +68,7 @@
         var m;
         if ((m = /^Chapter (\d+) of (\d+)$/.exec(t))) return 'الفصل ' + m[1] + ' من ' + m[2];
         if ((m = /^Chapter (\d+)$/.exec(t)))          return 'الفصل ' + m[1];
+        if ((m = /^(\d+) answers still to fill in$/.exec(t))) return 'ما زالت ' + m[1] + ' إجابات بحاجة إلى تعبئة';
         if ((m = /^Section (\d+)$/.exec(t)))          return 'القسم ' + m[1];
         return null;
     }

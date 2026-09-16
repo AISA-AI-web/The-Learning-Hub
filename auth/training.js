@@ -49,7 +49,8 @@
                 title: el.getAttribute('data-chapter-title') || ('Chapter ' + el.getAttribute('data-chapter')),
                 el:    el,
                 checkbox: el.querySelector('.module-checkbox'),
-                quizzes:  $$('.aisa-quiz', el)
+                quizzes:  $$('.aisa-quiz', el),
+                required: $$('[data-required]', el)
             };
         }).sort(function (a, b) { return a.idx - b.idx; });
 
@@ -61,11 +62,25 @@
         buildSidebar();
         buildNav();
         wireQuizzes();
+        wireRequiredFields();
         wireKeyboard();
 
         document.body.classList.add('aisa-train-managed');
         initialized = true;
         render();
+    }
+
+    /* Re-check the gate as the user types or ticks, so Next unlocks the
+     * moment the last required answer lands rather than on re-render. */
+    function wireRequiredFields() {
+        chapters.forEach(function (chap) {
+            chap.required.forEach(function (el) {
+                var evt = (el.type === 'checkbox' || el.type === 'radio' || el.tagName === 'SELECT')
+                    ? 'change' : 'input';
+                el.addEventListener(evt, updateNavState);
+                el.addEventListener('blur', updateNavState);
+            });
+        });
     }
 
     /* Power-user navigation: Left/Right arrows move between chapters,
@@ -314,18 +329,28 @@
 
     /* -------- rendering & navigation -------- */
 
+    /* A [data-required] field counts as answered when a checkbox is
+     * ticked, or any other control has non-whitespace content. */
+    function fieldAnswered(el) {
+        if (el.type === 'checkbox' || el.type === 'radio') return !!el.checked;
+        return String(el.value == null ? '' : el.value).trim() !== '';
+    }
+
+    function missingRequired(chap) {
+        return chap.required.filter(function (el) { return !fieldAnswered(el); });
+    }
+
     function isChapterReady(chap) {
-        /* "Ready" = the Next button should be enabled. Chapters with
-         * no quiz are always ready; chapters with quizzes need all of
-         * them passed first. Once a chapter has been marked complete
-         * (the user has already moved past it once) it stays ready
-         * even if quiz state was reset. */
+        /* "Ready" = the Next button should be enabled. A chapter needs
+         * every quiz passed and every [data-required] field answered.
+         * Chapters with neither are always ready. Once a chapter has
+         * been marked complete (the user has already moved past it
+         * once) it stays ready even if that state was reset. */
         if (completedSet.has(chap.id)) return true;
-        if (!chap.quizzes.length) return true;
         for (var i = 0; i < chap.quizzes.length; i++) {
             if (chap.quizzes[i].dataset.passed !== 'true') return false;
         }
-        return true;
+        return missingRequired(chap).length === 0;
     }
 
     function render(scroll) {
@@ -384,9 +409,14 @@
         if (refs.navCounter) {
             refs.navCounter.textContent = 'Chapter ' + (currentIndex + 1) + ' of ' + chapters.length;
         }
-        var gated = !canAdvance && chap.quizzes.length;
+        var missing = completedSet.has(chap.id) ? [] : missingRequired(chap);
+        var quizPending = !canAdvance && !missing.length && chap.quizzes.length;
+        var gated = !canAdvance && (chap.quizzes.length || chap.required.length);
         if (refs.navHint) {
-            refs.navHint.textContent = gated ? 'Answer the knowledge check to continue' : '';
+            refs.navHint.textContent = !gated ? ''
+                : quizPending ? 'Answer the knowledge check to continue'
+                : missing.length === 1 ? 'One answer still to fill in'
+                : missing.length + ' answers still to fill in';
         }
         if (refs.nav) {
             refs.nav.classList.toggle('is-gated', !!gated);

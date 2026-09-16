@@ -74,24 +74,32 @@ fail silently and the dependent UIs stay empty:
   sign-in gate is client-side only, so anything committed is
   world-readable regardless of what `gate.js` renders.
 
-## AI Literacy module — admin preview, not released
+## AI Literacy module — RELEASED to staff, 16 September 2026
 
-`PD Modules/ai-curriculum-readiness-module.html` is on `main` and live
-(PR #100, merged 14 Sept 2026), but **not released to staff**.
+`PD Modules/ai-curriculum-readiness-module.html` is live and visible to
+every signed-in member of staff. The admin gate, the `data-admin-only`
+card flag and the `adminOnly` search entry are all gone, and it is
+listed in pd.html, dashboard.html, menu.js, admin-dashboard.html and
+admin-charts.html.
 
-It is gated to admins exactly the way the Sustainability module is: an
-`#admin-gate` overlay on the page (fails closed), `data-admin-only` on
-the pd.html card, `adminOnly: true` in search-index.js, and no listing
-at all in dashboard.html, menu.js, admin-dashboard.html or
-admin-charts.html. Access is whoever is on the `admins` tab — it is not
-per-person.
+Bear in mind the repo is public with Pages enabled, so the HTML is
+readable by anyone with the URL regardless of the sign-in gate. Don't
+put anything in a module page that would be a problem to publish.
 
-**That gate hides the module; it does not protect it.** The GitHub repo
-is public with Pages enabled, so the HTML is readable by anyone with the
-URL whatever the client-side gate renders. Don't put anything in a
-module page that would be a problem to publish.
+**Answers are required.** Twelve fields carry `data-required`, and
+`training.js` now gates Next on them the same way it gates on
+`.aisa-quiz` — the nav hint says how many are outstanding. The Finish
+button re-checks and lists what is missing by label, for anyone who
+resumed part-way. `?preview=1` lifts the gate for review.
 
-To release: see the checklist in the pd.html card comment.
+Deliberately optional: **line 6** ("what you need from Brandon"),
+because most teachers need nothing and a forced box fills the one
+answer that should mean something with "n/a"; and the InstrucTwin
+**blocked** checkbox, which reports a problem rather than answering a
+question.
+
+`data-required` is opt-in, so the modules that predate it are
+unaffected.
 
 **Reading what teachers wrote:** admin dashboard → *AI Literacy
 readiness · what teachers wrote* (`#responses`). One card per teacher,

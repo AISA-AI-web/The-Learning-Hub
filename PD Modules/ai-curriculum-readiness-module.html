@@ -161,6 +161,12 @@
 
         /* ---- Free-text capture ---- */
         .field { margin: 0 0 1.15rem; }
+        .field .optional {
+            font-weight: 400; font-size: .78rem; color: var(--aisa-muted);
+            border: 1px solid var(--aisa-border); border-radius: 999px;
+            padding: .05rem .5rem; margin-left: .4rem; vertical-align: middle;
+        }
+        body.lang-ar .field .optional { margin-left: 0; margin-right: .4rem; }
         .field label {
             display: block; font-weight: 700; color: var(--aisa-purple);
             margin-bottom: .35rem; font-size: .95rem;
@@ -350,89 +356,12 @@
          * an RTL paragraph, or the punctuation jumps to the wrong end. */
         body.lang-ar .ltr { direction: ltr; unicode-bidi: embed; display: inline-block; }
 
-        /* ---- Admin access gate (pre-release) ---- */
-        #admin-gate {
-            position: fixed; inset: 0; z-index: 9999;
-            background: var(--aisa-purple);
-            display: grid; place-items: center; padding: 1.5rem;
-        }
-        #admin-gate .ag-card {
-            max-width: 30rem; text-align: center; color: var(--aisa-white);
-        }
-        #admin-gate h1 { color: var(--aisa-white); font-size: 1.6rem; margin: .5rem 0; }
-        #admin-gate p { color: var(--aisa-white); opacity: .9; }
-        #admin-gate .ag-spinner {
-            width: 2rem; height: 2rem; margin: 0 auto 1rem;
-            border: 3px solid var(--aisa-border);
-            border-top-color: var(--aisa-gold);
-            border-radius: 50%;
-            animation: ag-spin .8s linear infinite;
-        }
-        @keyframes ag-spin { to { transform: rotate(360deg); } }
-        #admin-gate .ag-btn {
-            display: inline-block; margin-top: 1rem;
-            background: var(--aisa-gold); color: var(--aisa-purple);
-            font-weight: 700; text-decoration: none;
-            padding: .65rem 1.3rem; border-radius: var(--radius-sm);
-        }
-
-        #admin-preview-banner {
-            background: var(--aisa-gold-wash);
-            border: 2px solid var(--aisa-gold);
-            border-radius: var(--radius);
-            padding: 1rem 1.15rem;
-            margin: 1.5rem auto 0;
-            max-width: var(--maxw);
-            font-size: .92rem;
-        }
-        #admin-preview-banner .apb-tag {
-            display: inline-block;
-            background: var(--aisa-purple); color: var(--aisa-white);
-            font-size: .7rem; font-weight: 700; letter-spacing: .1em;
-            text-transform: uppercase;
-            padding: .2rem .6rem; border-radius: 999px; margin-right: .5rem;
-        }
     </style>
 
     <script src="../auth/gate.js?v=17"></script>
     <script src="../auth/training.js?v=6"></script>
 </head>
 <body>
-
-<!-- ============================================================= -->
-<!-- ADMIN ACCESS GATE                                              -->
-<!-- Pre-release. The overlay covers the page until isAdmin()       -->
-<!-- resolves: admins get the module plus a preview ribbon,         -->
-<!-- everyone else gets a "coming soon" screen. Fails closed.       -->
-<!--                                                                -->
-<!-- This hides the module from staff browsing the Hub. It is NOT   -->
-<!-- access control: the repository is public, so the HTML is       -->
-<!-- readable by anyone who has the URL regardless of this gate.    -->
-<!-- ============================================================= -->
-<div id="admin-gate" role="dialog" aria-modal="true" aria-label="Access check">
-    <div class="ag-card">
-        <div data-gate-checking>
-            <div class="ag-spinner" aria-hidden="true"></div>
-            <p>Checking access&hellip;</p>
-        </div>
-        <div data-gate-denied hidden>
-            <div style="font-size:3rem;line-height:1" aria-hidden="true">&#127891;</div>
-            <h1>Coming soon</h1>
-            <p>The <strong>AI Literacy: Teacher Readiness</strong> module is still being
-               prepared and isn&rsquo;t available yet. It will appear in your PD Modules
-               once it&rsquo;s released.</p>
-            <a class="ag-btn" href="pd.html">&larr; Back to PD Modules</a>
-        </div>
-    </div>
-</div>
-
-<div id="admin-preview-banner" style="display:none" role="note" data-no-translate>
-    <span class="apb-tag">Admin preview</span>
-    <span><strong>Not yet released to staff.</strong> Content is complete and the backend
-    is deployed. Outstanding: the three videos in segments 1, 3 and 4 are optional and
-    not yet recorded, and the cohort has not been confirmed. Release by following the
-    checklist in the pd.html card comment.</span>
-</div>
 
 <header class="masthead">
     <div class="masthead-inner">
@@ -806,7 +735,7 @@
             <label for="f-repair">Pick one weak option above and rewrite it as the exact words you would say.
                 <span class="hint">Exact words, not a description of them. The important learner decision must stay open.</span>
             </label>
-            <textarea id="f-repair" data-capture="thinking.repair" rows="4"
+            <textarea id="f-repair" data-capture="thinking.repair" rows="4" data-required
                       placeholder="Instead of &quot;This AI summary is wrong…&quot;, I would say: …"></textarea>
             <div class="save-state" data-save-for="f-repair"></div>
         </div>
@@ -835,7 +764,7 @@
 
         <div class="field">
             <label for="f-grade">Which grade are you teaching?</label>
-            <select id="f-grade" data-capture="lesson.grade">
+            <select id="f-grade" data-capture="lesson.grade" data-required>
                 <option value="">Choose your grade&hellip;</option>
             </select>
             <div class="save-state" data-save-for="f-grade"></div>
@@ -849,13 +778,13 @@
 
         <div class="field">
             <label for="f-outcome">1 · The outcome this lesson is heading for</label>
-            <textarea id="f-outcome" data-capture="lesson.outcome" rows="2"></textarea>
+            <textarea id="f-outcome" data-capture="lesson.outcome" rows="2" data-required></textarea>
             <div class="save-state" data-save-for="f-outcome"></div>
         </div>
 
         <div class="field">
             <label for="f-hook">2 · The hook — what you open with</label>
-            <textarea id="f-hook" data-capture="lesson.hook" rows="2"></textarea>
+            <textarea id="f-hook" data-capture="lesson.hook" rows="2" data-required></textarea>
             <div class="save-state" data-save-for="f-hook"></div>
         </div>
 
@@ -863,13 +792,13 @@
             <label for="f-moves">3 · Two facilitation moves you'll use, and where
                 <span class="hint">Prompt · inquiry · critique &amp; evaluate · practice · reflect</span>
             </label>
-            <textarea id="f-moves" data-capture="lesson.moves" rows="2"></textarea>
+            <textarea id="f-moves" data-capture="lesson.moves" rows="2" data-required></textarea>
             <div class="save-state" data-save-for="f-moves"></div>
         </div>
 
         <div class="field">
             <label for="f-evidence">4 · What students will produce that shows their thinking</label>
-            <textarea id="f-evidence" data-capture="lesson.evidence" rows="2"></textarea>
+            <textarea id="f-evidence" data-capture="lesson.evidence" rows="2" data-required></textarea>
             <div class="save-state" data-save-for="f-evidence"></div>
         </div>
 
@@ -877,12 +806,12 @@
             <label for="f-unsure">5 · The one part you're least sure about
                 <span class="hint">This sets the agenda for 21 September. Be honest — it is more useful than being tidy.</span>
             </label>
-            <textarea id="f-unsure" data-capture="lesson.unsure" rows="2"></textarea>
+            <textarea id="f-unsure" data-capture="lesson.unsure" rows="2" data-required></textarea>
             <div class="save-state" data-save-for="f-unsure"></div>
         </div>
 
         <div class="field">
-            <label for="f-needs">6 · What you need from Brandon before the 21st
+            <label for="f-needs">6 · What you need from Brandon before the 21st <span class="optional">optional</span>
                 <span class="hint">This one reaches me as soon as you save it.</span>
             </label>
             <textarea id="f-needs" data-capture="lesson.needs_before" rows="2"></textarea>
@@ -997,13 +926,13 @@
 
         <div class="field">
             <label for="f-which">Which shows more learning — and what is your evidence?</label>
-            <textarea id="f-which" data-capture="quality.which" rows="3"></textarea>
+            <textarea id="f-which" data-capture="quality.which" rows="3" data-required></textarea>
             <div class="save-state" data-save-for="f-which"></div>
         </div>
 
         <div class="field">
             <label for="f-question">Name the one question you would ask the author of Sample A to find out what they actually understand.</label>
-            <textarea id="f-question" data-capture="quality.question" rows="2"></textarea>
+            <textarea id="f-question" data-capture="quality.question" rows="2" data-required></textarea>
             <div class="save-state" data-save-for="f-question"></div>
         </div>
 
@@ -1138,7 +1067,7 @@
 
         <h3>Acknowledgement</h3>
         <div class="checkline">
-            <input type="checkbox" id="f-ack" data-capture="responsible.acknowledged">
+            <input type="checkbox" id="f-ack" data-capture="responsible.acknowledged" data-required>
             <label for="f-ack">
                 I have read the responsible-use principles, the five risks and the escalation
                 route above.
@@ -1161,19 +1090,25 @@
 
         <div class="field">
             <label for="f-will-do">The one thing I will do in my first lesson that I would not have done before this module</label>
-            <textarea id="f-will-do" data-capture="commit.will_do" rows="3"></textarea>
+            <textarea id="f-will-do" data-capture="commit.will_do" rows="3" data-required></textarea>
             <div class="save-state" data-save-for="f-will-do"></div>
         </div>
 
         <div class="field">
             <label for="f-question-21">The one question I'm bringing to 21 September</label>
-            <textarea id="f-question-21" data-capture="commit.question" rows="3"></textarea>
+            <textarea id="f-question-21" data-capture="commit.question" rows="3" data-required></textarea>
             <div class="save-state" data-save-for="f-question-21"></div>
         </div>
 
         <p>
             <button type="button" class="btn" id="finish-btn">Finish and record my completion</button>
         </p>
+
+        <div class="capture-alert" id="finish-missing" role="alert">
+            <strong>Not quite finished.</strong>
+            <p style="margin:.5rem 0 0;">These still need an answer before your completion can be recorded:</p>
+            <ul id="finish-missing-list" style="margin:.5rem 0 0;"></ul>
+        </div>
 
     </section>
 
@@ -1338,36 +1273,6 @@
     })();
 
 
-    /* ---- Pre-release admin gate ----
-     * Fails closed: anything other than a confirmed admin gets the
-     * "coming soon" screen. Note this hides the page, it does not
-     * protect it — the repo is public, so the markup is readable by
-     * anyone with the URL. It keeps staff from stumbling in early;
-     * it is not a security boundary. */
-    (function () {
-        function revealPreview() {
-            var gate = document.getElementById('admin-gate');
-            if (gate) gate.remove();
-            var banner = document.getElementById('admin-preview-banner');
-            if (banner) banner.style.removeProperty('display');
-        }
-        function showDenied() {
-            var gate = document.getElementById('admin-gate');
-            if (!gate) return;
-            var checking = gate.querySelector('[data-gate-checking]');
-            var denied   = gate.querySelector('[data-gate-denied]');
-            if (checking) checking.hidden = true;
-            if (denied)   denied.hidden   = false;
-        }
-        if (!window.aisaReady) { showDenied(); return; }
-        window.aisaReady(function (auth) {
-            /* No backend means no way to verify admin status. */
-            if (!auth.isConfigured || !auth.isConfigured()) { showDenied(); return; }
-            auth.isAdmin().then(function (yes) {
-                yes ? revealPreview() : showDenied();
-            }).catch(function () { showDenied(); });
-        });
-    })();
 
     /* Segment id -> the capture prefix its fields use. Saves are grouped
      * by segment so a teacher who does three segments today and four
@@ -1628,8 +1533,41 @@
     }
 
     /* ---- Finish ---- */
+    /* Backstop for the per-chapter gate. Someone who resumed part-way, or
+     * whose saved answers came back incomplete, should be told exactly
+     * what is outstanding rather than finding the button inert. */
+    function missingRequired() {
+        return Array.prototype.filter.call(
+            document.querySelectorAll('[data-required]'),
+            function (el) {
+                if (el.type === 'checkbox') return !el.checked;
+                return String(el.value == null ? '' : el.value).trim() === '';
+            });
+    }
+
+    function labelFor(el) {
+        var lab = el.id && document.querySelector('label[for="' + el.id + '"]');
+        var text = (lab ? lab.textContent : '').replace(/\s+/g, ' ').trim();
+        /* Labels carry a hint after the question; the question identifies it. */
+        var m = /^(.*?[.?])\s/.exec(text);
+        return (m ? m[1] : text) || 'An answer';
+    }
+
+    function showMissing(list) {
+        var box = document.getElementById('finish-missing');
+        var ul  = document.getElementById('finish-missing-list');
+        ul.innerHTML = list.map(function (el) {
+            return '<li>' + labelFor(el).replace(/[<>&]/g, '') + '</li>';
+        }).join('');
+        box.classList.add('show');
+        box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     var finishBtn = document.getElementById('finish-btn');
     finishBtn.addEventListener('click', function () {
+        var missing = PREVIEW ? [] : missingRequired();
+        if (missing.length) { showMissing(missing); return; }
+        document.getElementById('finish-missing').classList.remove('show');
         finishBtn.disabled = true;
         finishBtn.textContent = 'Recording…';
 
@@ -1668,6 +1606,9 @@
     var PREVIEW = /[?&]preview=1(?:&|$)/.test(window.location.search);
 
     function openEverythingForReview() {
+        Array.prototype.forEach.call(document.querySelectorAll('[data-required]'), function (el) {
+            el.removeAttribute('data-required');
+        });
         Array.prototype.forEach.call(document.querySelectorAll('.aisa-quiz'), function (quiz) {
             /* Set before AisaTraining.init() so the very first render
              * already treats each chapter as ready. */
@@ -1684,15 +1625,15 @@
             }
         });
 
-        var banner = document.getElementById('admin-preview-banner');
-        if (banner) {
+        var host = document.querySelector('.timeline-container');
+        if (host) {
             var note = document.createElement('div');
             note.setAttribute('data-no-translate', '');
-            note.style.marginTop = '.6rem';
-            note.innerHTML = '<strong>Review mode is on.</strong> Every chapter is unlocked and ' +
-                'the knowledge-check answers are revealed. Drop <code>?preview=1</code> from the ' +
-                'URL to see what a teacher actually sees.';
-            banner.appendChild(note);
+            note.className = 'callout';
+            note.innerHTML = '<strong>Review mode is on.</strong> Every chapter is unlocked, the ' +
+                'knowledge-check answers are revealed, and required answers are not enforced. ' +
+                'Drop <code>?preview=1</code> from the URL to see what a teacher actually sees.';
+            host.insertBefore(note, host.firstChild);
         }
     }
 

@@ -459,6 +459,16 @@ window.AR_DICT = {
         "الصف 11",
     "Grade 12":
         "الصف 12",
+    "optional":
+        "اختياري",
+    "Not quite finished.":
+        "لم تكتمل بعد.",
+    "These still need an answer before your completion can be recorded:":
+        "ما زالت هذه تحتاج إلى إجابة قبل أن يُسجَّل إكمالك:",
+    "One answer still to fill in":
+        "ما زالت إجابة واحدة بحاجة إلى تعبئة",
+    "Fill in the required answers to continue":
+        "أكمل الإجابات المطلوبة للمتابعة",
 };
 
 /* Sentence-level translations for blocks containing inline markup. */
@@ -535,8 +545,8 @@ window.AR_BLOCKS = {
         "3 · حركتا تيسير ستستخدمهما، وأين <span class=\"hint\">التوجيه · الاستقصاء · النقد والتقييم · التطبيق · التأمّل</span>",
     "5 · The one part you're least sure about <span class=\"hint\">This sets the agenda for 21 September. Be honest — it is more useful than being tidy.</span>":
         "5 · الجزء الواحد الذي أنت أقل ثقة فيه <span class=\"hint\">هذا ما يحدّد جدول أعمال 21 سبتمبر. كن صريحًا — فذلك أنفع من أن تكون مرتّبًا.</span>",
-    "6 · What you need from Brandon before the 21st <span class=\"hint\">This one reaches me as soon as you save it.</span>":
-        "6 · ما تحتاجه من Brandon قبل الحادي والعشرين <span class=\"hint\">هذا يصلني فور حفظك له.</span>",
+    "6 · What you need from Brandon before the 21st <span class=\"optional\">optional</span> <span class=\"hint\">This one reaches me as soon as you save it.</span>":
+        "6 · ما تحتاجه من Brandon قبل الحادي والعشرين <span class=\"optional\">اختياري</span> <span class=\"hint\">هذا يصلني فور حفظك له.</span>",
     "Every criterion is described at three tiers: <strong>Emerging</strong>, <strong>Proficient</strong>, <strong>Advanced</strong>.":
         "يُوصف كل معيار عند ثلاثة مستويات: <strong>ناشئ</strong>، و<strong>متقِن</strong>، و<strong>متقدّم</strong>.",
     "<strong>Proficient is the entitlement.</strong> It is the baseline every student is owed — not the ceiling, and not a grade to aspire to. Design for it.":
