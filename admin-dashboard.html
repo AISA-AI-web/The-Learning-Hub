@@ -1575,7 +1575,10 @@
                  * most recent activity. */
                 if (isFlagged(a) !== isFlagged(b)) return isFlagged(a) ? -1 : 1;
                 if (isDone(a) !== isDone(b)) return isDone(a) ? 1 : -1;
-                return String(b.updated_at).localeCompare(String(a.updated_at));
+                /* Parse rather than string-compare: rows written before the
+                 * timezone change end in "Z" and newer ones in "+04:00",
+                 * which do not sort lexicographically. */
+                return (Date.parse(b.updated_at) || 0) - (Date.parse(a.updated_at) || 0);
             });
         }
 
@@ -1791,8 +1794,10 @@
                 /* Submitted first, then most recent. Drafts are a chase
                  * list, not a read, so they sit below the finished ones. */
                 if (isSubmitted(a) !== isSubmitted(b)) return isSubmitted(a) ? -1 : 1;
-                return String(b.submitted_at || b.updated_at)
-                       .localeCompare(String(a.submitted_at || a.updated_at));
+                /* Parse rather than string-compare — see the note in the
+                 * responses section above. */
+                return (Date.parse(b.submitted_at || b.updated_at) || 0) -
+                       (Date.parse(a.submitted_at || a.updated_at) || 0);
             });
         }
 

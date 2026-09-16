@@ -125,6 +125,68 @@ fail silently and the dependent UIs stay empty:
   ever read back their own row, and nothing from this sheet goes in the
   repo, which is public.
 
+## Reading timestamps out of the sheets
+
+**Never compare a timestamp cell as a string.** Put it through `_tsMs()`
+and compare numbers; return it through `_isoOut()`. Two separate things
+make raw cells untrustworthy:
+
+1. Google Sheets decides for itself whether an ISO string we wrote is
+   text or a date. Date-formatted cells come back as **Date objects**,
+   and `String(date)` is `"Mon Mar 02 2026 ..."` — so `a > b` between two
+   of them sorts by the English **weekday name** (Fri, Mon, Sat, Sun,
+   Thu, Tue, Wed). "Latest wins" then picks essentially at random.
+2. Rows written before the Abu Dhabi timezone change end in `Z`, newer
+   ones in `+04:00`. Those do not sort lexicographically either:
+   `2026-06-18T02:00:00+04:00` sorts after `2026-06-17T23:00:00Z` but is
+   an hour earlier.
+
+This bit `getCompletionsFor()` and `adminOverview()` (both the
+"latest completion per person x module" pick and `last_seen`), so the
+tracker could show a stale completion date and a wrong last-seen. Fixed
+16 Sept 2026. `_isDate()` uses `Object.prototype.toString`, not
+`instanceof` — `instanceof Date` is false for a Date from another realm.
+
+The same class of bug hits the client: sort by `Date.parse(...)`, never
+`localeCompare` on a timestamp.
+
+`getCompletionsFor()` also matched emails with a case-sensitive `!==`
+while `adminOverview()` lowercased them, so a teacher's own dashboard
+and the admin tracker could disagree about the same completion. Both
+lowercase now.
+
+## Diagnosing "the dashboard doesn't match the spreadsheet"
+
+Run **`auditHubData()`** from the Apps Script editor (Run →
+auditHubData). Reads only, changes nothing, prints a report. It covers
+the three things that cause a silent mismatch:
+
+1. **Header drift.** Every reader in `apps-script.gs` addresses columns
+   **by position**, using the `*_HEADERS` constants as the map. Insert,
+   delete or reorder a column by hand in the spreadsheet and every read
+   after it silently returns the wrong field — no error, just wrong
+   numbers. The audit compares each sheet's real header row against its
+   constant and names the offending columns.
+2. **Timestamp cell types** — how many cells per sheet are text vs
+   date-typed, and how many end `Z` vs `+04:00`.
+3. **Recomputed totals** — staff tracked, and completions per
+   `module_id` straight from the events sheet, to read side by side with
+   the tracker. Also flags duplicate roster emails.
+
+A `module_id` in that list which the dashboard's `MODULES` array does
+not name is **invisible** on the tracker; anything `MODULES` names that
+is missing from the list reads 0% forever. `sustainability` is knowingly
+in the first category — the module records completions but is not
+released, so it is not on the tracker. Add it to `MODULES` in
+`admin-dashboard.html`, `admin-charts.html` and `dashboard.html` when it
+is released, or those completions stay uncounted.
+
+Remember that **adding a module to `MODULES` moves the headline
+numbers**: "fully complete" needs every listed module, "required done"
+needs every `required: true` one, and the avg-modules denominator and PD
+hours both change. Releasing AI Literacy as required on 16 Sept 2026 did
+exactly that, which looks like a regression and is not one.
+
 ## Admin dashboard — three tabs
 
 `admin-dashboard.html` splits into **PD Data**, **Survey Data** and

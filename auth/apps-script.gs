@@ -257,6 +257,40 @@ function nowIsoLocal() {
   return isoLocal(new Date());
 }
 
+/* Epoch milliseconds for a timestamp cell, whatever shape it arrives in.
+ *
+ * Two things make a raw cell value untrustworthy to compare directly:
+ *
+ *  1. Google Sheets decides for itself whether an ISO string we wrote is
+ *     text or a date. Date-formatted cells come back as Date OBJECTS, and
+ *     String(date) is "Mon Mar 02 2026 ...", so a `a > b` string compare
+ *     between two of them sorts by the English weekday name — Fri, Mon,
+ *     Sat, Sun, Thu, Tue, Wed. "Latest wins" then picks at random.
+ *  2. Rows written before the Abu Dhabi timezone change end in "Z" while
+ *     newer ones end in "+04:00". Those are not lexicographically
+ *     comparable either: 2026-06-18T02:00:00+04:00 sorts after
+ *     2026-06-17T23:00:00Z but is an hour EARLIER.
+ *
+ * So never compare timestamp cells as strings — put both through here. */
+function _isDate(v) {
+  return Object.prototype.toString.call(v) === '[object Date]';
+}
+
+function _tsMs(v) {
+  if (!v) return 0;
+  if (_isDate(v)) { const t = v.getTime(); return isNaN(t) ? 0 : t; }
+  const t = Date.parse(String(v));
+  return isNaN(t) ? 0 : t;
+}
+
+/* The same value as an ISO string the client can parse, so the browser
+ * never receives "Mon Mar 02 2026 ..." from a date-formatted cell. */
+function _isoOut(v) {
+  if (!v) return '';
+  if (_isDate(v)) return isNaN(v.getTime()) ? '' : isoLocal(v);
+  return String(v);
+}
+
 // ---------- HTTP entry points ----------
 
 function doGet(e) {
@@ -720,7 +754,7 @@ function adminDwell() {
       chapters_seen:         Number(r[idx.seen] || 0) | 0,
       avg_secs_per_chapter:  Number(r[idx.avg] || 0),
       first_seen:            String(r[idx.first] || ''),
-      last_seen:             String(r[idx.updated] || '')
+      last_seen:             _isoOut(r[idx.updated])
     };
   });
   return { ok: true, generated_at: nowIsoLocal(), rows: rows };
@@ -1031,8 +1065,8 @@ function getModuleResponse(claims, body) {
     ok: true,
     found: true,
     data: blob,
-    updated_at:   r[MODULE_RESPONSE_HEADERS.indexOf('updated_at_iso')]   || '',
-    completed_at: r[MODULE_RESPONSE_HEADERS.indexOf('completed_at_iso')] || ''
+    updated_at:   _isoOut(r[MODULE_RESPONSE_HEADERS.indexOf('updated_at_iso')]),
+    completed_at: _isoOut(r[MODULE_RESPONSE_HEADERS.indexOf('completed_at_iso')])
   };
 }
 
@@ -1059,9 +1093,9 @@ function adminModuleResponses(body) {
       email:        String(r[idx.email] || ''),
       name:         String(r[idx.name]  || ''),
       module_id:    String(r[idx.module_id] || ''),
-      first_saved:  r[idx.first_saved_iso]  || '',
-      updated_at:   r[idx.updated_at_iso]   || '',
-      completed_at: r[idx.completed_at_iso] || '',
+      first_saved:  _isoOut(r[idx.first_saved_iso]),
+      updated_at:   _isoOut(r[idx.updated_at_iso]),
+      completed_at: _isoOut(r[idx.completed_at_iso]),
       segments_done: String(r[idx.segments_done] || '').split(',').filter(Boolean),
       flagged:      r[idx.flagged] === true || String(r[idx.flagged]).toUpperCase() === 'TRUE',
       data:         blob
@@ -1310,8 +1344,8 @@ function getSurveyResponse(claims, body) {
     data:         blob,
     status:       String(r[SURVEY_HEADERS.indexOf('status')] || 'draft'),
     revision:     Number(r[SURVEY_HEADERS.indexOf('revision')] || 0) || 0,
-    updated_at:   r[SURVEY_HEADERS.indexOf('updated_at_iso')]   || '',
-    submitted_at: r[SURVEY_HEADERS.indexOf('submitted_at_iso')] || ''
+    updated_at:   _isoOut(r[SURVEY_HEADERS.indexOf('updated_at_iso')]),
+    submitted_at: _isoOut(r[SURVEY_HEADERS.indexOf('submitted_at_iso')])
   };
 }
 
@@ -1352,9 +1386,9 @@ function adminSurveyResponses(body) {
         survey_id:    surveyId,
         status:       status,
         revision:     Number(r[idx.revision] || 0) || 0,
-        first_saved:  r[idx.first_saved_iso]  || '',
-        updated_at:   r[idx.updated_at_iso]   || '',
-        submitted_at: r[idx.submitted_at_iso] || '',
+        first_saved:  _isoOut(r[idx.first_saved_iso]),
+        updated_at:   _isoOut(r[idx.updated_at_iso]),
+        submitted_at: _isoOut(r[idx.submitted_at_iso]),
         data:         blob
       });
     });
@@ -1654,6 +1688,7 @@ function listMySubmissions(claims) {
 // ---------- Completions ----------
 
 function getCompletionsFor(email) {
+  email = String(email || '').trim().toLowerCase();
   const sheet = getEventsSheet();
   const last = sheet.getLastRow();
   if (last < 2) return [];
@@ -1670,11 +1705,11 @@ function getCompletionsFor(email) {
   const seen = {};
   for (let i = 0; i < values.length; i++) {
     const row = values[i];
-    if (row[idx.email] !== email) continue;
+    if (String(row[idx.email] || '').trim().toLowerCase() !== email) continue;
     if (row[idx.event] !== 'completed') continue;
     const moduleId = String(row[idx.module]);
-    const ts = String(row[idx.ts]);
-    if (!seen[moduleId] || ts > seen[moduleId].completed_at) {
+    const ts = _isoOut(row[idx.ts]);
+    if (!seen[moduleId] || _tsMs(ts) > _tsMs(seen[moduleId].completed_at)) {
       seen[moduleId] = {
         module_id:    moduleId,
         completed_at: ts,
@@ -1740,7 +1775,7 @@ function adminOverview() {
     if (!people[key]) people[key] = { email: key, name: name || '', last_seen: ts || '' };
     else {
       if (name && !people[key].name) people[key].name = name;
-      if (ts && ts > people[key].last_seen) people[key].last_seen = ts;
+      if (ts && _tsMs(ts) > _tsMs(people[key].last_seen)) people[key].last_seen = ts;
     }
   }
 
@@ -1751,7 +1786,7 @@ function adminOverview() {
     const rows = sess.getRange(2, 1, sLast - 1, SESSION_HEADERS.length).getValues();
     // SESSION_HEADERS: token, email, name, created, expires, last_used, ua
     for (let i = 0; i < rows.length; i++) {
-      touch(rows[i][1], rows[i][2], String(rows[i][5] || rows[i][3] || ''));
+      touch(rows[i][1], rows[i][2], _isoOut(rows[i][5] || rows[i][3] || ''));
     }
   }
 
@@ -1786,10 +1821,10 @@ function adminOverview() {
       if (row[idx.event] !== 'completed') continue;
       const email = String(row[idx.email] || '').trim().toLowerCase();
       const moduleId = String(row[idx.module] || '');
-      const ts = String(row[idx.ts] || '');
+      const ts = _isoOut(row[idx.ts] || '');
       touch(email, row[idx.name], ts);  // ensure the person exists
       const key = email + '|' + moduleId;
-      if (!seen[key] || ts > seen[key].completed_at) {
+      if (!seen[key] || _tsMs(ts) > _tsMs(seen[key].completed_at)) {
         seen[key] = { email: email, module_id: moduleId, completed_at: ts };
       }
     }
@@ -2291,6 +2326,165 @@ function adminNotificationStats() {
 function adminListTags() {
   const roster = getRosterIndex();
   return { ok: true, tags: roster.allTags };
+}
+
+/**
+ * DIAGNOSTIC — run from the Apps Script editor (Run → auditHubData) when
+ * the dashboard and the spreadsheet seem to disagree.
+ *
+ * Reads only; changes nothing. Prints a report and also returns it as a
+ * string, so it works from the editor or from a scratch function.
+ *
+ * It checks the three things that actually cause a silent mismatch:
+ *
+ *  1. HEADER DRIFT. Every reader in this file addresses columns BY
+ *     POSITION, using the *_HEADERS constants as the map. Insert, delete
+ *     or reorder a column by hand in the spreadsheet and every read after
+ *     it silently returns the wrong field — no error, just wrong numbers.
+ *     This compares each sheet's real header row against its constant.
+ *
+ *  2. TIMESTAMP CELL TYPES. Sheets decides for itself whether an ISO
+ *     string is text or a date. Date-formatted cells come back as Date
+ *     objects, which used to break "latest wins" comparisons. Reads now
+ *     cope with both, but a sheet that is half text and half date is
+ *     worth knowing about.
+ *
+ *  3. WHAT THE DASHBOARD WOULD SHOW. Recomputes the headline numbers and
+ *     the per-module completion counts from the raw rows, so they can be
+ *     read side by side with the dashboard.
+ */
+function auditHubData() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const out = [];
+  const say = (s) => { out.push(s); };
+
+  say('AISA Learning Hub — data audit');
+  say('Generated ' + nowIsoLocal());
+  say('Spreadsheet: ' + ss.getName());
+  say('');
+
+  // ---- 1. Header drift -------------------------------------------------
+  say('=== 1. SHEET HEADERS ===');
+  const expected = [
+    [EVENTS_SHEET,           EVENT_HEADERS],
+    [SESSIONS_SHEET,         SESSION_HEADERS],
+    [PAGEVIEWS_SHEET,        PAGEVIEW_HEADERS],
+    [CLICKS_SHEET,           CLICK_HEADERS],
+    [ROSTER_SHEET,           ROSTER_HEADERS],
+    [NOTIFS_SHEET,           NOTIF_HEADERS],
+    [NOTIF_READS_SHEET,      NOTIF_READ_HEADERS],
+    [DWELL_SHEET,            DWELL_HEADERS],
+    [LINE_MANAGERS_SHEET,    LINE_MANAGER_HEADERS],
+    [FORM_SUBMISSIONS_SHEET, FORM_SUBMISSION_HEADERS],
+    [MODULE_RESPONSES_SHEET, MODULE_RESPONSE_HEADERS]
+  ];
+  let drift = 0;
+  expected.forEach(function (pair) {
+    const name = pair[0], want = pair[1];
+    const sheet = ss.getSheetByName(name);
+    if (!sheet) { say('  – ' + name + ': not created yet (fine if unused)'); return; }
+    const rows = sheet.getLastRow();
+    if (rows < 1) { say('  – ' + name + ': empty'); return; }
+    const got = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), want.length))
+                     .getValues()[0].map(function (v) { return String(v || '').trim(); });
+    const same = want.every(function (h, i) { return got[i] === h; });
+    if (same) {
+      say('  OK ' + name + ' (' + (rows - 1) + ' rows)');
+    } else {
+      drift++;
+      say('  ** MISMATCH ' + name + ' (' + (rows - 1) + ' rows)');
+      say('     expected: ' + want.join(' | '));
+      say('     actual:   ' + got.join(' | '));
+      want.forEach(function (h, i) {
+        if (got[i] !== h) say('       col ' + (i + 1) + ': expected "' + h + '", found "' + (got[i] || '') + '"');
+      });
+    }
+  });
+  // Surveys may live in their own spreadsheet.
+  (function () {
+    const surveySs = _surveysSpreadsheet();
+    const sheet = surveySs.getSheetByName(SURVEYS_SHEET);
+    const where = (surveySs.getId() === ss.getId()) ? 'this spreadsheet' : surveySs.getName();
+    if (!sheet) { say('  – ' + SURVEYS_SHEET + ': not created yet, in ' + where); return; }
+    const got = sheet.getRange(1, 1, 1, Math.max(sheet.getLastColumn(), SURVEY_HEADERS.length))
+                     .getValues()[0].map(function (v) { return String(v || '').trim(); });
+    const same = SURVEY_HEADERS.every(function (h, i) { return got[i] === h; });
+    say((same ? '  OK ' : '  ** MISMATCH ') + SURVEYS_SHEET +
+        ' (' + Math.max(sheet.getLastRow() - 1, 0) + ' rows, in ' + where + ')');
+    if (!same) { drift++; say('     expected: ' + SURVEY_HEADERS.join(' | ')); say('     actual:   ' + got.join(' | ')); }
+  })();
+  say(drift ? '  >> ' + drift + ' sheet(s) drifted. Every number read from those is suspect.'
+            : '  >> No header drift.');
+  say('');
+
+  // ---- 2. Timestamp cell types ----------------------------------------
+  say('=== 2. TIMESTAMP CELL TYPES ===');
+  function typeScan(name, headers, colName) {
+    const sheet = ss.getSheetByName(name);
+    if (!sheet || sheet.getLastRow() < 2) return;
+    const col = headers.indexOf(colName) + 1;
+    if (col < 1) return;
+    const vals = sheet.getRange(2, col, sheet.getLastRow() - 1, 1).getValues();
+    let dates = 0, strings = 0, blank = 0, utc = 0, local = 0;
+    vals.forEach(function (r) {
+      const v = r[0];
+      if (v === '' || v === null) { blank++; return; }
+      if (_isDate(v)) { dates++; return; }
+      strings++;
+      const t = String(v);
+      if (/Z$/.test(t)) utc++; else if (/[+\-]\d{2}:\d{2}$/.test(t)) local++;
+    });
+    const mixedType = (dates > 0 && strings > 0);
+    const mixedZone = (utc > 0 && local > 0);
+    say('  ' + name + '.' + colName + ': ' + strings + ' text, ' + dates + ' date-typed, ' + blank + ' blank' +
+        (strings ? '  [' + utc + ' end "Z", ' + local + ' end "+04:00"]' : '') +
+        (mixedType ? '   ** mixed types' : '') + (mixedZone ? '   ** mixed offsets' : ''));
+  }
+  typeScan(EVENTS_SHEET,   EVENT_HEADERS,   'timestamp_iso');
+  typeScan(SESSIONS_SHEET, SESSION_HEADERS, 'last_used_iso');
+  typeScan(DWELL_SHEET,    DWELL_HEADERS,   'updated_at_iso');
+  say('  >> Both shapes are handled on read. Listed so you can see what is in there.');
+  say('');
+
+  // ---- 3. What the dashboard would show --------------------------------
+  say('=== 3. RECOMPUTED FROM RAW ROWS ===');
+  const ov = adminOverview();
+  say('  Staff tracked (sessions + roster + event authors): ' + ov.people.length);
+  say('  Distinct completions (person x module): ' + ov.completions.length);
+
+  const byModule = {};
+  ov.completions.forEach(function (c) {
+    byModule[c.module_id] = (byModule[c.module_id] || 0) + 1;
+  });
+  say('  Completions per module_id, straight from the events sheet:');
+  Object.keys(byModule).sort().forEach(function (id) {
+    say('     ' + id + ': ' + byModule[id]);
+  });
+  say('  >> Any module_id here that the dashboard does not list is invisible');
+  say('     on the tracker; anything the dashboard lists that is missing here');
+  say('     will read 0%. Compare against MODULES in admin-dashboard.html.');
+  say('');
+
+  // Duplicate roster emails quietly double-count people.
+  const roster = ss.getSheetByName(ROSTER_SHEET);
+  if (roster && roster.getLastRow() > 1) {
+    const seen = {}, dupes = [];
+    roster.getRange(2, 1, roster.getLastRow() - 1, 1).getValues().forEach(function (r) {
+      const e = String(r[0] || '').trim().toLowerCase();
+      if (!e) return;
+      if (seen[e]) { if (dupes.indexOf(e) === -1) dupes.push(e); }
+      seen[e] = true;
+    });
+    say('  Roster: ' + Object.keys(seen).length + ' unique emails' +
+        (dupes.length ? ', ** ' + dupes.length + ' duplicated: ' + dupes.join(', ') : ', no duplicates'));
+  } else {
+    say('  Roster: empty or missing — "outstanding" lists will only ever contain');
+    say('  people who have signed in at least once.');
+  }
+
+  const report = out.join('\n');
+  Logger.log(report);
+  return report;
 }
 
 // ---------- Output ----------
