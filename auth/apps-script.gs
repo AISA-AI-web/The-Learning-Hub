@@ -128,6 +128,105 @@ const MODULE_RESPONSE_HEADERS = [
   'segments_done', 'data_json', 'flagged', 'completed_at_iso', 'user_agent'
 ];
 
+/* ---------------------------------------------------------------------
+ * Surveys — structured, required-entry forms filled in on the Hub.
+ *
+ * Built for the Secondary Teacher Personal Goal form, which replaced a
+ * Google Form that could not enforce what the principal needed. Kept
+ * generic (survey_id + a JSON blob + a spec) so the next form is a spec
+ * entry and a page, not another backend.
+ *
+ * One row per (email x survey_id) — a person has ONE goal for the year
+ * and can come back and edit it, so the row is upserted rather than
+ * appended. Drafts and submissions live in the same row, told apart by
+ * `status`; that way a half-finished form survives a closed tab without
+ * showing up in the principal's list as if it were finished.
+ *
+ * PERSONAL DATA under UAE Federal Decree-Law No. 45 of 2021 — named
+ * staff writing about what they want to get better at, which feeds an
+ * appraisal conversation. Reads are admin-gated; a teacher can only
+ * ever read back their own row. Same rule as module_responses: don't
+ * widen it, and never mirror this sheet into the repo — the repo is
+ * public and the sign-in gate is client-side only.
+ * ------------------------------------------------------------------- */
+const SURVEYS_SHEET = 'survey_responses';
+
+/* Surveys can live in their own spreadsheet rather than the analytics
+ * one. Leave empty to use the spreadsheet this script is bound to
+ * (nothing to set up, the tab is created on first write). To split them
+ * out: create a spreadsheet, paste its ID here, redeploy. The ID is the
+ * long string in its URL between /d/ and /edit. Nothing else changes —
+ * every survey function goes through _surveysSpreadsheet().
+ *
+ * Worth splitting out when the goal responses should be shareable with
+ * secondary SLT without handing over the whole analytics workbook. */
+const SURVEYS_SPREADSHEET_ID = '';
+
+/*   status        : 'draft' | 'submitted'
+ *   data_json     : { <field_key>: value } — flat, one level, so the
+ *                   admin CSV export is a straight column-per-question
+ *   submitted_at  : set the first time it passes validation; kept on
+ *                   later edits so "when did they first commit to this"
+ *                   survives a reword
+ *   revision      : how many times they have submitted it */
+const SURVEY_HEADERS = [
+  'first_saved_iso', 'updated_at_iso', 'submitted_at_iso',
+  'email', 'name', 'survey_id', 'status', 'revision',
+  'data_json', 'user_agent'
+];
+
+/* What each survey is and what it refuses to accept as finished.
+ *
+ * `required` is enforced on the server as well as in the page, because
+ * "required entries" was the whole reason this did not stay a Google
+ * Form — a client-side-only check is a suggestion, not a requirement.
+ * `choices` pins the fields whose values must come from a fixed list,
+ * so a hand-crafted POST can't invent a focus area that no report
+ * groups by.
+ *
+ * Adding a survey: add an entry here and build the page. No new sheet,
+ * no new endpoint. */
+const SURVEY_SPECS = {
+  'secondary-teacher-goal-2026-27': {
+    title: 'AISA Secondary Teacher Personal Goal, 2026-27',
+    required: ['name', 'email', 'department', 'at_aisa_last_year',
+               'focus_area', 'goal', 'if_then'],
+    choices: {
+      at_aisa_last_year: ['Yes', 'No'],
+      focus_area: [
+        'Planning & Preparation for Learning',
+        'Curriculum & Lesson Design',
+        'Questioning & Discussion',
+        'Student Engagement & Learning Behaviors',
+        'Differentiation & Inclusion',
+        'Assessment for Learning',
+        'Classroom Climate & Relationships',
+        'Use of Resources & Technology',
+        'UAE Culture, Heritage & National Identity',
+        'Professionalism, Collaboration & Family Partnership'
+      ]
+    },
+    /* Order and labels for the emailed copy and the admin CSV. Keeps
+     * the two exports in step with each other and with the form. */
+    fields: [
+      { key: 'name',               label: 'Name' },
+      { key: 'email',              label: 'Email' },
+      { key: 'department',         label: 'Department / Subject' },
+      { key: 'at_aisa_last_year',  label: 'At AISA last year?' },
+      { key: 'focus_area',         label: 'Focus area' },
+      { key: 'goal',               label: 'Goal' },
+      { key: 'if_then',            label: 'If-then plan' },
+      { key: 'pl_supports',        label: 'Professional learning wanted' },
+      { key: 'pl_other',           label: 'Professional learning — other' },
+      { key: 'pl_detail',          label: 'What would make that support most useful' },
+      { key: 'beyond_classroom',   label: 'Beyond the classroom' }
+    ],
+    confirmation:
+      'Save a copy of this response. We’ll revisit this goal at your ' +
+      'mid-year and end-of-year check-ins, and in your appraisal conversation.'
+  }
+};
+
 /* Dwell rows hold per-module engagement summaries — one row per person
  * per module — rather than one row per chapter. The client sends the
  * full per-chapter snapshot each flush; we aggregate to total_seconds
@@ -228,6 +327,15 @@ function doPost(e) {
       case 'admin_module_responses':
         if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
         return jsonOut(adminModuleResponses(body));
+
+      // ----- Surveys (required-entry forms filled in on the Hub) -----
+      case 'save_survey_response':
+        return jsonOut(saveSurveyResponse(claims, body));
+      case 'get_survey_response':
+        return jsonOut(getSurveyResponse(claims, body));
+      case 'admin_survey_responses':
+        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
+        return jsonOut(adminSurveyResponses(body));
       case 'whoami':
         return jsonOut({
           ok: true,
@@ -963,6 +1071,379 @@ function adminModuleResponses(body) {
   return { ok: true, responses: out };
 }
 
+// ---------- Surveys (required-entry forms filled in on the Hub) ----------
+
+/* The surveys workbook: a separate spreadsheet when SURVEYS_SPREADSHEET_ID
+ * is set, otherwise the one this script is bound to. Falls back to the
+ * bound spreadsheet if the ID is wrong rather than throwing, so a typo
+ * loses the separation but never loses a teacher's goal. */
+function _surveysSpreadsheet() {
+  const id = String(SURVEYS_SPREADSHEET_ID || '').trim();
+  if (!id) return SpreadsheetApp.getActiveSpreadsheet();
+  try {
+    return SpreadsheetApp.openById(id);
+  } catch (e) {
+    return SpreadsheetApp.getActiveSpreadsheet();
+  }
+}
+
+function getSurveysSheet() {
+  const ss = _surveysSpreadsheet();
+  let sheet = ss.getSheetByName(SURVEYS_SHEET);
+  if (!sheet) {
+    sheet = ss.insertSheet(SURVEYS_SHEET);
+    sheet.appendRow(SURVEY_HEADERS);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, SURVEY_HEADERS.length).setFontWeight('bold');
+  }
+  return sheet;
+}
+
+/* Row index (1-based, header included) for this person's response to
+ * this survey, or 0 if they have never saved one. */
+function _findSurveyRow(sheet, email, surveyId) {
+  const last = sheet.getLastRow();
+  if (last < 2) return 0;
+  const emailCol  = SURVEY_HEADERS.indexOf('email') + 1;
+  const surveyCol = SURVEY_HEADERS.indexOf('survey_id') + 1;
+  const emails  = sheet.getRange(2, emailCol,  last - 1, 1).getValues();
+  const surveys = sheet.getRange(2, surveyCol, last - 1, 1).getValues();
+  for (let i = 0; i < emails.length; i++) {
+    if (String(emails[i][0]).trim().toLowerCase() === email &&
+        String(surveys[i][0]).trim() === surveyId) {
+      return i + 2;
+    }
+  }
+  return 0;
+}
+
+/* Normalise one submitted value. Arrays (checkbox groups) come back as
+ * arrays; everything else as a trimmed string. Length caps are generous
+ * enough for a paragraph answer and mean a pasted essay can't blow the
+ * 50k-character cell limit. */
+function _surveyValue(v) {
+  if (Array.isArray(v)) {
+    return v.map(function (x) { return String(x == null ? '' : x).slice(0, 300).trim(); })
+            .filter(function (x) { return !!x; })
+            .slice(0, 40);
+  }
+  if (v === true || v === false) return v;
+  return String(v == null ? '' : v).slice(0, 8000).trim();
+}
+
+function _surveyIsEmpty(v) {
+  if (Array.isArray(v)) return v.length === 0;
+  if (v === true) return false;
+  if (v === false) return true;
+  return !String(v == null ? '' : v).trim();
+}
+
+/* Which required fields are missing, and which pinned fields hold a
+ * value that isn't on their list. Returns [] when the response is
+ * complete and internally consistent. */
+function _validateSurvey(spec, data) {
+  const missing = [];
+  (spec.required || []).forEach(function (key) {
+    if (_surveyIsEmpty(data[key])) missing.push(key);
+  });
+
+  const invalid = [];
+  const choices = spec.choices || {};
+  Object.keys(choices).forEach(function (key) {
+    const v = data[key];
+    if (_surveyIsEmpty(v)) return;   // already covered by `required`
+    if (choices[key].indexOf(String(v)) === -1) invalid.push(key);
+  });
+
+  return { missing: missing, invalid: invalid };
+}
+
+/**
+ * Save one survey response — draft or final.
+ *
+ * Called on a debounce as the teacher types (`submit` false) and again
+ * when they press Submit (`submit` true). Only the submit path is
+ * validated: a draft is allowed to be half-empty, that is what a draft
+ * is. A validated submission stamps submitted_at and emails the teacher
+ * their copy, replacing what the Google Form used to do.
+ *
+ * Re-submitting an already-submitted response is an edit: revision goes
+ * up, submitted_at stays at the first commitment.
+ */
+function saveSurveyResponse(claims, body) {
+  const surveyId = String(body.survey_id || '').slice(0, 80).trim();
+  if (!surveyId) return { ok: false, error: 'missing_survey_id' };
+
+  const spec = SURVEY_SPECS[surveyId];
+  if (!spec) return { ok: false, error: 'unknown_survey' };
+
+  const email = String(claims.email || '').trim().toLowerCase();
+  const raw   = (body.data && typeof body.data === 'object') ? body.data : {};
+  const submit = body.submit === true;
+
+  /* Only fields the spec knows about are stored. Keeps the blob in step
+   * with the CSV columns and stops an old tab from a previous version of
+   * the form writing keys nothing reads. */
+  const data = {};
+  (spec.fields || []).forEach(function (f) {
+    if (Object.prototype.hasOwnProperty.call(raw, f.key)) {
+      data[f.key] = _surveyValue(raw[f.key]);
+    }
+  });
+
+  if (submit) {
+    const bad = _validateSurvey(spec, data);
+    if (bad.missing.length || bad.invalid.length) {
+      /* The client checks the same rules first, so landing here means a
+       * stale tab or a hand-made request — say which fields, so the page
+       * can point at them rather than showing a shrug. */
+      return {
+        ok: false, error: 'missing_required',
+        missing: bad.missing, invalid: bad.invalid
+      };
+    }
+  }
+
+  const now   = nowIsoLocal();
+  const sheet = getSurveysSheet();
+  const lock  = LockService.getScriptLock();
+  /* A debounced autosave racing the Submit click would otherwise let the
+   * draft write land last and un-submit a finished goal. */
+  try { lock.waitLock(10000); } catch (e) { return { ok: false, error: 'busy_try_again' }; }
+
+  try {
+    const rowIdx = _findSurveyRow(sheet, email, surveyId);
+    let firstSaved  = now;
+    let submittedAt = '';
+    let revision    = 0;
+    let existingData = {};
+
+    if (rowIdx) {
+      const existing = sheet.getRange(rowIdx, 1, 1, SURVEY_HEADERS.length).getValues()[0];
+      firstSaved  = existing[SURVEY_HEADERS.indexOf('first_saved_iso')] || now;
+      submittedAt = existing[SURVEY_HEADERS.indexOf('submitted_at_iso')] || '';
+      revision    = Number(existing[SURVEY_HEADERS.indexOf('revision')] || 0) || 0;
+      try {
+        existingData = JSON.parse(String(existing[SURVEY_HEADERS.indexOf('data_json')] || '') || '{}');
+      } catch (e) { existingData = {}; }
+    }
+
+    /* Merge over what is already stored so a page that posts a partial
+     * payload (one step of the wizard) never blanks the other steps. */
+    const merged = {};
+    Object.keys(existingData).forEach(function (k) { merged[k] = existingData[k]; });
+    Object.keys(data).forEach(function (k) { merged[k] = data[k]; });
+
+    if (submit) {
+      /* Validate the merged result too: a client that posts only the
+       * last step must not be able to submit past an empty step one. */
+      const bad = _validateSurvey(spec, merged);
+      if (bad.missing.length || bad.invalid.length) {
+        return {
+          ok: false, error: 'missing_required',
+          missing: bad.missing, invalid: bad.invalid
+        };
+      }
+      submittedAt = submittedAt || now;
+      revision   += 1;
+    }
+
+    const status = submit ? 'submitted' : (submittedAt ? 'submitted' : 'draft');
+
+    const row = new Array(SURVEY_HEADERS.length).fill('');
+    function set(h, v) { row[SURVEY_HEADERS.indexOf(h)] = v; }
+    set('first_saved_iso',  firstSaved);
+    set('updated_at_iso',   now);
+    set('submitted_at_iso', submittedAt);
+    set('email',            email);
+    set('name',             claims.name || '');
+    set('survey_id',        surveyId);
+    set('status',           status);
+    set('revision',         revision);
+    set('data_json',        JSON.stringify(merged).slice(0, 45000));
+    set('user_agent',       String(body.user_agent || '').slice(0, 300));
+
+    if (rowIdx) {
+      sheet.getRange(rowIdx, 1, 1, SURVEY_HEADERS.length).setValues([row]);
+    } else {
+      sheet.appendRow(row);
+    }
+
+    const out = {
+      ok: true, status: status, revision: revision,
+      updated_at: now, submitted_at: submittedAt
+    };
+
+    /* "A copy of your response will be emailed to you" — the one thing
+     * the Google Form did that people will miss. Sent only on a real
+     * submission, never on an autosave, and never allowed to fail the
+     * save: the row is already written by this point. */
+    if (submit && body.email_copy !== false) {
+      out.email = _sendSurveyCopy(claims, spec, merged, revision);
+    }
+
+    return out;
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** A teacher reading back their own response, to resume or to edit. */
+function getSurveyResponse(claims, body) {
+  const surveyId = String(body.survey_id || '').slice(0, 80).trim();
+  if (!surveyId) return { ok: false, error: 'missing_survey_id' };
+  if (!SURVEY_SPECS[surveyId]) return { ok: false, error: 'unknown_survey' };
+
+  const email  = String(claims.email || '').trim().toLowerCase();
+  const sheet  = getSurveysSheet();
+  const rowIdx = _findSurveyRow(sheet, email, surveyId);
+  if (!rowIdx) return { ok: true, found: false, data: {}, status: 'none' };
+
+  const r = sheet.getRange(rowIdx, 1, 1, SURVEY_HEADERS.length).getValues()[0];
+  let blob = {};
+  try { blob = JSON.parse(String(r[SURVEY_HEADERS.indexOf('data_json')] || '') || '{}'); }
+  catch (e) { blob = {}; }
+
+  return {
+    ok: true,
+    found: true,
+    data:         blob,
+    status:       String(r[SURVEY_HEADERS.indexOf('status')] || 'draft'),
+    revision:     Number(r[SURVEY_HEADERS.indexOf('revision')] || 0) || 0,
+    updated_at:   r[SURVEY_HEADERS.indexOf('updated_at_iso')]   || '',
+    submitted_at: r[SURVEY_HEADERS.indexOf('submitted_at_iso')] || ''
+  };
+}
+
+/**
+ * Every response to one survey, plus who hasn't answered.
+ *
+ * Admin-gated by the router. `outstanding` is the roster minus the
+ * people who have submitted, optionally narrowed to a roster tag
+ * (e.g. 'secondary'), which is what makes the admin view a tracker
+ * rather than a pile of answers. Staff who aren't on the roster tab
+ * simply don't appear in it.
+ */
+function adminSurveyResponses(body) {
+  const surveyId = String(body.survey_id || '').slice(0, 80).trim();
+  if (!surveyId) return { ok: false, error: 'missing_survey_id' };
+
+  const spec  = SURVEY_SPECS[surveyId] || null;
+  const sheet = getSurveysSheet();
+  const last  = sheet.getLastRow();
+
+  const idx = {};
+  SURVEY_HEADERS.forEach(function (h, i) { idx[h] = i; });
+
+  const out = [];
+  const answered = {};
+  if (last >= 2) {
+    const rows = sheet.getRange(2, 1, last - 1, SURVEY_HEADERS.length).getValues();
+    rows.forEach(function (r) {
+      if (String(r[idx.survey_id]).trim() !== surveyId) return;
+      let blob = {};
+      try { blob = JSON.parse(String(r[idx.data_json] || '') || '{}'); } catch (e) { blob = {}; }
+      const email  = String(r[idx.email] || '');
+      const status = String(r[idx.status] || 'draft');
+      if (status === 'submitted') answered[email.toLowerCase()] = true;
+      out.push({
+        email:        email,
+        name:         String(r[idx.name] || ''),
+        survey_id:    surveyId,
+        status:       status,
+        revision:     Number(r[idx.revision] || 0) || 0,
+        first_saved:  r[idx.first_saved_iso]  || '',
+        updated_at:   r[idx.updated_at_iso]   || '',
+        submitted_at: r[idx.submitted_at_iso] || '',
+        data:         blob
+      });
+    });
+  }
+
+  /* Who still owes one. Tag defaults to nothing = the whole roster. */
+  const wantTag = String(body.roster_tag || '').trim().toLowerCase();
+  const roster  = getRosterIndex();
+  const outstanding = [];
+  Object.keys(roster.byEmail).forEach(function (email) {
+    if (answered[email]) return;
+    const person = roster.byEmail[email];
+    if (wantTag && (person.tags || []).indexOf(wantTag) === -1) return;
+    outstanding.push({ email: person.email, name: person.name });
+  });
+
+  return {
+    ok: true,
+    survey_id:    surveyId,
+    title:        spec ? spec.title : surveyId,
+    fields:       spec ? spec.fields : [],
+    responses:    out,
+    outstanding:  outstanding,
+    roster_tags:  roster.allTags,
+    generated_at: nowIsoLocal()
+  };
+}
+
+/* The teacher's own copy of what they submitted, in the Hub's email
+ * styling. Never throws — the response is already saved, and a mail
+ * problem must not read back as a failed submission. */
+function _sendSurveyCopy(claims, spec, data, revision) {
+  const to = String(claims.email || '').trim();
+  if (!to) return { sent: 0, skipped: 1, reason: 'no_address' };
+  try {
+    if (MailApp.getRemainingDailyQuota() <= 0) {
+      return { sent: 0, skipped: 1, reason: 'quota_exhausted' };
+    }
+  } catch (e) { /* fall through and let sendEmail report the real problem */ }
+
+  const first  = _firstName(claims.name || data.name || '');
+  const greet  = first ? ('Hi ' + first + ',') : 'Hi,';
+  const intro  = (revision > 1)
+    ? 'You’ve updated your personal goal for 2026-27. Here it is as it now stands.'
+    : 'Here’s the personal goal you just set for 2026-27. Keep this — it’s what we’ll come back to at your mid-year and end-of-year check-ins, and in your appraisal conversation.';
+
+  /* Plain-text twin of the HTML, for clients that won't render it. */
+  const lines = [];
+  const htmlRows = [];
+  (spec.fields || []).forEach(function (f) {
+    const v = data[f.key];
+    if (_surveyIsEmpty(v)) return;
+    const text = Array.isArray(v) ? v.join(', ') : String(v);
+    lines.push(f.label + ':\n' + text);
+    htmlRows.push(
+      '<tr><td style="padding:0 0 14px;">' +
+        '<p style="margin:0 0 3px;font-size:11px;font-weight:700;letter-spacing:.07em;' +
+           'text-transform:uppercase;color:#8B7BB8;">' + _escHtml(f.label) + '</p>' +
+        '<p style="margin:0;font-size:14px;line-height:1.6;color:#334155;white-space:pre-wrap;">' +
+          _escHtml(text).replace(/\n/g, '<br>') + '</p>' +
+      '</td></tr>'
+    );
+  });
+
+  const html = _aisaEmailShell(
+    'Your 2026-27 Personal Goal',
+    '<p style="margin:0 0 16px;font-size:16px;font-weight:700;color:#21076C;">' + _escHtml(greet) + '</p>' +
+    '<p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#334155;">' + _escHtml(intro) + '</p>' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' +
+      htmlRows.join('') +
+    '</table>',
+    'You submitted this through the AISA Learning Hub. You can reopen and ' +
+    'edit your goal there at any time — we’ll always look at the latest version.'
+  );
+
+  try {
+    MailApp.sendEmail({
+      to:       to,
+      subject:  'Your copy — ' + spec.title,
+      body:     greet + '\n\n' + intro + '\n\n' + lines.join('\n\n'),
+      htmlBody: html,
+      name:     'AISA Learning Hub'
+    });
+    return { sent: 1, failed: 0, skipped: 0 };
+  } catch (err) {
+    return { sent: 0, failed: 1, skipped: 0, error: String(err) };
+  }
+}
+
 /* System-fired notification — used when the form workflow needs to
  * notify the manager (form submitted) or the staff member (form
  * returned). The existing user-driven postNotification is admin-only;
@@ -1619,6 +2100,20 @@ function _reminderHtml(greeting, bodyText, linkUrl, linkLabel) {
         '</td></tr></table>'
     : '';
 
+  return _aisaEmailShell(
+    'Professional Development',
+    (greeting ? '<p style="margin:0 0 16px;font-size:16px;font-weight:700;color:#21076C;">' +
+       _escHtml(greeting) + '</p>' : '') + paras + button,
+    'Sent from the AISA Learning Hub. This reminder is also waiting ' +
+    'in your notifications the next time you sign in.'
+  );
+}
+
+/* The AISA-branded email frame every Hub email sits in: deep royal
+ * purple header, mustard-gold kicker, white body, grey footnote.
+ * Table-based and inline-styled because that is what mail clients
+ * reliably render. `inner` and `footer` are already-escaped HTML. */
+function _aisaEmailShell(kicker, inner, footer) {
   return '<!DOCTYPE html><html><body style="margin:0;padding:0;background:#f8fafc;">' +
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" ' +
            'style="background:#f8fafc;padding:24px 12px;"><tr><td align="center">' +
@@ -1628,17 +2123,12 @@ function _reminderHtml(greeting, bodyText, linkUrl, linkLabel) {
         '<tr><td style="background:#21076C;padding:20px 28px;">' +
           '<p style="margin:0;color:#ffffff;font-size:17px;font-weight:700;">AISA Learning Hub</p>' +
           '<p style="margin:3px 0 0;color:#D8B664;font-size:11px;font-weight:700;' +
-             'letter-spacing:.09em;text-transform:uppercase;">Professional Development</p>' +
+             'letter-spacing:.09em;text-transform:uppercase;">' + _escHtml(kicker) + '</p>' +
         '</td></tr>' +
-        '<tr><td style="padding:28px;">' +
-          (greeting ? '<p style="margin:0 0 16px;font-size:16px;font-weight:700;color:#21076C;">' +
-             _escHtml(greeting) + '</p>' : '') +
-          paras + button +
-        '</td></tr>' +
+        '<tr><td style="padding:28px;">' + inner + '</td></tr>' +
         '<tr><td style="padding:16px 28px 24px;border-top:1px solid #eef2f7;">' +
           '<p style="margin:0;font-size:12px;line-height:1.5;color:#94a3b8;">' +
-            'Sent from the AISA Learning Hub. This reminder is also waiting ' +
-            'in your notifications the next time you sign in.' +
+            _escHtml(footer) +
           '</p>' +
         '</td></tr>' +
       '</table>' +

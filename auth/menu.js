@@ -66,6 +66,7 @@
         { title: 'Admin Dashboard',                    desc: 'Staff completion overview and compliance reports',              href: 'admin-dashboard.html',                                                             icon: '\u{1F6E1}',  tag: 'Admin', adminOnly: true },
         { title: 'Admin Charts',                       desc: 'Hours trend, completion funnel, engagement quality, heatmap',   href: 'admin-charts.html',                                                                icon: '\u{1F4C8}', tag: 'Admin', adminOnly: true },
         { title: 'Send Notifications',                 desc: 'Compose and publish notifications to staff',                    href: 'admin-notifications.html',                                                         icon: '\u{1F4E2}',  tag: 'Admin', adminOnly: true },
+        { title: 'Personal Goals Tracker',             desc: 'Who has set a 2026\u201327 goal, and who still owes one',         href: 'admin-dashboard.html#goals',                                                       icon: '\u{1F3AF}', tag: 'Admin', adminOnly: true },
 
         /* PD modules */
         { title: 'PD Modules',                         desc: 'All professional development modules',                          href: 'PD%20Modules/pd.html',                                                             icon: '\u{1F393}', tag: 'Hub' },
@@ -91,6 +92,7 @@
         /* Tools */
         { title: 'Tools & Resources',                  desc: 'AI tools, templates, and reference materials',                  href: 'Tools%20and%20Resources/tools.html',                                               icon: '\u{1F6E0}', tag: 'Hub' },
         { title: 'Lesson Planning Tool',               desc: 'Excellent Teaching & Learning lesson planner',                  href: 'Tools%20and%20Resources/lesson-planning-tool.html',                                icon: '\u{1F4DD}', tag: 'Tool' },
+        { title: 'My Personal Goal 2026\u201327',        desc: 'Secondary: set your one professional goal for the year',        href: 'Tools%20and%20Resources/secondary-teacher-goal.html',                              icon: '\u{1F3AF}', tag: 'Form' },
 
         /* Library */
         { title: 'Library Hub',                        desc: 'Books, articles, and research collections',                     href: 'Library%20Hub/library-hub.html',                                                   icon: '\u{1F4DA}', tag: 'Hub' },

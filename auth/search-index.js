@@ -33,12 +33,14 @@
         { title: "Library Hub", desc: "Choose your view — student research tools or staff collection &amp; compliance resources.", url: "Library%20Hub/library-hub.html", type: "Page", icon: "📚", keywords: "library reading books students teachers staff research databases adek sensitive" },
         { title: "Secondary Hub", desc: "Daily portal for the secondary school (external).", url: "https://sites.google.com/aisa.sch.ae/aisa-secondary", type: "Page", icon: "🏫", keywords: "secondary hub portal daily google site" },
         { title: "AI & Innovation Survey (2 minutes)", desc: "Help shape what we build next — short survey from the Head of AI & Innovation.", url: "https://docs.google.com/forms/d/e/1FAIpQLScMbNJ1xK6-63sCTpkAN8C6cXKirHGsXwj5furPuzTqS9j7Fw/viewform?usp=header", type: "Survey", icon: "📋", keywords: "survey ai innovation feedback brandon head input form questionnaire policy pd priorities staff voice 2 minute quick" },
+        { title: "My Personal Goal 2026–27 (Secondary)", desc: "Set your one professional goal for the year — guidance for your chosen focus area, then your goal and if-then plan.", url: "Tools%20and%20Resources/secondary-teacher-goal.html", type: "Form", icon: "🎯", keywords: "personal goal goals secondary teacher 2026 2027 appraisal self assessment professional growth focus area if then plan smart goal target objective principal mid year end of year check in required form" },
 
         // Personal
         { title: "My Dashboard", desc: "Your PD progress, badges, and certificate downloads.", url: "dashboard.html", type: "Personal", icon: "📊", keywords: "dashboard progress my badges certificate completion personal" },
 
         // === Admin (hidden from non-admins) ===
         { title: "Admin Dashboard", desc: "Staff completion overview and compliance reports.", url: "admin-dashboard.html", type: "Admin", icon: "🛡️", keywords: "admin dashboard staff completion compliance reports", adminOnly: true },
+        { title: "Personal Goals Tracker", desc: "Who has set their 2026–27 goal, what the cohort chose to focus on, and who still owes one.", url: "admin-dashboard.html#goals", type: "Admin", icon: "🎯", keywords: "admin goals tracker personal goal secondary teacher 2026 2027 appraisal survey responses outstanding focus area if then export csv principal", adminOnly: true },
         { title: "Admin Charts", desc: "Hours trend, completion funnel, engagement quality, activity heatmap.", url: "admin-charts.html", type: "Admin", icon: "📈", keywords: "admin charts graphs analytics pd hours trend completion funnel engagement quality skim heatmap activity time range monthly weekly daily", adminOnly: true },
         { title: "Send Notifications", desc: "Compose and publish notifications to staff.", url: "admin-notifications.html", type: "Admin", icon: "📢", keywords: "admin notifications send compose broadcast announcement", adminOnly: true },
 

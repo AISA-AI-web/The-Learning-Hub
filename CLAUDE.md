@@ -74,6 +74,101 @@ fail silently and the dependent UIs stay empty:
   sign-in gate is client-side only, so anything committed is
   world-readable regardless of what `gate.js` renders.
 
+- **Surveys — the Secondary Teacher Personal Goal form.** Three new
+  endpoints (`save_survey_response`, `get_survey_response`,
+  `admin_survey_responses`) and one new sheet, `survey_responses`,
+  created lazily on first write. No manual setup needed.
+
+  The form is `Tools and Resources/secondary-teacher-goal.html`
+  (+ `-goal.js`); the admin view is the *Personal goals · secondary
+  2026–27* section on the admin dashboard, under the **Survey Data**
+  tab (`admin-dashboard.html#goals`).
+
+  Like the module capture above this one does **not** fail silently:
+  until the redeploy the form shows the teacher a red banner saying the
+  backend isn't switched on, and the admin section shows its own red
+  banner instead of rendering empty.
+
+  **Required entries are enforced twice** — in the page, and again in
+  `SURVEY_SPECS` in `apps-script.gs`. That double check is the entire
+  reason this stopped being a Google Form, so if you add a question that
+  must be answered, add its key to `required` there too. Otherwise it is
+  only a suggestion. The ten focus-area names are pinned in
+  `SURVEY_SPECS.choices.focus_area` and must stay character-for-character
+  identical to `FOCUS_AREAS` in `secondary-teacher-goal.js`, or
+  submissions start bouncing with `missing_required`.
+
+  **Two pieces of optional setup**, both safe to skip:
+  1. `SURVEYS_SPREADSHEET_ID` at the top of `apps-script.gs` is empty,
+     so survey rows land in the spreadsheet the script is bound to.
+     Paste a spreadsheet ID there to move **only** the survey data into
+     its own workbook — worth doing if secondary SLT should see the goal
+     responses without being handed the whole analytics sheet. A bad ID
+     silently falls back to the bound spreadsheet rather than throwing,
+     so check the rows actually moved.
+  2. Tag secondary staff `secondary` in the `roster` tab. The admin
+     section's "still to submit" list is the roster minus whoever has
+     submitted, narrowed by tag, and it auto-selects `secondary` when
+     that tag exists. Without tags it falls back to the whole roster;
+     staff not on the roster at all never appear as outstanding.
+
+  One row per (email × survey), upserted — a teacher reopening the form
+  edits their goal rather than filing a second one, and `revision`
+  counts the edits while `submitted_at` stays at the first commitment.
+  Submitting emails them a copy (`MailApp`, same authorisation scope as
+  the reminder emails — approve it once).
+
+  **Privacy:** `survey_responses` rows are personal data under UAE
+  Federal Decree-Law No. 45 of 2021 — named staff writing about what
+  they want to get better at, feeding an appraisal conversation. Same
+  rule as `module_responses`: reads are admin-gated, a teacher can only
+  ever read back their own row, and nothing from this sheet goes in the
+  repo, which is public.
+
+## Admin dashboard — three tabs
+
+`admin-dashboard.html` splits into **PD Data**, **Survey Data** and
+**Admin Actions**.
+
+- **PD Data** — the compliance tracker, per-module bars, engagement, and
+  the AI Literacy readiness free-text. That last one is a PD module's own
+  capture, so it sits with the training data rather than with the surveys.
+- **Survey Data** — the standalone forms staff fill in. Right now just
+  the personal goals.
+- **Admin Actions** — every other admin destination: charts,
+  notifications, the three performance-review forms, and the goal form as
+  staff see it. This replaced a card grid that used to sit above the
+  tabs and pushed the actual data below the fold.
+
+**Export CSV lives in the PD tracker's filter bar, not on Admin
+Actions.** It exports the tracker exactly as filtered, so it has to be
+next to the filters — from another tab you could not see what you were
+exporting.
+
+Adding a section: drop the markup inside the right panel. Nothing else
+needs wiring — the tab controller resolves a `#hash` to whichever panel
+contains that id, so deep links like `admin-dashboard.html#goals` from
+`menu.js` and `search-index.js` open the right tab on their own. Adding
+an Admin Actions destination also wants an entry in `search-index.js`
+with `adminOnly: true`.
+
+**Don't nest anchors in the action cards.** The Performance Review card
+has three destinations, so it is a `<div>` with three sibling `<a>`s. It
+used to be one `<a>` wrapping the card with two more `<a>`s inside;
+nested anchors are invalid, the browser closed the outer one early, and
+the card rendered split with its icon floating next to an empty box.
+
+Both panels stay in the DOM and every section's script runs and fetches
+on page load whichever tab is open. That is deliberate: nothing is lazy,
+so nothing can be left half-initialised, and switching tabs costs no
+requests. It also means **no section may measure layout** (offsetWidth,
+getBoundingClientRect) during setup — a closed panel has no dimensions.
+Nothing on the page does this today.
+
+The Survey Data tab carries an amber badge with the number of people
+who still owe a goal. The goals section fires an `aisa:goal-counts`
+CustomEvent on every render and the tab controller listens for it.
+
 ## AI Literacy module — RELEASED to staff, 16 September 2026
 
 `PD Modules/ai-curriculum-readiness-module.html` is live and visible to
