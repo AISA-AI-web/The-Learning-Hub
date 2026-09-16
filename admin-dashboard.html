@@ -26,6 +26,11 @@
         .matrix th.rot > div > span { border-bottom: 1px solid #e2e8f0; padding: 0 .25rem; }
         .matrix td, .matrix th { border-bottom: 1px solid #f1f5f9; }
         .sticky-col { position: sticky; left: 0; background: #fff; z-index: 1; }
+        /* Tab appearance is driven entirely by aria-selected, so the
+           script sets one attribute and the styling follows. */
+        .dash-tab { border-color: transparent; color: #64748b; }
+        .dash-tab:hover { color: #0f172a; border-color: #cbd5e1; }
+        .dash-tab[aria-selected="true"] { border-color: #4f46e5; color: #4f46e5; }
         .matrix thead .sticky-col { z-index: 2; background:#fff; }
     </style>
     <script src="auth/gate.js?v=18"></script>
@@ -55,8 +60,8 @@
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
                     Admin Console
                 </div>
-                <h2 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">PD Compliance Overview</h2>
-                <p class="text-slate-500 font-medium mt-1">Completion status across all staff. <span id="generated-at"></span></p>
+                <h2 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">Admin Console</h2>
+                <p class="text-slate-500 font-medium mt-1">Training compliance, engagement, and the forms staff fill in on the Hub.</p>
             </div>
 
             <!-- Admin tools — the central hub for everything admin-only.
@@ -147,6 +152,41 @@
                     </button>
                 </div>
             </section>
+
+            <!-- ==========================================================
+                 Tabs. Two kinds of data live on this page now and they
+                 answer different questions, so they don't belong in one
+                 scroll: PD Data is "has everyone done their training",
+                 Survey Data is "what did people say".
+
+                 Panels are hidden with .hidden rather than detached, so
+                 every section's own script still finds its elements at
+                 parse time and loads its data once, whichever tab is
+                 open. Switching is then instant and re-fetches nothing.
+                 ========================================================== -->
+            <div class="mb-7 border-b border-slate-200">
+                <div role="tablist" aria-label="Dashboard data" class="flex gap-6 -mb-px overflow-x-auto">
+                    <button type="button" role="tab" id="tab-pd" data-tab="pd"
+                            aria-controls="panel-pd" aria-selected="true" tabindex="0"
+                            class="dash-tab flex items-center gap-2 whitespace-nowrap border-b-2 px-1 pb-3 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 rounded-t">
+                        <span aria-hidden="true">&#128202;</span>
+                        PD Data
+                    </button>
+                    <button type="button" role="tab" id="tab-survey" data-tab="survey"
+                            aria-controls="panel-survey" aria-selected="false" tabindex="-1"
+                            class="dash-tab flex items-center gap-2 whitespace-nowrap border-b-2 px-1 pb-3 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 rounded-t">
+                        <span aria-hidden="true">&#127919;</span>
+                        Survey Data
+                        <!-- Carries the one number worth acting on (how many
+                             people still owe a goal) so it doesn't take a
+                             click to find out there's nothing to do. -->
+                        <span id="tab-survey-badge" class="hidden text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300 rounded-full px-1.5 py-0.5 leading-none"></span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="panel-pd" role="tabpanel" aria-labelledby="tab-pd" tabindex="0" class="focus:outline-none">
+                <p class="text-sm text-slate-500 font-medium mb-6">Completion status across all staff. <span id="generated-at"></span></p>
 
             <!-- Summary cards — each one deep-links into admin-charts.html
                  with an anchor jumping to the relevant chart, so admins can
@@ -306,6 +346,56 @@
             </p>
 
             <!-- ==========================================================
+                 AI Literacy readiness — what teachers actually wrote.
+                 Free-text answers from the AI Literacy Teacher Readiness
+                 module. This is the pre-21-September read: who is stuck,
+                 what they asked for, and what they are least sure about.
+                 ========================================================== -->
+            <div id="responses" class="mt-12">
+                <div class="flex items-center justify-between gap-4 mb-3 px-1 flex-wrap">
+                    <div>
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">AI Literacy readiness &middot; what teachers wrote</h3>
+                        <p class="text-xs text-slate-500 mt-1 max-w-2xl">
+                            Every teacher&rsquo;s delivery plan from the readiness module. People who asked for
+                            something, or who couldn&rsquo;t get into InstrucTwin, sort to the top.
+                            <span class="font-semibold text-slate-600">These are staff personal data &mdash; don&rsquo;t forward the export.</span>
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <select id="resp-filter" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                            <option value="all">Everyone who started</option>
+                            <option value="flagged">Needs something from me</option>
+                            <option value="done">Completed</option>
+                            <option value="open">Still in progress</option>
+                        </select>
+                        <input id="resp-search" type="search" placeholder="Search name or email&hellip;"
+                               class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        <button id="resp-export" type="button"
+                                class="text-sm font-bold text-indigo-700 border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 rounded-lg px-3 py-1.5 transition-colors">
+                            Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div id="resp-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4"></div>
+                <div id="resp-list" class="space-y-3"></div>
+
+                <p id="resp-empty" class="text-center text-slate-400 py-8">
+                    No responses yet &mdash; answers appear here as teachers work through the module.
+                </p>
+                <p id="resp-no-endpoint" class="hidden mt-3 text-sm text-rose-800 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
+                    <strong>The backend doesn&rsquo;t have the response endpoints yet.</strong>
+                    Paste <code class="font-mono bg-rose-100 px-1.5 py-0.5 rounded">auth/apps-script.gs</code>
+                    into the Apps Script editor and deploy a new version. Until then teachers see a red
+                    banner and nothing they type is being saved.
+                </p>
+            </div>
+            </div><!-- /#panel-pd -->
+
+            <div id="panel-survey" role="tabpanel" aria-labelledby="tab-survey" tabindex="0" class="hidden focus:outline-none">
+                <p class="text-sm text-slate-500 font-medium mb-6">Forms staff fill in on the Hub. Each survey gets its own section here.</p>
+
+            <!-- ==========================================================
                  Secondary Teacher Personal Goals, 2026-27.
 
                  The survey view. Reads survey_responses through
@@ -317,7 +407,7 @@
                  tag to `secondary` once the roster is tagged and this
                  becomes a real chase list.
                  ========================================================== -->
-            <div id="goals" class="mt-12 scroll-mt-24">
+            <div id="goals" class="scroll-mt-24">
                 <div class="flex items-center justify-between gap-4 mb-3 px-1 flex-wrap">
                     <div>
                         <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">Personal goals &middot; secondary 2026&ndash;27</h3>
@@ -390,53 +480,129 @@
                 </p>
             </div>
 
-            <!-- ==========================================================
-                 AI Literacy readiness — what teachers actually wrote.
-                 Free-text answers from the AI Literacy Teacher Readiness
-                 module. This is the pre-21-September read: who is stuck,
-                 what they asked for, and what they are least sure about.
-                 ========================================================== -->
-            <div id="responses" class="mt-12">
-                <div class="flex items-center justify-between gap-4 mb-3 px-1 flex-wrap">
-                    <div>
-                        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400">AI Literacy readiness &middot; what teachers wrote</h3>
-                        <p class="text-xs text-slate-500 mt-1 max-w-2xl">
-                            Every teacher&rsquo;s delivery plan from the readiness module. People who asked for
-                            something, or who couldn&rsquo;t get into InstrucTwin, sort to the top.
-                            <span class="font-semibold text-slate-600">These are staff personal data &mdash; don&rsquo;t forward the export.</span>
-                        </p>
-                    </div>
-                    <div class="flex items-center gap-3 flex-wrap">
-                        <select id="resp-filter" class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                            <option value="all">Everyone who started</option>
-                            <option value="flagged">Needs something from me</option>
-                            <option value="done">Completed</option>
-                            <option value="open">Still in progress</option>
-                        </select>
-                        <input id="resp-search" type="search" placeholder="Search name or email&hellip;"
-                               class="text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        <button id="resp-export" type="button"
-                                class="text-sm font-bold text-indigo-700 border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 rounded-lg px-3 py-1.5 transition-colors">
-                            Export CSV
-                        </button>
-                    </div>
-                </div>
-
-                <div id="resp-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4"></div>
-                <div id="resp-list" class="space-y-3"></div>
-
-                <p id="resp-empty" class="text-center text-slate-400 py-8">
-                    No responses yet &mdash; answers appear here as teachers work through the module.
-                </p>
-                <p id="resp-no-endpoint" class="hidden mt-3 text-sm text-rose-800 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
-                    <strong>The backend doesn&rsquo;t have the response endpoints yet.</strong>
-                    Paste <code class="font-mono bg-rose-100 px-1.5 py-0.5 rounded">auth/apps-script.gs</code>
-                    into the Apps Script editor and deploy a new version. Until then teachers see a red
-                    banner and nothing they type is being saved.
-                </p>
-            </div>
+            </div><!-- /#panel-survey -->
         </div>
     </main>
+
+    <script>
+    /* ============================================================
+     * Tab controller — PD Data / Survey Data.
+     *
+     * Deliberately dumb: panels stay in the DOM and every section's
+     * own script runs and fetches on page load regardless of which
+     * tab is open. Nothing here is lazy, so nothing here can leave a
+     * section half-initialised, and switching tabs costs no requests.
+     *
+     * The interesting part is the hash. `admin-dashboard.html#goals`
+     * is linked from the app-bar search, the nav drawer and the Admin
+     * Tools card above, and #goals lives in the tab that is closed by
+     * default — so a deep link has to open its tab or the link looks
+     * broken. tabForHash() resolves any in-page id to whichever panel
+     * contains it, which means new sections need no wiring here.
+     * ============================================================ */
+    (function () {
+        'use strict';
+
+        var TABS = ['pd', 'survey'];
+        var KEY  = 'aisa_admin_tab';
+
+        function panel(name) { return document.getElementById('panel-' + name); }
+        function tab(name)   { return document.getElementById('tab-'   + name); }
+
+        function show(name, opts) {
+            if (TABS.indexOf(name) === -1) name = 'pd';
+            TABS.forEach(function (t) {
+                var on = (t === name);
+                panel(t).classList.toggle('hidden', !on);
+                var btn = tab(t);
+                btn.setAttribute('aria-selected', on ? 'true' : 'false');
+                btn.tabIndex = on ? 0 : -1;
+            });
+            try { localStorage.setItem(KEY, name); } catch (e) { /* private mode */ }
+            if (opts && opts.focus) tab(name).focus();
+        }
+
+        /* Which tab owns this #hash? Accepts a panel's own name, or the
+         * id of anything inside one. Returns null for a hash that isn't
+         * ours, so unrelated anchors are left alone. */
+        function tabForHash(hash) {
+            var id = String(hash || '').replace(/^#/, '');
+            if (!id) return null;
+            if (TABS.indexOf(id) !== -1) return id;
+            var el = document.getElementById(id);
+            if (!el) return null;
+            for (var i = 0; i < TABS.length; i++) {
+                if (panel(TABS[i]).contains(el)) return TABS[i];
+            }
+            return null;
+        }
+
+        function applyHash(scroll) {
+            var t = tabForHash(location.hash);
+            if (!t) return false;
+            show(t);
+            if (scroll) {
+                var el = document.getElementById(location.hash.replace(/^#/, ''));
+                /* Deferred: the browser already tried to scroll to this
+                 * element while its panel was still hidden, so it needs
+                 * doing again now the panel has height. */
+                if (el) setTimeout(function () {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 0);
+            }
+            return true;
+        }
+
+        Array.prototype.forEach.call(document.querySelectorAll('[role="tab"][data-tab]'), function (btn) {
+            btn.addEventListener('click', function () { show(btn.getAttribute('data-tab')); });
+        });
+
+        /* Arrow keys, as a tablist is expected to behave. */
+        document.querySelector('[role="tablist"]').addEventListener('keydown', function (e) {
+            var active = document.activeElement;
+            var i = active ? TABS.indexOf(active.getAttribute('data-tab')) : -1;
+            if (i === -1) return;
+            var next = null;
+            if      (e.key === 'ArrowRight') next = TABS[(i + 1) % TABS.length];
+            else if (e.key === 'ArrowLeft')  next = TABS[(i - 1 + TABS.length) % TABS.length];
+            else if (e.key === 'Home')       next = TABS[0];
+            else if (e.key === 'End')        next = TABS[TABS.length - 1];
+            if (!next) return;
+            e.preventDefault();
+            show(next, { focus: true });
+        });
+
+        window.addEventListener('hashchange', function () { applyHash(true); });
+
+        /* Clicking an in-page link when the hash is already that value
+         * fires no hashchange, so the click needs handling too. */
+        document.addEventListener('click', function (e) {
+            var a = e.target.closest && e.target.closest('a[href^="#"]');
+            if (!a) return;
+            var t = tabForHash(a.getAttribute('href'));
+            if (t) show(t);
+        });
+
+        /* A hash beats the remembered tab: following a link to #goals
+         * means landing on #goals, whatever you were looking at last. */
+        if (!applyHash(true)) {
+            var saved = null;
+            try { saved = localStorage.getItem(KEY); } catch (e) { /* private mode */ }
+            show(saved || 'pd');
+        }
+
+        /* The goals section reports its counts so the closed tab can
+         * still say whether there is anything to chase. */
+        document.addEventListener('aisa:goal-counts', function (e) {
+            var n = (e.detail && e.detail.outstanding) || 0;
+            var badge = document.getElementById('tab-survey-badge');
+            if (!badge) return;
+            badge.textContent = n;
+            badge.title = n + (n === 1 ? ' person has' : ' people have') + ' not submitted a goal';
+            badge.classList.toggle('hidden', n === 0);
+        });
+    })();
+    </script>
 
     <!-- ==============================================================
          Reminder composer. Opens from the tracker's "Remind outstanding"
@@ -1682,6 +1848,17 @@
             renderStats();
             renderFocus();
             renderOutstanding();
+
+            /* Tell the tab strip how many people still owe a goal, so
+             * that number is visible without opening the tab. */
+            try {
+                document.dispatchEvent(new CustomEvent('aisa:goal-counts', {
+                    detail: {
+                        submitted:   rows.filter(isSubmitted).length,
+                        outstanding: outstanding.length
+                    }
+                }));
+            } catch (e) { /* no CustomEvent — the badge just stays hidden */ }
         }
 
         function csvCell(v) {

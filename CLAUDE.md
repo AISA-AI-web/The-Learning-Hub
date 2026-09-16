@@ -81,7 +81,8 @@ fail silently and the dependent UIs stay empty:
 
   The form is `Tools and Resources/secondary-teacher-goal.html`
   (+ `-goal.js`); the admin view is the *Personal goals · secondary
-  2026–27* section on the admin dashboard (`#goals`).
+  2026–27* section on the admin dashboard, under the **Survey Data**
+  tab (`admin-dashboard.html#goals`).
 
   Like the module capture above this one does **not** fail silently:
   until the redeploy the form shows the teacher a red banner saying the
@@ -123,6 +124,32 @@ fail silently and the dependent UIs stay empty:
   rule as `module_responses`: reads are admin-gated, a teacher can only
   ever read back their own row, and nothing from this sheet goes in the
   repo, which is public.
+
+## Admin dashboard — two tabs
+
+`admin-dashboard.html` splits into **PD Data** and **Survey Data**.
+PD Data holds the compliance tracker, the per-module bars, engagement,
+and the AI Literacy readiness free-text (that one is a PD module's own
+capture, so it sits with the training data rather than with the
+surveys). Survey Data holds the standalone forms staff fill in — right
+now just the personal goals.
+
+Adding a section: drop the markup inside `#panel-pd` or
+`#panel-survey`. Nothing else needs wiring — the tab controller resolves
+a `#hash` to whichever panel contains that id, so deep links like
+`admin-dashboard.html#goals` from `menu.js` and `search-index.js` open
+the right tab on their own.
+
+Both panels stay in the DOM and every section's script runs and fetches
+on page load whichever tab is open. That is deliberate: nothing is lazy,
+so nothing can be left half-initialised, and switching tabs costs no
+requests. It also means **no section may measure layout** (offsetWidth,
+getBoundingClientRect) during setup — a closed panel has no dimensions.
+Nothing on the page does this today.
+
+The Survey Data tab carries an amber badge with the number of people
+who still owe a goal. The goals section fires an `aisa:goal-counts`
+CustomEvent on every render and the tab controller listens for it.
 
 ## AI Literacy module — admin preview, not released
 
