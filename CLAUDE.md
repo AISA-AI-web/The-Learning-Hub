@@ -125,20 +125,38 @@ fail silently and the dependent UIs stay empty:
   ever read back their own row, and nothing from this sheet goes in the
   repo, which is public.
 
-## Admin dashboard — two tabs
+## Admin dashboard — three tabs
 
-`admin-dashboard.html` splits into **PD Data** and **Survey Data**.
-PD Data holds the compliance tracker, the per-module bars, engagement,
-and the AI Literacy readiness free-text (that one is a PD module's own
-capture, so it sits with the training data rather than with the
-surveys). Survey Data holds the standalone forms staff fill in — right
-now just the personal goals.
+`admin-dashboard.html` splits into **PD Data**, **Survey Data** and
+**Admin Actions**.
 
-Adding a section: drop the markup inside `#panel-pd` or
-`#panel-survey`. Nothing else needs wiring — the tab controller resolves
-a `#hash` to whichever panel contains that id, so deep links like
-`admin-dashboard.html#goals` from `menu.js` and `search-index.js` open
-the right tab on their own.
+- **PD Data** — the compliance tracker, per-module bars, engagement, and
+  the AI Literacy readiness free-text. That last one is a PD module's own
+  capture, so it sits with the training data rather than with the surveys.
+- **Survey Data** — the standalone forms staff fill in. Right now just
+  the personal goals.
+- **Admin Actions** — every other admin destination: charts,
+  notifications, the three performance-review forms, and the goal form as
+  staff see it. This replaced a card grid that used to sit above the
+  tabs and pushed the actual data below the fold.
+
+**Export CSV lives in the PD tracker's filter bar, not on Admin
+Actions.** It exports the tracker exactly as filtered, so it has to be
+next to the filters — from another tab you could not see what you were
+exporting.
+
+Adding a section: drop the markup inside the right panel. Nothing else
+needs wiring — the tab controller resolves a `#hash` to whichever panel
+contains that id, so deep links like `admin-dashboard.html#goals` from
+`menu.js` and `search-index.js` open the right tab on their own. Adding
+an Admin Actions destination also wants an entry in `search-index.js`
+with `adminOnly: true`.
+
+**Don't nest anchors in the action cards.** The Performance Review card
+has three destinations, so it is a `<div>` with three sibling `<a>`s. It
+used to be one `<a>` wrapping the card with two more `<a>`s inside;
+nested anchors are invalid, the browser closed the outer one early, and
+the card rendered split with its icon floating next to an empty box.
 
 Both panels stay in the DOM and every section's script runs and fetches
 on page load whichever tab is open. That is deliberate: nothing is lazy,

@@ -28,9 +28,16 @@
         .sticky-col { position: sticky; left: 0; background: #fff; z-index: 1; }
         /* Tab appearance is driven entirely by aria-selected, so the
            script sets one attribute and the styling follows. */
-        .dash-tab { border-color: transparent; color: #64748b; }
-        .dash-tab:hover { color: #0f172a; border-color: #cbd5e1; }
-        .dash-tab[aria-selected="true"] { border-color: #4f46e5; color: #4f46e5; }
+        .dash-tab { background: #fff; border-color: #e2e8f0; cursor: pointer; }
+        .dash-tab .dash-tab-title { color: #0f172a; }
+        .dash-tab .dash-tab-sub   { color: #64748b; }
+        .dash-tab .dash-tab-icon  { background: #f8fafc; border-color: #e2e8f0; }
+        .dash-tab:hover { border-color: #c7d2fe; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,23,42,.06); }
+        .dash-tab[aria-selected="true"] { background: #eef2ff; border-color: #4f46e5; box-shadow: 0 4px 14px rgba(79,70,229,.13); }
+        .dash-tab[aria-selected="true"] .dash-tab-title { color: #312e81; }
+        .dash-tab[aria-selected="true"] .dash-tab-sub   { color: #4f46e5; }
+        .dash-tab[aria-selected="true"] .dash-tab-icon  { background: #fff; border-color: #c7d2fe; }
+        @media (prefers-reduced-motion: reduce) { .dash-tab:hover { transform: none; } }
         .matrix thead .sticky-col { z-index: 2; background:#fff; }
     </style>
     <script src="auth/gate.js?v=18"></script>
@@ -64,123 +71,60 @@
                 <p class="text-slate-500 font-medium mt-1">Training compliance, engagement, and the forms staff fill in on the Hub.</p>
             </div>
 
-            <!-- Admin tools — the central hub for everything admin-only.
-                 Add new admin destinations here as cards (and to auth/search-index.js
-                 with adminOnly:true so search picks them up). The drawer + the
-                 amber Admin pill in the app-bar both lead here. -->
-            <section aria-label="Admin tools" class="mb-8">
-                <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">Admin Tools</h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    <a href="admin-charts.html" class="group block bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-indigo-200 hover:-translate-y-0.5 transition-all p-5 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        <div class="flex items-start gap-4">
-                            <div class="w-11 h-11 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-xl flex-shrink-0">📈</div>
-                            <div class="flex-1 min-w-0">
-                                <p class="font-bold text-slate-900 leading-tight">Charts &amp; Analytics</p>
-                                <p class="text-sm text-slate-500 mt-0.5 leading-snug">Hours trend, completion funnel, engagement quality, and a 90-day activity heatmap.</p>
-                                <span class="inline-flex items-center gap-1 text-xs font-bold text-indigo-700 mt-2 group-hover:translate-x-0.5 transition-transform">
-                                    Open
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="admin-notifications.html" class="group block bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-amber-200 hover:-translate-y-0.5 transition-all p-5 focus:outline-none focus:ring-2 focus:ring-amber-300">
-                        <div class="flex items-start gap-4">
-                            <div class="w-11 h-11 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-xl flex-shrink-0">📢</div>
-                            <div class="flex-1 min-w-0">
-                                <p class="font-bold text-slate-900 leading-tight">Send Notifications</p>
-                                <p class="text-sm text-slate-500 mt-0.5 leading-snug">Compose and publish a notification to staff.</p>
-                                <span class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 mt-2 group-hover:translate-x-0.5 transition-transform">
-                                    Open
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="Tools%20and%20Resources/teacher-assistant-performance-report.html" class="group block bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-teal-200 hover:-translate-y-0.5 transition-all p-5 focus:outline-none focus:ring-2 focus:ring-teal-300">
-                        <div class="flex items-start gap-4">
-                            <div class="w-11 h-11 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-xl flex-shrink-0">📋</div>
-                            <div class="flex-1 min-w-0">
-                                <p class="font-bold text-slate-900 leading-tight">Performance Review Forms</p>
-                                <p class="text-sm text-slate-500 mt-0.5 leading-snug">TA, Admin Support &amp; Hallway/Bus Monitor — fill, send to line manager, get it back. Always downloadable as PDF.</p>
-                                <span class="inline-flex items-center gap-1 text-xs font-bold text-teal-700 mt-2 group-hover:translate-x-0.5 transition-transform">
-                                    Open Teacher Assistant form
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                                </span>
-                                <div class="mt-1.5 flex flex-wrap gap-2 text-[11px] font-bold">
-                                    <a href="Tools%20and%20Resources/admin-support-staff-evaluation.html" class="text-slate-500 hover:text-teal-700 underline">Admin Support</a>
-                                    <a href="Tools%20and%20Resources/hallway-bus-monitor-report.html" class="text-slate-500 hover:text-teal-700 underline">Hallway / Bus Monitor</a>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <a href="#goals" class="group block bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-violet-200 hover:-translate-y-0.5 transition-all p-5 focus:outline-none focus:ring-2 focus:ring-violet-300">
-                        <div class="flex items-start gap-4">
-                            <div class="w-11 h-11 rounded-xl bg-violet-50 border border-violet-100 flex items-center justify-center text-xl flex-shrink-0">🎯</div>
-                            <div class="flex-1 min-w-0">
-                                <p class="font-bold text-slate-900 leading-tight">Personal Goals &mdash; Secondary</p>
-                                <p class="text-sm text-slate-500 mt-0.5 leading-snug">Every teacher&rsquo;s 2026&ndash;27 goal and if-then plan, what the cohort chose to focus on, and who still owes one.</p>
-                                <span class="inline-flex items-center gap-1 text-xs font-bold text-violet-700 mt-2 group-hover:translate-x-0.5 transition-transform">
-                                    Jump to the tracker
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
-                                </span>
-                                <div class="mt-1.5 flex flex-wrap gap-2 text-[11px] font-bold">
-                                    <span class="text-slate-400">Teachers fill it in at</span>
-                                    <span class="text-slate-500 underline">Tools &amp; Resources &rarr; My Personal Goal</span>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                                        <!-- Export CSV: the on-click handler lives in the script
-                         block below. The whole card IS the button so it
-                         matches the visual weight of the other tool cards.
-                         Hidden until adminOverview() resolves with data
-                         (otherwise there's nothing to export). -->
-                    <button id="export-btn" type="button"
-                            class="hidden group text-left bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-amber-200 hover:-translate-y-0.5 transition-all p-5 focus:outline-none focus:ring-2 focus:ring-amber-300">
-                        <div class="flex items-start gap-4">
-                            <div class="w-11 h-11 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-xl flex-shrink-0">⬇️</div>
-                            <div class="flex-1 min-w-0">
-                                <p class="font-bold text-slate-900 leading-tight">Export CSV</p>
-                                <p class="text-sm text-slate-500 mt-0.5 leading-snug">Download the tracker exactly as you've filtered and sorted it.</p>
-                                <span class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 mt-2 group-hover:translate-x-0.5 transition-transform">
-                                    Download
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
-                                </span>
-                            </div>
-                        </div>
-                    </button>
-                </div>
-            </section>
-
             <!-- ==========================================================
-                 Tabs. Two kinds of data live on this page now and they
-                 answer different questions, so they don't belong in one
-                 scroll: PD Data is "has everyone done their training",
-                 Survey Data is "what did people say".
+                 Tabs. Three things live on this page and they answer
+                 different questions, so they don't belong in one scroll:
+                 PD Data is "has everyone done their training", Survey
+                 Data is "what did people say", Admin Actions is "take me
+                 somewhere else". They are cards rather than a text strip
+                 because this page is the landing spot for every admin
+                 link in the Hub, so the choice has to read at a glance.
 
                  Panels are hidden with .hidden rather than detached, so
-                 every section's own script still finds its elements at
-                 parse time and loads its data once, whichever tab is
-                 open. Switching is then instant and re-fetches nothing.
+                 every section's script still finds its elements at parse
+                 time and loads its data once, whichever tab is open.
+                 Switching is then instant and re-fetches nothing.
                  ========================================================== -->
-            <div class="mb-7 border-b border-slate-200">
-                <div role="tablist" aria-label="Dashboard data" class="flex gap-6 -mb-px overflow-x-auto">
+            <div class="mb-8">
+                <div role="tablist" aria-label="Dashboard sections" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <button type="button" role="tab" id="tab-pd" data-tab="pd"
                             aria-controls="panel-pd" aria-selected="true" tabindex="0"
-                            class="dash-tab flex items-center gap-2 whitespace-nowrap border-b-2 px-1 pb-3 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 rounded-t">
-                        <span aria-hidden="true">&#128202;</span>
-                        PD Data
+                            class="dash-tab text-left rounded-2xl border-2 p-4 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400">
+                        <div class="flex items-center gap-3">
+                            <span class="dash-tab-icon w-12 h-12 rounded-xl border flex items-center justify-center text-2xl flex-shrink-0" aria-hidden="true">&#128202;</span>
+                            <div class="min-w-0">
+                                <span class="dash-tab-title font-heading font-black text-base leading-tight block">PD Data</span>
+                                <span class="dash-tab-sub text-xs leading-snug block mt-0.5">Training completion, engagement and module progress</span>
+                            </div>
+                        </div>
                     </button>
                     <button type="button" role="tab" id="tab-survey" data-tab="survey"
                             aria-controls="panel-survey" aria-selected="false" tabindex="-1"
-                            class="dash-tab flex items-center gap-2 whitespace-nowrap border-b-2 px-1 pb-3 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 rounded-t">
-                        <span aria-hidden="true">&#127919;</span>
-                        Survey Data
-                        <!-- Carries the one number worth acting on (how many
-                             people still owe a goal) so it doesn't take a
-                             click to find out there's nothing to do. -->
-                        <span id="tab-survey-badge" class="hidden text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300 rounded-full px-1.5 py-0.5 leading-none"></span>
+                            class="dash-tab text-left rounded-2xl border-2 p-4 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400">
+                        <div class="flex items-center gap-3">
+                            <span class="dash-tab-icon w-12 h-12 rounded-xl border flex items-center justify-center text-2xl flex-shrink-0" aria-hidden="true">&#127919;</span>
+                            <div class="min-w-0">
+                                <span class="dash-tab-title font-heading font-black text-base leading-tight flex items-center gap-2">
+                                    Survey Data
+                                    <!-- Carries the one number worth acting on (how many
+                                         people still owe a goal) so it doesn't take a
+                                         click to find out there's nothing to do. -->
+                                    <span id="tab-survey-badge" class="hidden text-[10px] font-black bg-amber-100 text-amber-800 border border-amber-300 rounded-full px-1.5 py-0.5 leading-none"></span>
+                                </span>
+                                <span class="dash-tab-sub text-xs leading-snug block mt-0.5">Personal goals and the forms staff fill in</span>
+                            </div>
+                        </div>
+                    </button>
+                    <button type="button" role="tab" id="tab-actions" data-tab="actions"
+                            aria-controls="panel-actions" aria-selected="false" tabindex="-1"
+                            class="dash-tab text-left rounded-2xl border-2 p-4 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400">
+                        <div class="flex items-center gap-3">
+                            <span class="dash-tab-icon w-12 h-12 rounded-xl border flex items-center justify-center text-2xl flex-shrink-0" aria-hidden="true">&#9881;&#65039;</span>
+                            <div class="min-w-0">
+                                <span class="dash-tab-title font-heading font-black text-base leading-tight block">Admin Actions</span>
+                                <span class="dash-tab-sub text-xs leading-snug block mt-0.5">Charts, notifications and the staff forms</span>
+                            </div>
+                        </div>
                     </button>
                 </div>
             </div>
@@ -282,6 +226,15 @@
                             class="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-bold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-300 whitespace-nowrap">
                         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                         <span id="notify-btn-label">Remind outstanding</span>
+                    </button>
+                    <!-- Exports the tracker exactly as filtered above, which
+                         is why it lives here and not on the Actions tab —
+                         from there you could not see what you were exporting.
+                         Hidden until adminOverview() resolves with data. -->
+                    <button id="export-btn" type="button"
+                            class="hidden inline-flex items-center gap-2 border border-indigo-200 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-sm px-4 py-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-300 whitespace-nowrap">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v12m0 0l-5-5m5 5l5-5M4 20h16"/></svg>
+                        Export CSV
                     </button>
                     <button id="tracker-reset" type="button"
                             class="text-sm font-bold text-slate-500 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-300 whitespace-nowrap">
@@ -481,6 +434,82 @@
             </div>
 
             </div><!-- /#panel-survey -->
+
+            <div id="panel-actions" role="tabpanel" aria-labelledby="tab-actions" tabindex="0" class="hidden focus:outline-none">
+                <!-- Adding a destination: a card here, plus an entry in
+                     auth/search-index.js with adminOnly:true so the app-bar
+                     search finds it too. That note is for whoever edits this
+                     file — it is not something SLT needs to read. -->
+                <p class="text-sm text-slate-500 font-medium mb-6">Everywhere else an admin needs to get to.</p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <a href="admin-charts.html" class="group block bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all p-5 focus:outline-none focus:ring-2 hover:border-indigo-200 focus:ring-indigo-300">
+                        <div class="flex items-start gap-4">
+                            <div class="w-11 h-11 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-xl flex-shrink-0">&#128200;</div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-slate-900 leading-tight">Charts &amp; Analytics</p>
+                                <p class="text-sm text-slate-500 mt-0.5 leading-snug">Hours trend, completion funnel, engagement quality, and a 90-day activity heatmap.</p>
+                                <span class="inline-flex items-center gap-1 text-xs font-bold text-indigo-700 mt-2 group-hover:translate-x-0.5 transition-transform">
+                                    Open
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="admin-notifications.html" class="group block bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all p-5 focus:outline-none focus:ring-2 hover:border-amber-200 focus:ring-amber-300">
+                        <div class="flex items-start gap-4">
+                            <div class="w-11 h-11 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-xl flex-shrink-0">&#128226;</div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-slate-900 leading-tight">Send Notifications</p>
+                                <p class="text-sm text-slate-500 mt-0.5 leading-snug">Compose and publish a notification to staff, with an optional AISA-branded email.</p>
+                                <span class="inline-flex items-center gap-1 text-xs font-bold text-amber-700 mt-2 group-hover:translate-x-0.5 transition-transform">
+                                    Open
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+
+                    <!-- Three destinations, so the card is a <div> and each
+                         form is its own link. It used to be one <a> wrapping
+                         the whole card with two more <a>s inside it; nested
+                         anchors are invalid, and the browser closed the outer
+                         one early, which split the card and left its icon
+                         floating beside a stray empty box. -->
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                        <div class="flex items-start gap-4">
+                            <div class="w-11 h-11 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-xl flex-shrink-0">&#128203;</div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-slate-900 leading-tight">Performance Review Forms</p>
+                                <p class="text-sm text-slate-500 mt-0.5 leading-snug">Fill on screen, send to a line manager, get it back. Always downloadable as PDF.</p>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    <a href="Tools%20and%20Resources/teacher-assistant-performance-report.html" class="inline-flex items-center gap-1 text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded-lg px-2.5 py-1.5 hover:bg-teal-100 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300">Teacher Assistant</a>
+                                    <a href="Tools%20and%20Resources/admin-support-staff-evaluation.html" class="inline-flex items-center gap-1 text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded-lg px-2.5 py-1.5 hover:bg-teal-100 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300">Admin Support</a>
+                                    <a href="Tools%20and%20Resources/hallway-bus-monitor-report.html" class="inline-flex items-center gap-1 text-xs font-bold text-teal-700 bg-teal-50 border border-teal-200 rounded-lg px-2.5 py-1.5 hover:bg-teal-100 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300">Hallway / Bus Monitor</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- The staff-facing form, not the responses. Lets an
+                         admin see exactly what a teacher sees before
+                         answering questions about it. -->
+                    <a href="Tools%20and%20Resources/secondary-teacher-goal.html" class="group block bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all p-5 focus:outline-none focus:ring-2 hover:border-violet-200 focus:ring-violet-300">
+                        <div class="flex items-start gap-4">
+                            <div class="w-11 h-11 rounded-xl bg-violet-50 border border-violet-100 flex items-center justify-center text-xl flex-shrink-0">&#127919;</div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-slate-900 leading-tight">Personal Goal form <span class="font-medium text-slate-400">(staff view)</span></p>
+                                <p class="text-sm text-slate-500 mt-0.5 leading-snug">The form secondary teachers fill in. Responses are on the Survey Data tab.</p>
+                                <span class="inline-flex items-center gap-1 text-xs font-bold text-violet-700 mt-2 group-hover:translate-x-0.5 transition-transform">
+                                    Open the form
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div><!-- /#panel-actions -->
         </div>
     </main>
 
@@ -503,7 +532,7 @@
     (function () {
         'use strict';
 
-        var TABS = ['pd', 'survey'];
+        var TABS = ['pd', 'survey', 'actions'];
         var KEY  = 'aisa_admin_tab';
 
         function panel(name) { return document.getElementById('panel-' + name); }
@@ -1140,12 +1169,10 @@
                 document.getElementById('generated-at').textContent =
                     'Updated ' + new Date(payload.generated_at).toLocaleString('en-GB');
             }
-            /* Export CSV is the second admin-hub card; reveal once we
-             * have data to export. `block` matches the sibling card so
-             * the grid lays out evenly. */
-            const ex = document.getElementById('export-btn');
-            ex.classList.remove('hidden');
-            ex.classList.add('block');
+            /* Export CSV sits in the tracker's filter bar; reveal it once
+             * there is data to export. It carries its own display class,
+             * so only `hidden` comes off. */
+            document.getElementById('export-btn').classList.remove('hidden');
             showState('state-ready');
             rendered = true;
         }
