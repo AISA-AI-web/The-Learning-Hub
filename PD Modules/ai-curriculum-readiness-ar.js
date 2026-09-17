@@ -469,6 +469,8 @@ window.AR_DICT = {
         "ما زالت إجابة واحدة بحاجة إلى تعبئة",
     "Fill in the required answers to continue":
         "أكمل الإجابات المطلوبة للمتابعة",
+    "Scope & Sequence":
+        "نطاق المحتوى وتسلسله",
 };
 
 /* Sentence-level translations for blocks containing inline markup. */
@@ -606,6 +608,10 @@ window.AR_BLOCKS = {
         "نشرت دائرة التعليم والمعرفة خطط الدروس الكاملة ومواد الطلاب على <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\" class=\"ltr\">InstrucTwin</a>. افتح درسك قبل يوم الاثنين واقرأه في ضوء الخطة التي كتبتَها للتو.",
     "<strong>Can't get in?</strong> You have not lost anything — your plan above is the part that matters, and it is already saved. Tick the box below so I know, and finish the module. Access is mine to chase, and I would rather know today than on the 20th.":
         "<strong>لا تستطيع الدخول؟</strong> لم تخسر شيئًا — فخطتك أعلاه هي الجزء المهم، وقد حُفظت بالفعل. ضع علامة في المربع أدناه لأعرف، وأكمل الوحدة. فمتابعة الدخول مسؤوليتي أنا، وأفضّل أن أعرف اليوم لا في العشرين.",
+    "This is the shape of it. The grade-by-grade detail is in the <a href=\"ai-literacy-scope-and-sequence.html\" target=\"_blank\" rel=\"noopener\">full Scope &amp; Sequence</a> — and the button in the corner opens it from any point in this module.":
+        "هذا هو الشكل العام. أما التفصيل صفًّا بصف فتجده في <a href=\"ai-literacy-scope-and-sequence.html\" target=\"_blank\" rel=\"noopener\">نطاق المحتوى وتسلسله كاملًا</a> — والزر في الزاوية يفتحه من أي موضع في هذه الوحدة.",
+    "<strong>Want the whole picture?</strong> The full <a href=\"ai-literacy-scope-and-sequence.html\" target=\"_blank\" rel=\"noopener\">Scope &amp; Sequence</a> lays out every grade from KG to 12 — the progression map, end-of-phase expectations, and how each strand builds year on year. It opens in a new tab, so you will not lose anything you have typed.":
+        "<strong>تريد الصورة كاملة؟</strong> يعرض <a href=\"ai-literacy-scope-and-sequence.html\" target=\"_blank\" rel=\"noopener\">نطاق المحتوى وتسلسله</a> كل صف من الروضة حتى الصف 12 — خريطة التدرّج، وتوقّعات نهاية كل مرحلة، وكيف يتراكم كل محور عامًا بعد عام. ويُفتح في علامة تبويب جديدة، فلن تفقد شيئًا مما كتبتَه.",
 };
 
 /* Stamp data-ar onto the elements AR_BLOCKS names, keyed by their

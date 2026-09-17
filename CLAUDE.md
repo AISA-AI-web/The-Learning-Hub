@@ -231,6 +231,23 @@ chapter unlocks and the knowledge-check answers and feedback are
 revealed, so the whole module reads end to end without working through
 it. Without the flag it behaves normally.
 
+**Scope & Sequence reference.**
+`PD Modules/ai-literacy-scope-and-sequence.html` is the full KG–Grade 12
+curriculum map (Brandon's own build: 43 tables, progression map,
+end-of-phase expectations, vertical strand progression). It is a
+**standalone page, deliberately not inlined** into the module — it
+carries its own design system (Atkinson Hyperlegible, a teal palette,
+dark mode) and its CSS styles bare `body`, `table`, `p` and `a`, so
+pasting it into the module would wreck the module's styling.
+
+The module reaches it three ways: a floating button present on every
+chapter, a callout beside the grade focus in segment 4, and a line in
+segment 2. The button is anchored **under the Hub topbar**, not above
+the chapter nav — that nav is sticky at `bottom:1rem`, so it slides
+between its stuck and natural positions as you scroll and no fixed
+bottom offset clears it at both ends. It flips to the left edge in
+Arabic.
+
 **Segment 4 does not depend on InstrucTwin.** A teacher picks their
 grade and sees that grade's Conceptual / Technical / Creation / Ethics
 focus — ADEK's own Scope and Sequence, held bilingually in the `GRADES`

@@ -305,6 +305,37 @@
             overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
         }
 
+        /* ---- Floating Scope & Sequence launcher ----
+         * The curriculum reference is wanted at any point, not at one
+         * step, so it follows the page rather than living in a chapter.
+         *
+         * Anchored under the Hub topbar (fixed, 0–60px) rather than
+         * above the chapter nav: that nav is sticky at bottom:1rem, so
+         * it slides between its stuck and natural positions as you
+         * scroll and no fixed bottom offset clears it at both. */
+        .scope-fab {
+            position: fixed;
+            right: 1rem;
+            top: 4.75rem;
+            z-index: 40;
+            display: inline-flex; align-items: center; gap: .5rem;
+            font-family: inherit; font-size: .85rem; font-weight: 700;
+            text-decoration: none;
+            color: var(--aisa-white); background: var(--aisa-purple);
+            border: 2px solid var(--aisa-white);
+            border-radius: 999px;
+            padding: .6rem 1rem;
+            box-shadow: 0 10px 26px -10px rgba(0,0,0,.55);
+        }
+        .scope-fab:hover { background: var(--aisa-purple-soft); }
+        .scope-fab svg { width: 15px; height: 15px; flex: none; }
+        body.lang-ar .scope-fab { right: auto; left: 1rem; }
+        @media (max-width: 30rem) {
+            .scope-fab .scope-fab-text { display: none; }
+            .scope-fab { padding: .7rem; }
+        }
+        @media print { .scope-fab { display: none; } }
+
         /* ---- Language toggle ---- */
         .lang-toggle {
             display: inline-flex; align-items: center; gap: .45rem;
@@ -362,6 +393,16 @@
     <script src="../auth/training.js?v=6"></script>
 </head>
 <body>
+
+<a class="scope-fab" href="ai-literacy-scope-and-sequence.html" target="_blank" rel="noopener"
+   title="Open the full Scope &amp; Sequence in a new tab">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+    </svg>
+    <span class="scope-fab-text">Scope &amp; Sequence</span>
+</a>
 
 <header class="masthead">
     <div class="masthead-inner">
@@ -511,6 +552,12 @@
             <li><strong>AI Creation, Engineering and System Design</strong></li>
             <li><strong>Responsible Governance, Data Privacy and Societal Impact</strong></li>
         </ol>
+
+        <p class="source-note">
+            This is the shape of it. The grade-by-grade detail is in the
+            <a href="ai-literacy-scope-and-sequence.html" target="_blank" rel="noopener">full Scope
+            &amp; Sequence</a> — and the button in the corner opens it from any point in this module.
+        </p>
 
         <div class="card">
             <h4>Time allocation</h4>
@@ -771,6 +818,16 @@
         </div>
 
         <div id="grade-focus" hidden></div>
+
+        <div class="callout">
+            <p style="margin-bottom:0;">
+                <strong>Want the whole picture?</strong> The full
+                <a href="ai-literacy-scope-and-sequence.html" target="_blank" rel="noopener">Scope
+                &amp; Sequence</a> lays out every grade from KG to 12 — the progression map,
+                end-of-phase expectations, and how each strand builds year on year. It opens in a
+                new tab, so you will not lose anything you have typed.
+            </p>
+        </div>
 
         <h3>Your six-line delivery plan</h3>
         <p>This is the thing that will be on your desk when the lesson starts. Write it against
