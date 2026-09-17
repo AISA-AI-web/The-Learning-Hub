@@ -98,9 +98,9 @@
      *     interactions land in the clicks sheet automatically.
      * Idempotent — guarded by a flag so we don't double-wire after
      * re-auth or programmatic sign-ins. */
-    /* The first-login tutorial + survey gate live in auth/onboarding.js.
-     * We auto-load that file here so individual pages don't each need
-     * a second <script> tag. The URL is derived from gate.js's own
+    /* The sibling auth helpers (certificate, search index, menu, dwell
+     * tracking) are auto-loaded here so individual pages don't each
+     * need a <script> tag apiece. The URL is derived from gate.js's own
      * <script> src, which works regardless of how the page included
      * it ('auth/gate.js', '../auth/gate.js', etc.).
      *
@@ -112,13 +112,11 @@
         return s ? s.src : '';
     })();
     var auxLoaded = false;
-    function loadOnboarding() {
-        /* Name kept for back-compat; loads all sibling auth helpers
-         * (first-login tutorial/survey gate + completion certificate). */
+    function loadAuxScripts() {
         if (auxLoaded) return;
         auxLoaded = true;
         if (!GATE_SCRIPT_SRC) return;
-        ['onboarding.js?v=2', 'certificate.js?v=7', 'search-index.js?v=8', 'menu.js?v=14', 'dwell.js?v=2'].forEach(function (name) {
+        ['certificate.js?v=7', 'search-index.js?v=8', 'menu.js?v=14', 'dwell.js?v=2'].forEach(function (name) {
             var url = GATE_SCRIPT_SRC.replace(/gate\.js(\?.*)?$/, name);
             if (url === GATE_SCRIPT_SRC) return;  // pattern didn't match — skip safely
             var s = document.createElement('script');
@@ -162,7 +160,7 @@
     if (existing) {
         window.aisaAuth = buildPublicApi();
         wireAutoTracking();
-        loadOnboarding();
+        loadAuxScripts();
         return;
     }
 
@@ -301,7 +299,7 @@
             unlock();
             drainReAuthResolvers();
             wireAutoTracking();
-            loadOnboarding();
+            loadAuxScripts();
             return;
         }
 
@@ -329,7 +327,7 @@
             unlock();
             drainReAuthResolvers();
             wireAutoTracking();
-            loadOnboarding();
+            loadAuxScripts();
         }).catch(function (err) {
             console.warn('AISA: create_session failed', err);
             showError('Could not start your session. Please try signing in again.');

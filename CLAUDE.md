@@ -135,6 +135,36 @@ fail silently and the dependent UIs stay empty:
   ever read back their own row, and nothing from this sheet goes in the
   repo, which is public.
 
+## First-login popups — removed 17 September 2026
+
+`auth/onboarding.js` is gone. It was two full-screen overlays shown on
+every page load until you cleared them: a four-slide "welcome tour"
+about the Hub, and a **blocking** gate demanding the AI & Innovation
+Survey be self-attested before the rest of the site would open. Both
+were annoying and the survey gate in particular held the whole Hub
+hostage to a Google Form. Removed at Brandon's request.
+
+What went with it: the file itself, its entry in the helper-script list
+in `gate.js` (`loadOnboarding()` is now `loadAuxScripts()`), and the
+*Onboarding* card pair on `dashboard.html` — with nothing left to write
+those events, they could only ever have read "Outstanding" in amber
+with no way to clear them.
+
+**Deliberately left in place:** the `survey` and `tutorial` columns in
+`EXTRA` on `admin-dashboard.html`. Those are the historical record of
+who attested before the removal, and nothing new will ever land in
+them. They are outside `MODULES`, so they never counted toward the
+headline numbers and dropping them later changes nothing but the
+tracker's column count.
+
+The `aisa_onboarding_v1` localStorage key is orphaned on staff devices.
+Harmless — nothing reads it.
+
+Note the cache-busting convention: `gate.js` is included as
+`auth/gate.js?v=N` by 44 pages, so **changing `gate.js` means bumping
+`N` on every one of them** or returning visitors keep running the
+cached copy. This change took it to `?v=19`.
+
 ## Reading timestamps out of the sheets
 
 **Never compare a timestamp cell as a string.** Put it through `_tsMs()`

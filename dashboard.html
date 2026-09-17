@@ -24,7 +24,7 @@
         .fade-in { animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
-    <script src="auth/gate.js?v=18"></script>
+    <script src="auth/gate.js?v=19"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
@@ -96,10 +96,6 @@
             <div id="dash-evals" class="grid gap-3"></div>
         </section>
 
-        <!-- System items -->
-        <h3 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-3 px-1">Onboarding</h3>
-        <section id="dash-system" class="grid sm:grid-cols-2 gap-3"></section>
-
         <p class="text-center text-xs text-slate-400 mt-10">
             Status syncs from your AISA account. Completions are recorded automatically as you finish each module.
         </p>
@@ -126,10 +122,6 @@
             { id: 'sharepoint-workflows', emoji: '🗂️', tag: 'Orientation', title: 'SharePoint WorkFlows',               cert: 'SharePoint WorkFlows — Staff How-To',       file: 'PD%20Modules/sharepoint-workflows-module.html', hours: 1 }
         ];
         const TOTAL_HOURS = MODULES.reduce((s, m) => s + (m.hours || 0), 0);
-        const SYSTEM = [
-            { id: 'tutorial', emoji: '👋', title: 'Welcome Tutorial' },
-            { id: 'survey',   emoji: '📋', title: 'AI & Innovation Survey' }
-        ];
         const TOTAL = MODULES.length;
         const RING_CIRCUMFERENCE = 326.7; // 2πr, r=52
         const PREVIEW_COUNT = 3;          // modules shown before "Show all"
@@ -175,24 +167,6 @@
                 '</div>';
         }
 
-        function systemCard(s, completedAt) {
-            const done = !!completedAt;
-            return '<div class="bg-white rounded-xl border ' + (done ? 'border-emerald-200' : 'border-gray-100') +
-                ' shadow-sm p-4 flex items-center gap-3">' +
-                    '<div class="w-9 h-9 rounded-lg flex items-center justify-center text-lg flex-shrink-0 ' +
-                        (done ? 'bg-emerald-50' : 'bg-amber-50') + '">' + s.emoji + '</div>' +
-                    '<div class="flex-1 min-w-0">' +
-                        '<p class="font-bold text-slate-900 text-sm leading-tight truncate">' + s.title + '</p>' +
-                        (done
-                            ? '<p class="text-xs text-emerald-700 font-semibold mt-0.5">Done ' + fmtDate(completedAt) + '</p>'
-                            : '<p class="text-xs text-amber-700 font-semibold mt-0.5">Outstanding</p>') +
-                    '</div>' +
-                    (done
-                        ? '<svg width="18" height="18" class="text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
-                        : '') +
-                '</div>';
-        }
-
         function render(map) {
             lastMap = map || {};
             // Modules — default to the first PREVIEW_COUNT so the
@@ -221,10 +195,6 @@
                     toggleBtn.classList.add('hidden');
                 }
             }
-
-            // System items
-            document.getElementById('dash-system').innerHTML =
-                SYSTEM.map(s => systemCard(s, map[s.id])).join('');
 
             // Overall ring + counts
             const done = MODULES.filter(m => map[m.id]).length;
