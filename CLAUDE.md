@@ -472,6 +472,41 @@ steps are 2.1–2.6. Cross-references ("see 2.4", "read section 4.3") are
 written out by hand. Reorder the sections and every one of them is
 wrong, so renumber both together.
 
+**ADEK's FAQ update, 18 September 2026.** ADEK recirculated the guide with
+four new rows in the Troubleshooting & FAQs table. **They did not bump the
+version string** — the cover still reads *Version 1.0, Last Updated
+09/12/2026* in both PDFs, so the cover cannot tell you which one you have.
+Diff the FAQ table instead. Everything outside that table is identical
+apart from glyph encoding, and the 16 figures are byte-identical bar
+Figure 8, which ADEK re-compressed without changing the picture (the
+committed copy was left alone rather than churn a binary in a public repo).
+
+Where the four went, which is **not** row-for-row where ADEK put them:
+
+- *Absent student*, *submitted by mistake* and *newly-added student cannot
+  log in* became table rows, plus a note on step 2.5 that a catch-up
+  session is just another timetable record.
+- The **10-minute submit lock** came out of the "submitted by mistake" row
+  and into the timing rules (4.5), because it is a timing fact every
+  proctor needs, not a thing you look up after it goes wrong. It sits
+  *last* among the timing cards: 45 + 5 = 50 has to read as a sum
+  left-to-right, and a 10 in front of it invites reading the total as 60.
+- **Additional Learning Needs** got its own panel (`#aln`) below the table.
+  It is a procedure with a deadline, not a one-liner, and burying the
+  extra-time route in a table cell would have cost students their
+  accommodation. Step 3.1 (verify the roster) points at it, because the
+  roster check is when you would notice and "in advance" is the whole
+  point.
+
+That panel names an **ADEK officer's email address**
+(`mirna.hassan@adek.gov.ae`, for arranging extra time) on a page that is
+world-readable. That follows the precedent set by
+`safeguarding-module.html`, which publishes both Safeguarding Leads with
+their emails, and the alternative — omitting the only route to an
+extra-time accommodation — is worse for the students it exists for. If it
+ever has to come out, it is two `<a href="mailto:">` occurrences in the
+`#aln` panel and the row it replaced can be reinstated from ADEK's PDF.
+
 **Screenshots.** The 16 figures in `Tools and Resources/assets/aigt/`
 were extracted from ADEK's PDF (~940 KB total). Every one shows
 demonstration data only — "Test Student One", `test9900101@example.com`,

@@ -242,6 +242,14 @@ figure.shot figcaption{display:flex;align-items:center;gap:7px;padding:7px 11px;
 figure.shot figcaption b{color:var(--ink-2);font-weight:700}
 figure.shot figcaption .expand{margin-left:auto;font-size:.72rem;color:var(--accent-ink);font-weight:700}
 
+/* standalone panel — a procedure that isn't a numbered step */
+.panel{margin-top:26px;border:1px solid var(--line);border-left:3px solid var(--pc,var(--accent));
+       border-radius:0 var(--radius) var(--radius) 0;background:var(--surface);
+       padding:18px 20px 20px;scroll-margin-top:calc(var(--topbar) + 12px)}
+.panel-head{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin-bottom:10px}
+.panel-head h3{font-size:1.12rem}
+.panel-body{display:grid;gap:12px}
+
 /* side-by-side figure strips */
 .shots{display:grid;gap:10px;align-items:start;
        grid-template-columns:repeat(auto-fit,minmax(var(--min,280px),1fr))}
@@ -284,7 +292,7 @@ table{border-collapse:collapse;width:100%;min-width:640px;font-size:.93rem}
 th,td{text-align:left;padding:11px 15px;border-bottom:1px solid var(--line);vertical-align:top}
 thead th{background:var(--surface-2);font-family:var(--head);font-size:.73rem;font-weight:800;
          letter-spacing:.07em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
-tbody tr:last-child td{border-bottom:0}
+tbody tr:last-child td,tbody tr:last-child th{border-bottom:0}
 tbody th{font-weight:700;color:var(--ink);border-bottom:1px solid var(--line)}
 td .who{display:inline-block;font-size:.74rem;font-weight:800;padding:2px 8px;border-radius:999px;
         background:var(--surface-2);border:1px solid var(--line-strong);color:var(--ink-2);white-space:nowrap}
@@ -673,6 +681,11 @@ body[data-role="lead"] .checks,body[data-role="proctor"] .checks{grid-template-c
         <div class="call warn"><b class="tag">These records go to ADEK</b>
           The timetable is shared with ADEK, and the assessment only becomes available to a grade’s
           students once its window is set here.</div>
+        <div class="call note"><b class="tag">Absences are a second timetable record</b>
+          A student who misses their session sits it in a catch-up slot booked here the same way.
+          Group a grade’s absentees into one session and label it plainly — <i>Grade 4 absent
+          students</i> — then the Proctor generates a fresh code for it. See
+          <a href="#troubleshooting">section 7</a>.</div>
         <figure class="shot">
           <button class="zoom" type="button" data-full="assets/aigt/07-timetable-record.png"
             data-cap="Figure 7 — Adding a timetable record: grade, section, one or more proctors, and the exam date and time.">
@@ -728,6 +741,10 @@ body[data-role="lead"] .checks,body[data-role="proctor"] .checks{grid-template-c
           <li>Check every student in your assigned grade appears — then <b>confirm it with your
               AI Lead</b>. That confirmation is your responsibility, not theirs.</li>
         </ol>
+        <div class="call warn"><b class="tag">Anyone needing extra time?</b>
+          Extra time for a student with Additional Learning Needs has to be arranged with ADEK
+          <b>before</b> the session — it cannot be granted once they have started. Check now:
+          <a href="#aln">Students with Additional Learning Needs</a>.</div>
         <figure class="shot">
           <button class="zoom" type="button" data-full="assets/aigt/08-roster.jpg"
             data-cap="Figure 8 — The Roster tab: every enrolled student with their username and email, plus Enroll Student and Upload CSV.">
@@ -889,8 +906,12 @@ body[data-role="lead"] .checks,body[data-role="proctor"] .checks{grid-template-c
             <div class="lbl">Grace period</div></div>
           <div class="tcard tot"><div class="big">50<small style="font-size:.5em"> min</small></div>
             <div class="lbl">Hard limit</div></div>
+          <div class="tcard"><div class="big">10<small style="font-size:.5em"> min</small></div>
+            <div class="lbl">Submit locked from start</div></div>
         </div>
         <ul class="bul">
+          <li><b>Submit is blocked for the first 10 minutes.</b> After that, any submission counts
+              as final — the platform shows a flag asking the student to confirm they are ready.</li>
           <li>Time taken on the assessment is <b>tracked</b>.</li>
           <li>Minimising the browser before submitting <b>auto-flags the session and notifies ADEK</b>.</li>
           <li>The assessment is completed in <b>one sitting</b>.</li>
@@ -995,7 +1016,7 @@ body[data-role="lead"] .checks,body[data-role="proctor"] .checks{grid-template-c
 <!-- ============ 7. troubleshooting ============ -->
 <section class="sec" id="troubleshooting">
   <div class="sec-head"><span class="sec-num">7</span><h2>Troubleshooting</h2></div>
-  <p class="lede">The six things that actually go wrong, and who fixes each one.</p>
+  <p class="lede">What actually goes wrong, and who fixes each one.</p>
   <div class="tw" style="margin-top:20px">
     <table>
       <caption class="sr">Common problems, what to check, and who to contact</caption>
@@ -1019,8 +1040,55 @@ body[data-role="lead"] .checks,body[data-role="proctor"] .checks{grid-template-c
         <tr><th scope="row">Proctor cannot add or remove students</th>
             <td>Confirm <b>Manage Roster Access</b> has been granted (see 2.4).</td>
             <td><span class="who">AI Lead</span></td></tr>
+        <tr><th scope="row">Student was absent</th>
+            <td>Book a catch-up session on the <b>AIGT Timetable</b>, grouping a grade’s absentees
+                into one slot and labelling it plainly (<i>Grade 4 absent students</i>). The Proctor
+                generates a fresh access code for it and they sit it as normal.</td>
+            <td><span class="who">AI Lead</span> <span class="who">InstrucTwin</span></td></tr>
+        <tr><th scope="row">Student submitted by mistake</th>
+            <td>Contact Support straight away — live chat, or
+                <a href="mailto:support@instructwin.com">support@instructwin.com</a>.
+                Submitting is <b>blocked for the first 10 minutes</b>; after that the platform asks
+                them to confirm and the submission counts as valid.</td>
+            <td><span class="who">InstrucTwin</span></td></tr>
+        <tr><th scope="row">A student you just added cannot get in</th>
+            <td>This happens when a student is added <b>after</b> the code was generated. Generate a
+                new access code, and check on the <b>Roster</b> page that they are assigned to a
+                class. Adding students in advance avoids it entirely.</td>
+            <td><span class="who">Proctor</span></td></tr>
       </tbody>
     </table>
+  </div>
+
+  <div class="panel" id="aln" style="--pc:var(--stud)">
+    <div class="panel-head">
+      <h3>Students with Additional Learning Needs</h3>
+      <span class="badge" style="--rsoft:var(--lead-soft);--rc:var(--lead);--rline:var(--lead-line)">AI Lead</span>
+      <span class="badge" style="--rsoft:var(--proc-soft);--rc:var(--proc);--rline:var(--proc-line)">Proctor</span>
+    </div>
+    <div class="panel-body">
+      <p style="font-size:.98rem;color:var(--ink-2)">There is no single ALN adjustment. What a student
+         gets depends on their needs and on <b>what their official medical report requires</b> — and
+         whatever is used has to be recorded against the session.</p>
+
+      <div class="call note"><b class="tag">English language learners are not in scope here</b>
+        The assessment was designed with ELLs in mind, so they need no accommodation flag.</div>
+
+      <h4 style="font-size:.95rem;margin-top:4px">Recording an accommodation that was used</h4>
+      <p class="path"><span class="k">Incidents</span><span class="sep">›</span><span class="k">New Incident</span>
+        <span class="sep">›</span><span class="k">Other</span></p>
+      <ol class="do">
+        <li>Title it exactly <b>ALN Student Accommodation</b>.</li>
+        <li>In the description, name the accommodation used and confirm it is stated in the
+            student’s official medical report.</li>
+      </ol>
+
+      <div class="call stop"><b class="tag">Extra time must be arranged before the session</b>
+        If the accommodation in the medical report is <b>extra time</b>, email
+        <a href="mailto:mirna.hassan@adek.gov.ae">mirna.hassan@adek.gov.ae</a> at ADEK
+        <b>in advance</b> — the support team sets it up. It cannot be added once the student has
+        started, so pick this up at the roster check (see 3.1), not on the day.</div>
+    </div>
   </div>
 </section>
 
@@ -1086,10 +1154,13 @@ body[data-role="lead"] .checks,body[data-role="proctor"] .checks{grid-template-c
   </div>
 
   <div class="foot">
-    <p><b>Source:</b> <i>AI Growth Test — AI Lead &amp; Proctor User Guide</i>, version 1.0,
-       last updated 12 September 2026. Republished here for AISA staff; the wording has been
-       reorganised for the screen but the procedures, timings and rules are unchanged.
-       Screenshots are the guide’s own, and show demonstration data only.</p>
+    <p><b>Source:</b> <i>AI Growth Test — AI Lead &amp; Proctor User Guide</i>, including the FAQ
+       update ADEK circulated on 18 September 2026 (absent students, accidental submissions,
+       Additional Learning Needs, and newly-added student logins). ADEK left the cover marked
+       version 1.0 / 12 September, so that date does not distinguish the two.
+       Republished here for AISA staff; the wording has been reorganised for the screen but the
+       procedures, timings and rules are unchanged. Screenshots are the guide’s own, and show
+       demonstration data only.</p>
     <p>If the platform changes and a step here no longer matches what you see, the platform is right —
        tell the AI Lead so this page can be corrected.</p>
   </div>
