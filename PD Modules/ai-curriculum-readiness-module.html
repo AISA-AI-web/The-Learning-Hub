@@ -389,7 +389,7 @@
 
     </style>
 
-    <script src="../auth/gate.js?v=20"></script>
+    <script src="../auth/gate.js?v=21"></script>
     <script src="../auth/training.js?v=6"></script>
 </head>
 <body>
@@ -425,7 +425,7 @@
                 <span class="ob-lang-text">العربية</span>
             </button>
             <span class="chip">Complete by 20 September 2026</span>
-            <span class="chip">Teaching begins 21 September</span>
+            <span class="chip">Teaching begins week of 21 September</span>
             <span class="chip">In person, 21 September</span>
         </div>
     </div>
@@ -477,7 +477,7 @@
         <h3>The plain facts</h3>
         <ul>
             <li>AI literacy is a <strong>mandatory entitlement for every student, KG to Grade 12</strong> — not an elective, and not only for ICT.</li>
-            <li>Teaching begins <strong>21 September 2026</strong>. The full curriculum, lesson plans and teacher toolkits are already on InstrucTwin.</li>
+            <li>Teaching begins <strong>the week of 21 September 2026</strong> — your first lesson falls somewhere in that week, not necessarily on the Monday. The full curriculum, lesson plans and teacher toolkits are already on InstrucTwin.</li>
             <li>This module is the sixty minutes that gets you to your first lesson.</li>
             <li>We meet in person on <strong>21 September</strong> to rehearse — moderation, micro-teach, and the questions you raise here.</li>
         </ul>
@@ -553,11 +553,22 @@
             <li><strong>Responsible Governance, Data Privacy and Societal Impact</strong></li>
         </ol>
 
-        <p class="source-note">
-            This is the shape of it. The grade-by-grade detail is in the
-            <a href="ai-literacy-scope-and-sequence.html" target="_blank" rel="noopener">full Scope
-            &amp; Sequence</a> — and the button in the corner opens it from any point in this module.
-        </p>
+        <div class="card">
+            <h4>The whole map, grade by grade</h4>
+            <p>
+                The shape above is the summary. The <strong>Scope &amp; Sequence</strong> is the full
+                KG&ndash;Grade 12 curriculum map: what every grade covers, what students are expected to
+                reach by the end of each phase, and how each strand builds year on year.
+            </p>
+            <p style="margin-bottom:0;">
+                <a class="btn btn-secondary" href="ai-literacy-scope-and-sequence.html"
+                   target="_blank" rel="noopener">Open the Scope &amp; Sequence</a>
+            </p>
+            <p class="source-note" style="margin-bottom:0;">
+                Opens in a new tab. The purple button in the corner of the screen opens the same
+                thing from any point in this module.
+            </p>
+        </div>
 
         <div class="card">
             <h4>Time allocation</h4>
@@ -801,17 +812,18 @@
     </section>
 
     <!-- ================= 4 · THE LOAD-BEARING SEGMENT ================= -->
-    <section class="chapter" data-chapter="4" data-chapter-id="lesson" data-chapter-title="Your 21 September lesson">
+    <section class="chapter" data-chapter="4" data-chapter-id="lesson" data-chapter-title="Your first lesson">
         <input type="checkbox" class="sr-only module-checkbox" aria-hidden="true" tabindex="-1">
         <div class="chapter-head">
             <div class="chapter-time">Segment 4 · 13 minutes</div>
-            <h2>Your 21 September lesson</h2>
+            <h2>Your first lesson</h2>
         </div>
 
         <p>
-            Everything so far has been preparation for this. Pick your grade and write the plan
-            you will teach from. You do not need InstrucTwin open to do it — the curriculum focus
-            for your grade is below.
+            Everything so far has been preparation for this. Teaching starts the
+            <strong>week of 21 September</strong> — your first lesson falls somewhere in that week,
+            not necessarily on the Monday. Pick your grade and write the plan you will teach from.
+            You do not need InstrucTwin open to do it — the curriculum focus for your grade is below.
         </p>
 
         <div class="field">
@@ -825,12 +837,17 @@
         <div id="grade-focus" hidden></div>
 
         <div class="callout">
+            <p>
+                <strong>Want the whole picture?</strong> The <strong>Scope &amp; Sequence</strong>
+                lays out every grade from KG to 12 — the progression map, end-of-phase
+                expectations, and how each strand builds year on year.
+            </p>
             <p style="margin-bottom:0;">
-                <strong>Want the whole picture?</strong> The full
-                <a href="ai-literacy-scope-and-sequence.html" target="_blank" rel="noopener">Scope
-                &amp; Sequence</a> lays out every grade from KG to 12 — the progression map,
-                end-of-phase expectations, and how each strand builds year on year. It opens in a
-                new tab, so you will not lose anything you have typed.
+                <a class="btn btn-secondary" href="ai-literacy-scope-and-sequence.html"
+                   target="_blank" rel="noopener">Open the Scope &amp; Sequence</a>
+            </p>
+            <p class="source-note" style="margin-bottom:0;">
+                It opens in a new tab, so you will not lose anything you have typed.
             </p>
         </div>
 
@@ -903,7 +920,7 @@
             <ol style="margin-bottom:0;">
                 <li>Sign in at <a href="https://schools.instructwin.com/" target="_blank" rel="noopener">schools.instructwin.com</a> with your school username and password.</li>
                 <li>Find your grade, then your unit.</li>
-                <li>Open the lesson scheduled for 21 September.</li>
+                <li>Open your first lesson for the week of 21 September.</li>
                 <li>Read the lesson template through once — note what each section is for.</li>
                 <li>Locate the student-facing materials before the lesson, not during it.</li>
             </ol>
@@ -1574,7 +1591,8 @@
         var name = (user && user.name && user.name.trim()) ? user.name.trim() : '';
         var band = gradeLabel(document.getElementById('f-grade').value, isArabic());
         document.getElementById('op-who').textContent =
-            [name, band].filter(Boolean).join(' · ') + (name || band ? ' · ' : '') + '21 September 2026';
+            [name, band].filter(Boolean).join(' · ') + (name || band ? ' · ' : '') +
+            (isArabic() ? 'أسبوع 21 سبتمبر 2026' : 'Week of 21 September 2026');
 
         var g = GRADES[document.getElementById('f-grade').value];
         var labels = isArabic() ? FOCUS_LABELS.ar : FOCUS_LABELS.en;

@@ -73,11 +73,27 @@
         /* Latin runs inside Arabic sentences keep their own direction */
         .ltr { direction: ltr; unicode-bidi: isolate; }
 
+        /* Newsletter mail-out bar. Deliberately off-palette (AISA purple,
+           not the Digital Lion navy) so it never reads as content. */
+        #nl-send { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+                   background: #21076C; color: #fff; padding: .85rem 1rem;
+                   box-shadow: 0 -8px 24px -12px rgba(0,0,0,.6); }
+        #nl-send .nl-inner { max-width: 56rem; margin: 0 auto; display: flex;
+                             flex-wrap: wrap; align-items: center; gap: .6rem .9rem; }
+        #nl-send .nl-kicker { font-size: .62rem; font-weight: 800; letter-spacing: .09em;
+                              text-transform: uppercase; color: #D8B664; }
+        #nl-send button { font: inherit; font-weight: 700; font-size: .8rem; cursor: pointer;
+                          border-radius: 999px; padding: .5rem 1.1rem; border: 2px solid #D8B664; }
+        #nl-send .nl-go   { background: #D8B664; color: #21076C; }
+        #nl-send .nl-test { background: transparent; color: #D8B664; }
+        #nl-send button[disabled] { opacity: .55; cursor: not-allowed; }
+        #nl-send .nl-msg { font-size: .78rem; color: #E9E4F7; flex-basis: 100%; margin: 0; }
+
         /* Key-dates table */
         .dates-table th, .dates-table td { padding: 0.7rem 0.9rem; vertical-align: top; }
         .dates-table tbody tr + tr { border-top: 1px solid rgba(207, 250, 254, 0.16); }
     </style>
-    <script src="../auth/gate.js?v=20"></script>
+    <script src="../auth/gate.js?v=21"></script>
 </head>
 <body class="bg-slate-50 text-gray-800 min-h-screen flex flex-col">
 
@@ -100,8 +116,8 @@
                 <span class="lang-ar">ما الذي يجري مع الذكاء الاصطناعي في AISA</span>
             </h2>
             <p class="text-lg md:text-xl max-w-3xl mx-auto text-cyan-50 drop-shadow text-center">
-                <span class="lang-en">Every AISA student, from KG to Grade 12, has AI literacy lessons this year under ADEK's K&ndash;12 AI Literacy Framework. ADEK's start date for those lessons is this Monday. Here's what's happening, what's coming, and what &mdash; if anything &mdash; you need to do.</span>
-                <span class="lang-ar">سيحصل كل طالب في AISA، من رياض الأطفال حتى الصف الثاني عشر، على دروس في الثقافة في الذكاء الاصطناعي هذا العام بموجب إطار دائرة التعليم والمعرفة للثقافة في الذكاء الاصطناعي. وتاريخ البدء المحدَّد من الدائرة هو يوم الاثنين المقبل. فيما يلي ما يجري، وما هو قادم، وما المطلوب منكم — إن وُجد.</span>
+                <span class="lang-en">Every AISA student, from KG to Grade 12, has AI literacy lessons this year under ADEK's K&ndash;12 AI Literacy Framework. ADEK's start date for those lessons is the week beginning this Monday. Here's what's happening, what's coming, and what &mdash; if anything &mdash; you need to do.</span>
+                <span class="lang-ar">سيحصل كل طالب في AISA، من رياض الأطفال حتى الصف الثاني عشر، على دروس في الثقافة في الذكاء الاصطناعي هذا العام بموجب إطار دائرة التعليم والمعرفة للثقافة في الذكاء الاصطناعي. وتاريخ البدء المحدَّد من الدائرة هو الأسبوع الذي يبدأ يوم الاثنين المقبل. فيما يلي ما يجري، وما هو قادم، وما المطلوب منكم — إن وُجد.</span>
             </p>
             <div class="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm">
                 <span class="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3 py-1 font-semibold">
@@ -157,7 +173,7 @@
                                 <td class="text-cyan-100/85"><span class="lang-en">Everyone who received the email</span><span class="lang-ar">كل من وصلته الرسالة</span></td>
                             </tr>
                             <tr>
-                                <td class="font-bold text-amber-200 whitespace-nowrap"><span class="lang-en">Mon, Sept 21</span><span class="lang-ar">الاثنين ٢١ سبتمبر</span></td>
+                                <td class="font-bold text-amber-200 whitespace-nowrap"><span class="lang-en">Week of Sept 21</span><span class="lang-ar">أسبوع ٢١ سبتمبر</span></td>
                                 <td><span class="lang-en">AI Literacy lessons begin (ADEK start date)</span><span class="lang-ar">بدء دروس الثقافة في الذكاء الاصطناعي (تاريخ الدائرة)</span></td>
                                 <td class="text-cyan-100/85"><span class="lang-en">Teachers delivering the AI curriculum</span><span class="lang-ar">المعلّمون الذين يدرّسون منهج الذكاء الاصطناعي</span></td>
                             </tr>
@@ -308,8 +324,8 @@
                                     <span class="lang-ar"><strong>هناك اثنتا عشرة إجابة إلزامية.</strong> تُعلمكم الوحدة بعدد ما تبقّى منها، وتسردها بالاسم في النهاية إن كنتم قد استأنفتم من المنتصف.</span>
                                 </li>
                                 <li>
-                                    <span class="lang-en"><strong>Your plan is printable.</strong> Print it at the end and have it on the desk on Monday.</span>
-                                    <span class="lang-ar"><strong>خطتكم قابلة للطباعة.</strong> اطبعوها في النهاية لتكون أمامكم على المكتب يوم الاثنين.</span>
+                                    <span class="lang-en"><strong>Your plan is printable.</strong> Print it at the end and have it on the desk for your first lesson.</span>
+                                    <span class="lang-ar"><strong>خطتكم قابلة للطباعة.</strong> اطبعوها في النهاية لتكون أمامكم على المكتب في درسكم الأوّل.</span>
                                 </li>
                                 <li>
                                     <span class="lang-en"><strong>It's available in Arabic.</strong> Use the language button at the top of the module.</span>
@@ -332,8 +348,8 @@
                                 <span class="lang-ar">توجد خطط الدروس وموادّ الطلاب الصادرة عن دائرة التعليم والمعرفة على منصّتها الخاصة، غير أنّ <strong>الصفوف التي تدرّسونها لم تظهر بعد في حسابات الطاقم</strong>. ومتابعة هذا من مسؤوليتي لا من مسؤوليتكم — فلا تبحثوا عنها، وسأؤكّد لكم فور توفّرها.</span>
                             </p>
                             <p class="text-sm text-gray-700 leading-relaxed">
-                                <span class="lang-en"><strong>This changes nothing about Monday.</strong> Your grade’s curriculum focus is held inside the module itself, so the plan you write there is complete on its own — and it’s already saved. That plan is what you teach from.</span>
-                                <span class="lang-ar"><strong>وهذا لا يغيّر شيئًا في يوم الاثنين.</strong> فمحور المنهج الخاصّ بصفّكم موجود داخل الوحدة نفسها، أي أنّ الخطة التي تكتبونها فيها كاملة بذاتها — وهي محفوظة بالفعل. وهي ما ستدرّسون منه.</span>
+                                <span class="lang-en"><strong>This changes nothing about your first lesson.</strong> Your grade’s curriculum focus is held inside the module itself, so the plan you write there is complete on its own — and it’s already saved. That plan is what you teach from.</span>
+                                <span class="lang-ar"><strong>وهذا لا يغيّر شيئًا في درسكم الأوّل.</strong> فمحور المنهج الخاصّ بصفّكم موجود داخل الوحدة نفسها، أي أنّ الخطة التي تكتبونها فيها كاملة بذاتها — وهي محفوظة بالفعل. وهي ما ستدرّسون منه.</span>
                             </p>
                         </div>
                     </div>
@@ -358,8 +374,8 @@
                             <span class="lang-ar">كم مرّة ستدرّسونه</span>
                         </h3>
                         <p class="text-gray-700 leading-relaxed mb-3">
-                            <span class="lang-en">ADEK's entitlement is <strong>one period a week</strong> for KG through Grade 5, and <strong>two periods a week</strong> for Grades 6&ndash;12.</span>
-                            <span class="lang-ar">الاستحقاق المقرَّر من دائرة التعليم والمعرفة هو <strong>حصة واحدة أسبوعيًا</strong> لرياض الأطفال حتى الصف الخامس، و<strong>حصتان أسبوعيًا</strong> للصفوف ٦–١٢.</span>
+                            <span class="lang-en">Teaching starts the <strong>week of September 21</strong> — your first lesson falls somewhere in that week, not necessarily on the Monday. ADEK's entitlement is <strong>one period a week</strong> for KG through Grade 5, and <strong>two periods a week</strong> for Grades 6&ndash;12.</span>
+                            <span class="lang-ar">يبدأ التدريس في <strong>أسبوع ٢١ سبتمبر</strong> — فدرسكم الأوّل يقع في موضع ما من ذلك الأسبوع، وليس بالضرورة يوم الاثنين. والاستحقاق المقرَّر من دائرة التعليم والمعرفة هو <strong>حصة واحدة أسبوعيًا</strong> لرياض الأطفال حتى الصف الخامس، و<strong>حصتان أسبوعيًا</strong> للصفوف ٦–١٢.</span>
                         </p>
                         <div class="bg-amber-50 border-s-4 border-amber-500 rounded-xl p-5 mb-4">
                             <p class="text-gray-800 leading-relaxed">
@@ -369,18 +385,22 @@
                         </div>
                         <div class="bg-blue-50 border border-blue-100 rounded-xl p-5">
                             <h4 class="font-heading font-bold text-blue-950 mb-2">
-                                <span class="lang-en">Planning beyond Monday?</span>
-                                <span class="lang-ar">تخطّطون لما بعد الاثنين؟</span>
+                                <span class="lang-en">Planning beyond your first lesson?</span>
+                                <span class="lang-ar">تخطّطون لما بعد درسكم الأوّل؟</span>
                             </h4>
                             <p class="text-sm text-gray-700 leading-relaxed mb-3">
                                 <span class="lang-en">The full <strong>Scope &amp; Sequence</strong> maps every grade from KG to 12 — the progression, what students are expected to reach by the end of each phase, and how each strand builds year on year. It's a reference, not a module: dip in when you need it.</span>
                                 <span class="lang-ar">تعرض <strong>خريطة النطاق والتتابع</strong> الكاملة كل صف من رياض الأطفال حتى الثاني عشر — التدرّج، وما يُتوقَّع أن يبلغه الطلاب بنهاية كل مرحلة، وكيف يتنامى كل محور عامًا بعد عام. وهي مرجع لا وحدة تدريبية: ارجعوا إليها عند الحاجة.</span>
                             </p>
-                            <a href="../PD%20Modules/ai-literacy-scope-and-sequence.html" class="inline-flex items-center text-sm font-bold text-cyan-800 hover:text-cyan-900">
+                            <a href="../PD%20Modules/ai-literacy-scope-and-sequence.html" target="_blank" rel="noopener" class="inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-cyan-700 text-white px-6 py-3 rounded-full font-bold hover:from-blue-950 hover:to-cyan-800 transition-transform hover:scale-105">
                                 <span class="mr-2">🗺️</span>
-                                <span class="lang-en">Open the Scope &amp; Sequence</span>
-                                <span class="lang-ar">افتحوا خريطة النطاق والتتابع</span>
+                                <span class="lang-en">Open the full KG&ndash;12 curriculum map</span>
+                                <span class="lang-ar">افتحوا خريطة المنهج الكاملة للصفوف رياض الأطفال–١٢</span>
                             </a>
+                            <p class="text-xs text-gray-500 mt-2">
+                                <span class="lang-en">Opens in a new tab.</span>
+                                <span class="lang-ar">يُفتح في علامة تبويب جديدة.</span>
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -592,6 +612,100 @@
             </p>
         </div>
     </footer>
+
+    <!-- Mail-out bar. Rendered only for the addresses the server's
+         NEWSLETTER_SENDERS allowlist names. Hiding it is a courtesy, not a
+         control: send_newsletter re-checks the caller server-side, because
+         the Hub's sign-in gate is client-side and this repo is public. -->
+    <div id="nl-send" hidden>
+        <div class="nl-inner">
+            <span class="nl-kicker">Newsletter tools</span>
+            <span id="nl-count" style="font-size:.82rem;"></span>
+            <span style="flex:1"></span>
+            <button type="button" class="nl-test" id="nl-test">Send me a test</button>
+            <button type="button" class="nl-go" id="nl-go">Email all staff</button>
+            <p class="nl-msg" id="nl-msg"></p>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        /* What the email says. Kept here rather than scraped from the page
+           so the trailer can be shorter and blunter than the issue itself. */
+        var ISSUE    = 'Issue No. 5 \u00b7 September 18';
+        var HEADLINE = "What's happening with AI at AISA";
+        var INTRO    = 'Every AISA student, KG to Grade 12, has AI literacy lessons this year. '
+                     + 'Teaching starts the week of September 21. Here is what that means for you.';
+        var ITEMS    = [
+            'Teachers delivering the curriculum: finish the 60-minute training module by Sunday, September 20.',
+            'Building meeting Monday, September 21 at 3:10 pm in the Big Gym, for anyone who got the email.',
+            'Lessons start the week of September 21 \u2014 not necessarily on the Monday.',
+            'Grades 4 and 5: your homeroom teacher proctors the AI Growth Test. Dates to follow.',
+            'New to AISA: ADEK Level 1 AI Foundations is due Wednesday, September 30.'
+        ];
+
+        var bar = document.getElementById('nl-send');
+        var msg = document.getElementById('nl-msg');
+        var go  = document.getElementById('nl-go');
+        var test= document.getElementById('nl-test');
+        var cnt = document.getElementById('nl-count');
+        if (!bar || !window.aisaReady) return;
+
+        function say(t, tone) {
+            msg.textContent = t || '';
+            msg.style.color = tone === 'bad' ? '#FFB4B4' : (tone === 'good' ? '#BDF5C8' : '#E9E4F7');
+        }
+        function busy(on) { go.disabled = on; test.disabled = on; }
+
+        // The issue's own address, so the email never needs a hardcoded host.
+        function issueUrl() { return location.origin + location.pathname; }
+
+        function send(opts) {
+            busy(true);
+            say(opts.testOnly ? 'Sending you a test\u2026' : 'Sending\u2026');
+            window.aisaAuth.sendNewsletter({
+                url: issueUrl(), subject: 'The Digital Lion \u2014 ' + HEADLINE,
+                issue: ISSUE, headline: HEADLINE, intro: INTRO, items: ITEMS,
+                linkLabel: 'Read the newsletter',
+                testOnly: !!opts.testOnly, confirm: !opts.testOnly
+            }).then(function (r) {
+                busy(false);
+                if (!r || r.ok === false) {
+                    say('Not sent: ' + ((r && r.error) || 'unknown error') +
+                        (r && r.error === 'unknown_action'
+                          ? ' \u2014 the Apps Script backend has not been redeployed yet.' : ''), 'bad');
+                    return;
+                }
+                var bits = [r.sent + ' sent'];
+                if (r.failed)  bits.push(r.failed + ' failed');
+                if (r.skipped) bits.push(r.skipped + ' skipped (quota or time limit \u2014 run it again)');
+                say((r.test_only ? 'Test: ' : 'Done: ') + bits.join(', ') + '.',
+                    (r.failed || r.skipped) ? 'bad' : 'good');
+            }).catch(function (e) { busy(false); say('Not sent: ' + e, 'bad'); });
+        }
+
+        test.addEventListener('click', function () { send({ testOnly: true }); });
+        go.addEventListener('click', function () {
+            if (!window.confirm('Email this issue to all AISA staff?\n\nThis sends a real email to '
+                + 'everyone on the roster. Send yourself a test first if you have not.')) return;
+            send({ testOnly: false });
+        });
+
+        window.aisaReady(function (auth) {
+            if (!auth || !auth.newsletterStatus) return;
+            auth.newsletterStatus().then(function (r) {
+                if (!r || !r.may_send) return;       // not a sender: bar stays hidden
+                bar.hidden = false;
+                document.body.style.paddingBottom = '5.5rem';
+                cnt.textContent = (r.recipients || 0) + ' staff on the list';
+                if (r.quota_left != null && r.quota_left < (r.recipients || 0)) {
+                    say('Heads up: ' + r.quota_left + ' emails left in today\u2019s quota, '
+                        + (r.recipients || 0) + ' recipients. Anything over will report as skipped.', 'bad');
+                }
+            }).catch(function () { /* no backend yet: leave the bar hidden */ });
+        });
+    })();
+    </script>
 
     <script>
         (function () {

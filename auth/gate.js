@@ -797,6 +797,39 @@
             adminNotificationStats: function () {
                 return apiCall('admin_notification_stats');
             },
+
+            /* Newsletter mail-out. Held to a short server-side allowlist
+             * (NEWSLETTER_SENDERS in apps-script.gs), not to `admins` —
+             * a school-wide blast is a bigger button than posting a bell
+             * notification. newsletterStatus() tells the page whether to
+             * render its send bar at all and how many people would get
+             * it; hiding the bar is cosmetic, the server decides.
+             *
+             * sendNewsletter(payload) takes:
+             *   url        absolute link to the issue (required)
+             *   subject, issue, headline, intro, link_label
+             *   items      array of "what's inside" lines, max 8
+             *   testOnly   true  -> sends only to the caller
+             *   confirm    true  -> required for a real send
+             * and replies { sent, failed, skipped, recipients }. */
+            newsletterStatus: function () {
+                return apiCall('newsletter_status');
+            },
+            sendNewsletter: function (payload) {
+                var o = payload || {};
+                var body = {
+                    url:        o.url        || '',
+                    subject:    o.subject    || '',
+                    issue:      o.issue      || '',
+                    headline:   o.headline   || '',
+                    intro:      o.intro      || '',
+                    link_label: o.linkLabel  || '',
+                    items:      Array.isArray(o.items) ? o.items.join('\n') : (o.items || '')
+                };
+                if (o.testOnly) body.test_only = '1';
+                if (o.confirm)  body.confirm   = '1';
+                return apiCall('send_newsletter', body);
+            },
             adminListTags: function () {
                 return apiCall('admin_list_tags');
             },

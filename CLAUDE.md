@@ -54,6 +54,32 @@ fail silently and the dependent UIs stay empty:
   redeploy, the tracker posts the bell notification and then warns the
   admin in red that no emails went out.
 
+- **Newsletter mail-out** — two new endpoints, `newsletter_status` and
+  `send_newsletter`. No new sheet: recipients are the `roster` tab plus
+  everyone in `sessions`, filtered to `@aisa.sch.ae`. Uses `MailApp`, so
+  the same one-off send-mail authorisation as the reminder emails.
+
+  **Who can send is `NEWSLETTER_SENDERS` at the top of `apps-script.gs`**
+  — currently `bbaki@` and `hodai@`. Deliberately **not** the `admins`
+  tab: every SLT admin can post a bell notification, but mailing the
+  whole school is a bigger button. Edit that array to change it. The
+  send bar on the newsletter page hides itself for everyone else, but
+  that is cosmetic — `send_newsletter` re-checks server-side, which is
+  the check that matters, because the sign-in gate is client-side and
+  this repo is public.
+
+  Guard rails: a real send needs `confirm: '1'`, `test_only: '1'` mails
+  only the sender, and the loop stops short of the daily mail quota and
+  the 6-minute execution cap, reporting the remainder as `skipped` so
+  the sender knows to run it again rather than assuming everyone got it.
+  The email link is whatever `url` the page passes, and the page passes
+  its own `location.origin + location.pathname` — **so no production
+  host is hardcoded anywhere.** Keep it that way.
+
+  Until the redeploy this does **not** fail silently: `gate.js` maps
+  `unknown_action` through, and the bar reports "the Apps Script backend
+  has not been redeployed yet" in red.
+
 - **Module free-text capture** — three new endpoints
   (`save_module_response`, `get_module_response`,
   `admin_module_responses`) and one new sheet, `module_responses`,
@@ -164,7 +190,7 @@ Note the cache-busting convention: `gate.js` is included as
 `auth/gate.js?v=N` by 45 pages, so **changing `gate.js` means bumping
 `N` on every one of them** or returning visitors keep running the
 cached copy. That change took it to `?v=19`; the September 18
-newsletter took it to `?v=20`.
+newsletter took it to `?v=20`, and the newsletter mail-out to `?v=21`.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
 their own pins — `certificate.js?v=7`, `search-index.js?v=9`,
@@ -525,6 +551,20 @@ thank-you, Monday's building meeting, the readiness module (the big
 one), how often the curriculum is taught, the AI Growth Test, Level 1
 for new staff, Level 1 certificates, the secondary goal form, and the
 student-data reminder.
+
+It is the **latest-newsletter card on `index.html`** as well as the
+Media Hub listing — that card already existed and pointed at jun17; it
+is pointed at each new issue rather than duplicated. Updating an issue
+means four places: `media.html` (promote, and archive the previous
+one), `index.html` (href, badge, date, summary, CTA), `menu.js` and
+`search-index.js`.
+
+It carries a **mail-out bar** for the addresses in `NEWSLETTER_SENDERS`
+(see the pending-redeploy section). The copy the email sends is the
+`ISSUE`/`HEADLINE`/`INTRO`/`ITEMS` block in the page's own script, not
+scraped from the article — the email is the trailer, the page is the
+newsletter, and the trailer should stay blunter and shorter. A new issue
+needs that block rewritten or it will mail the previous issue's summary.
 
 **Every link out of it is relative** (`../PD%20Modules/…`), so the page
 does not hardcode a production host and keeps working wherever the Hub
