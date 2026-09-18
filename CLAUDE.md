@@ -468,12 +468,14 @@ assignments visible in staff accounts, and the URL confirmed — the
 module uses `schools.instructwin.com`, the ADEK correspondence says
 `www.adek.instructwin.com`, and nobody has established which is right.
 
-**The module still points at InstrucTwin** — segment 4 says to open your
-lesson before Monday, which currently no one can do. It degrades
-gracefully (the grade focus lives in the module, and there is a
-"could not get into InstrucTwin" checkbox), but the instruction itself
-is now untrue and was knowingly left alone rather than edited under a
-live cohort mid-completion.
+**The module still names InstrucTwin, softened.** Segment 4 used to say
+"open your lesson before Monday", which no one could do; on 18 Sept 2026
+it was reworded to say that staff accounts are not yet showing assigned
+grades, that chasing it is Brandon's job, and to read the lesson against
+the plan *when it opens*. The "when you have access" steps and the
+"could not get into InstrucTwin" checkbox are unchanged and still worth
+keeping — the checkbox is the only signal of who tried. Put the
+"before Monday" urgency back only once grades are actually visible.
 
 One fact in it came from Brandon rather than the repo: the **secondary
 delivery model** is one timetabled period a week for Grades 6–12 with
