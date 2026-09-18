@@ -438,7 +438,128 @@
         }, kind === 'error' ? 5000 : 2600);
     }
 
-    function apiCall(action, extra) {
+    /* ---------- Request transport ----------
+     *
+     * Three things wrap every call, all of them lessons from the admin
+     * dashboard, which fires six requests the moment it loads and used
+     * to spin for a minute before claiming the user wasn't an admin.
+     *
+     * 1. A concurrency limit. Apps Script gives one script very little
+     *    parallelism, and *every* action re-reads the `sessions` tab —
+     *    and writes a `last_used` cell back — before it does any real
+     *    work. Six requests at once therefore do not finish six times
+     *    faster than one: they pile up on Google's side, where we
+     *    cannot see them or time them out, and each one's clock starts
+     *    at zero. Holding the queue in the browser instead means the
+     *    first answer arrives as early as it possibly can.
+     *
+     *    The limit is above 1 on purpose: `record_pageview` and
+     *    `whoami` are quick, and stacking them behind a 30-second
+     *    `admin_overview` would stall the menu for no reason.
+     *
+     * 2. A timeout. fetch() on its own waits indefinitely, so a request
+     *    Apps Script never answers left the page spinning forever.
+     *
+     * 3. One retry, for the failures a second attempt can actually fix.
+     */
+    var MAX_INFLIGHT       = 2;
+    /* Deliberately generous. A full-sheet admin read against a large
+     * spreadsheet is genuinely slow, and a tight timeout would turn a
+     * load that was merely slow into one that fails. This is here to
+     * catch a request that is never coming back, not to police latency. */
+    var REQUEST_TIMEOUT_MS = 60000;
+    var RETRY_LIMIT        = 1;
+    var RETRY_DELAY_MS     = 1200;
+
+    var inFlight = 0;
+    var queued   = [];
+
+    function withSlot(run) {
+        return new Promise(function (resolve, reject) {
+            function start() {
+                inFlight++;
+                run().then(function (v) { release(); resolve(v); },
+                           function (e) { release(); reject(e); });
+            }
+            function release() {
+                inFlight--;
+                var next = queued.shift();
+                if (next) next();
+            }
+            if (inFlight < MAX_INFLIGHT) start(); else queued.push(start);
+        });
+    }
+
+    function sleep(ms) {
+        return new Promise(function (r) { setTimeout(r, ms); });
+    }
+
+    /* Actions with no side effect, so a second attempt after a timeout
+     * or a dropped connection cannot do any damage. Everything absent
+     * from this list is only ever retried on `busy_try_again`, which is
+     * the backend saying it never took the lock and therefore wrote
+     * nothing — the one failure we know did not land. That distinction
+     * matters most for `post_notification`, which sends real email. */
+    var IDEMPOTENT_ACTIONS = {
+        whoami: 1, get_completions: 1, admin_overview: 1, admin_dwell: 1,
+        get_line_managers: 1, get_form_submission: 1, list_my_submissions: 1,
+        get_module_response: 1, admin_module_responses: 1,
+        get_survey_response: 1, admin_survey_responses: 1,
+        get_notifications: 1, admin_notification_stats: 1, admin_list_tags: 1
+    };
+
+    function isRetryable(err, action) {
+        var code = (err && err.message) || '';
+        /* The lock was never taken, so nothing was written. Always safe. */
+        if (code === 'busy_try_again') return true;
+        if (!Object.prototype.hasOwnProperty.call(IDEMPOTENT_ACTIONS, action)) return false;
+        if (code === 'request_timeout' || code === 'bad_response') return true;
+        if (/^http_5/.test(code)) return true;
+        return err instanceof TypeError;   // how fetch reports a network failure
+    }
+
+    function postJson(body) {
+        return withSlot(function () {
+            var opts = {
+                method: 'POST',
+                mode: 'cors',
+                redirect: 'follow',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(body)
+            };
+            var timer = null;
+            if (typeof AbortController !== 'undefined') {
+                var ctrl = new AbortController();
+                opts.signal = ctrl.signal;
+                timer = setTimeout(function () { ctrl.abort(); }, REQUEST_TIMEOUT_MS);
+            }
+            function done() { if (timer) clearTimeout(timer); }
+
+            return fetch(API_URL, opts).then(function (r) {
+                done();
+                /* Apps Script answers an over-quota, crashed or
+                 * not-yet-authorised execution with an HTML error page
+                 * rather than JSON. Reading it as JSON throws a bare
+                 * SyntaxError, which tells the caller nothing — so read
+                 * the text and name the failure ourselves. */
+                return r.text().then(function (text) {
+                    var json = null;
+                    try { json = JSON.parse(text); } catch (e) {}
+                    if (json) return json;
+                    var err = new Error(r.ok ? 'bad_response' : 'http_' + r.status);
+                    err.status = r.status;
+                    err.bodyText = String(text || '').slice(0, 500);
+                    throw err;
+                });
+            }, function (e) {
+                done();
+                if (e && e.name === 'AbortError') throw new Error('request_timeout');
+                throw e;
+            });
+        });
+    }
+
+    function apiCall(action, extra, _attempt) {
         if (!API_URL) {
             return Promise.reject(new Error('aisa_api_not_configured'));
         }
@@ -455,15 +576,9 @@
             }
         }
 
-        return fetch(API_URL, {
-            method: 'POST',
-            mode: 'cors',
-            redirect: 'follow',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(body)
-        }).then(function (r) {
-            return r.json();
-        }).then(function (json) {
+        var attempt = _attempt || 0;
+
+        return postJson(body).then(function (json) {
             if (json && json.ok) return json;
             /* Server rejected our session (revoked, expired on its end,
              * or someone tampered with localStorage). Wipe and re-auth. */
@@ -480,6 +595,13 @@
             err.detail = json || null;
             if (json && json.missing) err.missing = json.missing;
             if (json && json.invalid) err.invalid = json.invalid;
+            throw err;
+        }).catch(function (err) {
+            if (attempt < RETRY_LIMIT && isRetryable(err, action)) {
+                return sleep(RETRY_DELAY_MS * (attempt + 1)).then(function () {
+                    return apiCall(action, extra, attempt + 1);
+                });
+            }
             throw err;
         });
     }

@@ -65,6 +65,14 @@ const SESSION_HEADERS = [
   'expires_at_iso', 'last_used_iso', 'user_agent'
 ];
 
+/* How stale `last_used_iso` has to be before verifySessionToken() writes
+ * it again. Every action the Hub offers verifies a session first, so
+ * writing on every call put a spreadsheet write in front of every read —
+ * six of them on one admin-dashboard load, all queuing on the same
+ * sheet. The column only ever drives "last seen", so five minutes of
+ * granularity costs nothing and takes the write off the common path. */
+const LAST_USED_WRITE_INTERVAL_MS = 5 * 60 * 1000;
+
 const PAGEVIEW_HEADERS = [
   'timestamp_iso', 'email', 'name', 'page_path',
   'page_title', 'referrer', 'user_agent'
@@ -495,7 +503,10 @@ function verifySessionToken(token) {
     const expiresAtMs = new Date(row[4]).getTime();
     if (!expiresAtMs || Date.now() > expiresAtMs) return null;
 
-    try { sheet.getRange(i + 2, 6).setValue(nowIsoLocal()); } catch (_) {}
+    const lastUsedMs = _tsMs(row[5]);
+    if (!lastUsedMs || (Date.now() - lastUsedMs) > LAST_USED_WRITE_INTERVAL_MS) {
+      try { sheet.getRange(i + 2, 6).setValue(nowIsoLocal()); } catch (_) {}
+    }
 
     return { email: row[1], name: row[2] };
   }

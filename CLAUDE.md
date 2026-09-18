@@ -135,6 +135,73 @@ fail silently and the dependent UIs stay empty:
   ever read back their own row, and nothing from this sheet goes in the
   repo, which is public.
 
+- **Session `last_used` is no longer written on every request.**
+  `verifySessionToken()` runs before every action and used to
+  `setValue()` the `last_used_iso` cell each time, so every read the Hub
+  does carried a spreadsheet *write* in front of it. It now only writes
+  when the stored value is older than `LAST_USED_WRITE_INTERVAL_MS`
+  (5 minutes). `last_seen` on the admin tracker loses nothing but
+  five minutes of precision. This is the one change here that actually
+  makes the backend faster; until it is redeployed the admin dashboard
+  stays slow, and the client-side work described below only stops it
+  *lying* about why.
+
+## Admin dashboard — "takes forever, then says I'm not an admin"
+
+Reported and fixed 18 September 2026. The message was a lie: the boot
+code did
+
+```js
+auth.adminOverview().then(render).catch(function () { showState('state-denied'); });
+```
+
+so **every** failure — a timeout, a 500, an Apps Script quota trip, a
+network blink, an HTML error page that `r.json()` choked on — rendered
+*Admin access required*. Only the backend's own `not_admin` actually
+means that. There is now a separate `state-error` panel that names what
+went wrong and offers a retry, and `state-denied` is reserved for a real
+`not_admin`. **Don't collapse those two states back together.**
+
+The slowness behind it had three parts:
+
+1. **Six requests fired at once on page load** — `record_pageview`
+   (gate.js), `whoami` (menu.js's `isAdmin()`), then `admin_overview`,
+   `admin_dwell`, `admin_module_responses` and `admin_survey_responses`.
+   Apps Script gives one script very little parallelism, so they queued
+   on Google's side where the browser could neither see nor time them
+   out.
+2. **Every one of them wrote to the spreadsheet before doing any work**,
+   via `verifySessionToken()` — see the redeploy note above.
+3. **`fetch()` had no timeout**, so a request the backend never answered
+   left the page spinning indefinitely.
+
+`apiCall()` in `gate.js` now wraps all of that:
+
+- **A concurrency limit** (`MAX_INFLIGHT`, currently 2) queues calls in
+  the browser instead. Above 1 on purpose — `record_pageview` and
+  `whoami` are quick and shouldn't sit behind a 30-second
+  `admin_overview`.
+- **A 60-second timeout** via `AbortController`, surfaced as
+  `request_timeout`. Generous deliberately: a full-sheet admin read is
+  genuinely slow and a tight timeout would make things worse.
+- **Non-JSON responses** are read as text and reported as `bad_response`
+  or `http_<status>` instead of a bare `SyntaxError`, because an
+  over-quota or crashed Apps Script answers with an HTML page.
+- **One retry** on the failures a second attempt can fix.
+  `busy_try_again` is always retried (the backend never took the lock, so
+  it wrote nothing); the unknown-outcome failures are retried **only for
+  the read-only actions in `IDEMPOTENT_ACTIONS`**. Keep that list
+  read-only — `post_notification` sends real email, and a retry there
+  would send it twice.
+
+The dashboard's two free-text sections (`#responses`, `#goals`) now
+chain off `window.aisaAdminGate` rather than firing their own heavy
+reads immediately. **This is not the lazy-loading that the three-tabs
+note forbids** — they still run unconditionally on page load, whichever
+tab is open, just after the read that decides whether there is a
+dashboard to fill at all. The gate resolves `false` when it isn't, so
+they don't fire two more requests already known to be doomed.
+
 ## First-login popups — removed 17 September 2026
 
 `auth/onboarding.js` is gone. It was two full-screen overlays shown on
@@ -163,7 +230,7 @@ Harmless — nothing reads it.
 Note the cache-busting convention: `gate.js` is included as
 `auth/gate.js?v=N` by 44 pages, so **changing `gate.js` means bumping
 `N` on every one of them** or returning visitors keep running the
-cached copy. This change took it to `?v=19`.
+cached copy. It is at `?v=20` as of 18 September 2026.
 
 ## Reading timestamps out of the sheets
 

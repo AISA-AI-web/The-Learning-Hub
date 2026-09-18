@@ -40,7 +40,7 @@
         @media (prefers-reduced-motion: reduce) { .dash-tab:hover { transform: none; } }
         .matrix thead .sticky-col { z-index: 2; background:#fff; }
     </style>
-    <script src="auth/gate.js?v=19"></script>
+    <script src="auth/gate.js?v=20"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
@@ -58,6 +58,19 @@
             <h2 class="text-xl font-heading font-black text-slate-900 mb-2">Admin access required</h2>
             <p class="text-slate-500">This dashboard is limited to PD leads and SLT. If you should have access, ask for your email to be added to the admin list.</p>
             <a href="index.html" class="inline-block mt-6 text-indigo-700 font-bold hover:text-indigo-900">← Back to the Learning Hub</a>
+        </div>
+
+        <!-- Load failure. Deliberately separate from "Admin access
+             required": a timeout, a backend error or a quota trip is not
+             a permissions answer, and telling an admin they aren't one
+             sends them chasing the wrong problem. -->
+        <div id="state-error" class="hidden max-w-md mx-auto text-center py-20">
+            <div class="text-5xl mb-4">⚠️</div>
+            <h2 class="text-xl font-heading font-black text-slate-900 mb-2">Couldn’t load the dashboard</h2>
+            <p id="state-error-msg" class="text-slate-500"></p>
+            <p id="state-error-code" class="text-[11px] text-slate-400 font-mono mt-3"></p>
+            <button id="state-error-retry" class="inline-block mt-6 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm px-5 py-2.5 rounded-lg transition-colors">Try again</button>
+            <a href="index.html" class="block mt-4 text-indigo-700 font-bold hover:text-indigo-900">← Back to the Learning Hub</a>
         </div>
 
         <!-- Dashboard -->
@@ -1154,7 +1167,7 @@
         }
 
         function showState(id) {
-            ['state-loading', 'state-denied', 'state-ready'].forEach(s => {
+            ['state-loading', 'state-denied', 'state-error', 'state-ready'].forEach(s => {
                 document.getElementById(s).classList.toggle('hidden', s !== id);
             });
         }
@@ -1233,33 +1246,89 @@
             if (ev.key === 'Escape') closeNotify();
         });
 
+        /* Only the backend's own `not_admin` means what the access-denied
+         * screen says. Everything else — a timeout, a 500, an Apps Script
+         * quota trip, a network blink — is a failure to find out, and
+         * showing it as a permissions verdict is how an admin ends up
+         * being told they have no access to their own dashboard. */
+        function showLoadFailure(err) {
+            var code = (err && err.message) || 'api_error';
+            if (code === 'not_admin') { showState('state-denied'); return; }
+            var says = {
+                request_timeout:
+                    'The backend didn’t answer in time. It gets slow when the ' +
+                    'spreadsheet is large or several people are loading this page ' +
+                    'at once — trying again usually works.',
+                busy_try_again:
+                    'The backend was busy with another write and gave up waiting. ' +
+                    'Try again in a moment.',
+                bad_response:
+                    'The backend replied with something that wasn’t data — usually ' +
+                    'an Apps Script error page, which means it crashed or has hit ' +
+                    'its daily quota.',
+                aisa_api_not_configured:
+                    'This copy of the Hub has no backend URL configured, so there ' +
+                    'is nothing to load from.',
+                unknown_action:
+                    'The backend is running an older version that doesn’t have this ' +
+                    'endpoint. It needs redeploying in the Apps Script editor.'
+            };
+            document.getElementById('state-error-msg').textContent =
+                says[code] || 'The backend refused the request. Trying again may help.';
+            document.getElementById('state-error-code').textContent = code;
+            showState('state-error');
+        }
+
+        document.getElementById('state-error-retry')
+            .addEventListener('click', function () { location.reload(); });
+
+        /* The two free-text sections further down are admin reads as well,
+         * and they used to fire the instant the page loaded — so four
+         * heavy spreadsheet scans raced each other and the compliance
+         * view, the one thing the page cannot render without, waited its
+         * turn behind them. They chain off this instead. Nothing became
+         * lazy: they still run unconditionally on page load, just after
+         * the read that decides whether there is a dashboard at all.
+         * Resolves false when there isn't, so they don't fire two more
+         * requests that are already known to be doomed. */
+        var adminGateSettle;
+        window.aisaAdminGate = new Promise(function (resolve) { adminGateSettle = resolve; });
+
         if (window.aisaReady) {
             window.aisaReady(function (auth) {
-                if (!auth.isConfigured()) { showState('state-denied'); return; }
+                if (!auth.isConfigured()) {
+                    showLoadFailure(new Error('aisa_api_not_configured'));
+                    adminGateSettle(false);
+                    return;
+                }
                 AUTH = auth;
                 auth.adminOverview().then(function (payload) {
                     render(payload);
+                    adminGateSettle(true);
+                    /* Engagement is not on the critical path — a stale
+                     * dwell sheet shouldn't block the compliance view —
+                     * so it goes after the render rather than alongside it. */
+                    if (auth.getAdminDwell) {
+                        auth.getAdminDwell().then(function (payload) {
+                            if (payload && payload.ok) {
+                                renderDwell(payload.rows || []);
+                            } else if (payload && payload.error === 'dwell_sheet_needs_migration') {
+                                var n = document.getElementById('dwell-needs-migration');
+                                if (n) n.classList.remove('hidden');
+                            }
+                        }).catch(function (err) {
+                            console.warn('AISA: admin dwell failed', err);
+                        });
+                    }
                 }).catch(function (err) {
                     console.warn('AISA: admin overview failed', err);
-                    showState('state-denied');
+                    showLoadFailure(err);
+                    adminGateSettle(false);
                 });
-                /* Engagement loads independently — a stale dwell sheet
-                 * shouldn't block the main compliance view. */
-                if (auth.getAdminDwell) {
-                    auth.getAdminDwell().then(function (payload) {
-                        if (payload && payload.ok) {
-                            renderDwell(payload.rows || []);
-                        } else if (payload && payload.error === 'dwell_sheet_needs_migration') {
-                            var n = document.getElementById('dwell-needs-migration');
-                            if (n) n.classList.remove('hidden');
-                        }
-                    }).catch(function (err) {
-                        console.warn('AISA: admin dwell failed', err);
-                    });
-                }
             });
         } else {
-            showState('state-denied');
+            showLoadFailure(new Error('aisa_api_not_configured'));
+            adminGateSettle(false);
         }
     </script>
 
@@ -1643,22 +1712,35 @@
         document.getElementById('resp-search').addEventListener('input', rerender);
         document.getElementById('resp-export').addEventListener('click', exportCsv);
 
+        /* Wait for the compliance view to load before adding another
+         * heavy admin read to the pile — see the note beside
+         * aisaAdminGate. Falls through immediately if the gate never got
+         * defined, so a failure up there can't silently mute this
+         * section. */
+        function afterAdminGate(fn) {
+            var gate = window.aisaAdminGate;
+            if (!gate || typeof gate.then !== 'function') { fn(); return; }
+            gate.then(function (ok) { if (ok) fn(); });
+        }
+
         if (window.aisaReady) {
             window.aisaReady(function (auth) {
                 if (!auth.adminModuleResponses) return;
-                auth.adminModuleResponses(MODULE_ID).then(function (payload) {
-                    rows = (payload && payload.responses) || [];
-                    renderStats();
-                    rerender();
-                }).catch(function (err) {
-                    /* An un-deployed backend is the likely cause and the
-                     * one worth naming, because it also means teachers
-                     * are losing work right now. */
-                    if (err && err.message === 'unknown_action') {
-                        document.getElementById('resp-no-endpoint').classList.remove('hidden');
-                        document.getElementById('resp-empty').classList.add('hidden');
-                    }
-                    console.warn('AISA: module responses failed', err);
+                afterAdminGate(function () {
+                    auth.adminModuleResponses(MODULE_ID).then(function (payload) {
+                        rows = (payload && payload.responses) || [];
+                        renderStats();
+                        rerender();
+                    }).catch(function (err) {
+                        /* An un-deployed backend is the likely cause and
+                         * the one worth naming, because it also means
+                         * teachers are losing work right now. */
+                        if (err && err.message === 'unknown_action') {
+                            document.getElementById('resp-no-endpoint').classList.remove('hidden');
+                            document.getElementById('resp-empty').classList.add('hidden');
+                        }
+                        console.warn('AISA: module responses failed', err);
+                    });
                 });
             });
         }
@@ -2046,6 +2128,17 @@
             rerender();
         });
 
+        /* Wait for the compliance view to load before adding another
+         * heavy admin read to the pile — see the note beside
+         * aisaAdminGate. Falls through immediately if the gate never got
+         * defined, so a failure up there can't silently mute this
+         * section. */
+        function afterAdminGate(fn) {
+            var gate = window.aisaAdminGate;
+            if (!gate || typeof gate.then !== 'function') { fn(); return; }
+            gate.then(function (ok) { if (ok) fn(); });
+        }
+
         if (window.aisaReady) {
             window.aisaReady(function (auth) {
                 if (!auth.adminSurveyResponses) return;
@@ -2055,15 +2148,17 @@
                     load(auth).catch(function () {});
                 });
 
-                load(auth).catch(function (err) {
-                    /* An un-deployed backend is the likely cause and the
-                     * one worth naming, because it also means the form is
-                     * turning teachers away right now. */
-                    if (err && (err.message === 'unknown_action' || err.message === 'unknown_survey')) {
-                        document.getElementById('goal-no-endpoint').classList.remove('hidden');
-                        document.getElementById('goal-empty').classList.add('hidden');
-                    }
-                    console.warn('AISA: survey responses failed', err);
+                afterAdminGate(function () {
+                    load(auth).catch(function (err) {
+                        /* An un-deployed backend is the likely cause and
+                         * the one worth naming, because it also means the
+                         * form is turning teachers away right now. */
+                        if (err && (err.message === 'unknown_action' || err.message === 'unknown_survey')) {
+                            document.getElementById('goal-no-endpoint').classList.remove('hidden');
+                            document.getElementById('goal-empty').classList.add('hidden');
+                        }
+                        console.warn('AISA: survey responses failed', err);
+                    });
                 });
             });
         }
