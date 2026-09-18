@@ -161,9 +161,19 @@ The `aisa_onboarding_v1` localStorage key is orphaned on staff devices.
 Harmless — nothing reads it.
 
 Note the cache-busting convention: `gate.js` is included as
-`auth/gate.js?v=N` by 44 pages, so **changing `gate.js` means bumping
+`auth/gate.js?v=N` by 45 pages, so **changing `gate.js` means bumping
 `N` on every one of them** or returning visitors keep running the
-cached copy. This change took it to `?v=19`.
+cached copy. That change took it to `?v=19`; the September 18
+newsletter took it to `?v=20`.
+
+The same trap sits one level down. `gate.js` pulls its helpers with
+their own pins — `certificate.js?v=7`, `search-index.js?v=9`,
+`menu.js?v=15`, `dwell.js?v=2` — so **editing one of those helpers
+means bumping its pin inside `gate.js`, which is itself a change to
+`gate.js`, which means bumping `?v=N` on all 45 pages again.** Adding a
+page to the menu or the search index is enough to trigger the whole
+cascade. Skip it and returning staff keep the cached helper and never
+see the new entry.
 
 ## Reading timestamps out of the sheets
 
@@ -350,6 +360,19 @@ between its stuck and natural positions as you scroll and no fixed
 bottom offset clears it at both ends. It flips to the left edge in
 Arabic.
 
+**Segment 2's time-allocation card carries both numbers.** ADEK's
+entitlement (one period a week for KG–5, two for Grades 6–12) and, below
+it, how AISA actually delivers that: Grades 6–12 get **one timetabled
+period a week with the remainder asynchronous**, elementary is unchanged.
+Added 18 Sept 2026, when the secondary model was decided — before that
+the card showed ADEK's two periods alone, which would have told every
+secondary teacher something their timetable contradicts. Keep both: the
+entitlement is what ADEK audits against, the delivery is what teachers
+plan around. Each paragraph is a separate `AR_BLOCKS` key, so editing
+either English string means editing its key in
+`ai-curriculum-readiness-ar.js` to match, or that paragraph silently
+falls back to English in the Arabic view.
+
 **Segment 4 does not depend on InstrucTwin.** A teacher picks their
 grade and sees that grade's Conceptual / Technical / Creation / Ethics
 focus — ADEK's own Scope and Sequence, held bilingually in the `GRADES`
@@ -405,10 +428,45 @@ Content sourced verbatim from ADEK's Train-the-Trainer Day 1 deck and
 Participant Worksheet Packet — the Ms Hana case in segment 3 is
 Worksheet 3 unaltered, including its Grade 7 setting.
 
+## Digital Lion — Issue No. 5, 18 September 2026
+
+`Media Hub/sep18.html`, the AI Literacy rollout issue. Bilingual like
+may18 and jun17, same house style (Poppins/Inter/Cairo, navy `#0b2545`,
+cyan, amber) — **deliberately not the AISA purple-and-gold brand**, so
+that the newsletter series stays internally consistent. Listed as the
+latest issue on `media.html`, and in `menu.js` and `search-index.js`.
+
+Nine sections, each labelled with who it is for: the AI Specialists
+thank-you, Monday's building meeting, the readiness module (the big
+one), how often the curriculum is taught, the AI Growth Test, Level 1
+for new staff, Level 1 certificates, the secondary goal form, and the
+student-data reminder.
+
+**Every link out of it is relative** (`../PD%20Modules/…`), so the page
+does not hardcode a production host and keeps working wherever the Hub
+is served from. If this is ever re-cut as an email, those links have to
+become absolute — that is the one thing an email version needs that the
+page does not.
+
+**There is no page-local language toggle**, and there should not be:
+`menu.js` injects the canonical Hub-wide toggle into the topbar and owns
+the shared `aisa-newsletter-lang` key. The small inline script at the
+bottom only applies the saved choice on load, before `menu.js` arrives,
+so Arabic readers never get a flash of English. jun17 and may18 do the
+same thing — their `.lang-toggle` CSS and `#lang-toggle` lookup are
+leftovers from before the global toggle existed and match no element.
+
+Two facts in it came from Brandon rather than the repo and are worth
+knowing if either changes: the **InstrucTwin URL** is written as
+`schools.instructwin.com`, matching the module, and the **secondary
+delivery model** is one timetabled period a week for Grades 6–12 with
+the remainder asynchronous.
+
 ## Next Digital Lion Newsletter — items to include
 
 - **NotebookLM ⇄ Google Drive auto-sync.** Files uploaded to NotebookLM
   now auto-sync from Google Drive — no more re-uploading after edits.
   Worth a dedicated section (huge daily-use win for teachers building
   unit packs and study guides). Link to Drive and to the existing
-  NotebookLM PD module.
+  NotebookLM PD module. **Held back from Issue No. 5** on 18 Sept 2026 —
+  that issue was entirely AI-literacy rollout and this did not fit.

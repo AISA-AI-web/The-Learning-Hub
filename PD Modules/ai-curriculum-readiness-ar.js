@@ -507,6 +507,8 @@ window.AR_BLOCKS = {
         "تمتد هذه المحاور عبر <em>كل</em> صف، ويزداد تعقيدها كلما ارتقت المراحل.",
     "KG and Grades 1–5: <strong>one period per week</strong>. Grades 6–8 and 9–12: <strong>two periods per week</strong>.":
         "رياض الأطفال والصفوف 1–5: <strong>حصة واحدة أسبوعيًا</strong>. الصفوف 6–8 و9–12: <strong>حصتان أسبوعيًا</strong>.",
+    "<strong>How AISA delivers this in Grades 6–12:</strong> one timetabled period per week, with the rest of the entitlement completed asynchronously. Elementary is unchanged — one timetabled period per week.":
+        "<strong>كيف تطبّق AISA ذلك في الصفوف 6–12:</strong> حصة واحدة مجدولة أسبوعيًا، مع استكمال بقية الاستحقاق بشكل غير متزامن. أمّا المرحلة الابتدائية فلا تتغيّر — حصة واحدة مجدولة أسبوعيًا.",
     "<strong>1.</strong> \"Learners classify each claim in an AI summary as supported, misleading or not established, citing evidence.\" Which strand?":
         "<strong>1.</strong> «يصنّف المتعلمون كل ادّعاء في ملخّص أنتجه الذكاء الاصطناعي بأنه مدعوم أو مضلّل أو غير ثابت، مع الاستشهاد بالدليل.» أي محور؟",
     "<strong>2.</strong> \"Learners recognise personal information and identify trusted adults.\" Which strand?":

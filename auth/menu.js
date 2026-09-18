@@ -104,6 +104,7 @@
         { title: 'Digital Tools Newsletter — May 4',   desc: 'Issue 1: digital tools deep-dives',                             href: 'Media%20Hub/may4.html',                                                            icon: '\u{1F4F0}', tag: 'Newsletter' },
         { title: 'Digital Lion Newsletter — May 11',   desc: 'Issue 2: Wired Wednesdays, Flows, Gemini in Workspace',         href: 'Media%20Hub/may11.html',                                                           icon: '\u{1F4F0}', tag: 'Newsletter' },
         { title: 'Digital Lion Newsletter — May 18',   desc: 'Issue 3: class visit schedule, AI integration snapshot form',   href: 'Media%20Hub/may18.html',                                                           icon: '\u{1F4F0}', tag: 'Newsletter' },
+        { title: 'Digital Lion Newsletter — September 18',  desc: 'Issue 5: AI Literacy starts 21 Sept, readiness module due 20 Sept',  href: 'Media%20Hub/sep18.html',                                                           icon: '\u{1F4F0}', tag: 'Newsletter' },
         { title: 'Classroom AI Integration Snapshot',  desc: 'Non-evaluative classroom-visit observation form (PDF)',         href: 'Media%20Hub/Classroom%20AI%20Integration%20Snapshot.pdf',                          icon: '\u{1F4CB}', tag: 'Reference' },
 
         /* Committees */
