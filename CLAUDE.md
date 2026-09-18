@@ -298,6 +298,22 @@ question.
 `data-required` is opt-in, so the modules that predate it are
 unaffected.
 
+**The cohort is per-module, and it cuts both ways.** A module carrying a
+`cohort` only counts for people in it:
+
+- Nobody outside the 62 is expected to complete AI Literacy, so it is
+  skipped in their "required done" and "fully complete". Without that
+  guard every other member of staff would read as permanently behind on
+  required training the moment this module was marked required.
+- Everyone inside the 62 is chased **even if they have never signed in**.
+  Scope the tracker to AI Literacy and it shows all 62 rows, stubbing in
+  anyone the Hub has never seen — that is precisely the person you need
+  to find before a deadline, and a plain roster filter would hide them.
+- The module bar reads "*n* of 62 assigned teachers", not "*n* of all
+  staff", and the readiness section counts started/not-started against 62.
+
+Other modules are untouched: no cohort means it applies to everybody.
+
 **Reading what teachers wrote:** admin dashboard → *AI Literacy
 readiness · what teachers wrote* (`#responses`). One card per teacher,
 people who asked for something or are blocked on InstrucTwin sorted to
@@ -389,8 +405,11 @@ Outstanding before it can be announced to staff:
    See that folder's README, which also covers why a screencast of
    InstrucTwin may not belong in a public repo. The written content
    stands alone, so shipping without videos is fine.
-4. **Confirm the cohort** — who has to complete it, per the ADEK
-   Implementation Form. That list drives the tracker's "outstanding".
+4. ~~Confirm the cohort~~ — done 18 Sept 2026. The 62 teachers named on
+   AISA's ADEK Implementation Form are in `AI_LITERACY_COHORT` at the top
+   of the `MODULES` block in `admin-dashboard.html`. **Edit that list to
+   change the cohort**; matching is by lower-cased email, the names are
+   only for display.
 
 **Resolved 15 Sept 2026:** `safeguarding-module.html` had the wrong
 elementary nurse — it listed Jothi Vinod, who is secondary. Corrected to
