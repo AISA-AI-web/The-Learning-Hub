@@ -1,0 +1,1391 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AISA | AI Growth Test — AI Lead &amp; Proctor Guide</title>
+<meta name="description" content="Step-by-step reference for setting up and running the Baseline AI Growth Test (AIGT) for Grades 4-12 on InstrucTwin.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   AI Growth Test — AI Lead & Proctor Guide
+   Self-contained: no Tailwind, no build step. Palette follows the
+   Hub's teal; the three audiences carry their own accent so a
+   step's owner is readable at a glance.
+   ============================================================ */
+:root{
+  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --head:"Poppins","Inter",system-ui,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+
+  --bg:#F4F7F6; --surface:#FFFFFF; --surface-2:#EDF3F1; --surface-3:#E3ECE9;
+  --ink:#10201E; --ink-2:#334744; --muted:#5F7371;
+  --line:#DCE5E2; --line-strong:#BCCAC6;
+
+  --accent:#0F766E; --accent-ink:#0B5B55; --accent-soft:#DCF1EE;
+
+  /* audience accents */
+  --lead:#4338CA;    --lead-soft:#E7E7FC;   --lead-line:#C7C7F4;
+  --proc:#B45309;    --proc-soft:#FDF0DC;   --proc-line:#F3D6A8;
+  --stud:#0F766E;    --stud-soft:#D9F2EE;   --stud-line:#A7DCD5;
+
+  --warn:#B45309; --warn-soft:#FEF4E4; --warn-line:#F0D5A6;
+  --stop:#B91C1C; --stop-soft:#FDECEC; --stop-line:#F4C4C4;
+  --ok:#15803D;   --ok-soft:#E4F5E9;   --ok-line:#B7E2C5;
+
+  --radius:14px;
+  --topbar:3.75rem;          /* matches BAR_HEIGHT in auth/menu.js */
+  --shadow:0 1px 2px rgba(16,32,30,.05), 0 8px 24px -14px rgba(16,32,30,.28);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#101614; --surface:#171F1D; --surface-2:#1E2826; --surface-3:#25312E;
+    --ink:#E8F0ED; --ink-2:#C6D4D0; --muted:#94A6A2;
+    --line:#2A3633; --line-strong:#3C4B47;
+    --accent:#5EC8BC; --accent-ink:#8FDCD2; --accent-soft:#12312D;
+    --lead:#A5A5F5; --lead-soft:#21214A; --lead-line:#3B3B72;
+    --proc:#E6A75A; --proc-soft:#3A2B14; --proc-line:#5C441F;
+    --stud:#5EC8BC; --stud-soft:#12312D; --stud-line:#1E4A45;
+    --warn:#E6A75A; --warn-soft:#3A2B14; --warn-line:#5C441F;
+    --stop:#F08C8C; --stop-soft:#3A1C1C; --stop-line:#5E2C2C;
+    --ok:#7CD79A;   --ok-soft:#16321F;   --ok-line:#26512F;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -14px rgba(0,0,0,.7);
+    color-scheme:dark;
+  }
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);
+     font-size:1rem;line-height:1.6;text-rendering:optimizeLegibility;
+     -webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--head);line-height:1.18;margin:0;font-weight:800;letter-spacing:-.018em}
+p{margin:0}
+ul,ol{margin:0;padding:0}
+a{color:var(--accent-ink);text-underline-offset:.16em}
+a:hover{text-decoration-thickness:2px}
+img{max-width:100%;display:block}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
+code,kbd{font-family:var(--mono);font-size:.85em}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.skip{position:absolute;left:-999px;top:calc(var(--topbar) + 8px);z-index:1000;
+      background:var(--surface);color:var(--ink);padding:10px 14px;border-radius:8px;
+      border:1px solid var(--line-strong);font-weight:600}
+.skip:focus{left:8px}
+
+/* ---------------- layout ---------------- */
+.layout{display:grid;grid-template-columns:270px minmax(0,1fr);max-width:1460px;margin:0 auto;gap:0}
+main{min-width:0;padding:0 clamp(16px,3.5vw,52px) 80px}
+
+.sidebar{position:sticky;top:var(--topbar);align-self:start;
+         height:calc(100vh - var(--topbar));overflow:auto;overscroll-behavior:contain;
+         padding:26px 16px 32px 20px;border-right:1px solid var(--line);font-size:.9rem}
+.side-title{display:block;text-decoration:none;color:var(--ink);font-family:var(--head);
+            font-weight:800;font-size:1.02rem;line-height:1.25;margin-bottom:4px}
+.side-title span{display:block;font-family:var(--font);font-weight:500;font-size:.78rem;
+                 color:var(--muted);margin-top:3px;letter-spacing:0}
+.side-back{display:inline-flex;align-items:center;gap:6px;margin:14px 0 18px;
+           font-size:.8rem;color:var(--muted);text-decoration:none}
+.side-back:hover{color:var(--accent-ink)}
+.side-label{font-size:.7rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+            color:var(--muted);margin:0 0 8px 8px}
+.toc{list-style:none;display:grid;gap:1px;margin:0 0 22px}
+.toc a{display:flex;gap:9px;align-items:baseline;padding:6px 10px;border-radius:8px;
+       color:var(--ink-2);text-decoration:none;line-height:1.35}
+.toc a b{color:var(--muted);font-variant-numeric:tabular-nums;font-weight:700;min-width:1.6ch;font-size:.82rem}
+.toc a:hover{background:var(--surface-2)}
+.toc a.active{background:var(--accent-soft);color:var(--ink);font-weight:600}
+.toc a.active b{color:var(--accent)}
+.toc li.is-hidden{display:none}
+
+/* ---------------- role filter ---------------- */
+.rolebar{display:grid;gap:6px;margin:0 0 22px}
+.rolebar button{display:flex;align-items:center;gap:9px;width:100%;text-align:left;
+                padding:8px 10px;border:1px solid var(--line);border-radius:10px;
+                background:var(--surface);color:var(--ink-2);font:inherit;font-size:.86rem;
+                font-weight:600;cursor:pointer;transition:border-color .15s,background .15s}
+.rolebar button:hover{border-color:var(--line-strong)}
+.rolebar button .swatch{width:9px;height:9px;border-radius:50%;background:var(--c,var(--muted));flex:none}
+.rolebar button .n{margin-left:auto;font-size:.72rem;font-weight:700;color:var(--muted);
+                   font-variant-numeric:tabular-nums}
+.rolebar button[aria-pressed="true"]{background:var(--sel-soft,var(--accent-soft));
+     border-color:var(--sel-line,var(--accent));color:var(--ink)}
+.rolebar button[aria-pressed="true"] .n{color:var(--ink-2)}
+.rolebar-hint{font-size:.76rem;color:var(--muted);margin:-14px 0 22px 8px;line-height:1.45}
+
+/* ---------------- hero ---------------- */
+.hero{padding:clamp(28px,5vw,56px) 0 30px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.74rem;font-weight:800;
+         letter-spacing:.11em;text-transform:uppercase;color:var(--accent-ink);
+         background:var(--accent-soft);padding:5px 11px;border-radius:999px;margin-bottom:16px}
+.hero h1{font-size:clamp(2rem,4.6vw,3.15rem);font-weight:900;letter-spacing:-.03em;max-width:22ch}
+.hero-sub{margin-top:14px;font-size:clamp(1.02rem,1.5vw,1.17rem);color:var(--ink-2);max-width:60ch}
+
+.window-strip{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:22px;
+              padding:13px 16px;border-radius:var(--radius);border:1px solid var(--line);
+              background:var(--surface);box-shadow:var(--shadow)}
+.window-strip[data-state="open"]{border-color:var(--ok-line);background:var(--ok-soft)}
+.window-strip[data-state="soon"]{border-color:var(--warn-line);background:var(--warn-soft)}
+.window-strip[data-state="closed"]{border-color:var(--line-strong);background:var(--surface-2)}
+.pulse{width:9px;height:9px;border-radius:50%;background:var(--muted);flex:none;position:relative}
+.window-strip[data-state="open"] .pulse{background:var(--ok)}
+.window-strip[data-state="soon"] .pulse{background:var(--warn)}
+.window-strip[data-state="open"] .pulse::after{content:"";position:absolute;inset:-4px;border-radius:50%;
+   border:2px solid var(--ok);opacity:.45;animation:ping 2.2s cubic-bezier(0,0,.2,1) infinite}
+@keyframes ping{75%,100%{transform:scale(1.9);opacity:0}}
+@media (prefers-reduced-motion: reduce){.pulse::after{animation:none}}
+.window-strip strong{font-weight:700}
+.window-strip .dates{color:var(--ink-2);font-size:.92rem}
+.window-strip .cta{margin-left:auto}
+
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:10px;
+     background:var(--accent);color:#fff;font-weight:700;font-size:.9rem;text-decoration:none;
+     border:1px solid transparent;cursor:pointer;font-family:inherit;transition:filter .15s}
+.btn:hover{filter:brightness(1.08)}
+.btn-ghost{background:var(--surface);color:var(--ink);border-color:var(--line-strong)}
+.btn-ghost:hover{background:var(--surface-2);filter:none}
+
+/* ---------------- facts ---------------- */
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:1px;
+       margin:22px 0 0;background:var(--line);border:1px solid var(--line);
+       border-radius:var(--radius);overflow:hidden}
+.facts div{background:var(--surface);padding:13px 15px}
+.facts dt{font-size:.71rem;font-weight:700;letter-spacing:.085em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:4px 0 0;font-size:1rem;font-weight:700;font-family:var(--head);letter-spacing:-.01em}
+.facts dd small{display:block;font-family:var(--font);font-weight:500;font-size:.78rem;
+                color:var(--muted);letter-spacing:0;margin-top:2px}
+
+/* ---------------- phase spine ---------------- */
+.phases{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:34px 0 0}
+.phase{display:block;text-decoration:none;color:inherit;padding:15px 16px 16px;
+       border:1px solid var(--line);border-top:3px solid var(--pc,var(--accent));
+       border-radius:0 0 var(--radius) var(--radius);background:var(--surface);
+       transition:transform .16s ease,box-shadow .16s ease}
+.phase:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+@media (prefers-reduced-motion: reduce){.phase:hover{transform:none}}
+.phase .pn{font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--pc)}
+.phase h3{font-size:1.02rem;margin:5px 0 5px}
+.phase p{font-size:.85rem;color:var(--muted);line-height:1.45}
+@media (max-width:760px){.phases{grid-template-columns:1fr}}
+
+/* ---------------- sections ---------------- */
+.sec{padding:54px 0 8px;scroll-margin-top:calc(var(--topbar) + 12px)}
+.sec + .sec{border-top:1px solid var(--line)}
+.sec-head{display:flex;align-items:baseline;gap:13px;flex-wrap:wrap;margin-bottom:8px}
+.sec-head h2{font-size:clamp(1.5rem,2.6vw,2rem);font-weight:800}
+.sec-num{font-family:var(--head);font-variant-numeric:tabular-nums;font-weight:800;
+         color:var(--accent);font-size:clamp(1.5rem,2.6vw,2rem)}
+.lede{font-size:1.04rem;color:var(--ink-2);max-width:68ch;margin-bottom:6px}
+
+/* ---------------- step cards ---------------- */
+.steps{display:grid;gap:14px;margin-top:22px;list-style:none}
+.step{border:1px solid var(--line);border-left:3px solid var(--rc,var(--accent));
+      border-radius:0 var(--radius) var(--radius) 0;background:var(--surface);
+      padding:17px 19px 18px;scroll-margin-top:calc(var(--topbar) + 12px)}
+.step-top{display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.step-n{font-family:var(--head);font-weight:800;font-size:.8rem;color:var(--rc);
+        background:var(--rsoft);border:1px solid var(--rline);border-radius:7px;
+        padding:3px 8px;flex:none;font-variant-numeric:tabular-nums;line-height:1.35}
+.step h3{font-size:1.09rem;flex:1 1 14ch;min-width:0}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:.68rem;font-weight:800;
+       letter-spacing:.07em;text-transform:uppercase;padding:3px 9px;border-radius:999px;
+       background:var(--rsoft);color:var(--rc);border:1px solid var(--rline);flex:none;white-space:nowrap}
+.step[data-role="lead"]{--rc:var(--lead);--rsoft:var(--lead-soft);--rline:var(--lead-line)}
+.step[data-role="proctor"]{--rc:var(--proc);--rsoft:var(--proc-soft);--rline:var(--proc-line)}
+.step[data-role="student"]{--rc:var(--stud);--rsoft:var(--stud-soft);--rline:var(--stud-line)}
+.step-body{margin-top:12px;display:grid;gap:12px}
+
+/* click path */
+.path{display:flex;align-items:center;flex-wrap:wrap;gap:5px;font-size:.82rem;
+      color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line);
+      border-radius:9px;padding:7px 11px;width:fit-content;max-width:100%}
+.path .k{font-family:var(--mono);font-size:.78rem;font-weight:600;background:var(--surface);
+         border:1px solid var(--line-strong);border-radius:5px;padding:1px 7px;
+         box-shadow:0 1px 0 var(--line-strong);white-space:nowrap}
+.path .sep{color:var(--muted);font-weight:700}
+
+ol.do{list-style:none;counter-reset:do;display:grid;gap:7px}
+ol.do li{counter-increment:do;position:relative;padding-left:28px;color:var(--ink-2);font-size:.96rem}
+ol.do li::before{content:counter(do);position:absolute;left:0;top:.08em;width:19px;height:19px;
+   border-radius:50%;background:var(--surface-2);border:1px solid var(--line-strong);
+   color:var(--ink-2);font-size:.7rem;font-weight:800;display:grid;place-items:center;
+   font-family:var(--head);font-variant-numeric:tabular-nums}
+ul.bul{list-style:none;display:grid;gap:7px}
+ul.bul li{position:relative;padding-left:20px;color:var(--ink-2);font-size:.96rem}
+ul.bul li::before{content:"";position:absolute;left:5px;top:.6em;width:6px;height:6px;
+   border-radius:50%;background:var(--accent)}
+li strong,p strong{color:var(--ink);font-weight:700}
+
+/* callouts */
+.call{border-radius:10px;padding:11px 14px;font-size:.92rem;line-height:1.5;
+      border:1px solid var(--cl);background:var(--cs);color:var(--ink-2)}
+.call b.tag{display:block;font-family:var(--head);font-size:.69rem;font-weight:800;
+            letter-spacing:.09em;text-transform:uppercase;color:var(--ct);margin-bottom:3px}
+.call.note{--cs:var(--surface-2);--cl:var(--line-strong);--ct:var(--muted)}
+.call.warn{--cs:var(--warn-soft);--cl:var(--warn-line);--ct:var(--warn)}
+.call.stop{--cs:var(--stop-soft);--cl:var(--stop-line);--ct:var(--stop)}
+.call.ok{--cs:var(--ok-soft);--cl:var(--ok-line);--ct:var(--ok)}
+
+/* figures */
+figure.shot{margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden;
+            background:var(--surface-2)}
+figure.shot button.zoom{display:block;width:100%;padding:0;border:0;background:var(--surface-3);
+     cursor:zoom-in;line-height:0;position:relative}
+figure.shot img{max-width:100%;max-height:380px;width:auto;height:auto;margin:0 auto;
+                background:var(--surface-3)}
+figure.shot figcaption{display:flex;align-items:center;gap:7px;padding:7px 11px;font-size:.78rem;
+     color:var(--muted);border-top:1px solid var(--line);background:var(--surface)}
+figure.shot figcaption b{color:var(--ink-2);font-weight:700}
+figure.shot figcaption .expand{margin-left:auto;font-size:.72rem;color:var(--accent-ink);font-weight:700}
+
+/* side-by-side figure strips */
+.shots{display:grid;gap:10px;align-items:start;
+       grid-template-columns:repeat(auto-fit,minmax(var(--min,280px),1fr))}
+
+/* lightbox */
+.lb{position:fixed;inset:0;z-index:2147483600;display:none;place-items:center;
+    background:rgba(8,16,15,.86);padding:clamp(12px,4vw,44px);backdrop-filter:blur(2px)}
+.lb[open],.lb.is-open{display:grid}
+.lb img{max-width:100%;max-height:82vh;width:auto;border-radius:10px;background:#fff;
+        box-shadow:0 30px 80px -20px rgba(0,0,0,.7)}
+.lb figcaption{color:#E6EDEB;text-align:center;font-size:.88rem;margin-top:14px;max-width:70ch}
+.lb .close{position:absolute;top:14px;right:16px;width:40px;height:40px;border-radius:10px;
+   border:1px solid rgba(255,255,255,.28);background:rgba(255,255,255,.1);color:#fff;
+   font-size:1.3rem;line-height:1;cursor:pointer}
+.lb .close:hover{background:rgba(255,255,255,.2)}
+
+/* briefing script */
+.script{border:1px solid var(--stud-line);background:var(--stud-soft);border-radius:var(--radius);
+        padding:17px 19px}
+.script-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:11px}
+.script-head h3{font-size:1.02rem}
+.script-head .btn{margin-left:auto;padding:6px 13px;font-size:.82rem}
+.script ul{list-style:none;display:grid;gap:9px}
+.script li{position:relative;padding-left:24px;font-size:1rem;color:var(--ink)}
+.script li::before{content:"\201C";position:absolute;left:0;top:.05em;font-size:1.4rem;
+   line-height:1;color:var(--stud);font-weight:700}
+
+/* timing dial */
+.timing{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:6px}
+.tcard{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:14px 16px}
+.tcard .big{font-family:var(--head);font-size:1.75rem;font-weight:900;letter-spacing:-.03em;line-height:1.1}
+.tcard .lbl{font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+            color:var(--muted);margin-top:3px}
+.tcard.tot{background:var(--accent-soft);border-color:var(--accent)}
+.tcard.tot .big{color:var(--accent-ink)}
+
+/* tables */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.93rem}
+th,td{text-align:left;padding:11px 15px;border-bottom:1px solid var(--line);vertical-align:top}
+thead th{background:var(--surface-2);font-family:var(--head);font-size:.73rem;font-weight:800;
+         letter-spacing:.07em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+tbody tr:last-child td{border-bottom:0}
+tbody th{font-weight:700;color:var(--ink);border-bottom:1px solid var(--line)}
+td .who{display:inline-block;font-size:.74rem;font-weight:800;padding:2px 8px;border-radius:999px;
+        background:var(--surface-2);border:1px solid var(--line-strong);color:var(--ink-2);white-space:nowrap}
+
+/* roles-at-a-glance grid */
+.roles{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:20px}
+.rcard{border:1px solid var(--line);border-top:3px solid var(--rc);border-radius:0 0 var(--radius) var(--radius);
+       background:var(--surface);padding:15px 17px 17px}
+.rcard[data-role="lead"]{--rc:var(--lead);--rsoft:var(--lead-soft);--rline:var(--lead-line)}
+.rcard[data-role="proctor"]{--rc:var(--proc);--rsoft:var(--proc-soft);--rline:var(--proc-line)}
+.rcard[data-role="student"]{--rc:var(--stud);--rsoft:var(--stud-soft);--rline:var(--stud-line)}
+.rcard h3{font-size:1.02rem;margin-bottom:9px;color:var(--rc)}
+.rcard ul{list-style:none;display:grid;gap:6px}
+.rcard li{position:relative;padding-left:18px;font-size:.89rem;color:var(--ink-2);line-height:1.45}
+.rcard li::before{content:"";position:absolute;left:3px;top:.55em;width:5px;height:5px;
+   border-radius:50%;background:var(--rc)}
+@media (max-width:780px){.roles{grid-template-columns:1fr}}
+
+/* checklists */
+.checks{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:22px}
+@media (max-width:860px){.checks{grid-template-columns:1fr}}
+.cl{border:1px solid var(--line);border-top:3px solid var(--rc);border-radius:0 0 var(--radius) var(--radius);
+    background:var(--surface);padding:16px 18px 18px}
+.cl[data-role="lead"]{--rc:var(--lead)}
+.cl[data-role="proctor"]{--rc:var(--proc)}
+.cl-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:5px}
+.cl-head h3{font-size:1.04rem;color:var(--rc)}
+.cl-head .reset{margin-left:auto;font-size:.76rem;font-weight:700;color:var(--muted);
+   background:none;border:0;cursor:pointer;font-family:inherit;padding:2px 4px;border-radius:5px}
+.cl-head .reset:hover{color:var(--stop);text-decoration:underline}
+.cl-prog{height:6px;border-radius:99px;background:var(--surface-3);overflow:hidden;margin:9px 0 4px}
+.cl-prog i{display:block;height:100%;width:0;background:var(--rc);border-radius:99px;
+           transition:width .25s ease}
+.cl-count{font-size:.76rem;color:var(--muted);font-variant-numeric:tabular-nums;margin-bottom:12px}
+.cl ul{list-style:none;display:grid;gap:3px}
+.cl label{display:flex;gap:10px;align-items:flex-start;padding:7px 8px;border-radius:9px;
+          cursor:pointer;font-size:.92rem;color:var(--ink-2);line-height:1.45}
+.cl label:hover{background:var(--surface-2)}
+.cl input{appearance:none;-webkit-appearance:none;width:18px;height:18px;flex:none;margin-top:.12em;
+   border:1.5px solid var(--line-strong);border-radius:5px;background:var(--surface);
+   cursor:pointer;display:grid;place-items:center;transition:background .12s,border-color .12s}
+.cl input:checked{background:var(--rc);border-color:var(--rc)}
+.cl input:checked::after{content:"";width:9px;height:5px;border:2px solid #fff;border-top:0;
+   border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.cl input:checked + span{color:var(--muted);text-decoration:line-through;text-decoration-thickness:1px}
+
+/* help + footer */
+.help{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:20px}
+.hcard{border:1px solid var(--line);border-radius:var(--radius);background:var(--surface);padding:15px 17px}
+.hcard h3{font-size:.97rem;margin-bottom:5px}
+.hcard p{font-size:.89rem;color:var(--muted);line-height:1.5}
+.hcard a{font-weight:600}
+.foot{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);
+      font-size:.84rem;line-height:1.6;max-width:78ch}
+.foot p + p{margin-top:8px}
+
+/* empty state when a filter hides everything in a section */
+.sec.is-empty{display:none}
+.filtered-note{display:none;margin-top:22px;padding:13px 16px;border-radius:var(--radius);
+   border:1px dashed var(--line-strong);background:var(--surface-2);color:var(--muted);font-size:.9rem}
+.sec.has-hidden .filtered-note{display:block}
+body[data-role="lead"] .step[data-role="proctor"],
+body[data-role="lead"] .step[data-role="student"],
+body[data-role="proctor"] .step[data-role="lead"],
+body[data-role="proctor"] .step[data-role="student"],
+body[data-role="student"] .step[data-role="lead"],
+body[data-role="student"] .step[data-role="proctor"]{display:none}
+body[data-role="lead"] .cl[data-role="proctor"],
+body[data-role="proctor"] .cl[data-role="lead"],
+body[data-role="student"] .cl{display:none}
+body[data-role="lead"] .checks,body[data-role="proctor"] .checks{grid-template-columns:1fr}
+
+/* ---------------- responsive ---------------- */
+@media (max-width:1040px){
+  /* The sidebar becomes a two-row jump strip above the hero. Both rows
+     scroll sideways rather than wrapping, so the strip costs ~110px of
+     a phone screen instead of half of it. */
+  .layout{grid-template-columns:minmax(0,1fr)}
+  .sidebar{position:static;height:auto;overflow:visible;min-width:0;border-right:0;
+           border-bottom:1px solid var(--line);background:var(--surface);
+           padding:12px 0 12px}
+  .side-title,.side-back,.side-label,.rolebar-hint,.sidebar .btn{display:none}
+  .sidebar .side-label + *{margin-top:0}
+  .rolebar,.toc{display:flex;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;
+                min-width:0;gap:6px;margin:0;padding:0 clamp(16px,3.5vw,52px)}
+  .rolebar::-webkit-scrollbar,.toc::-webkit-scrollbar{display:none}
+  .rolebar{margin-bottom:8px}
+  .rolebar button{width:auto;flex:none;padding:6px 12px;font-size:.82rem}
+  .toc a{flex:none;white-space:nowrap;padding:5px 11px;font-size:.83rem;
+         border:1px solid var(--line);border-radius:999px}
+  .toc a.active{border-color:var(--accent)}
+  .sidebar p:last-child{display:none}
+}
+@media (max-width:560px){
+  .facts{grid-template-columns:repeat(2,1fr)}
+  /* Five facts in two columns leaves a grey slab where the sixth
+     would be — let the last one run the full width instead. */
+  .facts div:last-child{grid-column:1/-1}
+  .window-strip .cta{margin-left:0;width:100%}
+  .window-strip .cta .btn{width:100%;justify-content:center}
+  .step{padding:15px 15px 16px}
+  .sec{padding-top:40px}
+}
+
+/* ---------------- print ---------------- */
+@media print{
+  :root{--bg:#fff;--surface:#fff;--surface-2:#fff;--surface-3:#fff;--topbar:0rem}
+  body{background:#fff;font-size:10pt}
+  .layout{display:block;max-width:none}
+  .sidebar,.skip,.lb,.window-strip .cta,figure.shot button.zoom,.cl-head .reset,
+  .script-head .btn,.filtered-note{display:none!important}
+  main{padding:0}
+  .step,.call,.rcard,.cl,.tcard,.hcard,.phase,tr{break-inside:avoid}
+  .sec{break-before:auto;padding-top:20px}
+  .step{border:1px solid #bbb;border-left-width:3px}
+  a{color:inherit;text-decoration:none}
+  a[href^="http"]::after{content:" (" attr(href) ")";font-size:8pt;color:#555;word-break:break-all}
+}
+</style>
+<script src="../auth/gate.js?v=20"></script>
+</head>
+<body>
+<a class="skip" href="#overview">Skip to content</a>
+
+<div class="layout" dir="ltr">
+
+<!-- ============ sidebar ============ -->
+<nav class="sidebar" aria-label="Guide contents">
+  <a class="side-title" href="#top">AI Growth Test<span>AI Lead &amp; Proctor guide · Grades 4–12</span></a>
+  <a class="side-back" href="tools.html">&larr; Tools &amp; Resources</a>
+
+  <p class="side-label" id="role-lbl">Show steps for</p>
+  <div class="rolebar" role="group" aria-labelledby="role-lbl">
+    <button type="button" data-set-role="all" aria-pressed="true">
+      <span class="swatch" style="--c:var(--muted)"></span>Everyone<span class="n" data-count="all"></span></button>
+    <button type="button" data-set-role="lead" aria-pressed="false"
+            style="--sel-soft:var(--lead-soft);--sel-line:var(--lead)">
+      <span class="swatch" style="--c:var(--lead)"></span>AI Lead<span class="n" data-count="lead"></span></button>
+    <button type="button" data-set-role="proctor" aria-pressed="false"
+            style="--sel-soft:var(--proc-soft);--sel-line:var(--proc)">
+      <span class="swatch" style="--c:var(--proc)"></span>Proctor<span class="n" data-count="proctor"></span></button>
+    <button type="button" data-set-role="student" aria-pressed="false"
+            style="--sel-soft:var(--stud-soft);--sel-line:var(--stud)">
+      <span class="swatch" style="--c:var(--stud)"></span>Student<span class="n" data-count="student"></span></button>
+  </div>
+  <p class="rolebar-hint">Pick a role and the guide hides every step that isn’t yours.</p>
+
+  <p class="side-label">Contents</p>
+  <ol class="toc" id="toc">
+    <li><a href="#overview"><b>1</b> Overview &amp; key dates</a></li>
+    <li><a href="#phase-1"><b>2</b> Phase 1 — Get ready</a></li>
+    <li><a href="#phase-2"><b>3</b> Phase 2 — Before the test</a></li>
+    <li><a href="#phase-3"><b>4</b> Phase 3 — Test day</a></li>
+    <li><a href="#incidents"><b>5</b> Handling incidents</a></li>
+    <li><a href="#finalising"><b>6</b> Finalising</a></li>
+    <li><a href="#troubleshooting"><b>7</b> Troubleshooting</a></li>
+    <li><a href="#checklists"><b>8</b> Quick checklists</a></li>
+    <li><a href="#help"><b>9</b> Getting help</a></li>
+  </ol>
+
+  <p class="side-label">Platform</p>
+  <p style="margin:0 0 0 8px"><a class="btn" style="font-size:.82rem;padding:7px 13px"
+     href="https://instructwin.com/aigt" target="_blank" rel="noopener">Open InstrucTwin ↗</a></p>
+</nav>
+
+<main id="top">
+
+<!-- ============ hero ============ -->
+<header class="hero">
+  <span class="eyebrow">ADEK · InstrucTwin · Baseline</span>
+  <h1>AI Growth Test — AI&nbsp;Lead &amp; Proctor guide</h1>
+  <p class="hero-sub">Everything needed to set up, run and close out the Baseline AI Growth Test
+     for Grades 4–12 — from first login to marking the session complete.</p>
+
+  <div class="window-strip" id="window-strip" data-state="open">
+    <span class="pulse" aria-hidden="true"></span>
+    <strong id="window-state">Assessment window</strong>
+    <span class="dates">14 September – 4 October 2026</span>
+    <span class="cta"><a class="btn" href="https://instructwin.com/aigt" target="_blank" rel="noopener">
+      Open the platform ↗</a></span>
+  </div>
+
+  <dl class="facts">
+    <div><dt>Grades</dt><dd>4 – 12</dd></div>
+    <div><dt>Duration</dt><dd>50 min<small>45 min + 5 min grace</small></dd></div>
+    <div><dt>Access code</dt><dd>4 digits<small>valid 1 hour</small></dd></div>
+    <div><dt>Device</dt><dd>Laptop / desktop<small>Chrome or Safari, up to date</small></dd></div>
+    <div><dt>Sitting</dt><dd>One<small>no pausing, no resuming</small></dd></div>
+  </dl>
+</header>
+
+<!-- ============ 1. overview ============ -->
+<section class="sec" id="overview">
+  <div class="sec-head"><span class="sec-num">1</span><h2>Overview &amp; key dates</h2></div>
+  <p class="lede">Three phases, three audiences. Phase 1 is the AI Lead setting the school up.
+     Phase 2 and 3 belong to the Proctor in the room. Students only ever see Phase 3.</p>
+
+  <div class="phases">
+    <a class="phase" href="#phase-1" style="--pc:var(--lead)">
+      <span class="pn">Phase 1 · AI Lead</span>
+      <h3>Get ready</h3>
+      <p>Log in, assign proctors per grade, set roster permissions and the timetable, confirm devices.</p>
+    </a>
+    <a class="phase" href="#phase-2" style="--pc:var(--proc)">
+      <span class="pn">Phase 2 · Proctor</span>
+      <h3>Before the test</h3>
+      <p>Open your grade’s roster, confirm every student is on it, add anyone missing.</p>
+    </a>
+    <a class="phase" href="#phase-3" style="--pc:var(--stud)">
+      <span class="pn">Phase 3 · Proctor + Student</span>
+      <h3>Test day</h3>
+      <p>Generate the access code, get students signed in, brief them, watch the room.</p>
+    </a>
+  </div>
+
+  <h3 style="font-size:1.12rem;margin:38px 0 0">Who does what</h3>
+  <div class="roles">
+    <div class="rcard" data-role="lead">
+      <h3>AI Lead</h3>
+      <ul>
+        <li>Signs in with Training platform credentials (the Trainee account)</li>
+        <li>Assigns Proctor accounts, per grade</li>
+        <li>Sets the assessment window per grade &amp; section</li>
+        <li>Owns smooth, end-to-end execution</li>
+        <li>Marks each session complete when it is done</li>
+      </ul>
+    </div>
+    <div class="rcard" data-role="proctor">
+      <h3>Proctor</h3>
+      <ul>
+        <li>Verifies students, adds any who are missing</li>
+        <li>Generates the access code per session</li>
+        <li>Briefs students and monitors the room</li>
+        <li>Reports any incident on the platform</li>
+      </ul>
+    </div>
+    <div class="rcard" data-role="student">
+      <h3>Student</h3>
+      <ul>
+        <li>Uses a laptop or desktop, per school device policy</li>
+        <li>Signs in with their Student ID</li>
+        <li>Enters the Proctor’s session code</li>
+        <li>Completes the assessment in one sitting</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="call note" style="margin-top:24px">
+    <b class="tag">Who this does not apply to</b>
+    Charter schools, schools following the MoE curriculum, and schools whose academic year
+    does not begin in August or September.
+  </div>
+</section>
+
+<!-- ============ 2. phase 1 ============ -->
+<section class="sec" id="phase-1">
+  <div class="sec-head"><span class="sec-num">2</span><h2>Phase 1 — Get ready</h2>
+    <span class="badge" style="--rsoft:var(--lead-soft);--rc:var(--lead);--rline:var(--lead-line)">AI Lead</span></div>
+  <p class="lede">Access and proctor setup. Do all of this before the first session is due to run —
+     a Proctor cannot see a roster or generate a code until their account is assigned to a grade.</p>
+  <p class="filtered-note">Showing only the steps for the role you selected. Switch to
+     <b>Everyone</b> in the sidebar to see the full guide.</p>
+
+  <ol class="steps">
+
+    <li class="step" id="s-login" data-role="lead">
+      <div class="step-top"><span class="step-n">2.1</span>
+        <h3>Log in</h3><span class="badge">AI Lead</span></div>
+      <div class="step-body">
+        <ol class="do">
+          <li>Go to <a href="https://instructwin.com/aigt" target="_blank" rel="noopener">instructwin.com/aigt</a>.</li>
+          <li>Select <b>Assessments</b>.</li>
+          <li>Choose your role: <b>AI Lead &amp; Proctor</b>.</li>
+          <li>Enter your email and password, then sign in.</li>
+        </ol>
+        <div class="call note"><b class="tag">Credentials</b>
+          The same email and password as your <b>Trainee account</b> on the Training platform.
+          There is no separate AIGT password.</div>
+        <figure class="shot">
+          <button class="zoom" type="button" data-full="assets/aigt/01-sign-in.png"
+            data-cap="Figure 1 — Signing in at instructwin.com/aigt with your Training platform credentials.">
+            <img src="assets/aigt/01-sign-in.png" loading="lazy" width="561" height="357"
+                 alt="InstrucTwin sign-in panel headed Sign in with your Email, with Email and Password fields and a Sign in button."></button>
+          <figcaption><b>Figure 1</b> Signing in <span class="expand">Click to enlarge</span></figcaption>
+        </figure>
+      </div>
+    </li>
+
+    <li class="step" id="s-roles" data-role="lead">
+      <div class="step-top"><span class="step-n">2.2</span>
+        <h3>Switch between your two roles <small style="font-family:var(--font);font-weight:500;color:var(--muted)">— optional</small></h3>
+        <span class="badge">AI Lead</span></div>
+      <div class="step-body">
+        <p style="font-size:.96rem;color:var(--ink-2)">Every AI Lead is <b>also a Proctor for every grade</b> by default.
+           If you don’t want that, remove yourself from a grade — or add other staff and stay on as a
+           primary or secondary Proctor yourself (see 2.3).</p>
+        <p class="path"><span class="k">Profile</span><span class="sep">›</span><span class="k">Change Role</span>
+          <span class="sep">›</span><span class="k">pick a role</span></p>
+        <figure class="shot">
+          <button class="zoom" type="button" data-full="assets/aigt/02-switch-profile.jpg"
+            data-cap="Figure 2 — The Switch profile dialog. (1) the Profile button, top right. (2) the two profiles: AI Lead (Administrator, default) and Proctor (Teacher).">
+            <img src="assets/aigt/02-switch-profile.jpg" loading="lazy" width="1248" height="758"
+                 alt="Switch profile dialog listing two profiles: AI Lead Name (Administrator, default, ticked) and Proctor Name (Teacher). A numbered marker points to the profile button in the top right."></button>
+          <figcaption><b>Figure 2</b> Switching profile <span class="expand">Click to enlarge</span></figcaption>
+        </figure>
+      </div>
+    </li>
+
+    <li class="step" id="s-proctors" data-role="lead">
+      <div class="step-top"><span class="step-n">2.3</span>
+        <h3>Assign Proctor accounts, per grade</h3><span class="badge">AI Lead</span></div>
+      <div class="step-body">
+        <p class="path"><span class="k">Class Management</span><span class="sep">›</span><span class="k">your grade</span>
+          <span class="sep">›</span><span class="k">Add a proctor</span></p>
+        <ol class="do">
+          <li>Click <b>Class Management</b> in the left menu.</li>
+          <li>Select the grade or year you want to add a Proctor to.</li>
+          <li>Pick an existing Proctor from the list on the right — or create a new one with their
+              first name, last name, username and email.</li>
+          <li>Click <b>Save changes</b>.</li>
+        </ol>
+        <div class="call note"><b class="tag">New proctor passwords</b>
+          Creating a Proctor generates a default password, shown to you on creation — or you can set
+          the password yourself for that Proctor. Note it down: you are the one who passes it on.</div>
+        <div class="call note"><b class="tag">Rosters are per grade, not per section</b>
+          Several Proctors can be assigned to the same grade, and they all see the same student list.</div>
+        <div class="shots" style="--min:300px">
+          <figure class="shot">
+            <button class="zoom" type="button" data-full="assets/aigt/03-class-management.png"
+              data-cap="Figure 3 — Class Management: total classes, students and proctors, with one course card per grade. Click Manage to open a grade.">
+              <img src="assets/aigt/03-class-management.png" loading="lazy" width="1570" height="714"
+                   alt="Class Management screen showing summary tiles for total classes, students and proctors, and a course card for AI - G04 with a Manage button."></button>
+            <figcaption><b>Figure 3</b> Class Management <span class="expand">Enlarge</span></figcaption>
+          </figure>
+          <figure class="shot">
+            <button class="zoom" type="button" data-full="assets/aigt/04-choose-proctor.png"
+              data-cap="Figure 4 — Inside a grade: students on the left, the Proctors/Teachers panel on the right. Use Add a proctor to search the existing list.">
+              <img src="assets/aigt/04-choose-proctor.png" loading="lazy" width="1047" height="755"
+                   alt="Grade page with an enrolled student list on the left and a Proctors slash Teachers panel on the right, with an Add a proctor search box open."></button>
+            <figcaption><b>Figure 4</b> Choosing an existing Proctor <span class="expand">Enlarge</span></figcaption>
+          </figure>
+          <figure class="shot">
+            <button class="zoom" type="button" data-full="assets/aigt/05-add-new-proctor.png"
+              data-cap="Figure 5 — Creating a Proctor who isn't in the list yet: first name, last name, teacher username and email, then Add proctor and Save changes.">
+              <img src="assets/aigt/05-add-new-proctor.png" loading="lazy" width="1141" height="936"
+                   alt="New proctor form with First name, Last name, Teacher username and Email fields and an Add proctor button, with a Save changes bar at the foot of the page."></button>
+            <figcaption><b>Figure 5</b> Adding a new Proctor <span class="expand">Enlarge</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </li>
+
+    <li class="step" id="s-roster-access" data-role="lead">
+      <div class="step-top"><span class="step-n">2.4</span>
+        <h3>Let Proctors manage the roster</h3><span class="badge">AI Lead</span></div>
+      <div class="step-body">
+        <p style="font-size:.96rem;color:var(--ink-2)">Proctors can add missing students by default.
+           This is the permission that controls it — a Proctor without it cannot add or remove anyone.</p>
+        <p class="path"><span class="k">Proctors</span><span class="sep">›</span><span class="k">⋮ next to their name</span>
+          <span class="sep">›</span><span class="k">Manage Roster Access</span></p>
+        <div class="call stop"><b class="tag">Before you remove a student</b>
+          Students are <b>not</b> split across sections. Check they are not enrolled in another
+          Proctor’s section for the same grade — removing them affects <b>every section that shares
+          that grade</b>.</div>
+        <figure class="shot">
+          <button class="zoom" type="button" data-full="assets/aigt/06-manage-roster-access.png"
+            data-cap="Figure 6 — The Proctors page. The three-dot action menu carries Manage roster access, alongside Manage courses and Log in as this proctor.">
+            <img src="assets/aigt/06-manage-roster-access.png" loading="lazy" width="1432" height="375"
+                 alt="Proctors table listing each proctor with status, roster management state, courses assigned and last login, with a three-dot menu open showing Manage roster access."></button>
+          <figcaption><b>Figure 6</b> Granting roster access <span class="expand">Click to enlarge</span></figcaption>
+        </figure>
+      </div>
+    </li>
+
+    <li class="step" id="s-timetable" data-role="lead">
+      <div class="step-top"><span class="step-n">2.5</span>
+        <h3>Set the assessment timetable</h3><span class="badge">AI Lead</span></div>
+      <div class="step-body">
+        <p class="path"><span class="k">AIGT Timetable</span><span class="sep">›</span><span class="k">Add</span></p>
+        <ol class="do">
+          <li>Click <b>AIGT Timetable</b> in the left menu.</li>
+          <li>Click <b>Add</b> to create a new schedule record.</li>
+          <li>Choose the grade, section and assigned Proctor(s), then set the date and time.</li>
+          <li>Repeat for <b>every grade and every section</b> in the school.</li>
+        </ol>
+        <div class="call warn"><b class="tag">These records go to ADEK</b>
+          The timetable is shared with ADEK, and the assessment only becomes available to a grade’s
+          students once its window is set here.</div>
+        <figure class="shot">
+          <button class="zoom" type="button" data-full="assets/aigt/07-timetable-record.png"
+            data-cap="Figure 7 — Adding a timetable record: grade, section, one or more proctors, and the exam date and time.">
+            <img src="assets/aigt/07-timetable-record.png" loading="lazy" width="1518" height="912"
+                 alt="AIGT Timetable screen with a New record panel open, containing Grade, Section, Proctors and Exam date and time fields with a date picker."></button>
+          <figcaption><b>Figure 7</b> Adding a timetable record <span class="expand">Click to enlarge</span></figcaption>
+        </figure>
+      </div>
+    </li>
+
+    <li class="step" id="s-devices" data-role="lead">
+      <div class="step-top"><span class="step-n">2.6</span>
+        <h3>Device, internet &amp; power readiness</h3><span class="badge">AI Lead</span></div>
+      <div class="step-body">
+        <p style="font-size:.96rem;color:var(--ink-2)">Confirm this setup is the same for every student sitting the test:</p>
+        <ul class="bul">
+          <li>A <b>laptop, desktop or tablet</b> — school-provided or personal, per school policy —
+              running an up-to-date <b>Chrome or Safari</b>.</li>
+          <li>Reliable internet <b>at the student’s seat</b>, not just in the building.</li>
+          <li>Reliable power — a charged laptop, or an outlet within reach.</li>
+          <li>School IT has confirmed the network allows <code>instructwin.com</code>.</li>
+          <li>Other tabs and applications <b>closed before starting</b>, so nobody minimises the
+              assessment window by accident.</li>
+        </ul>
+        <div class="call stop"><b class="tag">Why the closed tabs matter</b>
+          Minimising or switching away from the assessment window <b>auto-flags the session and
+          notifies ADEK</b>. An accidental Alt-Tab counts.</div>
+      </div>
+    </li>
+
+  </ol>
+</section>
+
+<!-- ============ 3. phase 2 ============ -->
+<section class="sec" id="phase-2">
+  <div class="sec-head"><span class="sec-num">3</span><h2>Phase 2 — Before the test</h2>
+    <span class="badge" style="--rsoft:var(--proc-soft);--rc:var(--proc);--rline:var(--proc-line)">Proctor</span></div>
+  <p class="lede">Roster checks, done ahead of the day — not on it. A student who isn’t on the roster
+     cannot sit the test, and sorting that out with five minutes to go is the single most common
+     way a session runs late.</p>
+  <p class="filtered-note">Showing only the steps for the role you selected. Switch to
+     <b>Everyone</b> in the sidebar to see the full guide.</p>
+
+  <ol class="steps">
+
+    <li class="step" id="s-verify" data-role="proctor">
+      <div class="step-top"><span class="step-n">3.1</span>
+        <h3>Verify the student roster</h3><span class="badge">Proctor</span></div>
+      <div class="step-body">
+        <ol class="do">
+          <li>Log in with the credentials your AI Lead gave you.</li>
+          <li>Open the <b>Roster</b> tab to see your grade’s students.</li>
+          <li>Check every student in your assigned grade appears — then <b>confirm it with your
+              AI Lead</b>. That confirmation is your responsibility, not theirs.</li>
+        </ol>
+        <figure class="shot">
+          <button class="zoom" type="button" data-full="assets/aigt/08-roster.jpg"
+            data-cap="Figure 8 — The Roster tab: every enrolled student with their username and email, plus Enroll Student and Upload CSV.">
+            <img src="assets/aigt/08-roster.jpg" loading="lazy" width="911" height="264"
+                 alt="Roster screen listing enrolled students with username and email columns, and Enroll Student and Upload CSV buttons."></button>
+          <figcaption><b>Figure 8</b> Checking the student list <span class="expand">Click to enlarge</span></figcaption>
+        </figure>
+      </div>
+    </li>
+
+    <li class="step" id="s-manage-roster" data-role="proctor">
+      <div class="step-top"><span class="step-n">3.2</span>
+        <h3>Add or remove a student</h3><span class="badge">Proctor</span></div>
+      <div class="step-body">
+        <div style="display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+          <div class="call ok"><b class="tag">To add someone</b>
+            Click <b>Enroll Student</b>, then enter their first name, last name and Student ID.</div>
+          <div class="call stop"><b class="tag">To remove someone</b>
+            Click the <b>delete</b> icon next to their enrolment — after checking they are not in
+            another section of the same grade.</div>
+        </div>
+        <div class="call note"><b class="tag">If the buttons aren’t there</b>
+          You need <b>Manage Roster Access</b>, which only the AI Lead can grant (see 2.4).</div>
+        <figure class="shot">
+          <button class="zoom" type="button" data-full="assets/aigt/09-enroll-student.jpg"
+            data-cap="Figure 9 — The Enroll Student panel: first name, last name and ID/Username, then Add.">
+            <img src="assets/aigt/09-enroll-student.jpg" loading="lazy" width="1048" height="919"
+                 alt="Subject Roster screen with an Enroll Student side panel open containing First name, Last name and ID slash Username fields."></button>
+          <figcaption><b>Figure 9</b> Adding a student to the roster <span class="expand">Click to enlarge</span></figcaption>
+        </figure>
+      </div>
+    </li>
+
+  </ol>
+</section>
+
+<!-- ============ 4. phase 3 ============ -->
+<section class="sec" id="phase-3">
+  <div class="sec-head"><span class="sec-num">4</span><h2>Phase 3 — Test day</h2>
+    <span class="badge" style="--rsoft:var(--proc-soft);--rc:var(--proc);--rline:var(--proc-line)">Proctor</span>
+    <span class="badge" style="--rsoft:var(--stud-soft);--rc:var(--stud);--rline:var(--stud-line)">Student</span></div>
+  <p class="lede">Codes, logins, briefing, monitoring. Read section 4.3 aloud before anyone clicks Start.</p>
+  <p class="filtered-note">Showing only the steps for the role you selected. Switch to
+     <b>Everyone</b> in the sidebar to see the full guide.</p>
+
+  <ol class="steps">
+
+    <li class="step" id="s-code" data-role="proctor">
+      <div class="step-top"><span class="step-n">4.1</span>
+        <h3>Generate the access code</h3><span class="badge">Proctor</span></div>
+      <div class="step-body">
+        <p style="font-size:.96rem;color:var(--ink-2)">Just before the session starts, click
+           <b>Regenerate Code</b>. That creates a new <b>4-digit code</b> every student in the room
+           uses to sign in.</p>
+        <div class="call stop"><b class="tag">Copy it immediately</b>
+          Navigate away without copying the code and you cannot see it again — you have to generate a
+          new one, which <b>replaces the old code for every student</b>. Write it on the board first.</div>
+        <div class="call warn"><b class="tag">The code lasts one hour</b>
+          Once it expires students can no longer sign in, and you must generate a new one to restore access.</div>
+        <div class="shots" style="--min:300px">
+          <figure class="shot">
+            <button class="zoom" type="button" data-full="assets/aigt/10-assessment-list.png"
+              data-cap="Figure 10 — The Assessments list. Regenerate Code sits on the assessment card, alongside the time counter, weight and total points.">
+              <img src="assets/aigt/10-assessment-list.png" loading="lazy" width="979" height="398"
+                   alt="Assessments list showing the Baseline assessment card with a Regenerate Code button and a 50 minute time counter."></button>
+            <figcaption><b>Figure 10</b> Finding the assessment <span class="expand">Enlarge</span></figcaption>
+          </figure>
+          <figure class="shot">
+            <button class="zoom" type="button" data-full="assets/aigt/11-access-code.jpg"
+              data-cap="Figure 11 — The Assessment Access Code dialog, with the four-digit code, a copy button, the countdown to expiry, and the confirmation tick-box.">
+              <img src="assets/aigt/11-access-code.jpg" loading="lazy" width="627" height="688"
+                   alt="Assessment Access Code dialog showing a four digit code with a copy button, a valid-until countdown, and a warning to write the code down now."></button>
+            <figcaption><b>Figure 11</b> The access code <span class="expand">Enlarge</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </li>
+
+    <li class="step" id="s-student-login" data-role="student">
+      <div class="step-top"><span class="step-n">4.2</span>
+        <h3>Student login</h3><span class="badge">Student · proctor-assisted</span></div>
+      <div class="step-body">
+        <ol class="do">
+          <li>Go to <a href="https://instructwin.com/aigt" target="_blank" rel="noopener">instructwin.com/aigt</a>,
+              click <b>Assessment</b>, then select <b>Student</b>.</li>
+          <li>Enter the <b>Username (Student ID)</b> and the <b>access code</b> from the Proctor.</li>
+          <li>Click <b>Sign In</b>.</li>
+          <li>Click <b>Start</b> to begin.</li>
+        </ol>
+        <div class="call note"><b class="tag">The code is shared, the username is not</b>
+          Every student in the room types the same access code, but signs in under their own
+          Student ID. Check the name on screen belongs to the student sitting there.</div>
+        <div class="shots" style="--min:280px">
+          <figure class="shot">
+            <button class="zoom" type="button" data-full="assets/aigt/12-student-sign-in.png"
+              data-cap="Figure 12 — The student sign-in screen: Username (Student ID) and Access code.">
+              <img src="assets/aigt/12-student-sign-in.png" loading="lazy" width="567" height="423"
+                   alt="Student sign-in panel headed Sign in with your Access Code, with Username and Access code fields."></button>
+            <figcaption><b>Figure 12</b> Signing in <span class="expand">Enlarge</span></figcaption>
+          </figure>
+          <figure class="shot">
+            <button class="zoom" type="button" data-full="assets/aigt/13-student-dashboard.png"
+              data-cap="Figure 13 — The student dashboard. The Baseline assessment sits under To do; Start begins it.">
+              <img src="assets/aigt/13-student-dashboard.png" loading="lazy" width="1256" height="322"
+                   alt="Student Assessments dashboard with a To do list containing the Baseline assessment, marked Not started, with a Start button."></button>
+            <figcaption><b>Figure 13</b> Clicking Start <span class="expand">Enlarge</span></figcaption>
+          </figure>
+          <figure class="shot">
+            <button class="zoom" type="button" data-full="assets/aigt/14-answering-questions.png"
+              data-cap="Figure 14 — Sitting the assessment: progress bar, question counter, countdown timer, and Submit Assessment.">
+              <img src="assets/aigt/14-answering-questions.png" loading="lazy" width="999" height="539"
+                   alt="Assessment question view with multiple choice questions, a progress bar, a countdown timer and a Submit Assessment button."></button>
+            <figcaption><b>Figure 14</b> Answering and submitting <span class="expand">Enlarge</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </li>
+
+    <li class="step" id="s-brief" data-role="proctor">
+      <div class="step-top"><span class="step-n">4.3</span>
+        <h3>Brief students before they start</h3><span class="badge">Proctor</span></div>
+      <div class="step-body">
+        <div class="script">
+          <div class="script-head">
+            <h3>Read this aloud</h3>
+            <button class="btn btn-ghost" type="button" id="copy-script">Copy script</button>
+          </div>
+          <ul id="script-body">
+            <li>The assessment lasts <b>45 minutes</b>, plus a <b>5-minute grace period</b>.</li>
+            <li>Do <b>not</b> close or minimise the browser until you have clicked <b>Submit</b> —
+                doing so automatically flags your session.</li>
+            <li>Report any technical issue to me <b>immediately</b>.</li>
+          </ul>
+        </div>
+      </div>
+    </li>
+
+    <li class="step" id="s-monitor" data-role="proctor">
+      <div class="step-top"><span class="step-n">4.4</span>
+        <h3>Monitor the room</h3><span class="badge">Proctor</span></div>
+      <div class="step-body">
+        <ul class="bul">
+          <li>Observe students’ screens <b>continuously</b> throughout the session.</li>
+          <li>Check the <b>name on screen</b> matches the student actually sitting there.</li>
+          <li>Do <b>not</b> leave the room unattended while the assessment is running.</li>
+          <li>Report any suspected violation <b>on the platform, immediately</b> — see section 5.</li>
+        </ul>
+      </div>
+    </li>
+
+    <li class="step" id="s-timing" data-role="proctor">
+      <div class="step-top"><span class="step-n">4.5</span>
+        <h3>Timing rules</h3><span class="badge">Proctor</span></div>
+      <div class="step-body">
+        <div class="timing">
+          <div class="tcard"><div class="big">45<small style="font-size:.5em"> min</small></div>
+            <div class="lbl">Assessment</div></div>
+          <div class="tcard"><div class="big">5<small style="font-size:.5em"> min</small></div>
+            <div class="lbl">Grace period</div></div>
+          <div class="tcard tot"><div class="big">50<small style="font-size:.5em"> min</small></div>
+            <div class="lbl">Hard limit</div></div>
+        </div>
+        <ul class="bul">
+          <li>Time taken on the assessment is <b>tracked</b>.</li>
+          <li>Minimising the browser before submitting <b>auto-flags the session and notifies ADEK</b>.</li>
+          <li>The assessment is completed in <b>one sitting</b>.</li>
+        </ul>
+      </div>
+    </li>
+
+  </ol>
+</section>
+
+<!-- ============ 5. incidents ============ -->
+<section class="sec" id="incidents">
+  <div class="sec-head"><span class="sec-num">5</span><h2>Handling incidents</h2>
+    <span class="badge" style="--rsoft:var(--proc-soft);--rc:var(--proc);--rline:var(--proc-line)">Proctor</span></div>
+  <p class="lede">Anything that happens during a session is logged <b>on the platform</b> — not by
+     email, not verbally. That includes technical problems, not just integrity concerns.</p>
+  <p class="filtered-note">Showing only the steps for the role you selected. Switch to
+     <b>Everyone</b> in the sidebar to see the full guide.</p>
+
+  <ol class="steps">
+
+    <li class="step" id="s-violation" data-role="proctor">
+      <div class="step-top"><span class="step-n">5.1</span>
+        <h3>What counts as a violation</h3><span class="badge">Proctor</span></div>
+      <div class="step-body">
+        <ul class="bul">
+          <li>Any form of <b>cheating</b> during the assessment.</li>
+          <li><b>Minimising or switching away</b> from the assessment window.</li>
+          <li>Any other integrity concern you observe.</li>
+        </ul>
+      </div>
+    </li>
+
+    <li class="step" id="s-report" data-role="proctor">
+      <div class="step-top"><span class="step-n">5.2</span>
+        <h3>Report an incident</h3><span class="badge">Proctor</span></div>
+      <div class="step-body">
+        <p class="path"><span class="k">Incidents</span><span class="sep">›</span><span class="k">New Incident</span>
+          <span class="sep">›</span><span class="k">Log Incident</span></p>
+        <ol class="do">
+          <li>Click <b>Incidents</b> in the left menu.</li>
+          <li>Click <b>New Incident</b>.</li>
+          <li>Select the class, and whether it concerns the <b>whole class</b> or <b>a specific student</b>.</li>
+          <li>Choose a category, set the severity, and add a title and description.</li>
+          <li>Click <b>Log Incident</b>.</li>
+        </ol>
+        <div class="call note"><b class="tag">Categories on the form</b>
+          Technical issue · Accidental submission · Timing issue · Content issue ·
+          Absence / late start · Behavioural disruption · Suspected cheating · Other.
+          Severity runs Low · Medium · High · Critical.</div>
+        <div class="call warn"><b class="tag">Log it while you remember it</b>
+          Say what happened, when, and any steps already taken. A thin description written a day later
+          is worth much less than two sentences written in the room.</div>
+        <figure class="shot">
+          <button class="zoom" type="button" data-full="assets/aigt/15-new-incident.png"
+            data-cap="Figure 15 — The New incident panel: course, whole class or single student, category, severity, title and description.">
+            <img src="assets/aigt/15-new-incident.png" loading="lazy" width="1187" height="585"
+                 alt="Incidents screen with a New incident panel open showing course selection, whole class or specific student options, eight category tiles, severity buttons, and title and description fields."></button>
+          <figcaption><b>Figure 15</b> Logging an incident <span class="expand">Click to enlarge</span></figcaption>
+        </figure>
+      </div>
+    </li>
+
+  </ol>
+</section>
+
+<!-- ============ 6. finalising ============ -->
+<section class="sec" id="finalising">
+  <div class="sec-head"><span class="sec-num">6</span><h2>Finalising</h2>
+    <span class="badge" style="--rsoft:var(--lead-soft);--rc:var(--lead);--rline:var(--lead-line)">AI Lead</span></div>
+  <p class="lede">The last step, and the one most easily forgotten — a session nobody marks complete
+     stays open in ADEK’s view of the school.</p>
+  <p class="filtered-note">Showing only the steps for the role you selected. Switch to
+     <b>Everyone</b> in the sidebar to see the full guide.</p>
+
+  <ol class="steps">
+    <li class="step" id="s-complete" data-role="lead">
+      <div class="step-top"><span class="step-n">6.1</span>
+        <h3>Mark the assessment complete</h3><span class="badge">AI Lead</span></div>
+      <div class="step-body">
+        <p class="path"><span class="k">AIGT Timetable</span><span class="sep">›</span><span class="k">the session’s row</span>
+          <span class="sep">›</span><span class="k">Mark complete</span></p>
+        <ol class="do">
+          <li>Open <b>AIGT Timetable</b>.</li>
+          <li>Find the schedule record for the session that has finished.</li>
+          <li>Click <b>Mark complete</b>.</li>
+        </ol>
+        <div class="call ok"><b class="tag">This notifies ADEK automatically</b>
+          Nothing else needs sending. A row marked complete can be reopened if you close it by mistake.</div>
+        <figure class="shot">
+          <button class="zoom" type="button" data-full="assets/aigt/16-mark-complete.png"
+            data-cap="Figure 16 — The timetable after a session. A completed row turns green and offers Reopen; scheduled rows still show Mark complete.">
+            <img src="assets/aigt/16-mark-complete.png" loading="lazy" width="1405" height="242"
+                 alt="AIGT Timetable rows showing one completed session highlighted green with a Reopen action, and two scheduled sessions each with a Mark complete button."></button>
+          <figcaption><b>Figure 16</b> Marking a session complete <span class="expand">Click to enlarge</span></figcaption>
+        </figure>
+      </div>
+    </li>
+  </ol>
+</section>
+
+<!-- ============ 7. troubleshooting ============ -->
+<section class="sec" id="troubleshooting">
+  <div class="sec-head"><span class="sec-num">7</span><h2>Troubleshooting</h2></div>
+  <p class="lede">The six things that actually go wrong, and who fixes each one.</p>
+  <div class="tw" style="margin-top:20px">
+    <table>
+      <caption class="sr">Common problems, what to check, and who to contact</caption>
+      <thead><tr><th scope="col">Problem</th><th scope="col">What to check</th><th scope="col">Who fixes it</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Student cannot log in</th>
+            <td>Is the username (Student ID) right, is the access code right, and has the code expired?</td>
+            <td><span class="who">Proctor</span></td></tr>
+        <tr><th scope="row">Session code expired</th>
+            <td>Generate a new one with <b>Regenerate Code</b> — it replaces the old code for everyone.</td>
+            <td><span class="who">Proctor</span></td></tr>
+        <tr><th scope="row">Student missing from the roster</th>
+            <td>Add them with <b>Enroll Student</b> (see 3.2).</td>
+            <td><span class="who">Proctor</span></td></tr>
+        <tr><th scope="row">Assessment auto-submitted early</th>
+            <td>Check whether the 50-minute limit was reached.</td>
+            <td><span class="who">Proctor</span></td></tr>
+        <tr><th scope="row">Cannot reach the platform at all</th>
+            <td>Confirm the school network allows <code>instructwin.com</code>.</td>
+            <td><span class="who">School IT</span> <span class="who">InstrucTwin</span></td></tr>
+        <tr><th scope="row">Proctor cannot add or remove students</th>
+            <td>Confirm <b>Manage Roster Access</b> has been granted (see 2.4).</td>
+            <td><span class="who">AI Lead</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 8. checklists ============ -->
+<section class="sec" id="checklists">
+  <div class="sec-head"><span class="sec-num">8</span><h2>Quick checklists</h2></div>
+  <p class="lede">Tick as you go — this page remembers your progress on this device.
+     Nothing is sent anywhere.</p>
+
+  <div class="checks">
+    <div class="cl" data-role="lead" data-key="lead">
+      <div class="cl-head"><h3>AI Lead</h3>
+        <button class="reset" type="button" data-reset="lead">Reset</button></div>
+      <div class="cl-prog"><i></i></div>
+      <p class="cl-count"></p>
+      <ul>
+        <li><label><input type="checkbox" data-c="lead-1"><span>Logged in at instructwin.com/aigt with Training platform credentials</span></label></li>
+        <li><label><input type="checkbox" data-c="lead-2"><span>Reviewed and adjusted the default Proctor assignments per grade</span></label></li>
+        <li><label><input type="checkbox" data-c="lead-3"><span>Added any additional Proctor accounts needed</span></label></li>
+        <li><label><input type="checkbox" data-c="lead-4"><span>Granted Manage Roster Access to the Proctors who need it</span></label></li>
+        <li><label><input type="checkbox" data-c="lead-5"><span>Set the timetable for every grade and section</span></label></li>
+        <li><label><input type="checkbox" data-c="lead-6"><span>Confirmed device, internet and power readiness across the school</span></label></li>
+        <li><label><input type="checkbox" data-c="lead-7"><span>Had every Proctor confirm their grade’s roster is up to date</span></label></li>
+        <li><label><input type="checkbox" data-c="lead-8"><span>Marked each completed session as complete in AIGT Timetable</span></label></li>
+      </ul>
+    </div>
+
+    <div class="cl" data-role="proctor" data-key="proctor">
+      <div class="cl-head"><h3>Proctor</h3>
+        <button class="reset" type="button" data-reset="proctor">Reset</button></div>
+      <div class="cl-prog"><i></i></div>
+      <p class="cl-count"></p>
+      <ul>
+        <li><label><input type="checkbox" data-c="proc-1"><span>Logged in with the credentials from the AI Lead</span></label></li>
+        <li><label><input type="checkbox" data-c="proc-2"><span>Verified the roster for my grade and told the AI Lead</span></label></li>
+        <li><label><input type="checkbox" data-c="proc-3"><span>Added any missing students before the session</span></label></li>
+        <li><label><input type="checkbox" data-c="proc-4"><span>Briefed students on the rules and timing before starting</span></label></li>
+        <li><label><input type="checkbox" data-c="proc-5"><span>Generated the access code and shared it with students</span></label></li>
+        <li><label><input type="checkbox" data-c="proc-6"><span>Monitored the room for the full session</span></label></li>
+        <li><label><input type="checkbox" data-c="proc-7"><span>Reported any incidents directly on the platform</span></label></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 9. help ============ -->
+<section class="sec" id="help">
+  <div class="sec-head"><span class="sec-num">9</span><h2>Getting help</h2></div>
+  <div class="help">
+    <div class="hcard"><h3>Anything on the platform</h3>
+      <p>Technical, scheduling or just unclear — InstrucTwin Support is reachable through your
+         platform account, or at
+         <a href="mailto:support@instructwin.com">support@instructwin.com</a>.</p></div>
+    <div class="hcard"><h3>Rosters, proctors, timetable</h3>
+      <p>Your school’s <b>AI Lead</b> owns all three. Go to them before you go to the platform.</p></div>
+    <div class="hcard"><h3>Network access</h3>
+      <p>If <code>instructwin.com</code> is blocked or slow on the school network, that is one for
+         <b>School IT</b>.</p></div>
+    <div class="hcard"><h3>The curriculum behind the test</h3>
+      <p>See the <a href="../PD%20Modules/ai-curriculum-readiness-module.html">AI Literacy teacher
+         readiness module</a> and the
+         <a href="../PD%20Modules/ai-literacy-scope-and-sequence.html">KG–12 Scope &amp; Sequence</a>.</p></div>
+  </div>
+
+  <div class="foot">
+    <p><b>Source:</b> <i>AI Growth Test — AI Lead &amp; Proctor User Guide</i>, version 1.0,
+       last updated 12 September 2026. Republished here for AISA staff; the wording has been
+       reorganised for the screen but the procedures, timings and rules are unchanged.
+       Screenshots are the guide’s own, and show demonstration data only.</p>
+    <p>If the platform changes and a step here no longer matches what you see, the platform is right —
+       tell the AI Lead so this page can be corrected.</p>
+  </div>
+</section>
+
+</main>
+</div>
+
+<!-- ============ lightbox ============ -->
+<div class="lb" id="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged screenshot" hidden>
+  <button class="close" type="button" id="lb-close" aria-label="Close">&times;</button>
+  <figure style="margin:0;display:grid;justify-items:center">
+    <img id="lb-img" src="" alt="">
+    <figcaption id="lb-cap"></figcaption>
+  </figure>
+</div>
+
+<script>
+/* ============================================================
+   AI Growth Test guide — page behaviour.
+   Everything degrades: with JS off the page is still the full
+   guide, unfiltered, with every screenshot inline.
+   ============================================================ */
+(function () {
+    'use strict';
+
+    var STORE = 'aisa_aigt_v1';
+
+    function read() {
+        try { return JSON.parse(localStorage.getItem(STORE) || '{}') || {}; }
+        catch (e) { return {}; }
+    }
+    function write(obj) {
+        try { localStorage.setItem(STORE, JSON.stringify(obj)); } catch (e) {}
+    }
+    var state = read();
+
+    /* ---------- 1. assessment window banner ----------
+     * Dates come from the ADEK guide. Recomputed on load so the
+     * banner never claims the window is open after it has closed. */
+    (function windowBanner() {
+        var strip = document.getElementById('window-strip');
+        var label = document.getElementById('window-state');
+        if (!strip || !label) return;
+
+        var OPEN  = new Date('2026-09-14T00:00:00+04:00');
+        var CLOSE = new Date('2026-10-04T23:59:59+04:00');
+        var now = new Date();
+        var DAY = 864e5;
+
+        function days(a, b) { return Math.ceil((a - b) / DAY); }
+
+        if (now < OPEN) {
+            var d = days(OPEN, now);
+            strip.dataset.state = 'soon';
+            label.textContent = 'Opens in ' + d + (d === 1 ? ' day' : ' days');
+        } else if (now > CLOSE) {
+            strip.dataset.state = 'closed';
+            label.textContent = 'Window closed';
+        } else {
+            var left = days(CLOSE, now);
+            strip.dataset.state = 'open';
+            label.textContent = 'Window open' +
+                (left > 0 ? ' — ' + left + (left === 1 ? ' day left' : ' days left') : ' — last day');
+        }
+    }());
+
+    /* ---------- 2. role filter ----------
+     * CSS does the hiding of individual steps (see body[data-role]
+     * rules). This only keeps the chrome honest: counts, the TOC,
+     * and sections that a filter empties out entirely. */
+    (function roleFilter() {
+        var body = document.body;
+        var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-set-role]'));
+        var steps = Array.prototype.slice.call(document.querySelectorAll('.step'));
+        var tocLinks = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+        if (!buttons.length) return;
+
+        /* step counts per role, printed next to each button */
+        var counts = { all: steps.length, lead: 0, proctor: 0, student: 0 };
+        steps.forEach(function (s) {
+            var r = s.getAttribute('data-role');
+            if (counts[r] != null) counts[r]++;
+        });
+        Object.keys(counts).forEach(function (r) {
+            var el = document.querySelector('[data-count="' + r + '"]');
+            if (el) el.textContent = counts[r];
+        });
+
+        /* How much of a section survives the current filter:
+         * {total, kept}. Sections with nothing role-tagged always show. */
+        function tally(sec, role) {
+            var items = sec.querySelectorAll('.step, .cl');
+            /* Nothing in here is role-tagged, so no filter can empty it. */
+            if (!items.length) return { total: 0, kept: 0, always: true };
+            if (role === 'all') {
+                return { total: items.length, kept: items.length, always: false };
+            }
+            var kept = 0;
+            for (var i = 0; i < items.length; i++) {
+                if (items[i].getAttribute('data-role') === role) kept++;
+            }
+            return { total: items.length, kept: kept, always: false };
+        }
+
+        function apply(role, persist) {
+            body.setAttribute('data-role', role);
+
+            buttons.forEach(function (b) {
+                b.setAttribute('aria-pressed', String(b.getAttribute('data-set-role') === role));
+            });
+
+            document.querySelectorAll('.sec').forEach(function (sec) {
+                var t = tally(sec, role);
+                sec.classList.toggle('is-empty', !t.always && t.kept === 0);
+                sec.classList.toggle('has-hidden', t.kept > 0 && t.kept < t.total);
+                var link = tocLinks.filter(function (a) {
+                    return a.getAttribute('href') === '#' + sec.id;
+                })[0];
+                if (link && link.parentNode) {
+                    link.parentNode.classList.toggle('is-hidden', !t.always && t.kept === 0);
+                }
+            });
+
+            if (persist) { state.role = role; write(state); }
+        }
+
+        buttons.forEach(function (b) {
+            b.addEventListener('click', function () {
+                apply(b.getAttribute('data-set-role'), true);
+            });
+        });
+
+        /* A deep link into a section the current filter hides would
+         * land on nothing at all — drop back to the full guide. */
+        function rescueHash() {
+            var id = (location.hash || '').slice(1);
+            if (!id) return;
+            var target = document.getElementById(id);
+            if (!target) return;
+            var sec = target.closest ? target.closest('.sec') : null;
+            var hiddenStep = target.classList && target.classList.contains('step') &&
+                             body.getAttribute('data-role') !== 'all' &&
+                             target.getAttribute('data-role') !== body.getAttribute('data-role');
+            if (hiddenStep || (sec && sec.classList.contains('is-empty'))) {
+                apply('all', false);
+                setTimeout(function () { target.scrollIntoView(); }, 0);
+            }
+        }
+        window.addEventListener('hashchange', rescueHash);
+
+        apply(state.role || 'all', false);
+        rescueHash();
+    }());
+
+    /* ---------- 3. scrollspy ---------- */
+    (function scrollspy() {
+        var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+        var secs  = links.map(function (a) {
+            return document.getElementById(a.getAttribute('href').slice(1));
+        }).filter(Boolean);
+        if (!secs.length || !('IntersectionObserver' in window)) return;
+
+        var seen = {};
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) { seen[e.target.id] = e.isIntersecting; });
+            for (var i = 0; i < secs.length; i++) {
+                if (seen[secs[i].id]) {
+                    links.forEach(function (a) {
+                        a.classList.toggle('active', a.getAttribute('href') === '#' + secs[i].id);
+                    });
+                    break;
+                }
+            }
+        }, { rootMargin: '-72px 0px -62% 0px', threshold: 0 });
+        secs.forEach(function (s) { io.observe(s); });
+    }());
+
+    /* ---------- 4. screenshot lightbox ---------- */
+    (function lightbox() {
+        var lb    = document.getElementById('lightbox');
+        var img   = document.getElementById('lb-img');
+        var cap   = document.getElementById('lb-cap');
+        var close = document.getElementById('lb-close');
+        if (!lb || !img) return;
+        var opener = null;
+
+        function open(btn) {
+            var pic = btn.querySelector('img');
+            opener = btn;
+            img.src = btn.getAttribute('data-full') || (pic && pic.src) || '';
+            img.alt = (pic && pic.alt) || '';
+            cap.textContent = btn.getAttribute('data-cap') || '';
+            lb.removeAttribute('hidden');
+            lb.classList.add('is-open');
+            document.body.style.overflow = 'hidden';
+            close.focus();
+        }
+        function shut() {
+            lb.classList.remove('is-open');
+            lb.setAttribute('hidden', '');
+            document.body.style.overflow = '';
+            img.src = '';
+            if (opener) { opener.focus(); opener = null; }
+        }
+
+        document.querySelectorAll('figure.shot button.zoom').forEach(function (b) {
+            b.addEventListener('click', function () { open(b); });
+        });
+        close.addEventListener('click', shut);
+        lb.addEventListener('click', function (e) { if (e.target === lb) shut(); });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !lb.hasAttribute('hidden')) shut();
+        });
+    }());
+
+    /* ---------- 5. copy the briefing script ---------- */
+    (function copyScript() {
+        var btn  = document.getElementById('copy-script');
+        var body = document.getElementById('script-body');
+        if (!btn || !body) return;
+
+        btn.addEventListener('click', function () {
+            var lines = Array.prototype.map.call(body.querySelectorAll('li'), function (li) {
+                return '• ' + li.textContent.replace(/\s+/g, ' ').trim();
+            });
+            var text = 'Before you start:\n' + lines.join('\n');
+            var done = function (ok) {
+                btn.textContent = ok ? 'Copied' : 'Press Ctrl+C';
+                setTimeout(function () { btn.textContent = 'Copy script'; }, 1800);
+            };
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(function () { done(true); },
+                                                         function () { done(false); });
+            } else {
+                var ta = document.createElement('textarea');
+                ta.value = text; ta.setAttribute('readonly', '');
+                ta.style.position = 'fixed'; ta.style.left = '-9999px';
+                document.body.appendChild(ta); ta.select();
+                var ok = false;
+                try { ok = document.execCommand('copy'); } catch (e) {}
+                document.body.removeChild(ta);
+                done(ok);
+            }
+        });
+    }());
+
+    /* ---------- 6. checklists ----------
+     * Per-device only: state lives in localStorage, never leaves the
+     * browser, and carries no names. */
+    (function checklists() {
+        var lists = Array.prototype.slice.call(document.querySelectorAll('.cl'));
+        if (!lists.length) return;
+        state.checks = state.checks || {};
+
+        lists.forEach(function (list) {
+            var boxes = Array.prototype.slice.call(list.querySelectorAll('input[type="checkbox"]'));
+            var bar   = list.querySelector('.cl-prog i');
+            var count = list.querySelector('.cl-count');
+
+            function paint() {
+                var done = boxes.filter(function (b) { return b.checked; }).length;
+                if (bar) bar.style.width = (boxes.length ? (done / boxes.length) * 100 : 0) + '%';
+                if (count) {
+                    count.textContent = done + ' of ' + boxes.length +
+                        (done === boxes.length ? ' — all done' : ' done');
+                }
+            }
+
+            boxes.forEach(function (b) {
+                var k = b.getAttribute('data-c');
+                b.checked = !!state.checks[k];
+                b.addEventListener('change', function () {
+                    if (b.checked) { state.checks[k] = true; } else { delete state.checks[k]; }
+                    write(state);
+                    paint();
+                });
+            });
+
+            var reset = list.querySelector('.reset');
+            if (reset) {
+                reset.addEventListener('click', function () {
+                    boxes.forEach(function (b) {
+                        b.checked = false;
+                        delete state.checks[b.getAttribute('data-c')];
+                    });
+                    write(state);
+                    paint();
+                });
+            }
+
+            paint();
+        });
+    }());
+
+}());
+</script>
+</body>
+</html>

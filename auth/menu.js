@@ -92,6 +92,7 @@
         /* Tools */
         { title: 'Tools & Resources',                  desc: 'AI tools, templates, and reference materials',                  href: 'Tools%20and%20Resources/tools.html',                                               icon: '\u{1F6E0}', tag: 'Hub' },
         { title: 'Lesson Planning Tool',               desc: 'Excellent Teaching & Learning lesson planner',                  href: 'Tools%20and%20Resources/lesson-planning-tool.html',                                icon: '\u{1F4DD}', tag: 'Tool' },
+        { title: 'AI Growth Test guide',               desc: 'AI Lead & Proctor steps for the ADEK Baseline AI Growth Test',  href: 'Tools%20and%20Resources/ai-growth-test-guide.html',                                icon: '\u{1F9ED}', tag: 'Guide' },
         { title: 'My Personal Goal 2026\u201327',        desc: 'Secondary: set your one professional goal for the year',        href: 'Tools%20and%20Resources/secondary-teacher-goal.html',                              icon: '\u{1F3AF}', tag: 'Form' },
 
         /* Library */

@@ -65,6 +65,7 @@
         .type-badge-module { background: #eef2ff; color: #4338ca; border-color: #c7d2fe; }
         .type-badge-login { background: #fdf2f8; color: #be185d; border-color: #fbcfe8; }
         .type-badge-form  { background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe; }
+        .type-badge-guide { background: #fff7ed; color: #9a3412; border-color: #fed7aa; }
         /* Scroll offset so sticky header + quick-jump don't cover the section heading */
         .tool-category { scroll-margin-top: 140px; }
         /* Gemini Gems showcase section accent */
@@ -244,6 +245,11 @@
             color: #ffffff;
         }
         .filter-chip[data-type-filter="gem"]:not(.is-active) .chip-count { background: #f5f3ff; color: #6b21a8; }
+        .filter-chip[data-type-filter="guide"].is-active {
+            background: linear-gradient(135deg, #c2410c 0%, #f97316 100%);
+            box-shadow: 0 8px 18px -8px rgba(194, 65, 12, 0.6);
+        }
+        .filter-chip[data-type-filter="guide"]:not(.is-active) .chip-count { background: #fff7ed; color: #9a3412; }
 
         /* Active filter strip */
         .active-filter-strip {
@@ -601,6 +607,7 @@
                         <button type="button" class="filter-chip" data-type-filter="web" aria-pressed="false"><span aria-hidden="true">🌐</span> Web Tools <span class="chip-count" data-count="web">0</span></button>
                         <button type="button" class="filter-chip" data-type-filter="module" aria-pressed="false"><span aria-hidden="true">📦</span> Modules <span class="chip-count" data-count="module">0</span></button>
                         <button type="button" class="filter-chip" data-type-filter="login" aria-pressed="false"><span aria-hidden="true">🔐</span> Login Required <span class="chip-count" data-count="login">0</span></button>
+                        <button type="button" class="filter-chip" data-type-filter="guide" aria-pressed="false"><span aria-hidden="true">📖</span> Guides <span class="chip-count" data-count="guide">0</span></button>
                         <button type="button" class="filter-chip" data-type-filter="form" aria-pressed="false"><span aria-hidden="true">📋</span> Forms &amp; Documents <span class="chip-count" data-count="form">0</span></button>
                     </div>
 
@@ -800,6 +807,15 @@
                             <div class="flex-grow h-px bg-gradient-to-r from-teal-200 to-transparent"></div>
                         </div>
                         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+                            <a href="ai-growth-test-guide.html" class="block tool-item" data-type="guide" data-keywords="aigt ai growth test adek instructwin baseline assessment proctor ai lead grades 4-12 access code roster timetable incident invigilate proctoring guide september october window">
+                                <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-orange-100 flex flex-col items-center justify-start">
+                                    <span class="type-badge type-badge-guide">Guide</span>
+                                    <div class="text-4xl mb-3">🧭</div>
+                                    <h4 class="text-lg font-bold mb-2">AI Growth Test — AI Lead &amp; Proctor Guide</h4>
+                                    <p class="text-sm text-gray-600">ADEK's Baseline AI Growth Test on InstrucTwin, Grades 4&ndash;12. Set-up, access codes, roster checks, test-day monitoring and incident reporting &mdash; filtered to your role.</p>
+                                </div>
+                            </a>
 
                             <a href="#module-map" class="block tool-item" data-type="module" data-keywords="map testing growth rit score assessment adaptive nwea assign tests accommodations teachers training proctor administer setup">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-pink-100 flex flex-col items-center justify-center">
@@ -1926,8 +1942,8 @@
             items.forEach(card => { card._homeParent = card.parentElement; });
 
             // Compute canonical counts (skip duplicates flagged data-canonical="false").
-            const TYPE_LABELS = { gem: '✨ Gems', web: '🌐 Web Tools', module: '📦 Modules', login: '🔐 Login Required', form: '📋 Forms & Documents' };
-            const counts = { all: 0, gem: 0, web: 0, module: 0, login: 0, form: 0 };
+            const TYPE_LABELS = { gem: '✨ Gems', web: '🌐 Web Tools', module: '📦 Modules', login: '🔐 Login Required', guide: '📖 Guides', form: '📋 Forms & Documents' };
+            const counts = { all: 0, gem: 0, web: 0, module: 0, login: 0, guide: 0, form: 0 };
             items.forEach(card => {
                 if (card.getAttribute('data-canonical') === 'false') return;
                 counts.all++;

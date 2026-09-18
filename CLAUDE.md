@@ -308,6 +308,22 @@ question.
 `data-required` is opt-in, so the modules that predate it are
 unaffected.
 
+**The cohort is per-module, and it cuts both ways.** A module carrying a
+`cohort` only counts for people in it:
+
+- Nobody outside the 62 is expected to complete AI Literacy, so it is
+  skipped in their "required done" and "fully complete". Without that
+  guard every other member of staff would read as permanently behind on
+  required training the moment this module was marked required.
+- Everyone inside the 62 is chased **even if they have never signed in**.
+  Scope the tracker to AI Literacy and it shows all 62 rows, stubbing in
+  anyone the Hub has never seen — that is precisely the person you need
+  to find before a deadline, and a plain roster filter would hide them.
+- The module bar reads "*n* of 62 assigned teachers", not "*n* of all
+  staff", and the readiness section counts started/not-started against 62.
+
+Other modules are untouched: no cohort means it applies to everybody.
+
 **Reading what teachers wrote:** admin dashboard → *AI Literacy
 readiness · what teachers wrote* (`#responses`). One card per teacher,
 people who asked for something or are blocked on InstrucTwin sorted to
@@ -412,8 +428,11 @@ Outstanding before it can be announced to staff:
    See that folder's README, which also covers why a screencast of
    InstrucTwin may not belong in a public repo. The written content
    stands alone, so shipping without videos is fine.
-4. **Confirm the cohort** — who has to complete it, per the ADEK
-   Implementation Form. That list drives the tracker's "outstanding".
+4. ~~Confirm the cohort~~ — done 18 Sept 2026. The 62 teachers named on
+   AISA's ADEK Implementation Form are in `AI_LITERACY_COHORT` at the top
+   of the `MODULES` block in `admin-dashboard.html`. **Edit that list to
+   change the cohort**; matching is by lower-cased email, the names are
+   only for display.
 
 **Resolved 15 Sept 2026:** `safeguarding-module.html` had the wrong
 elementary nurse — it listed Jothi Vinod, who is secondary. Corrected to
@@ -427,6 +446,71 @@ silently falls back to English.
 Content sourced verbatim from ADEK's Train-the-Trainer Day 1 deck and
 Participant Worksheet Packet — the Ms Hana case in segment 3 is
 Worksheet 3 unaltered, including its Grade 7 setting.
+
+## AI Growth Test guide — added 18 September 2026
+
+`Tools and Resources/ai-growth-test-guide.html` is ADEK's *AI Growth Test
+— AI Lead & Proctor User Guide* (v1.0, 12 Sept 2026) rebuilt as a
+screen-first reference. Reached from the **Assessment & Test Prep**
+category on `tools.html`, from `menu.js`, and from `search-index.js`.
+
+**It is deliberately not a PD module.** It is an operational runbook for
+a live assessment window, with no chapters, no quiz, no completion event
+and no certificate. It is *not* in any `MODULES` array, so it does not
+move the headline compliance numbers — keep it that way unless someone
+decides proctor training is itself PD.
+
+**The window dates are in the page, not in a sheet.** `OPEN` and `CLOSE`
+in the page script (`2026-09-14` / `2026-10-04`, Abu Dhabi offset) drive
+the banner, which recomputes on every load and flips through
+*opens in N days* → *window open, N days left* → *window closed*. When
+ADEK moves the window, change those two dates and the prose in the hero
+strip and the key-dates line; nothing else reads them.
+
+**Step numbers track section numbers** — Phase 1 is section 2, so its
+steps are 2.1–2.6. Cross-references ("see 2.4", "read section 4.3") are
+written out by hand. Reorder the sections and every one of them is
+wrong, so renumber both together.
+
+**Screenshots.** The 16 figures in `Tools and Resources/assets/aigt/`
+were extracted from ADEK's PDF (~940 KB total). Every one shows
+demonstration data only — "Test Student One", `test9900101@example.com`,
+`ailead@instructwin.com` — and was checked individually before being
+committed; no real student or staff name appears in any of them. They
+are still **ADEK's screenshots in a public repo**, so if ADEK would
+rather they weren't republished, deleting the folder and the
+`<figure class="shot">` blocks leaves the guide complete — the written
+steps stand alone.
+
+**English only.** There is no `-ar.js` and no `data-ar` markup. The
+global language toggle in `menu.js` sets `html[dir="rtl"]` on *every*
+page, which would mirror this one, so the content wrapper pins
+`dir="ltr"`. That is scoped to `.layout`, not `<body>`, so the Hub
+topbar still flips normally.
+
+**A `guide` type was added to the `tools.html` filter bar** for this
+card, and it lives in four places that must stay in sync: the
+`.type-badge-guide` rule, the `.filter-chip[data-type-filter="guide"]`
+rules, the chip markup in the filter bar, and `TYPE_LABELS` + `counts`
+in the page script. Miss the last one and the chip renders but counts 0
+and filters to nothing.
+
+Interactive bits, all client-side and all optional: a role filter
+(Everyone / AI Lead / Proctor / Student) that hides the steps that
+aren't yours, tick-off checklists, a copyable student briefing script,
+and click-to-enlarge figures. State lives in one localStorage key,
+`aisa_aigt_v1` (chosen role + ticked boxes) — per device, never sent
+anywhere, and carrying no names, which is what keeps this page outside
+the personal-data rules that govern `module_responses` and
+`survey_responses`.
+
+**Grid gotcha worth remembering:** the mobile jump strip is two
+`overflow-x:auto` rows, and the layout's mobile rule was
+`grid-template-columns:1fr`. A `1fr` track floors at its content's
+*min-content* width, and a `nowrap` flex row's min-content width is the
+entire row — so the page laid out 1578px wide and scrolled sideways on
+every phone. It is `minmax(0,1fr)` now. Any future scrolling strip in a
+grid column needs the same treatment.
 
 ## Digital Lion — Issue No. 5, 18 September 2026
 
@@ -480,6 +564,7 @@ keeping — the checkbox is the only signal of who tried. Put the
 One fact in it came from Brandon rather than the repo: the **secondary
 delivery model** is one timetabled period a week for Grades 6–12 with
 the remainder asynchronous.
+
 
 ## Next Digital Lion Newsletter — items to include
 
