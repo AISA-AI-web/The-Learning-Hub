@@ -561,9 +561,17 @@ the plan *when it opens*. The "when you have access" steps and the
 keeping — the checkbox is the only signal of who tried. Put the
 "before Monday" urgency back only once grades are actually visible.
 
-One fact in it came from Brandon rather than the repo: the **secondary
+Two facts in it came from Brandon rather than the repo. The **secondary
 delivery model** is one timetabled period a week for Grades 6–12 with
-the remainder asynchronous.
+the remainder asynchronous. And on the **AI Growth Test**, the only
+proctoring that is settled is **Grades 4 and 5, by the class’s own
+homeroom teacher** — Grades 6–12 are still open, and K–3 do not sit the
+test at all. That section links the AI Lead & Proctor guide but still
+carries **no AISA test dates**, deliberately: Brandon announces those
+himself, and the guide’s own banner is driven by ADEK’s window
+(`OPEN`/`CLOSE` in its page script), not by AISA’s. When the secondary
+arrangement and the dates land, both belong in the next issue rather
+than as an edit to this one.
 
 
 ## Next Digital Lion Newsletter — items to include
