@@ -456,9 +456,26 @@ so Arabic readers never get a flash of English. jun17 and may18 do the
 same thing — their `.lang-toggle` CSS and `#lang-toggle` lookup are
 leftovers from before the global toggle existed and match no element.
 
-Two facts in it came from Brandon rather than the repo and are worth
-knowing if either changes: the **InstrucTwin URL** is written as
-`schools.instructwin.com`, matching the module, and the **secondary
+**InstrucTwin is deliberately absent from this issue**, and that is not
+an oversight to be tidied up. As of 18 Sept 2026 staff accounts do not
+show the grades a teacher is assigned to, so sending anyone to the
+platform to open "their" Monday lesson would send the whole cohort to a
+dead end. The training section instead says the materials are coming and
+that chasing them is Brandon's job, and the Level 1 section names the
+course and the 30 September deadline without naming the platform. Two
+things have to be true before InstrucTwin goes back in: grade
+assignments visible in staff accounts, and the URL confirmed — the
+module uses `schools.instructwin.com`, the ADEK correspondence says
+`www.adek.instructwin.com`, and nobody has established which is right.
+
+**The module still points at InstrucTwin** — segment 4 says to open your
+lesson before Monday, which currently no one can do. It degrades
+gracefully (the grade focus lives in the module, and there is a
+"could not get into InstrucTwin" checkbox), but the instruction itself
+is now untrue and was knowingly left alone rather than edited under a
+live cohort mid-completion.
+
+One fact in it came from Brandon rather than the repo: the **secondary
 delivery model** is one timetabled period a week for Grades 6–12 with
 the remainder asynchronous.
 
