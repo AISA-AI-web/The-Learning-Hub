@@ -538,12 +538,11 @@ page, which would mirror this one, so the content wrapper pins
 `dir="ltr"`. That is scoped to `.layout`, not `<body>`, so the Hub
 topbar still flips normally.
 
-**A `guide` type was added to the `tools.html` filter bar** for this
-card, and it lives in four places that must stay in sync: the
-`.type-badge-guide` rule, the `.filter-chip[data-type-filter="guide"]`
-rules, the chip markup in the filter bar, and `TYPE_LABELS` + `counts`
-in the page script. Miss the last one and the chip renders but counts 0
-and filters to nothing.
+**A `guide` type was added to `tools.html`** for this card. Since the
+browse-bar rebuild (below) the type chips are gone, so it now lives in
+just two places: the `.type-badge-guide` rule and the `<option
+value="guide">` in the Format select. Counts are derived from the DOM,
+so there is no third list to forget.
 
 Interactive bits, all client-side and all optional: a role filter
 (Everyone / AI Lead / Proctor / Student) that hides the steps that
@@ -672,3 +671,108 @@ than as an edit to this one.
   unit packs and study guides). Link to Drive and to the existing
   NotebookLM PD module. **Held back from Issue No. 5** on 18 Sept 2026 —
   that issue was entirely AI-literacy rollout and this did not fit.
+
+## Browse bar — pd.html + tools.html, 18 September 2026
+
+`PD Modules/pd.html` and `Tools and Resources/tools.html` were the two
+"index" pages staff use to find anything, and both had grown a stack of
+controls with no page title above them. `tools.html` was the worst: a
+*filter command bar* (search + seven type chips + an active-filter
+strip) sitting directly on top of a separate sticky *"Jump to"* nav
+whose pills looked identical but **scrolled** instead of filtering. Two
+rows of pills, two taxonomies, two behaviours, no labels.
+
+Both pages now share one component, **the browse bar** — teal on tools,
+indigo on PD, otherwise identical:
+
+```
+page header (eyebrow · H1 · one-line lede [· progress strip on PD])
+browse bar   (sticky, top:3.75rem)
+  row 1: search  ·  secondary control  ·  "n of N"  ·  Reset
+  row 2: ONE row of pills
+content
+```
+
+**The one rule: one row of pills.** Anything that is not the page's
+primary taxonomy goes in row 1 as a *differently shaped* control, never
+as a second pill row. On tools that secondary axis is the **Format**
+`<select>` (gem / web / module / guide / form / login); on PD it is the
+**"Hide completed"** checkbox. Add a second pill row and you have
+rebuilt exactly the thing this replaced.
+
+The bar sticks at `top: 3.75rem` because the `menu.js` topbar is
+`BAR_HEIGHT = 3.75rem` (60px). The old quick-jump bar used
+`top-[68px] md:top-[76px]`, which matched nothing.
+
+`.browse-pills` and `.browse-inner` both carry **`min-width: 0`**, and
+`.browse-bar input, select, button` carry **`box-sizing: border-box`**.
+Both are load-bearing: a `nowrap` flex row's min-content width is the
+whole row, and the padded pill-shaped input is 128px wider than its
+parent without border-box. Either one missing and the whole page
+scrolls sideways on a phone. Same trap as the AI Growth Test guide's
+jump strip.
+
+### tools.html specifics
+
+- The pill row **is** the six `<section class="tool-category">`
+  headings, so the control and the content share one taxonomy. Pills
+  filter in place: `All` shows every section, one category shows just
+  that section (headings kept — they give context), and search or a
+  Format choice flattens matches into `#tools-search-grid`.
+- Cards cross-listed into a second category carry
+  `data-canonical="false"`. They are dropped from the count and from
+  results **only when the category is `All`**, where they would repeat.
+  Inside a single category the cross-listed copy is that category's only
+  copy of the tool — dropping it there made *Assessment & Test Prep +
+  Gems* return nothing even though the IB Exam Format Generator sits in
+  that very section.
+- So "21 cards on screen, 18 tools" is correct and intended: three Gems
+  appear twice.
+- `#cat-*` in the URL now **selects that pill**, not just scrolls —
+  `Media Hub/may11.html` links to `tools.html#cat-gems`. The router
+  hashes (`#module-map`, `#module-twinkl`, …) are untouched and still
+  open their detail sections.
+- The "Request a Tool or Resource" CTA moved to **bottom**-right. At
+  `top-24` it sat inside the sticky bar and covered the result count.
+
+### pd.html specifics
+
+- `data-category` is now a pure **topic** (`ai-digital`, `teaching`,
+  `safety`, `essentials`) and **`data-required="true"`** is a separate
+  flag. They used to be one attribute, so "Required" swallowed the
+  topic: AI Literacy was `required` and therefore absent from `AI
+  Tools`. The `Required` pill is amber and divided off from the four
+  subject pills because it is a status, not a subject.
+- **The required list must match `MODULES` in `admin-dashboard.html`** —
+  currently `ai-curriculum-readiness`, `ai-ethics`, `return-to-school`,
+  `safeguarding`. Before this it did not: Safeguarding was tagged
+  `orientation` so it never appeared under Required, while Sustainability
+  (unreleased, not in `MODULES` at all) did. Change one, change both.
+- The old topic name `orientation` is gone. It collided with the
+  separate Orientation Hub in the main nav and had become a grab-bag of
+  five unrelated modules.
+- **Completed modules stay visible.** The old filter hid them from every
+  chip except a `Completed` one that was itself hidden until you had
+  finished something — so a module you had just passed silently vanished
+  from "All modules". Progress belongs in the header strip; the grid
+  shows what exists. "Hide completed" is opt-in.
+- **Pill counts are totals, not remainders.** They used to subtract
+  completed modules, so the numbers shrank as you worked and disagreed
+  with the grid.
+- Counts and the progress strip are computed **from the DOM on load**,
+  before any network call — they only ran inside the completion sync
+  before, so a signed-out or offline visitor saw every pill reading `0`.
+  The progress strip itself stays hidden until `applyCompletions()` has
+  run (`window.__pdCompletionsKnown`), so nobody is told "0 of 13" while
+  the request is still in flight.
+
+### Not touched
+
+No change to `gate.js`, `menu.js` or `search-index.js`, so **no `?v=N`
+cascade** — the 45 pages keep `auth/gate.js?v=21`. Keep it that way if
+you can: this was a two-file change precisely because it stayed out of
+the shared helpers.
+
+`Committees/committees.html` still has its own older `.filter-chip`
+styling and was left alone. If the browse bar is rolled out further,
+that page and the Library / Media / Orientation hubs are the candidates.

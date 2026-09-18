@@ -66,8 +66,9 @@
         .type-badge-login { background: #fdf2f8; color: #be185d; border-color: #fbcfe8; }
         .type-badge-form  { background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe; }
         .type-badge-guide { background: #fff7ed; color: #9a3412; border-color: #fed7aa; }
-        /* Scroll offset so sticky header + quick-jump don't cover the section heading */
-        .tool-category { scroll-margin-top: 140px; }
+        /* Scroll offset so the topbar + sticky browse bar never cover a
+           section heading that has just been jumped to. */
+        .tool-category { scroll-margin-top: 12rem; }
         /* Gemini Gems showcase section accent */
         .gems-showcase {
             background: linear-gradient(135deg, rgba(250, 245, 255, 0.6) 0%, rgba(243, 232, 255, 0.45) 100%);
@@ -75,247 +76,136 @@
             border-radius: 1.25rem;
             padding: 1.5rem 1.5rem 2rem;
         }
-        /* Quick-jump pill styling (subtler — for navigation only) */
-        .quickjump-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.375rem;
-            padding: 0.4rem 0.875rem;
-            border-radius: 9999px;
-            background: #ffffff;
-            border: 1px solid #ccfbf1;
-            color: #115e59;
-            font-size: 0.8125rem;
-            font-weight: 600;
-            white-space: nowrap;
-            box-shadow: 0 1px 2px rgba(15, 118, 110, 0.06);
-            transition: all 0.15s ease;
+        /* ===================================================================
+           BROWSE BAR — the one control surface for this page.
+           This replaced a two-deck arrangement: a "filter command bar"
+           (search + seven type chips + an active-filter strip) sitting
+           directly on top of a separate sticky "Jump to" nav whose pills
+           looked identical but scrolled instead of filtering. Staff could
+           not tell the two rows apart.
+           Now: one sticky bar = search + ONE row of category pills that
+           actually filter + a secondary Format select. The categories are
+           the page's own section headings, so the pill row and the content
+           share a single taxonomy.
+           `PD Modules/pd.html` carries the same component in indigo — keep
+           the two in step so the hub reads as one system.
+           =================================================================== */
+        .browse-bar {
+            position: sticky;
+            top: 3.75rem;                       /* clears the 60px global topbar */
+            z-index: 30;
+            margin: 0 -1.5rem 2.5rem;
+            padding: 0.875rem 1.5rem 0.9rem;
+            background: rgba(240, 253, 250, 0.94);
+            -webkit-backdrop-filter: saturate(180%) blur(12px);
+            backdrop-filter: saturate(180%) blur(12px);
+            border-bottom: 1px solid #ccfbf1;
         }
-        .quickjump-pill:hover { background: #f0fdfa; border-color: #5eead4; color: #0f766e; transform: translateY(-1px); }
-        .quickjump-pill.is-gems { border-color: #ddd6fe; color: #6b21a8; }
-        .quickjump-pill.is-gems:hover { background: #faf5ff; border-color: #c4b5fd; color: #5b21b6; }
-        .quickjump-bar::-webkit-scrollbar { display: none; }
-        .quickjump-bar { scrollbar-width: none; }
+        .browse-bar input, .browse-bar select, .browse-bar button { box-sizing: border-box; }
+        .browse-inner { max-width: 72rem; margin: 0 auto; display: flex; flex-direction: column; gap: 0.7rem; min-width: 0; }
+        .browse-controls { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
 
-        /* ============== Revamped filter command bar ============== */
-        .filter-command-bar {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(16px);
-            border: 1px solid #ccfbf1;
-            border-radius: 1.5rem;
-            box-shadow: 0 24px 60px -28px rgba(15, 118, 110, 0.35), 0 2px 6px -3px rgba(15, 118, 110, 0.12);
-            padding: 1.25rem 1.25rem 1.1rem;
-            position: relative;
-            overflow: hidden;
-        }
-        .filter-command-bar::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #14b8a6 0%, #0f766e 50%, #a855f7 100%);
-            opacity: 0.85;
-        }
-        @media (min-width: 768px) {
-            .filter-command-bar { padding: 1.5rem 1.75rem 1.25rem; }
-        }
-        .filter-search-wrap { position: relative; }
-        .filter-search-input {
+        /* --- search --- */
+        .browse-search { position: relative; flex: 1 1 18rem; min-width: 0; }
+        .browse-search input {
             width: 100%;
-            padding: 1rem 6rem 1rem 3.25rem;
-            border-radius: 1rem;
-            border: 1.5px solid #e2e8f0;
+            padding: 0.7rem 5rem 0.7rem 2.85rem;
+            border-radius: 9999px;
+            border: 1px solid #99f6e4;
             background: #ffffff;
             color: #0f172a;
             font-size: 0.9375rem;
-            font-weight: 500;
-            box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04);
-            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(15, 118, 110, 0.06);
+            transition: border-color .15s ease, box-shadow .15s ease;
         }
-        .filter-search-input::placeholder { color: #94a3b8; font-weight: 400; }
-        .filter-search-input:focus {
-            outline: none;
-            border-color: #14b8a6;
-            box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15), inset 0 1px 2px rgba(15, 23, 42, 0.04);
-        }
-        .filter-search-icon {
-            position: absolute;
-            left: 1.125rem; top: 50%;
-            transform: translateY(-50%);
-            color: #14b8a6;
-            pointer-events: none;
-        }
-        .filter-search-actions {
-            position: absolute;
-            right: 0.625rem; top: 50%;
-            transform: translateY(-50%);
-            display: flex; align-items: center; gap: 0.375rem;
-        }
-        .filter-kbd {
-            display: inline-flex; align-items: center;
+        .browse-search input::placeholder { color: #94a3b8; font-weight: 400; }
+        .browse-search input:focus { outline: none; border-color: #14b8a6; box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18); }
+        .browse-search .s-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.1rem; height: 1.1rem; color: #14b8a6; pointer-events: none; }
+        .browse-search .s-actions { position: absolute; right: 0.55rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.3rem; }
+        .browse-kbd {
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-            font-size: 0.6875rem;
-            font-weight: 700;
-            background: #f1f5f9;
-            color: #64748b;
-            border: 1px solid #e2e8f0;
-            border-bottom-width: 2px;
-            border-radius: 0.375rem;
-            padding: 0.125rem 0.4rem;
-            line-height: 1;
+            font-size: 0.6875rem; font-weight: 700; color: #5eead4;
+            background: #f0fdfa; border: 1px solid #ccfbf1; border-radius: 0.375rem;
+            padding: 0.15rem 0.4rem; line-height: 1;
         }
-        @media (max-width: 640px) { .filter-kbd { display: none; } }
-        .filter-search-clear {
-            display: none;
-            align-items: center; justify-content: center;
-            width: 1.875rem; height: 1.875rem;
-            border-radius: 9999px;
-            color: #94a3b8;
-            transition: all 0.15s ease;
+        @media (max-width: 640px) { .browse-kbd { display: none; } }
+        .browse-clear {
+            display: none; align-items: center; justify-content: center;
+            width: 1.6rem; height: 1.6rem; border-radius: 9999px;
+            color: #94a3b8; background: transparent; transition: all .15s ease;
         }
-        .filter-search-clear.is-visible { display: inline-flex; }
-        .filter-search-clear:hover { background: #f1f5f9; color: #0f766e; }
+        .browse-clear.is-visible { display: inline-flex; }
+        .browse-clear:hover { background: #f1f5f9; color: #0f766e; }
 
-        .filter-row {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
+        /* --- secondary "Format" select: deliberately NOT a pill, so it can
+               never be mistaken for the primary category row. --- */
+        .browse-select-wrap { position: relative; flex: 0 0 auto; }
+        .browse-select-wrap > label {
+            position: absolute; left: 0.95rem; top: 50%; transform: translateY(-50%);
+            font-size: 0.625rem; font-weight: 800; letter-spacing: 0.08em;
+            text-transform: uppercase; color: #5eead4; pointer-events: none;
         }
-        .filter-row-label {
-            display: inline-flex; align-items: center;
-            font-size: 0.6875rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.12em;
-            color: #134e4a;
-            opacity: 0.7;
-            margin-right: 0.125rem;
-            flex-shrink: 0;
+        .browse-select {
+            appearance: none; -webkit-appearance: none;
+            padding: 0.7rem 2.1rem 0.7rem 4.4rem;
+            border-radius: 9999px; border: 1px solid #99f6e4; background: #ffffff;
+            color: #0f766e; font-size: 0.8125rem; font-weight: 700; cursor: pointer;
+            box-shadow: 0 1px 2px rgba(15, 118, 110, 0.06);
         }
-        .filter-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            padding: 0.45rem 0.875rem;
-            border-radius: 9999px;
-            background: #ffffff;
-            border: 1.5px solid #e2e8f0;
-            color: #334155;
-            font-size: 0.8125rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.18s ease;
-            user-select: none;
-            white-space: nowrap;
-            line-height: 1.2;
-        }
-        .filter-chip:hover {
-            background: #f0fdfa;
-            border-color: #5eead4;
-            color: #0f766e;
-            transform: translateY(-1px);
-        }
-        .filter-chip.is-active {
-            background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-            border-color: transparent;
-            color: #ffffff;
-            box-shadow: 0 8px 18px -8px rgba(15, 118, 110, 0.6);
-        }
-        .filter-chip.is-active:hover { transform: translateY(-1px); }
-        .filter-chip[data-type-filter="gem"].is-active {
-            background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
-            box-shadow: 0 8px 18px -8px rgba(124, 58, 237, 0.6);
-        }
-        .chip-count {
-            display: inline-flex; align-items: center; justify-content: center;
-            min-width: 1.4rem;
-            padding: 0.05rem 0.4rem;
-            background: #f1f5f9;
-            color: #475569;
-            font-size: 0.65rem;
-            font-weight: 800;
-            border-radius: 9999px;
-            line-height: 1.3;
-        }
-        .filter-chip:hover .chip-count { background: #ccfbf1; color: #0f766e; }
-        .filter-chip.is-active .chip-count {
-            background: rgba(255, 255, 255, 0.22);
-            color: #ffffff;
-        }
-        .filter-chip[data-type-filter="gem"]:not(.is-active) .chip-count { background: #f5f3ff; color: #6b21a8; }
-        .filter-chip[data-type-filter="guide"].is-active {
-            background: linear-gradient(135deg, #c2410c 0%, #f97316 100%);
-            box-shadow: 0 8px 18px -8px rgba(194, 65, 12, 0.6);
-        }
-        .filter-chip[data-type-filter="guide"]:not(.is-active) .chip-count { background: #fff7ed; color: #9a3412; }
+        .browse-select:focus { outline: none; border-color: #14b8a6; box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18); }
+        .browse-select-wrap .chev { position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%); width: 0.85rem; height: 0.85rem; color: #0f766e; pointer-events: none; }
 
-        /* Active filter strip */
-        .active-filter-strip {
-            display: flex;
-            align-items: center;
-            gap: 0.625rem;
-            flex-wrap: wrap;
-            margin-top: 0.875rem;
-            padding: 0.625rem 0.875rem;
-            background: linear-gradient(90deg, #f0fdfa 0%, #ecfeff 100%);
-            border: 1px solid #99f6e4;
-            border-radius: 0.875rem;
-            font-size: 0.8125rem;
+        /* --- result count / reset --- */
+        .browse-status { margin-left: auto; display: flex; align-items: center; gap: 0.6rem; flex: 0 0 auto; }
+        .browse-count { font-size: 0.8125rem; font-weight: 700; color: #0f766e; white-space: nowrap; }
+        .browse-count .num { font-weight: 800; color: #134e4a; }
+        .browse-reset {
+            display: none; align-items: center; gap: 0.3rem;
+            font-size: 0.75rem; font-weight: 800; letter-spacing: 0.04em;
+            color: #0f766e; background: #ccfbf1; border-radius: 9999px;
+            padding: 0.35rem 0.7rem; transition: all .15s ease; white-space: nowrap;
         }
-        .results-count {
-            font-weight: 700;
-            color: #134e4a;
-            white-space: nowrap;
+        .browse-reset.is-visible { display: inline-flex; }
+        .browse-reset:hover { background: #99f6e4; color: #115e59; }
+
+        /* --- the single pill row (categories) --- */
+        /* min-width:0 is load-bearing. A nowrap flex row's min-content width is
+           the whole row, so without this the bar refuses to shrink and the
+           entire page scrolls sideways on phones. Same trap the AI Growth
+           Test guide hit with its jump strip — see CLAUDE.md. */
+        .browse-pills { display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.15rem; scrollbar-width: none; min-width: 0; }
+        .browse-pills::-webkit-scrollbar { display: none; }
+        .browse-pill {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.45rem 0.9rem; border-radius: 9999px;
+            background: #ffffff; border: 1px solid #ccfbf1; color: #115e59;
+            font-size: 0.8125rem; font-weight: 700; white-space: nowrap;
+            cursor: pointer; transition: all .15s ease;
         }
-        .results-count .num {
-            display: inline-block;
-            color: #0f766e;
-            background: rgba(15, 118, 110, 0.1);
-            border-radius: 0.375rem;
-            padding: 0.05rem 0.45rem;
-            margin: 0 0.1rem;
-            font-variant-numeric: tabular-nums;
+        .browse-pill:hover { background: #f0fdfa; border-color: #5eead4; transform: translateY(-1px); }
+        .browse-pill.is-active {
+            background: linear-gradient(135deg, #0f766e, #14b8a6);
+            border-color: transparent; color: #ffffff;
+            box-shadow: 0 4px 12px -4px rgba(15, 118, 110, 0.55);
         }
-        .active-filter-tag {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.35rem;
-            background: #ffffff;
-            border: 1px solid #5eead4;
-            color: #115e59;
-            border-radius: 9999px;
-            padding: 0.2rem 0.35rem 0.2rem 0.7rem;
-            font-weight: 600;
-            font-size: 0.75rem;
+        .browse-pill .n {
+            font-size: 0.6875rem; font-weight: 800; line-height: 1;
+            background: #f0fdfa; color: #0f766e;
+            border-radius: 9999px; padding: 0.2rem 0.4rem; min-width: 1.35rem; text-align: center;
         }
-        .active-filter-tag .tag-label-key { color: #64748b; font-weight: 700; text-transform: uppercase; font-size: 0.625rem; letter-spacing: 0.06em; margin-right: 0.15rem; }
-        .active-filter-tag button {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 1.125rem; height: 1.125rem;
-            border-radius: 9999px;
-            background: #ccfbf1;
-            color: #0f766e;
-            font-size: 0.875rem;
-            font-weight: 700;
-            line-height: 1;
-            transition: all 0.15s ease;
-        }
-        .active-filter-tag button:hover { background: #f87171; color: #ffffff; transform: rotate(90deg); }
-        .clear-all-btn {
-            margin-left: auto;
-            display: inline-flex; align-items: center; gap: 0.35rem;
-            color: #0f766e;
-            font-weight: 700;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            padding: 0.4rem 0.7rem;
-            border-radius: 0.5rem;
-            transition: all 0.15s ease;
-        }
-        .clear-all-btn:hover { background: #99f6e4; color: #115e59; }
+        .browse-pill.is-active .n { background: rgba(255,255,255,0.22); color: #ffffff; }
+        /* Gems keep their violet identity in the pill row too. */
+        .browse-pill[data-cat="cat-gems"] { border-color: #ddd6fe; color: #6b21a8; }
+        .browse-pill[data-cat="cat-gems"] .n { background: #f5f3ff; color: #6b21a8; }
+        .browse-pill[data-cat="cat-gems"]:hover { background: #faf5ff; border-color: #c4b5fd; }
+        .browse-pill[data-cat="cat-gems"].is-active { background: linear-gradient(135deg, #6d28d9, #a855f7); border-color: transparent; color: #ffffff; }
+        .browse-pill[data-cat="cat-gems"].is-active .n { background: rgba(255,255,255,0.22); color: #ffffff; }
+
+        /* --- page header --- */
+        .page-head { max-width: 72rem; margin: 0 auto 1.75rem; }
+        .page-head .eyebrow { font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #0d9488; }
+        .page-head h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 800; color: #134e4a; line-height: 1.1; margin: 0.3rem 0 0.5rem; }
+        .page-head p { color: #475569; font-size: 0.9375rem; max-width: 46rem; }
 
         /* Empty state */
         .empty-state {
@@ -567,9 +457,11 @@
 </head>
 <body class="bg-teal-50 text-gray-800 min-h-screen flex flex-col">
 
-<!-- Floating: Request a Tool or Resource -->
+<!-- Floating: Request a Tool or Resource.
+     Anchored to the BOTTOM right. It used to be top-24, which now sits
+     inside the sticky browse bar and covered the result count. -->
     <a href="https://docs.google.com/forms/d/e/1FAIpQLSeN_BO2PljIaKgvU-Khn-Zzr0mHsuyXTSamizOU3bV3rWhm-w/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer"
-       class="group fixed top-24 right-4 md:right-6 z-40 inline-flex items-center gap-2 bg-gradient-to-r from-teal-700 to-emerald-600 text-white pl-3 pr-4 py-2.5 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all font-semibold text-sm whitespace-nowrap"
+       class="group fixed bottom-5 right-4 md:right-6 z-40 inline-flex items-center gap-2 bg-gradient-to-r from-teal-700 to-emerald-600 text-white pl-3 pr-4 py-2.5 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all font-semibold text-sm whitespace-nowrap"
        title="Request a Tool or Resource">
         <span class="w-7 h-7 rounded-full bg-white/15 border border-white/20 flex items-center justify-center text-base leading-none group-hover:rotate-12 transition-transform">&#10024;</span>
         <span class="hidden sm:inline">Request a Tool or Resource</span>
@@ -582,65 +474,89 @@
         <main class="flex-grow">
             <div class="container mx-auto px-6 py-14">
 
-                <!-- Filter command bar -->
-                <div class="filter-command-bar max-w-4xl mx-auto mb-8">
-                    <label for="tools-search" class="sr-only">Search tools</label>
-                    <div class="filter-search-wrap">
-                        <svg class="filter-search-icon w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                        <input type="text" id="tools-search"
-                               class="filter-search-input"
-                               placeholder="Search tools by name or keyword…"
-                               autocomplete="off"
-                               aria-describedby="filter-result-summary">
-                        <div class="filter-search-actions">
-                            <kbd class="filter-kbd" aria-hidden="true">⌘K</kbd>
-                            <button type="button" id="tools-search-clear" class="filter-search-clear" aria-label="Clear search">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                <!-- =====================================================
+                     Page header. Both hub index pages (this and pd.html)
+                     open with the same three lines: eyebrow, H1, one
+                     sentence of orientation. Before this the page began
+                     cold with a search box and no title at all.
+                     ===================================================== -->
+                <header class="page-head">
+                    <p class="eyebrow">AISA Learning Hub</p>
+                    <h1 class="font-heading">Tools &amp; Resources</h1>
+                    <p>Everything staff can pick up and use today — custom Gemini Gems, AI assistants,
+                       assessment guides, curriculum material and the school’s forms.
+                       Filter by category, or search if you already know what you want.</p>
+                </header>
+
+                <!-- =====================================================
+                     BROWSE BAR — one bar, one taxonomy.
+                     The category pills below ARE the section headings of
+                     the content underneath, and they filter in place. Do
+                     not add a second row of pills here: the page used to
+                     have exactly that (type chips over a "Jump to" nav)
+                     and it was the main thing staff found confusing.
+                     Secondary axes belong in the Format select.
+                     ===================================================== -->
+                <div class="browse-bar">
+                  <div class="browse-inner">
+                    <div class="browse-controls">
+                        <label for="tools-search" class="sr-only">Search tools and resources</label>
+                        <div class="browse-search">
+                            <svg class="s-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <input type="text" id="tools-search"
+                                   placeholder="Search tools by name or keyword…"
+                                   autocomplete="off"
+                                   aria-describedby="browse-count">
+                            <div class="s-actions">
+                                <kbd class="browse-kbd" aria-hidden="true">⌘K</kbd>
+                                <button type="button" id="tools-search-clear" class="browse-clear" aria-label="Clear search">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="browse-select-wrap">
+                            <label for="tools-format">Format</label>
+                            <select id="tools-format" class="browse-select">
+                                <option value="all">Any</option>
+                                <option value="gem">✨ Gems</option>
+                                <option value="web">🌐 Web tools</option>
+                                <option value="module">📦 Modules &amp; templates</option>
+                                <option value="guide">📖 Guides</option>
+                                <option value="form">📋 Forms</option>
+                                <option value="login">🔐 Needs a login</option>
+                            </select>
+                            <svg class="chev" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/></svg>
+                        </div>
+
+                        <div class="browse-status">
+                            <span class="browse-count" id="browse-count" role="status" aria-live="polite">
+                                <span class="num" id="filter-result-count">0</span> of <span class="num" id="filter-total-count">0</span> tools
+                            </span>
+                            <button type="button" id="clear-all-filters" class="browse-reset">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                                Reset
                             </button>
                         </div>
                     </div>
 
-                    <div class="filter-row" role="group" aria-label="Filter tools by type">
-                        <span class="filter-row-label">Filter</span>
-                        <button type="button" class="filter-chip is-active" data-type-filter="all" aria-pressed="true">All <span class="chip-count" data-count="all">0</span></button>
-                        <button type="button" class="filter-chip" data-type-filter="gem" aria-pressed="false"><span aria-hidden="true">✨</span> Gems <span class="chip-count" data-count="gem">0</span></button>
-                        <button type="button" class="filter-chip" data-type-filter="web" aria-pressed="false"><span aria-hidden="true">🌐</span> Web Tools <span class="chip-count" data-count="web">0</span></button>
-                        <button type="button" class="filter-chip" data-type-filter="module" aria-pressed="false"><span aria-hidden="true">📦</span> Modules <span class="chip-count" data-count="module">0</span></button>
-                        <button type="button" class="filter-chip" data-type-filter="login" aria-pressed="false"><span aria-hidden="true">🔐</span> Login Required <span class="chip-count" data-count="login">0</span></button>
-                        <button type="button" class="filter-chip" data-type-filter="guide" aria-pressed="false"><span aria-hidden="true">📖</span> Guides <span class="chip-count" data-count="guide">0</span></button>
-                        <button type="button" class="filter-chip" data-type-filter="form" aria-pressed="false"><span aria-hidden="true">📋</span> Forms &amp; Documents <span class="chip-count" data-count="form">0</span></button>
+                    <div class="browse-pills" role="group" aria-label="Filter by category">
+                        <button type="button" class="browse-pill is-active" data-cat="all" aria-pressed="true">All <span class="n" data-count="all">0</span></button>
+                        <button type="button" class="browse-pill" data-cat="cat-gems" aria-pressed="false"><span aria-hidden="true">✨</span> Gemini Gems <span class="n" data-count="cat-gems">0</span></button>
+                        <button type="button" class="browse-pill" data-cat="cat-ai" aria-pressed="false"><span aria-hidden="true">🪄</span> AI Assistants <span class="n" data-count="cat-ai">0</span></button>
+                        <button type="button" class="browse-pill" data-cat="cat-interactive" aria-pressed="false"><span aria-hidden="true">🤖</span> Interactive Learning <span class="n" data-count="cat-interactive">0</span></button>
+                        <button type="button" class="browse-pill" data-cat="cat-assessment" aria-pressed="false"><span aria-hidden="true">📊</span> Assessment &amp; Test Prep <span class="n" data-count="cat-assessment">0</span></button>
+                        <button type="button" class="browse-pill" data-cat="cat-curriculum" aria-pressed="false"><span aria-hidden="true">📚</span> Curriculum <span class="n" data-count="cat-curriculum">0</span></button>
+                        <button type="button" class="browse-pill" data-cat="cat-forms" aria-pressed="false"><span aria-hidden="true">📋</span> Forms &amp; Documents <span class="n" data-count="cat-forms">0</span></button>
                     </div>
-
-                    <div id="active-filter-strip" class="active-filter-strip hidden" role="status" aria-live="polite">
-                        <span class="results-count" id="filter-result-summary">
-                            Showing <span class="num" id="filter-result-count">0</span> of <span class="num" id="filter-total-count">0</span> tools
-                        </span>
-                        <div id="active-filter-tags" class="flex flex-wrap items-center gap-1.5"></div>
-                        <button type="button" id="clear-all-filters" class="clear-all-btn">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
-                            Clear all
-                        </button>
-                    </div>
+                  </div>
                 </div>
 
-                <!-- Empty state (shown when no results) -->
+                <!-- Empty state (shown when nothing matches) -->
                 <div id="tools-search-empty" class="empty-state hidden max-w-xl mx-auto mb-10">
                     <div class="empty-emoji" aria-hidden="true">🔎</div>
-                    <h3 class="font-heading">No tools match your filters</h3>
-                    <p>Try a different keyword or remove a filter to see more results.</p>
-                </div>
-
-                <!-- Sticky quick-jump category nav -->
-                <div id="quickjump" class="sticky top-[68px] md:top-[76px] z-30 -mx-6 px-6 py-3 bg-teal-50/90 backdrop-blur-md border-y border-teal-100 mb-10">
-                    <nav class="quickjump-bar flex gap-2 overflow-x-auto items-center" aria-label="Jump to category">
-                        <span class="text-[10px] font-extrabold uppercase tracking-[0.12em] text-teal-900/60 mr-1 flex-shrink-0">Jump to</span>
-                        <a href="#cat-gems" class="quickjump-pill is-gems"><span aria-hidden="true">✨</span> Gemini Gems</a>
-                        <a href="#cat-ai" class="quickjump-pill"><span aria-hidden="true">🪄</span> AI Assistants</a>
-                        <a href="#cat-interactive" class="quickjump-pill"><span aria-hidden="true">🤖</span> Interactive Learning</a>
-                        <a href="#cat-assessment" class="quickjump-pill"><span aria-hidden="true">📊</span> Assessment</a>
-                        <a href="#cat-curriculum" class="quickjump-pill"><span aria-hidden="true">📚</span> Curriculum</a>
-                        <a href="#cat-forms" class="quickjump-pill"><span aria-hidden="true">📋</span> Forms &amp; Documents</a>
-                    </nav>
+                    <h3 class="font-heading">Nothing matches that</h3>
+                    <p>Try a different keyword, pick another category, or hit Reset to see everything again.</p>
                 </div>
 
                 <!-- Categorized tools -->
@@ -1923,96 +1839,115 @@
             window.addEventListener('hashchange', render);
             window.addEventListener('load', render);
 
-            // --- Combined search + type filter ---
-            const input = document.getElementById('tools-search');
-            const clearBtn = document.getElementById('tools-search-clear');
-            const emptyMsg = document.getElementById('tools-search-empty');
-            const categories = document.querySelectorAll('.tool-category');
-            const searchGrid = document.getElementById('tools-search-grid');
-            const items = document.querySelectorAll('.tool-item');
-            const typeButtons = document.querySelectorAll('[data-type-filter]');
-            const stripEl = document.getElementById('active-filter-strip');
-            const tagsEl = document.getElementById('active-filter-tags');
-            const resultCountEl = document.getElementById('filter-result-count');
+            /* ============================================================
+               BROWSE BAR behaviour.
+               Two filter axes, deliberately given different controls so
+               they can never read as "two filter menus":
+                 - CATEGORY (pill row)  = the page's own sections.
+                 - FORMAT   (select)    = the card's data-type.
+               Plus free-text search.
+
+               Browsing view  : category sections stay in place, so the
+                                headings give context.
+               Filtered view  : matching canonical cards are flattened
+                                into one grid, because section headings
+                                are noise once you are filtering.
+               "Browsing" now means category === 'all' AND no format AND
+               no search; picking a single category keeps the sections
+               (only that one is shown), which reads better than a
+               heading-less grid of three cards.
+               ============================================================ */
+            const input        = document.getElementById('tools-search');
+            const clearBtn     = document.getElementById('tools-search-clear');
+            const emptyMsg     = document.getElementById('tools-search-empty');
+            const categories   = document.querySelectorAll('.tool-category');
+            const searchGrid   = document.getElementById('tools-search-grid');
+            const items        = document.querySelectorAll('.tool-item');
+            const catButtons   = document.querySelectorAll('[data-cat]');
+            const formatSelect = document.getElementById('tools-format');
+            const resultCountEl= document.getElementById('filter-result-count');
             const totalCountEl = document.getElementById('filter-total-count');
-            const clearAllBtn = document.getElementById('clear-all-filters');
-            const quickjumpBar = document.getElementById('quickjump');
+            const resetBtn     = document.getElementById('clear-all-filters');
 
             // Remember each card's home so we can put it back when filters clear.
-            items.forEach(card => { card._homeParent = card.parentElement; });
-
-            // Compute canonical counts (skip duplicates flagged data-canonical="false").
-            const TYPE_LABELS = { gem: '✨ Gems', web: '🌐 Web Tools', module: '📦 Modules', login: '🔐 Login Required', guide: '📖 Guides', form: '📋 Forms & Documents' };
-            const counts = { all: 0, gem: 0, web: 0, module: 0, login: 0, guide: 0, form: 0 };
             items.forEach(card => {
+                card._homeParent = card.parentElement;
+                const sec = card.closest('.tool-category');
+                card._cat = sec ? sec.id : '';
+            });
+
+            // Counts. Duplicates (data-canonical="false") are cards repeated
+            // in a second category for browsing convenience: they count
+            // toward their own category pill but never toward the total, or
+            // "3 of 21" would not add up.
+            const counts = { all: 0 };
+            categories.forEach(sec => { counts[sec.id] = 0; });
+            items.forEach(card => {
+                if (counts[card._cat] !== undefined) counts[card._cat]++;
                 if (card.getAttribute('data-canonical') === 'false') return;
                 counts.all++;
-                const t = card.getAttribute('data-type');
-                if (counts[t] !== undefined) counts[t]++;
             });
             Object.keys(counts).forEach(k => {
-                const el = document.querySelector(`[data-count="${k}"]`);
+                const el = document.querySelector('[data-count="' + k + '"]');
                 if (el) el.textContent = counts[k];
             });
             if (totalCountEl) totalCountEl.textContent = counts.all;
 
-            let activeType = 'all';
+            let activeCat = 'all';
+            let activeFormat = 'all';
             let activeSearch = '';
 
-            function escapeHtml(s) {
-                return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-            }
-
-            function renderActiveFilterTags() {
-                tagsEl.innerHTML = '';
-                if (activeType !== 'all') {
-                    tagsEl.insertAdjacentHTML('beforeend',
-                        `<span class="active-filter-tag"><span class="tag-label-key">Type</span> ${TYPE_LABELS[activeType] || activeType}<button type="button" data-remove-filter="type" aria-label="Remove type filter">&times;</button></span>`);
-                }
-                if (activeSearch) {
-                    tagsEl.insertAdjacentHTML('beforeend',
-                        `<span class="active-filter-tag"><span class="tag-label-key">Search</span> &ldquo;${escapeHtml(activeSearch)}&rdquo;<button type="button" data-remove-filter="search" aria-label="Remove search">&times;</button></span>`);
-                }
+            function isBrowsing() {
+                return activeFormat === 'all' && activeSearch.trim() === '';
             }
 
             function applyAllFilters() {
                 const q = activeSearch.trim().toLowerCase();
-                const t = activeType;
-                const isFiltered = q !== '' || t !== 'all';
 
-                // Toggle clear-search button
-                if (q) clearBtn.classList.add('is-visible'); else clearBtn.classList.remove('is-visible');
+                if (clearBtn) clearBtn.classList.toggle('is-visible', q !== '');
+                if (resetBtn) resetBtn.classList.toggle('is-visible',
+                    activeCat !== 'all' || activeFormat !== 'all' || q !== '');
 
-                if (!isFiltered) {
-                    // Restore categorized view
+                // ---- Browsing / single-category view: keep the sections ----
+                if (isBrowsing()) {
                     items.forEach(card => {
                         card.style.display = '';
                         if (card._homeParent && card.parentElement !== card._homeParent) {
                             card._homeParent.appendChild(card);
                         }
                     });
-                    categories.forEach(sec => sec.classList.remove('hidden'));
-                    if (quickjumpBar) quickjumpBar.classList.remove('hidden');
+                    let shown = 0;
+                    categories.forEach(sec => {
+                        const on = (activeCat === 'all') || (sec.id === activeCat);
+                        sec.classList.toggle('hidden', !on);
+                        if (on) shown += counts[sec.id] || 0;
+                    });
                     searchGrid.style.display = 'none';
                     emptyMsg.classList.add('hidden');
-                    stripEl.classList.add('hidden');
+                    resultCountEl.textContent = (activeCat === 'all') ? counts.all : shown;
                     return;
                 }
 
-                // Flatten matching canonical cards into the search grid
+                // ---- Filtered view: one flat grid ----
                 categories.forEach(sec => sec.classList.add('hidden'));
-                if (quickjumpBar) quickjumpBar.classList.add('hidden');
                 searchGrid.style.display = '';
                 let visible = 0;
                 items.forEach(card => {
-                    if (card.getAttribute('data-canonical') === 'false') {
+                    // Cross-listed copies would repeat a tool three times when
+                    // the category is "All", so drop them there. Inside a
+                    // single category the copy IS that category's only copy of
+                    // the tool, so it has to stay: without this, Assessment &
+                    // Test Prep + Gems returned nothing despite the IB Exam
+                    // Format Generator sitting in that very section.
+                    if (activeCat === 'all' && card.getAttribute('data-canonical') === 'false') {
                         card.style.display = 'none';
                         return;
                     }
-                    const matchesType = (t === 'all') || (card.getAttribute('data-type') === t);
+                    const matchesCat    = (activeCat === 'all') || (card._cat === activeCat);
+                    const matchesFormat = (activeFormat === 'all') || (card.getAttribute('data-type') === activeFormat);
                     const text = (card.innerText + ' ' + (card.getAttribute('data-keywords') || '')).toLowerCase();
                     const matchesSearch = !q || text.includes(q);
-                    if (matchesType && matchesSearch) {
+                    if (matchesCat && matchesFormat && matchesSearch) {
                         card.style.display = '';
                         if (card.parentElement !== searchGrid) searchGrid.appendChild(card);
                         visible++;
@@ -2022,25 +1957,31 @@
                 });
 
                 resultCountEl.textContent = visible;
-                stripEl.classList.remove('hidden');
-                renderActiveFilterTags();
                 emptyMsg.classList.toggle('hidden', visible !== 0);
             }
 
-            // Type filter buttons
-            typeButtons.forEach(btn => {
+            // Category pills
+            catButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    activeType = btn.getAttribute('data-type-filter');
-                    typeButtons.forEach(b => {
-                        const isActive = b === btn;
-                        b.classList.toggle('is-active', isActive);
-                        b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+                    activeCat = btn.getAttribute('data-cat');
+                    catButtons.forEach(b => {
+                        const on = b === btn;
+                        b.classList.toggle('is-active', on);
+                        b.setAttribute('aria-pressed', on ? 'true' : 'false');
                     });
                     applyAllFilters();
                 });
             });
 
-            // Search input
+            // Format select
+            if (formatSelect) {
+                formatSelect.addEventListener('change', e => {
+                    activeFormat = e.target.value;
+                    applyAllFilters();
+                });
+            }
+
+            // Search
             if (input) {
                 input.addEventListener('input', e => {
                     activeSearch = e.target.value;
@@ -2066,41 +2007,44 @@
                 });
             }
 
-            // Active-filter tag removal
-            if (tagsEl) {
-                tagsEl.addEventListener('click', e => {
-                    const btn = e.target.closest('[data-remove-filter]');
-                    if (!btn) return;
-                    const kind = btn.getAttribute('data-remove-filter');
-                    if (kind === 'type') {
-                        activeType = 'all';
-                        typeButtons.forEach(b => {
-                            const isAll = b.getAttribute('data-type-filter') === 'all';
-                            b.classList.toggle('is-active', isAll);
-                            b.setAttribute('aria-pressed', isAll ? 'true' : 'false');
-                        });
-                    } else if (kind === 'search') {
-                        activeSearch = '';
-                        if (input) input.value = '';
-                    }
+            // Reset
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    activeCat = 'all';
+                    activeFormat = 'all';
+                    activeSearch = '';
+                    if (input) input.value = '';
+                    if (formatSelect) formatSelect.value = 'all';
+                    catButtons.forEach(b => {
+                        const on = b.getAttribute('data-cat') === 'all';
+                        b.classList.toggle('is-active', on);
+                        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+                    });
                     applyAllFilters();
+                    if (input) input.focus();
                 });
             }
 
-            // Clear-all button
-            if (clearAllBtn) {
-                clearAllBtn.addEventListener('click', () => {
-                    activeType = 'all';
-                    activeSearch = '';
-                    if (input) input.value = '';
-                    typeButtons.forEach(b => {
-                        const isAll = b.getAttribute('data-type-filter') === 'all';
-                        b.classList.toggle('is-active', isAll);
-                        b.setAttribute('aria-pressed', isAll ? 'true' : 'false');
-                    });
-                    applyAllFilters();
-                });
+            /* Deep links to a category (e.g. Media Hub/may11.html points at
+             * tools.html#cat-gems) used to just scroll, because the category
+             * row was a jump nav. Now that the row filters, honour the hash
+             * by selecting that pill so the link lands on the category rather
+             * than on a scroll position. Re-scroll afterwards: the browser
+             * has already jumped by the time this runs, and hiding the other
+             * sections moves the target. */
+            function applyCategoryHash() {
+                const id = (location.hash || '').replace(/^#/, '');
+                if (!id) return;
+                const pill = document.querySelector('.browse-pill[data-cat="' + (window.CSS && CSS.escape ? CSS.escape(id) : id) + '"]');
+                if (!pill || pill.getAttribute('data-cat') === 'all') return;
+                pill.click();
+                const sec = document.getElementById(id);
+                if (sec) sec.scrollIntoView({ block: 'start' });
             }
+
+            applyAllFilters();
+            applyCategoryHash();
+            window.addEventListener('hashchange', applyCategoryHash);
 
             // --- Clipboard: click-to-copy Twinkl credentials ---
             function copyToClipboard(text, msgElement) {
