@@ -657,6 +657,31 @@
         }
         function busy(on) { go.disabled = on; test.disabled = on; }
 
+        /* Say what actually went wrong and what to do about it. The one that
+           bites first is mail authorisation: a web app never shows the
+           person clicking the button an auth prompt, so the script owner has
+           to grant it once from the editor. */
+        function explain(r) {
+            var e = (r && r.error) || 'unknown error';
+            if (e === 'mail_not_authorized') {
+                return 'The Apps Script project has not been given permission to send email. '
+                     + 'Open the Apps Script editor and run authorizeMail() once, as the account '
+                     + 'that owns the script, then try again.';
+            }
+            if (e === 'unknown_action') {
+                return 'The Apps Script backend has not been redeployed yet \u2014 '
+                     + 'Deploy \u2192 Manage deployments \u2192 New version.';
+            }
+            if (e === 'not_newsletter_sender') {
+                return 'Your account is not on the newsletter sender list.';
+            }
+            if (e === 'no_recipients') {
+                return 'No recipients found \u2014 the roster and sessions tabs are both empty of '
+                     + '@aisa.sch.ae addresses.';
+            }
+            return 'Not sent: ' + e + (r && r.message ? ' (' + r.message + ')' : '');
+        }
+
         // The issue's own address, so the email never needs a hardcoded host.
         function issueUrl() { return location.origin + location.pathname; }
 
@@ -670,15 +695,16 @@
                 testOnly: !!opts.testOnly, confirm: !opts.testOnly
             }).then(function (r) {
                 busy(false);
-                if (!r || r.ok === false) {
-                    say('Not sent: ' + ((r && r.error) || 'unknown error') +
-                        (r && r.error === 'unknown_action'
-                          ? ' \u2014 the Apps Script backend has not been redeployed yet.' : ''), 'bad');
+                if (!r || r.ok === false || r.error) {
+                    say(explain(r), 'bad');
                     return;
                 }
                 var bits = [r.sent + ' sent'];
                 if (r.failed)  bits.push(r.failed + ' failed');
-                if (r.skipped) bits.push(r.skipped + ' skipped (quota or time limit \u2014 run it again)');
+                if (r.skipped) bits.push(r.skipped + ' skipped'
+                    + (r.reason === 'daily_quota_exhausted'
+                        ? ' \u2014 today\u2019s Gmail quota is used up, try again tomorrow'
+                        : ' \u2014 hit the 6-minute limit, click again to send the rest'));
                 say((r.test_only ? 'Test: ' : 'Done: ') + bits.join(', ') + '.',
                     (r.failed || r.skipped) ? 'bad' : 'good');
             }).catch(function (e) { busy(false); say('Not sent: ' + e, 'bad'); });
@@ -698,7 +724,11 @@
                 bar.hidden = false;
                 document.body.style.paddingBottom = '5.5rem';
                 cnt.textContent = (r.recipients || 0) + ' staff on the list';
-                if (r.quota_left != null && r.quota_left < (r.recipients || 0)) {
+                if (r.mail_authorized === false) {
+                    say('Email is not switched on yet: run authorizeMail() once from the Apps '
+                        + 'Script editor, as the account that owns the script. Nothing will send '
+                        + 'until you do.', 'bad');
+                } else if (r.quota_left != null && r.quota_left < (r.recipients || 0)) {
                     say('Heads up: ' + r.quota_left + ' emails left in today\u2019s quota, '
                         + (r.recipients || 0) + ' recipients. Anything over will report as skipped.', 'bad');
                 }

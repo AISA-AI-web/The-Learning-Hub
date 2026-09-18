@@ -2199,10 +2199,18 @@ function _sendReminderEmails(claims, emails, title, bodyText, linkUrl, linkLabel
   const out = { sent: 0, failed: 0, skipped: 0, quota_left: 0, errors: [] };
   if (!emails.length) return out;
 
-  let quota = 0;
-  try { quota = MailApp.getRemainingDailyQuota(); } catch (e) { quota = 0; }
+  const q = _mailQuota();
+  const quota = q.quota;
   out.quota_left = quota;
-  if (quota <= 0) { out.skipped = emails.length; return out; }
+  if (q.error) {
+    // Same trap as the newsletter: a thrown quota read means the script
+    // was never authorised to send, which is not "out of quota".
+    out.error = 'mail_not_authorized';
+    out.message = q.error;
+    out.skipped = emails.length;
+    return out;
+  }
+  if (quota <= 0) { out.skipped = emails.length; out.reason = 'daily_quota_exhausted'; return out; }
 
   const names   = _namesForEmails(emails);
   const subject = title || 'A reminder from the AISA Learning Hub';
@@ -2246,6 +2254,37 @@ function _sendReminderEmails(claims, emails, title, bodyText, linkUrl, linkLabel
 // audience precisely so nobody blasts the school by accident, and this
 // one exists to do exactly that, deliberately, from a short allowlist.
 
+/* Reading the mail quota needs the send-mail scope, so this throws --
+ * not returns zero -- when the script has never been authorised to send.
+ * Those two cases need completely different advice ("wait until
+ * tomorrow" vs "grant the permission"), so keep them apart and never
+ * collapse a thrown error into a quota of 0. */
+function _mailQuota() {
+  try {
+    return { quota: MailApp.getRemainingDailyQuota(), error: '' };
+  } catch (e) {
+    return { quota: 0, error: String(e && e.message || e) };
+  }
+}
+
+/* Run this ONCE from the Apps Script editor (Run -> authorizeMail) to
+ * grant the send-mail permission and prove it works: it mails the
+ * script owner. A web app never shows an authorisation prompt to the
+ * person clicking a button in the Hub, so without this the first real
+ * send just fails. */
+function authorizeMail() {
+  const me = Session.getEffectiveUser().getEmail();
+  MailApp.sendEmail({
+    to: me,
+    subject: 'AISA Learning Hub \u2014 mail permission granted',
+    body: 'If you are reading this, the Learning Hub can send email.\n\n'
+        + 'Remaining quota today: ' + MailApp.getRemainingDailyQuota() + '\n'
+  });
+  Logger.log('Sent a test email to ' + me + '. Remaining quota: '
+             + MailApp.getRemainingDailyQuota());
+  return 'ok';
+}
+
 /* Newsletter bullets arrive either as a JSON array or as one string per
  * line. Not _parseList: that lowercases and splits on commas, which is
  * right for tags and wrong for a sentence like "Level 1, due Sept 30". */
@@ -2285,11 +2324,22 @@ function newsletterStatus(claims) {
   const out = { ok: true, may_send: may };
   if (!may) return out;
   out.recipients = _allStaffEmails().length;
-  try { out.quota_left = MailApp.getRemainingDailyQuota(); } catch (e) { out.quota_left = 0; }
+  const q = _mailQuota();
+  out.quota_left = q.quota;
+  if (q.error) { out.mail_authorized = false; out.mail_error = q.error; }
+  else         { out.mail_authorized = true; }
   return out;
 }
 
 function sendNewsletter(claims, body) {
+  // Run bare from the editor this would throw on body.url. Say what to do
+  // instead, because "TypeError: cannot read properties of undefined" is
+  // not a useful thing to meet when you are trying to debug a send.
+  if (!claims || !body) {
+    return { ok: false, error: 'not_callable_from_editor',
+             message: 'sendNewsletter is called by the Hub with a signed-in user. '
+                    + 'To grant the mail permission, run authorizeMail() instead.' };
+  }
   const url = String(body.url || '').trim();
   if (!/^https?:\/\//i.test(url)) return { ok: false, error: 'missing_url' };
 
@@ -2315,10 +2365,17 @@ function sendNewsletter(claims, body) {
   };
   if (!emails.length) { out.ok = false; out.error = 'no_recipients'; return out; }
 
-  let quota = 0;
-  try { quota = MailApp.getRemainingDailyQuota(); } catch (e) { quota = 0; }
+  const q = _mailQuota();
+  const quota = q.quota;
   out.quota_left = quota;
-  if (quota <= 0) { out.skipped = emails.length; return out; }
+  if (q.error) {
+    // Not a quota problem: the script has never been allowed to send mail.
+    out.ok = false;
+    out.error = 'mail_not_authorized';
+    out.message = q.error;
+    return out;
+  }
+  if (quota <= 0) { out.skipped = emails.length; out.reason = 'daily_quota_exhausted'; return out; }
 
   const names   = _namesForEmails(emails);
   const replyTo = String(claims && claims.email || '').trim();

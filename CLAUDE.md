@@ -44,9 +44,10 @@ fail silently and the dependent UIs stay empty:
   action (no new endpoint, no new sheet): it accepts optional
   `send_email`, `email_link` and `email_link_label`, and replies with an
   `email: { sent, failed, skipped }` summary. `MailApp.sendEmail` is used,
-  so the first run after redeploying prompts for the Gmail/send-mail
-  authorisation scope — approve it once as the account that owns the
-  script. One personalised message per recipient (first name pulled from
+  so the send-mail scope has to be granted once by running
+  `authorizeMail()` from the editor as the account that owns the script
+  — clicking the button in the Hub will never prompt for it. One
+  personalised message per recipient (first name pulled from
   the `sessions` and `roster` tabs), `replyTo` set to the admin who sent
   it, and sends stop short of both the daily mail quota and the 6-minute
   execution cap, reporting anything unsent as `skipped`.
@@ -56,8 +57,21 @@ fail silently and the dependent UIs stay empty:
 
 - **Newsletter mail-out** — two new endpoints, `newsletter_status` and
   `send_newsletter`. No new sheet: recipients are the `roster` tab plus
-  everyone in `sessions`, filtered to `@aisa.sch.ae`. Uses `MailApp`, so
-  the same one-off send-mail authorisation as the reminder emails.
+  everyone in `sessions`, filtered to `@aisa.sch.ae`.
+
+  **Run `authorizeMail()` once from the Apps Script editor** (Run →
+  authorizeMail), signed in as the account that owns the script. It
+  mails that account and logs the remaining quota. This is not optional
+  and it is easy to miss: **a web app never shows an authorisation
+  prompt to the person clicking a button in the Hub**, so until the
+  owner grants the send-mail scope from the editor, every `MailApp`
+  call fails — including `getRemainingDailyQuota()`. The same grant
+  covers the reminder emails and the goal-form copies.
+
+  Note that `sendNewsletter` cannot usefully be run from the editor:
+  it takes the signed-in user and the page's payload, so run
+  `authorizeMail()` instead. It returns `not_callable_from_editor`
+  rather than throwing, to say so.
 
   **Who can send is `NEWSLETTER_SENDERS` at the top of `apps-script.gs`**
   — currently `bbaki@` and `hodai@`. Deliberately **not** the `admins`
@@ -78,7 +92,17 @@ fail silently and the dependent UIs stay empty:
 
   Until the redeploy this does **not** fail silently: `gate.js` maps
   `unknown_action` through, and the bar reports "the Apps Script backend
-  has not been redeployed yet" in red.
+  has not been redeployed yet" in red. It names the other failures too —
+  missing mail permission, exhausted daily quota, hitting the 6-minute
+  cap — and each says what to do next.
+
+  **Never collapse a thrown quota read into a quota of zero.** Both
+  mailers read the quota through `_mailQuota()`, which keeps "the script
+  may not send mail" apart from "no sends left today", because the two
+  need opposite advice and the first one shipped once disguised as the
+  second: a test send to one person came back "0 sent, 1 skipped (quota
+  or time limit)" when the real problem was that the scope had never
+  been granted.
 
 - **Module free-text capture** — three new endpoints
   (`save_module_response`, `get_module_response`,
