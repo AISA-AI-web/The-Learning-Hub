@@ -55,6 +55,19 @@ const NOTIF_READ_HEADERS = [
 ];
 const ROSTER_HEADERS = ['email', 'name', 'tags'];  // tags = comma-separated
 
+/* Who may send a newsletter to the whole school. Deliberately NOT the
+ * `admins` tab: every SLT admin can post notifications and read the
+ * tracker, but a school-wide mail blast is a much bigger button and is
+ * held to two named people. Edit this list to change who has it.
+ * This is the only enforcement that matters — the Hub's sign-in gate is
+ * client-side, so hiding the button in the page proves nothing. */
+const NEWSLETTER_SENDERS = ['bbaki@aisa.sch.ae', 'hodai@aisa.sch.ae'];
+
+function canSendNewsletter(email) {
+  const e = String(email || '').trim().toLowerCase();
+  return NEWSLETTER_SENDERS.indexOf(e) !== -1;
+}
+
 const EVENT_HEADERS = [
   'timestamp_iso', 'email', 'name', 'module_id', 'event',
   'progress_pct', 'version', 'user_agent'
@@ -406,6 +419,15 @@ function doPost(e) {
       case 'admin_notification_stats':
         if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
         return jsonOut(adminNotificationStats());
+
+      // ----- Newsletter mail-out -----
+      case 'newsletter_status':
+        return jsonOut(newsletterStatus(claims));
+      case 'send_newsletter':
+        if (!canSendNewsletter(claims.email)) {
+          return jsonOut({ ok: false, error: 'not_newsletter_sender' });
+        }
+        return jsonOut(sendNewsletter(claims, body));
       case 'admin_list_tags':
         if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
         return jsonOut(adminListTags());
@@ -2188,10 +2210,18 @@ function _sendReminderEmails(claims, emails, title, bodyText, linkUrl, linkLabel
   const out = { sent: 0, failed: 0, skipped: 0, quota_left: 0, errors: [] };
   if (!emails.length) return out;
 
-  let quota = 0;
-  try { quota = MailApp.getRemainingDailyQuota(); } catch (e) { quota = 0; }
+  const q = _mailQuota();
+  const quota = q.quota;
   out.quota_left = quota;
-  if (quota <= 0) { out.skipped = emails.length; return out; }
+  if (q.error) {
+    // Same trap as the newsletter: a thrown quota read means the script
+    // was never authorised to send, which is not "out of quota".
+    out.error = 'mail_not_authorized';
+    out.message = q.error;
+    out.skipped = emails.length;
+    return out;
+  }
+  if (quota <= 0) { out.skipped = emails.length; out.reason = 'daily_quota_exhausted'; return out; }
 
   const names   = _namesForEmails(emails);
   const subject = title || 'A reminder from the AISA Learning Hub';
@@ -2226,6 +2256,218 @@ function _sendReminderEmails(claims, emails, title, bodyText, linkUrl, linkLabel
     }
   }
   return out;
+}
+
+// ---------- Newsletter mail-out ----------
+//
+// One button, two people, the whole school in the "to" line. Kept apart
+// from post_notification on purpose: that one refuses to email a tag
+// audience precisely so nobody blasts the school by accident, and this
+// one exists to do exactly that, deliberately, from a short allowlist.
+
+/* Reading the mail quota needs the send-mail scope, so this throws --
+ * not returns zero -- when the script has never been authorised to send.
+ * Those two cases need completely different advice ("wait until
+ * tomorrow" vs "grant the permission"), so keep them apart and never
+ * collapse a thrown error into a quota of 0. */
+function _mailQuota() {
+  try {
+    return { quota: MailApp.getRemainingDailyQuota(), error: '' };
+  } catch (e) {
+    return { quota: 0, error: String(e && e.message || e) };
+  }
+}
+
+/* Run this ONCE from the Apps Script editor (Run -> authorizeMail) to
+ * grant the send-mail permission and prove it works: it mails the
+ * script owner. A web app never shows an authorisation prompt to the
+ * person clicking a button in the Hub, so without this the first real
+ * send just fails. */
+function authorizeMail() {
+  const me = Session.getEffectiveUser().getEmail();
+  MailApp.sendEmail({
+    to: me,
+    subject: 'AISA Learning Hub \u2014 mail permission granted',
+    body: 'If you are reading this, the Learning Hub can send email.\n\n'
+        + 'Remaining quota today: ' + MailApp.getRemainingDailyQuota() + '\n'
+  });
+  Logger.log('Sent a test email to ' + me + '. Remaining quota: '
+             + MailApp.getRemainingDailyQuota());
+  return 'ok';
+}
+
+/* Newsletter bullets arrive either as a JSON array or as one string per
+ * line. Not _parseList: that lowercases and splits on commas, which is
+ * right for tags and wrong for a sentence like "Level 1, due Sept 30". */
+function _newsletterItems(v) {
+  const raw = Array.isArray(v) ? v : String(v == null ? '' : v).split(/\r?\n/);
+  return raw.map(function (t) { return String(t == null ? '' : t).trim(); })
+            .filter(function (t) { return !!t; });
+}
+
+/* Everyone we could reasonably call "AISA staff": the roster if there is
+ * one, plus anyone who has ever signed in to the Hub. Restricted to the
+ * school domain so a stray row can never mail an outsider. */
+function _allStaffEmails() {
+  const seen = {};
+  const push = function (raw) {
+    const e = String(raw || '').trim().toLowerCase();
+    const suffix = '@' + ALLOWED_DOMAIN;
+    if (e.length > suffix.length && e.slice(-suffix.length) === suffix) seen[e] = true;
+  };
+
+  const roster = getRosterIndex();
+  Object.keys(roster.byEmail).forEach(push);
+
+  const sess = getSessionsSheet();
+  const last = sess.getLastRow();
+  if (last >= 2) {
+    const rows = sess.getRange(2, 2, last - 1, 1).getValues();   // email column
+    for (let i = 0; i < rows.length; i++) push(rows[i][0]);
+  }
+  return Object.keys(seen).sort();
+}
+
+/* What the page needs to decide whether to show the send bar at all, and
+ * to tell the sender how many people are about to hear from them. */
+function newsletterStatus(claims) {
+  const may = canSendNewsletter(claims.email);
+  const out = { ok: true, may_send: may };
+  if (!may) return out;
+  out.recipients = _allStaffEmails().length;
+  const q = _mailQuota();
+  out.quota_left = q.quota;
+  if (q.error) { out.mail_authorized = false; out.mail_error = q.error; }
+  else         { out.mail_authorized = true; }
+  return out;
+}
+
+function sendNewsletter(claims, body) {
+  // Run bare from the editor this would throw on body.url. Say what to do
+  // instead, because "TypeError: cannot read properties of undefined" is
+  // not a useful thing to meet when you are trying to debug a send.
+  if (!claims || !body) {
+    return { ok: false, error: 'not_callable_from_editor',
+             message: 'sendNewsletter is called by the Hub with a signed-in user. '
+                    + 'To grant the mail permission, run authorizeMail() instead.' };
+  }
+  const url = String(body.url || '').trim();
+  if (!/^https?:\/\//i.test(url)) return { ok: false, error: 'missing_url' };
+
+  const testOnly = String(body.test_only || '') === '1' ||
+                   String(body.test_only || '').toLowerCase() === 'true';
+  // A real send has to say so. Nothing goes school-wide on a stray click.
+  if (!testOnly && String(body.confirm || '') !== '1') {
+    return { ok: false, error: 'not_confirmed' };
+  }
+
+  const subject  = String(body.subject  || 'The Digital Lion — AISA Learning Hub').trim();
+  const issue    = String(body.issue    || '').trim();
+  const headline = String(body.headline || '').trim();
+  const intro    = String(body.intro    || '').trim();
+  const label    = String(body.link_label || 'Read the newsletter').trim();
+  const items    = _newsletterItems(body.items).slice(0, 8);
+
+  const emails = testOnly ? [String(claims.email || '').trim().toLowerCase()]
+                          : _allStaffEmails();
+  const out = {
+    ok: true, test_only: testOnly, recipients: emails.length,
+    sent: 0, failed: 0, skipped: 0, quota_left: 0, errors: []
+  };
+  if (!emails.length) { out.ok = false; out.error = 'no_recipients'; return out; }
+
+  const q = _mailQuota();
+  const quota = q.quota;
+  out.quota_left = quota;
+  if (q.error) {
+    // Not a quota problem: the script has never been allowed to send mail.
+    out.ok = false;
+    out.error = 'mail_not_authorized';
+    out.message = q.error;
+    return out;
+  }
+  if (quota <= 0) { out.skipped = emails.length; out.reason = 'daily_quota_exhausted'; return out; }
+
+  const names   = _namesForEmails(emails);
+  const replyTo = String(claims && claims.email || '').trim();
+  const started = Date.now();
+
+  for (let i = 0; i < emails.length; i++) {
+    // Same caps as the reminder mailer: stop short of the 6-minute
+    // execution limit and the daily quota, and report the rest as
+    // skipped so the sender knows to run it again rather than assuming
+    // everyone got it.
+    if (Date.now() - started > 240000 || out.sent >= quota) {
+      out.skipped += emails.length - i;
+      break;
+    }
+    const to    = emails[i];
+    const first = _firstName(names[to]);
+    const greet = first ? ('Hi ' + first + ',') : 'Hi,';
+    const opts  = {
+      to:       to,
+      subject:  subject,
+      body:     greet + '\n\n' + (headline ? headline + '\n\n' : '') +
+                (intro ? intro + '\n\n' : '') +
+                (items.length ? items.map(function (t) { return '• ' + t; }).join('\n') + '\n\n' : '') +
+                url,
+      htmlBody: _newsletterHtml(greet, issue, headline, intro, items, url, label),
+      name:     'AISA Learning Hub'
+    };
+    if (replyTo) opts.replyTo = replyTo;
+
+    try {
+      MailApp.sendEmail(opts);
+      out.sent++;
+    } catch (err) {
+      out.failed++;
+      if (out.errors.length < 5) out.errors.push(String(err));
+    }
+  }
+  return out;
+}
+
+/* The newsletter email: the same AISA frame as the PD reminders, with a
+ * gold issue kicker, the headline, a short intro, up to eight
+ * what's-inside lines and one big button through to the real thing.
+ * The body stays short on purpose — the email is the trailer, the Hub
+ * page is the newsletter. */
+function _newsletterHtml(greeting, issue, headline, intro, items, url, linkLabel) {
+  const para = function (t) {
+    return '<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#334155;">' +
+      _escHtml(t).replace(/\n/g, '<br>') + '</p>';
+  };
+
+  const list = items && items.length
+    ? '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" ' +
+             'style="margin:0 0 20px;background:#F2EFFA;border-radius:10px;">' +
+        '<tr><td style="padding:16px 18px;">' +
+          items.map(function (t, i) {
+            const gap = (i === items.length - 1) ? '0' : '0 0 8px';
+            return '<p style="margin:' + gap + ';font-size:14px;line-height:1.55;color:#21076C;">' +
+              '<span style="color:#D8B664;font-weight:700;">•</span>&nbsp;' + _escHtml(t) + '</p>';
+          }).join('') +
+        '</td></tr></table>'
+    : '';
+
+  const button =
+    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 0;">' +
+      '<tr><td style="background:#D8B664;border-radius:8px;">' +
+        '<a href="' + _escHtml(url) + '" ' +
+           'style="display:inline-block;padding:13px 26px;font-size:15px;font-weight:700;' +
+           'color:#21076C;text-decoration:none;">' + _escHtml(linkLabel) + '</a>' +
+      '</td></tr></table>';
+
+  return _aisaEmailShell(
+    issue || 'The Digital Lion',
+    (greeting ? '<p style="margin:0 0 16px;font-size:16px;font-weight:700;color:#21076C;">' +
+       _escHtml(greeting) + '</p>' : '') +
+    (headline ? '<p style="margin:0 0 14px;font-size:20px;line-height:1.3;font-weight:700;' +
+       'color:#21076C;">' + _escHtml(headline) + '</p>' : '') +
+    (intro ? para(intro) : '') + list + button,
+    'Sent from the AISA Learning Hub. You can read this and every past ' +
+    'issue any time from the Media Hub.'
+  );
 }
 
 function markNotificationRead(claims, body) {

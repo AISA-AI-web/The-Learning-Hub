@@ -36,8 +36,8 @@ window.AR_DICT = {
         "منهج الثقافة في الذكاء الاصطناعي: جاهزية المعلّم",
     "Complete by 20 September 2026":
         "يُستكمل بحلول 20 سبتمبر 2026",
-    "Teaching begins 21 September":
-        "يبدأ التدريس في 21 سبتمبر",
+    "Teaching begins week of 21 September":
+        "يبدأ التدريس في أسبوع 21 سبتمبر",
     "In person, 21 September":
         "حضوريًا، 21 سبتمبر",
     "Admin preview":
@@ -62,8 +62,8 @@ window.AR_DICT = {
         "ما الذي ستُدرّسه فعليًا",
     "Who is doing the thinking?":
         "مَن الذي يقوم بالتفكير؟",
-    "Your 21 September lesson":
-        "درسك في 21 سبتمبر",
+    "Your first lesson":
+        "درسك الأوّل",
     "What good work looks like":
         "كيف يبدو العمل الجيّد",
     "Responsible AI and the AISA route":
@@ -244,8 +244,8 @@ window.AR_DICT = {
         "هذه هي الورقة التي ستكون على مكتبك عند بدء الدرس.",
     "Find your grade, then your unit.":
         "ابحث عن صفّك، ثم عن وحدتك.",
-    "Open the lesson scheduled for 21 September.":
-        "افتح الدرس المقرّر في 21 سبتمبر.",
+    "Open your first lesson for the week of 21 September.":
+        "افتح درسك الأوّل لأسبوع 21 سبتمبر.",
     "Read the lesson template through once — note what each section is for.":
         "اقرأ قالب الدرس كاملًا مرة واحدة — ولاحظ الغرض من كل قسم.",
     "Locate the student-facing materials before the lesson, not during it.":
@@ -415,8 +415,6 @@ window.AR_DICT = {
         "التطبيق يعني تقليل الدعم، لا تكرار الدعم نفسه. فإعادة بنية الدعم كاملةً تختبر الاستدعاء لا النقل إلى سياق جديد.",
     "Reflection has to point forwards to be transfer. Definitions test vocabulary; enjoyment tells you nothing about the learning.":
         "على التأمّل أن يتّجه إلى الأمام ليكون نقلًا إلى سياق جديد. فالتعريفات تختبر المفردات؛ والاستمتاع لا يخبرك بشيء عن التعلّم.",
-    "Everything so far has been preparation for this. Pick your grade and write the plan you will teach from. You do not need InstrucTwin open to do it — the curriculum focus for your grade is below.":
-        "كل ما سبق كان تمهيدًا لهذا. اختر صفّك واكتب الخطة التي ستُدرّس منها. ولستَ بحاجة إلى فتح InstrucTwin لتفعل ذلك — فمحاور المنهج الخاصة بصفّك مذكورة أدناه.",
     "Which grade are you teaching?":
         "أي صف تُدرّس؟",
     "Choose your grade…":
@@ -471,6 +469,14 @@ window.AR_DICT = {
         "أكمل الإجابات المطلوبة للمتابعة",
     "Scope & Sequence":
         "نطاق المحتوى وتسلسله",
+    "The whole map, grade by grade":
+        "الخريطة كاملة، صفًا بصف",
+    "Open the Scope & Sequence":
+        "افتح نطاق المحتوى وتسلسله",
+    "Opens in a new tab. The purple button in the corner of the screen opens the same thing from any point in this module.":
+        "يُفتح في علامة تبويب جديدة. والزرّ البنفسجي في زاوية الشاشة يفتح الشيء نفسه من أي موضع في هذه الوحدة.",
+    "It opens in a new tab, so you will not lose anything you have typed.":
+        "يُفتح في علامة تبويب جديدة، فلن تفقد شيئًا ممّا كتبتَه.",
 };
 
 /* Sentence-level translations for blocks containing inline markup. */
@@ -479,8 +485,6 @@ window.AR_BLOCKS = {
         "<strong>الفيديو سيُضاف لاحقًا.</strong> النسخة المكتوبة أدناه تحمل المحتوى نفسه — ولا شيء في هذه الوحدة يتوقف على الفيديو.",
     "AI literacy is a <strong>mandatory entitlement for every student, KG to Grade 12</strong> — not an elective, and not only for ICT.":
         "الثقافة في الذكاء الاصطناعي <strong>حق إلزامي لكل طالب، من الروضة حتى الصف 12</strong> — وليست مادة اختيارية، وليست حكرًا على تقنية المعلومات.",
-    "Teaching begins <strong>21 September 2026</strong>. The full curriculum, lesson plans and teacher toolkits are already on InstrucTwin.":
-        "يبدأ التدريس في <strong>21 سبتمبر 2026</strong>. والمنهج الكامل وخطط الدروس وحقائب المعلّم متاحة بالفعل على <span class=\"ltr\">InstrucTwin</span>.",
     "We meet in person on <strong>21 September</strong> to rehearse — moderation, micro-teach, and the questions you raise here.":
         "نلتقي حضوريًا في <strong>21 سبتمبر</strong> للتدرّب — ضبط معايير التقييم، والتدريس المصغّر، والأسئلة التي تطرحها هنا.",
     "One spiral curriculum, KG to Grade 12: <strong>four phases</strong>, <strong>four strands</strong> running through every grade, and <strong>three proficiency tiers</strong>. Read the whole table once, then read your own band properly.":
@@ -507,6 +511,8 @@ window.AR_BLOCKS = {
         "تمتد هذه المحاور عبر <em>كل</em> صف، ويزداد تعقيدها كلما ارتقت المراحل.",
     "KG and Grades 1–5: <strong>one period per week</strong>. Grades 6–8 and 9–12: <strong>two periods per week</strong>.":
         "رياض الأطفال والصفوف 1–5: <strong>حصة واحدة أسبوعيًا</strong>. الصفوف 6–8 و9–12: <strong>حصتان أسبوعيًا</strong>.",
+    "<strong>How AISA delivers this in Grades 6–12:</strong> one timetabled period per week, with the rest of the entitlement completed asynchronously. Elementary is unchanged — one timetabled period per week.":
+        "<strong>كيف تطبّق AISA ذلك في الصفوف 6–12:</strong> حصة واحدة مجدولة أسبوعيًا، مع استكمال بقية الاستحقاق بشكل غير متزامن. أمّا المرحلة الابتدائية فلا تتغيّر — حصة واحدة مجدولة أسبوعيًا.",
     "<strong>1.</strong> \"Learners classify each claim in an AI summary as supported, misleading or not established, citing evidence.\" Which strand?":
         "<strong>1.</strong> «يصنّف المتعلمون كل ادّعاء في ملخّص أنتجه الذكاء الاصطناعي بأنه مدعوم أو مضلّل أو غير ثابت، مع الاستشهاد بالدليل.» أي محور؟",
     "<strong>2.</strong> \"Learners recognise personal information and identify trusted adults.\" Which strand?":
@@ -604,14 +610,18 @@ window.AR_BLOCKS = {
     "<strong>Fairness</strong> — check outputs for bias and unfair assumptions.":
         "<strong>العدالة</strong> — افحص المخرجات بحثًا عن التحيّز والافتراضات غير العادلة.",
     "<strong>Notice → Record → Report → Act → Review.</strong> A memory aid for the shape of a response — not the reporting route.":
-        "<strong>لاحِظ ← سجّل ← أبلِغ ← تصرّف ← راجِع.</strong> وسيلة تذكّر لشكل الاستجابة — لا مسار الإبلاغ.",    "ADEK has published the full lesson plans and student materials on <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\">InstrucTwin</a>. Open your lesson before Monday and read it against the plan you just wrote.":
-        "نشرت دائرة التعليم والمعرفة خطط الدروس الكاملة ومواد الطلاب على <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\" class=\"ltr\">InstrucTwin</a>. افتح درسك قبل يوم الاثنين واقرأه في ضوء الخطة التي كتبتَها للتو.",
+        "<strong>لاحِظ ← سجّل ← أبلِغ ← تصرّف ← راجِع.</strong> وسيلة تذكّر لشكل الاستجابة — لا مسار الإبلاغ.",    "ADEK has published the full lesson plans and student materials on <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\">InstrucTwin</a>. Staff accounts are not yet showing the grades you are assigned to, so you may not be able to reach yours today. That is mine to chase, not yours — when it opens, read your lesson against the plan you just wrote.":
+        "نشرت دائرة التعليم والمعرفة خطط الدروس الكاملة ومواد الطلاب على <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\" class=\"ltr\">InstrucTwin</a>. غير أنّ حسابات الطاقم لا تُظهر بعد الصفوف المُسنَدة إليك، لذا قد لا تتمكّن من الوصول إلى درسك اليوم. ومتابعة هذا من مسؤوليتي لا من مسؤوليتك — وحين يُتاح، اقرأ درسك في ضوء الخطة التي كتبتَها للتو.",
     "<strong>Can't get in?</strong> You have not lost anything — your plan above is the part that matters, and it is already saved. Tick the box below so I know, and finish the module. Access is mine to chase, and I would rather know today than on the 20th.":
         "<strong>لا تستطيع الدخول؟</strong> لم تخسر شيئًا — فخطتك أعلاه هي الجزء المهم، وقد حُفظت بالفعل. ضع علامة في المربع أدناه لأعرف، وأكمل الوحدة. فمتابعة الدخول مسؤوليتي أنا، وأفضّل أن أعرف اليوم لا في العشرين.",
-    "This is the shape of it. The grade-by-grade detail is in the <a href=\"ai-literacy-scope-and-sequence.html\" target=\"_blank\" rel=\"noopener\">full Scope &amp; Sequence</a> — and the button in the corner opens it from any point in this module.":
-        "هذا هو الشكل العام. أما التفصيل صفًّا بصف فتجده في <a href=\"ai-literacy-scope-and-sequence.html\" target=\"_blank\" rel=\"noopener\">نطاق المحتوى وتسلسله كاملًا</a> — والزر في الزاوية يفتحه من أي موضع في هذه الوحدة.",
-    "<strong>Want the whole picture?</strong> The full <a href=\"ai-literacy-scope-and-sequence.html\" target=\"_blank\" rel=\"noopener\">Scope &amp; Sequence</a> lays out every grade from KG to 12 — the progression map, end-of-phase expectations, and how each strand builds year on year. It opens in a new tab, so you will not lose anything you have typed.":
-        "<strong>تريد الصورة كاملة؟</strong> يعرض <a href=\"ai-literacy-scope-and-sequence.html\" target=\"_blank\" rel=\"noopener\">نطاق المحتوى وتسلسله</a> كل صف من الروضة حتى الصف 12 — خريطة التدرّج، وتوقّعات نهاية كل مرحلة، وكيف يتراكم كل محور عامًا بعد عام. ويُفتح في علامة تبويب جديدة، فلن تفقد شيئًا مما كتبتَه.",
+    "Teaching begins <strong>the week of 21 September 2026</strong> — your first lesson falls somewhere in that week, not necessarily on the Monday. The full curriculum, lesson plans and teacher toolkits are already on InstrucTwin.":
+        "يبدأ التدريس في <strong>أسبوع 21 سبتمبر 2026</strong> — فدرسك الأوّل يقع في موضع ما من ذلك الأسبوع، وليس بالضرورة يوم الاثنين. والمنهج الكامل وخطط الدروس وحقائب المعلّم متاحة بالفعل على <span class=\"ltr\">InstrucTwin</span>.",
+    "Everything so far has been preparation for this. Teaching starts the <strong>week of 21 September</strong> — your first lesson falls somewhere in that week, not necessarily on the Monday. Pick your grade and write the plan you will teach from. You do not need InstrucTwin open to do it — the curriculum focus for your grade is below.":
+        "كل ما سبق كان تمهيدًا لهذا. يبدأ التدريس في <strong>أسبوع 21 سبتمبر</strong> — فدرسك الأوّل يقع في موضع ما من ذلك الأسبوع، وليس بالضرورة يوم الاثنين. اختر صفّك واكتب الخطة التي ستُدرّس منها. ولستَ بحاجة إلى فتح <span class=\"ltr\">InstrucTwin</span> لتفعل ذلك — فمحاور المنهج الخاصة بصفّك مذكورة أدناه.",
+    "The shape above is the summary. The <strong>Scope &amp; Sequence</strong> is the full KG–Grade 12 curriculum map: what every grade covers, what students are expected to reach by the end of each phase, and how each strand builds year on year.":
+        "ما سبق هو الملخّص. أمّا <strong>نطاق المحتوى وتسلسله</strong> فهو خريطة المنهج الكاملة من رياض الأطفال حتّى الصف 12: ما يغطّيه كل صفّ، وما يُتوقّع أن يبلغه الطلاب بنهاية كل مرحلة، وكيف يتراكم كل محور عامًا بعد عام.",
+    "<strong>Want the whole picture?</strong> The <strong>Scope &amp; Sequence</strong> lays out every grade from KG to 12 — the progression map, end-of-phase expectations, and how each strand builds year on year.":
+        "<strong>تريد الصورة كاملة؟</strong> يعرض <strong>نطاق المحتوى وتسلسله</strong> كل صف من رياض الأطفال حتّى الصف 12 — خريطة التدرّج، وتوقّعات نهاية كل مرحلة، وكيف يتراكم كل محور عامًا بعد عام.",
 };
 
 /* Stamp data-ar onto the elements AR_BLOCKS names, keyed by their

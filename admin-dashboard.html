@@ -40,7 +40,7 @@
         @media (prefers-reduced-motion: reduce) { .dash-tab:hover { transform: none; } }
         .matrix thead .sticky-col { z-index: 2; background:#fff; }
     </style>
-    <script src="auth/gate.js?v=20"></script>
+    <script src="auth/gate.js?v=22"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
@@ -343,7 +343,7 @@
                     </div>
                 </div>
 
-                <div id="resp-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4"></div>
+                <div id="resp-stats" class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4"></div>
                 <div id="resp-list" class="space-y-3"></div>
 
                 <p id="resp-empty" class="text-center text-slate-400 py-8">
@@ -704,8 +704,106 @@
         // Module registry — keep `hours` and `file` in sync with dashboard.html
         // (the same numbers go on the certificate's "PD Hours" badge, and
         // `file` is what a "complete your training" reminder deep-links to).
+        /* ==========================================================
+         * AI Literacy cohort — the teachers named on AISA's ADEK
+         * Implementation Form as delivering the AI Literacy curriculum.
+         *
+         * Only these people are measured against the AI Literacy module.
+         * That matters in both directions:
+         *   - nobody outside the list is expected to complete it, so it
+         *     must never count against their "required done";
+         *   - everyone inside it is chased even if they have never
+         *     signed in to the Hub, which is exactly the person you most
+         *     need to find before the deadline.
+         *
+         * To change the cohort, edit this list. Names are only for
+         * display — matching is by lower-cased email.
+         * ========================================================== */
+        const AI_LITERACY_COHORT = [
+            { email: "vplayer@aisa.sch.ae",             name: "Veronica Ann Player" },
+            { email: "rlawson@aisa.sch.ae",             name: "Robin Elizabeth Martin Lawson" },
+            { email: "snaidoo@aisa.sch.ae",             name: "Sudashna Naidoo" },
+            { email: "jhecker@aisa.sch.ae",             name: "Jennifer Hecker" },
+            { email: "wlester@aisa.sch.ae",             name: "William Scott Lester" },
+            { email: "kmejia@aisa.sch.ae",              name: "Kelly Mejia" },
+            { email: "fbabikir@aisa.sch.ae",            name: "Fairouz Babikir" },
+            { email: "hmaoued@aisa.sch.ae",             name: "Hiam Maoued" },
+            { email: "hmahanna@aisa.sch.ae",            name: "Hossam Mahanna" },
+            { email: "jalbakour@aisa.sch.ae",           name: "Jamila Al Bakour" },
+            { email: "amalroz@aisa.sch.ae",             name: "Abdel Moamen Alroz" },
+            { email: "enazaraliyev@aisa.sch.ae",        name: "Elnur Nazaraliyev" },
+            { email: "azalama@aisa.sch.ae",             name: "Abdul Fattah Zalama" },
+            { email: "bfortune@aisa.sch.ae",            name: "Brent Marc Fortune" },
+            { email: "cdarwish@aisa.sch.ae",            name: "Camilia Darwish" },
+            { email: "dchetty@aisa.sch.ae",             name: "Damian Chetty" },
+            { email: "emohamed@aisa.sch.ae",            name: "Egbal Ibrahim Mohamed" },
+            { email: "ghinampas@aisa.sch.ae",           name: "Given Gatera Hinampas" },
+            { email: "habdelsalam@aisa.sch.ae",         name: "Hosam Samy Zakaria Abdelsalam" },
+            { email: "jsanchez@aisa.sch.ae",            name: "Jenel Sanchez" },
+            { email: "jmatar@aisa.sch.ae",              name: "Jennifer Matar" },
+            { email: "jkoch@aisa.sch.ae",               name: "Jeffrey Taber Koch" },
+            { email: "mmekouar@aisa.sch.ae",            name: "Mouhcine Mekouar" },
+            { email: "pvitor@aisa.sch.ae",              name: "Paulo Vitor" },
+            { email: "aelsawaf@aisa.sch.ae",            name: "Ahmed Elsawaf" },
+            { email: "btantawi@aisa.sch.ae",            name: "Belal Khairi Salem Tantawi" },
+            { email: "nmater@aisa.sch.ae",              name: "Nagla Mater" },
+            { email: "aeldin@aisa.sch.ae",              name: "Amr Mohamed Wahid Eldin" },
+            { email: "fbotha@aisa.sch.ae",              name: "Francois Botha" },
+            { email: "rmyles@aisa.sch.ae",              name: "Ryan Myles" },
+            { email: "hhidalgo@aisa.sch.ae",            name: "Haley Hidalgo" },
+            { email: "ebarton@aisa.sch.ae",             name: "Ellen Barton" },
+            { email: "slazare@aisa.sch.ae",             name: "Sandrine Lazare" },
+            { email: "damir@aisa.sch.ae",               name: "Donia Amir" },
+            { email: "zbeer@aisa.sch.ae",               name: "Zantia De Beer" },
+            { email: "sstream@aisa.sch.ae",             name: "Sabrina Stream" },
+            { email: "avarma@aisa.sch.ae",              name: "Arpita Varma" },
+            { email: "lahill@aisa.sch.ae",              name: "Lauren Hill" },
+            { email: "mforrester@aisa.sch.ae",          name: "Michelle Forrester" },
+            { email: "hcampbell@aisa.sch.ae",           name: "Helen Louise Campbell" },
+            { email: "sdavis@aisa.sch.ae",              name: "Sonya Davis" },
+            { email: "mhussein@aisa.sch.ae",            name: "Marwa Hussein H M Afifi" },
+            { email: "fmartin@aisa.sch.ae",             name: "Fatima Martin" },
+            { email: "dvega@aisa.sch.ae",               name: "Derian Reinaldo Céspedes Vega" },
+            { email: "kheyns@aisa.sch.ae",              name: "Kate Heyns" },
+            { email: "amartins@aisa.sch.ae",            name: "Adryne San Martins" },
+            { email: "aecheverri@aisa.sch.ae",          name: "Alejandra Echeverri" },
+            { email: "anair@aisa.sch.ae",               name: "Ashwati Nair" },
+            { email: "cmonroe@aisa.sch.ae",             name: "Chandler Alexandra Monroe" },
+            { email: "gkurton@aisa.sch.ae",             name: "Geoff Kurton" },
+            { email: "uwyss@aisa.sch.ae",               name: "Ula Wyss" },
+            { email: "asiju@aisa.sch.ae",               name: "Anna Maria Siju" },
+            { email: "emckeever@aisa.sch.ae",           name: "Emily McKeever" },
+            { email: "chenry@aisa.sch.ae",              name: "Cassandra Henry" },
+            { email: "abrehony@aisa.sch.ae",            name: "Aisling Brehony" },
+            { email: "kstafford@aisa.sch.ae",           name: "Kasey Stafford" },
+            { email: "jplooy@aisa.sch.ae",              name: "Jacolien du Plooy" },
+            { email: "aclassen@aisa.sch.ae",            name: "Amy Leigh Classen" },
+            { email: "jvanbelle@aisa.sch.ae",           name: "Jennifer Van belle" },
+            { email: "nnaicker@aisa.sch.ae",            name: "Natasha Naicker" },
+            { email: "apieterse@aisa.sch.ae",           name: "Angelique Pieterse" },
+            { email: "jheyns@aisa.sch.ae",              name: "Arthur Juan Pierre Heyns" },
+        ];
+        const AI_LITERACY_EMAILS = new Set(AI_LITERACY_COHORT.map(t => t.email));
+
+        /* A module with a cohort applies only to that cohort; a module
+         * without one applies to everybody. */
+        function moduleApplies(m, email) {
+            return !m.cohort || m.cohort.has(String(email || '').toLowerCase());
+        }
+
+        /* The cohort as tracker rows: real data where we have it, a stub
+         * row where the person has never appeared in the Hub at all.
+         * Without the stubs a teacher who never signed in is simply
+         * absent from the table and reads as nobody's problem. */
+        function cohortRows(mod) {
+            return AI_LITERACY_COHORT.map(t => {
+                const known = DATA.byEmail[t.email];
+                return known || { email: t.email, name: t.name, last_seen: '', done: {}, neverSeen: true };
+            });
+        }
+
         const MODULES = [
-            { id: 'ai-curriculum-readiness', short: 'AI Readiness', title: 'AI Literacy: Teacher Readiness',   required: true,  hours: 1, file: 'PD%20Modules/ai-curriculum-readiness-module.html' },
+            { id: 'ai-curriculum-readiness', short: 'AI Readiness', title: 'AI Literacy: Teacher Readiness',   required: true,  hours: 1, file: 'PD%20Modules/ai-curriculum-readiness-module.html', cohort: AI_LITERACY_EMAILS },
             { id: 'ai-ethics',         short: 'AI Ethics',        title: 'AI Vision & Ethical Framework',         required: true,  hours: 1, file: 'PD%20Modules/ai-ethics-module.html' },
             { id: 'return-to-school',  short: 'Return to School', title: 'Return to School — Emergency Protocol', required: true,  hours: 2, file: 'PD%20Modules/return-to-school.html' },
             { id: 'safeguarding',      short: 'Safeguarding',     title: 'Child Safeguarding & Protection',       required: true,  hours: 2, file: 'PD%20Modules/safeguarding-module.html' },
@@ -750,7 +848,7 @@
             return byEmail;
         }
 
-        function moduleBar(m, count, total) {
+        function moduleBar(m, count, total, unit) {
             const pct = total ? Math.round((count / total) * 100) : 0;
             return '<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">' +
                 '<div class="flex items-center justify-between mb-2">' +
@@ -762,7 +860,7 @@
                 '<div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">' +
                     '<div class="h-full rounded-full ' + (m.required ? 'bg-gradient-to-r from-rose-500 to-orange-500' : 'bg-gradient-to-r from-indigo-500 to-cyan-500') + '" style="width:' + pct + '%"></div>' +
                 '</div>' +
-                '<p class="text-xs text-slate-400 font-semibold mt-1.5">' + count + ' of ' + total + ' staff</p>' +
+                '<p class="text-xs text-slate-400 font-semibold mt-1.5">' + count + ' of ' + total + ' ' + (unit || 'staff') + '</p>' +
             '</div>';
         }
 
@@ -779,8 +877,8 @@
                 const completed = MODULES.filter(m => p.done[m.id]);
                 sumMods += completed.length;
                 sumHours += completed.reduce((s, m) => s + (m.hours || 0), 0);
-                if (completed.length === MODULES.length) full++;
-                if (REQUIRED.every(m => p.done[m.id])) reqDone++;
+                if (MODULES.every(m => !moduleApplies(m, p.email) || p.done[m.id])) full++;
+                if (REQUIRED.every(m => !moduleApplies(m, p.email) || p.done[m.id])) reqDone++;
             });
             document.getElementById('stat-people').textContent = total;
             document.getElementById('stat-full').textContent = full;
@@ -799,10 +897,16 @@
         }
 
         function renderModuleBars(people) {
-            const total = people.length;
             const html = MODULES.map(m => {
+                if (m.cohort) {
+                    const done = AI_LITERACY_COHORT.filter(t => {
+                        const k = DATA.byEmail[t.email];
+                        return k && k.done[m.id];
+                    }).length;
+                    return moduleBar(m, done, m.cohort.size, 'assigned teachers');
+                }
                 const count = people.filter(p => p.done[m.id]).length;
-                return moduleBar(m, count, total);
+                return moduleBar(m, count, people.length, 'staff');
             }).join('');
             document.getElementById('module-bars').innerHTML = html;
         }
@@ -861,13 +965,17 @@
         }
 
         function isCompleteFor(p, mods) {
-            return mods.every(m => !!p.done[m.id]);
+            return mods.every(m => !moduleApplies(m, p.email) || !!p.done[m.id]);
         }
 
         function filteredPeople(mods) {
             const q = (document.getElementById('filter-text').value || '').toLowerCase().trim();
             const status = document.getElementById('tracker-status').value || '';
-            return DATA.list.filter(p => {
+            /* Viewing a single cohort module: the cohort *is* the
+             * population, stubs included. Any wider scope stays on the
+             * real staff list so the other modules are unaffected. */
+            const source = (mods.length === 1 && mods[0].cohort) ? cohortRows(mods[0]) : DATA.list;
+            return source.filter(p => {
                 if (q && ((p.name || '') + ' ' + p.email).toLowerCase().indexOf(q) === -1) return false;
                 if (status) {
                     const done = isCompleteFor(p, mods);
@@ -1659,9 +1767,16 @@
         }
 
         function renderStats() {
+            /* Measured against the assigned cohort, not against whoever
+             * happens to have opened the module — "12 started" means
+             * nothing without the 62 it is out of, and "not started" is
+             * the number worth acting on. */
+            var cohort = (typeof AI_LITERACY_COHORT !== 'undefined') ? AI_LITERACY_COHORT.length : 0;
+            var started = rows.length;
             document.getElementById('resp-stats').innerHTML =
-                statTile(rows.length, 'Started', 'text-slate-900') +
+                statTile(cohort ? (started + ' / ' + cohort) : started, 'Started', 'text-slate-900') +
                 statTile(rows.filter(isDone).length, 'Completed', 'text-emerald-700') +
+                (cohort ? statTile(Math.max(0, cohort - started), 'Not started', 'text-slate-500') : '') +
                 statTile(rows.filter(needsHelp).length, 'Asked for something', 'text-amber-700') +
                 statTile(rows.filter(isBlocked).length, 'Blocked on InstrucTwin', 'text-rose-700');
         }

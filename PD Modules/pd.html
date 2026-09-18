@@ -116,36 +116,145 @@
         .pd-module .module-icon { transition: transform .3s ease; }
         .pd-module:hover .module-icon { transform: scale(1.08) rotate(-2deg); }
 
-        /* --- Filter pills --- */
-        .pd-filter {
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-size: 0.8rem; font-weight: 600;
-            background: #ffffff;
-            border: 1px solid #e0e7ff;
-            color: #4338ca;
-            transition: all .2s ease;
-            cursor: pointer;
+        /* ===================================================================
+           BROWSE BAR — same component as `Tools and Resources/tools.html`,
+           in indigo instead of teal. Keep the two in step: staff move
+           between these two pages constantly and the controls should not
+           change shape on the way.
+           Before this the page opened with a pill-shaped search box and a
+           separate centred row of filter chips, with no page title above
+           either of them.
+           One rule: ONE row of pills. Anything that is not a topic goes in
+           the controls row, not in a second pill row.
+           =================================================================== */
+        .browse-bar {
+            position: sticky;
+            top: 3.75rem;                       /* clears the 60px global topbar */
+            z-index: 30;
+            margin: 0 -1.5rem 2.5rem;
+            padding: 0.875rem 1.5rem 0.9rem;
+            background: rgba(238, 242, 255, 0.94);
+            -webkit-backdrop-filter: saturate(180%) blur(12px);
+            backdrop-filter: saturate(180%) blur(12px);
+            border-bottom: 1px solid #e0e7ff;
         }
-        .pd-filter:hover { border-color: #818cf8; background: #eef2ff; }
-        .pd-filter.active {
+        .browse-bar input, .browse-bar select, .browse-bar button, .browse-bar label { box-sizing: border-box; }
+        .browse-inner { max-width: 72rem; margin: 0 auto; display: flex; flex-direction: column; gap: 0.7rem; min-width: 0; }
+        .browse-controls { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+
+        /* --- search --- */
+        .browse-search { position: relative; flex: 1 1 18rem; min-width: 0; }
+        .browse-search input {
+            width: 100%;
+            padding: 0.7rem 5rem 0.7rem 2.85rem;
+            border-radius: 9999px;
+            border: 1px solid #c7d2fe;
+            background: #ffffff;
+            color: #0f172a;
+            font-size: 0.9375rem;
+            box-shadow: 0 1px 2px rgba(67, 56, 202, 0.06);
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+        .browse-search input::placeholder { color: #94a3b8; font-weight: 400; }
+        .browse-search input:focus { outline: none; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18); }
+        .browse-search .s-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.1rem; height: 1.1rem; color: #6366f1; pointer-events: none; }
+        .browse-search .s-actions { position: absolute; right: 0.55rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.3rem; }
+        .browse-kbd {
+            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+            font-size: 0.6875rem; font-weight: 700; color: #818cf8;
+            background: #eef2ff; border: 1px solid #e0e7ff; border-radius: 0.375rem;
+            padding: 0.15rem 0.4rem; line-height: 1;
+        }
+        @media (max-width: 640px) { .browse-kbd { display: none; } }
+        .browse-clear {
+            display: none; align-items: center; justify-content: center;
+            width: 1.6rem; height: 1.6rem; border-radius: 9999px;
+            color: #94a3b8; background: transparent; transition: all .15s ease;
+        }
+        .browse-clear.is-visible { display: inline-flex; }
+        .browse-clear:hover { background: #f1f5f9; color: #4338ca; }
+
+        /* --- "Hide completed" switch. A checkbox, not a pill, so it reads as
+               a view option rather than another category. --- */
+        .browse-toggle {
+            display: inline-flex; align-items: center; gap: 0.45rem;
+            padding: 0.55rem 0.9rem; border-radius: 9999px;
+            background: #ffffff; border: 1px solid #c7d2fe; color: #4338ca;
+            font-size: 0.8125rem; font-weight: 700; cursor: pointer;
+            white-space: nowrap; transition: all .15s ease; flex: 0 0 auto;
+        }
+        .browse-toggle:hover { background: #eef2ff; border-color: #818cf8; }
+        .browse-toggle input { width: 0.95rem; height: 0.95rem; accent-color: #4338ca; cursor: pointer; }
+        .browse-toggle.is-off { opacity: .55; }
+
+        /* --- result count / reset --- */
+        .browse-status { margin-left: auto; display: flex; align-items: center; gap: 0.6rem; flex: 0 0 auto; }
+        .browse-count { font-size: 0.8125rem; font-weight: 700; color: #4338ca; white-space: nowrap; }
+        .browse-count .num { font-weight: 800; color: #312e81; }
+        .browse-reset {
+            display: none; align-items: center; gap: 0.3rem;
+            font-size: 0.75rem; font-weight: 800; letter-spacing: 0.04em;
+            color: #4338ca; background: #e0e7ff; border-radius: 9999px;
+            padding: 0.35rem 0.7rem; transition: all .15s ease; white-space: nowrap;
+        }
+        .browse-reset.is-visible { display: inline-flex; }
+        .browse-reset:hover { background: #c7d2fe; color: #312e81; }
+
+        /* --- the single pill row --- */
+        /* min-width:0 is load-bearing: a nowrap flex row's min-content width
+           is the whole row, so without it the bar refuses to shrink and the
+           page scrolls sideways on phones (see CLAUDE.md). */
+        .browse-pills { display: flex; gap: 0.4rem; overflow-x: auto; padding-bottom: 0.15rem; scrollbar-width: none; min-width: 0; }
+        .browse-pills::-webkit-scrollbar { display: none; }
+        .browse-pill {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.45rem 0.9rem; border-radius: 9999px;
+            background: #ffffff; border: 1px solid #e0e7ff; color: #4338ca;
+            font-size: 0.8125rem; font-weight: 700; white-space: nowrap;
+            cursor: pointer; transition: all .15s ease;
+        }
+        .browse-pill:hover { background: #eef2ff; border-color: #818cf8; transform: translateY(-1px); }
+        .browse-pill.is-active {
             background: linear-gradient(135deg, #4338ca, #6366f1);
-            border-color: transparent;
-            color: #ffffff;
+            border-color: transparent; color: #ffffff;
             box-shadow: 0 6px 18px -6px rgba(67, 56, 202, 0.55);
         }
-        .pd-filter .pd-filter-count {
-            font-size: 0.65rem; font-weight: 800;
-            background: rgba(99, 102, 241, 0.12);
-            color: #4338ca;
-            padding: 0.1rem 0.45rem;
-            border-radius: 9999px;
+        .browse-pill .n {
+            font-size: 0.6875rem; font-weight: 800; line-height: 1;
+            background: rgba(99, 102, 241, 0.12); color: #4338ca;
+            border-radius: 9999px; padding: 0.2rem 0.4rem; min-width: 1.35rem; text-align: center;
         }
-        .pd-filter.active .pd-filter-count {
-            background: rgba(255,255,255,0.25);
-            color: #ffffff;
+        .browse-pill.is-active .n { background: rgba(255,255,255,0.25); color: #ffffff; }
+        /* "Required" is a status, not a topic — amber so the eye reads it as
+           a different kind of thing from the four subject pills beside it. */
+        .browse-pill[data-cat="required"] { border-color: #fcd34d; color: #92400e; background: #fffbeb; }
+        .browse-pill[data-cat="required"] .n { background: rgba(217, 119, 6, 0.14); color: #92400e; }
+        .browse-pill[data-cat="required"]:hover { background: #fef3c7; border-color: #f59e0b; }
+        .browse-pill[data-cat="required"].is-active {
+            background: linear-gradient(135deg, #b45309, #f59e0b);
+            border-color: transparent; color: #ffffff;
+            box-shadow: 0 6px 18px -6px rgba(180, 83, 9, 0.55);
         }
+        .browse-pill[data-cat="required"].is-active .n { background: rgba(255,255,255,0.25); color: #ffffff; }
+        .browse-pill-sep { flex: 0 0 auto; width: 1px; align-self: stretch; background: #c7d2fe; margin: 0.15rem 0.35rem; }
+
+        /* --- page header + progress --- */
+        .page-head { max-width: 72rem; margin: 0 auto 1.75rem; }
+        .page-head .eyebrow { font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #4f46e5; }
+        .page-head h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 800; color: #312e81; line-height: 1.1; margin: 0.3rem 0 0.5rem; }
+        .page-head p.lede { color: #475569; font-size: 0.9375rem; max-width: 46rem; }
+        .pd-progress {
+            display: none; align-items: center; gap: 0.9rem; flex-wrap: wrap;
+            margin-top: 1.1rem; padding: 0.85rem 1.1rem;
+            background: #ffffff; border: 1px solid #e0e7ff; border-radius: 1rem;
+            box-shadow: 0 2px 8px -4px rgba(67, 56, 202, 0.25);
+        }
+        .pd-progress.is-ready { display: flex; }
+        .pd-progress .bar { flex: 1 1 12rem; min-width: 8rem; height: 0.5rem; border-radius: 9999px; background: #e0e7ff; overflow: hidden; }
+        .pd-progress .bar > span { display: block; height: 100%; border-radius: 9999px; background: linear-gradient(90deg, #4338ca, #10b981); transition: width .4s ease; }
+        .pd-progress .headline { font-size: 0.875rem; font-weight: 800; color: #312e81; white-space: nowrap; }
+        .pd-progress .note { font-size: 0.8125rem; font-weight: 600; color: #64748b; }
+        .pd-progress .note.owed { color: #b45309; }
 
         /* --- Required-module pulse dot --- */
         .required-dot {
@@ -199,7 +308,7 @@
             margin-top: 28px;
         }
     </style>
-    <script src="../auth/gate.js?v=20"></script>
+    <script src="../auth/gate.js?v=22"></script>
 </head>
 <body class="bg-pd-pattern text-gray-800 min-h-screen flex flex-col">
 
@@ -210,53 +319,80 @@
     <main class="flex-grow">
         <div class="container mx-auto px-6 py-14">
 
-            <!-- Search Bar -->
-            <div class="max-w-2xl mx-auto mb-10">
-                <label for="pd-search" class="sr-only">Search modules</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    </div>
-                    <input type="text" id="pd-search"
-                           class="w-full pl-12 pr-12 py-4 rounded-full border border-indigo-200 bg-white shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 placeholder-gray-400"
-                           placeholder="Search modules by topic, keyword, or title…"
-                           autocomplete="off">
-                    <button type="button" id="pd-search-clear" class="hidden absolute inset-y-0 right-0 pr-4 items-center text-gray-400 hover:text-indigo-600" aria-label="Clear search">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
+            <!-- =====================================================
+                 Page header. Mirrors the one on tools.html.
+                 The progress strip stays display:none until the
+                 completion sync has real numbers (.is-ready), so nobody
+                 ever sees a placeholder "0 of 0".
+                 ===================================================== -->
+            <header class="page-head">
+                <p class="eyebrow">AISA Learning Hub</p>
+                <h1 class="font-heading">Professional Development</h1>
+                <p class="lede">Every PD module in one place. Required modules are flagged in amber —
+                   start with those, then pick whatever else is useful to you. Your progress saves
+                   automatically, and finished modules stay here so you can go back to them.</p>
+
+                <div class="pd-progress" id="pd-progress">
+                    <span class="headline" id="pd-progress-headline">—</span>
+                    <span class="bar" aria-hidden="true"><span id="pd-progress-fill" style="width:0%"></span></span>
+                    <span class="note" id="pd-progress-note"></span>
                 </div>
-                <p id="pd-search-empty" class="hidden mt-4 text-center text-gray-500 text-sm">No modules match your search. Try a different keyword.</p>
+            </header>
+
+            <!-- =====================================================
+                 BROWSE BAR — one bar, one pill row.
+                 Pills: "Required" (a status, amber, kept apart by a
+                 divider) then the four subject topics. Completion is a
+                 view option in the controls row, NOT a pill, because it
+                 crosses every topic.
+                 ===================================================== -->
+            <div class="browse-bar">
+              <div class="browse-inner">
+                <div class="browse-controls">
+                    <label for="pd-search" class="sr-only">Search modules</label>
+                    <div class="browse-search">
+                        <svg class="s-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <input type="text" id="pd-search"
+                               placeholder="Search modules by topic, keyword, or title…"
+                               autocomplete="off"
+                               aria-describedby="pd-browse-count">
+                        <div class="s-actions">
+                            <kbd class="browse-kbd" aria-hidden="true">⌘K</kbd>
+                            <button type="button" id="pd-search-clear" class="browse-clear" aria-label="Clear search">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <label class="browse-toggle is-off" id="pd-hide-done-wrap" for="pd-hide-done">
+                        <input type="checkbox" id="pd-hide-done">
+                        Hide completed
+                    </label>
+
+                    <div class="browse-status">
+                        <span class="browse-count" id="pd-browse-count" role="status" aria-live="polite">
+                            <span class="num" id="pd-result-count">0</span> of <span class="num" id="pd-total-count">0</span> modules
+                        </span>
+                        <button type="button" id="pd-reset" class="browse-reset">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="browse-pills" role="group" aria-label="Filter modules">
+                    <button type="button" class="browse-pill is-active" data-cat="all" aria-pressed="true">📚 All modules <span class="n" data-count="all">0</span></button>
+                    <button type="button" class="browse-pill" data-cat="required" aria-pressed="false"><span class="required-dot" aria-hidden="true"></span> Required <span class="n" data-count="required">0</span></button>
+                    <span class="browse-pill-sep" aria-hidden="true"></span>
+                    <button type="button" class="browse-pill" data-cat="ai-digital" aria-pressed="false"><span aria-hidden="true">🤖</span> AI &amp; Digital <span class="n" data-count="ai-digital">0</span></button>
+                    <button type="button" class="browse-pill" data-cat="teaching" aria-pressed="false"><span aria-hidden="true">🎯</span> Teaching &amp; Learning <span class="n" data-count="teaching">0</span></button>
+                    <button type="button" class="browse-pill" data-cat="safety" aria-pressed="false"><span aria-hidden="true">🛡️</span> Safety &amp; Compliance <span class="n" data-count="safety">0</span></button>
+                    <button type="button" class="browse-pill" data-cat="essentials" aria-pressed="false"><span aria-hidden="true">🧰</span> Staff Essentials <span class="n" data-count="essentials">0</span></button>
+                </div>
+              </div>
             </div>
 
-            <!-- Category filter chips -->
-            <div id="pd-filters" class="flex flex-wrap justify-center gap-2 mb-8" role="tablist" aria-label="Module categories">
-                <button type="button" class="pd-filter active" data-filter="all" role="tab" aria-selected="true">
-                    <span>📚 All modules</span>
-                    <span class="pd-filter-count" data-count-for="all">12</span>
-                </button>
-                <button type="button" class="pd-filter" data-filter="required" role="tab" aria-selected="false">
-                    <span class="required-dot" aria-hidden="true"></span>
-                    <span>Required</span>
-                    <span class="pd-filter-count" data-count-for="required">2</span>
-                </button>
-                <button type="button" class="pd-filter" data-filter="ai-tools" role="tab" aria-selected="false">
-                    <span>🤖 AI Tools</span>
-                    <span class="pd-filter-count" data-count-for="ai-tools">3</span>
-                </button>
-                <button type="button" class="pd-filter" data-filter="pedagogy" role="tab" aria-selected="false">
-                    <span>🎯 Pedagogy</span>
-                    <span class="pd-filter-count" data-count-for="pedagogy">2</span>
-                </button>
-                <button type="button" class="pd-filter" data-filter="orientation" role="tab" aria-selected="false">
-                    <span>🧭 Orientation</span>
-                    <span class="pd-filter-count" data-count-for="orientation">5</span>
-                </button>
-                <button type="button" id="pd-filter-completed" class="pd-filter hidden" data-filter="completed" role="tab" aria-selected="false">
-                    <span class="text-emerald-600">✓</span>
-                    <span>Completed</span>
-                    <span class="pd-filter-count" data-count-for="completed">0</span>
-                </button>
-            </div>
+            <p id="pd-search-empty" class="hidden mb-10 text-center text-gray-500 text-sm">No modules match your search. Try a different keyword.</p>
 
             <!-- Modules Grid -->
             <section class="mb-16">
@@ -267,7 +403,7 @@
                          once isAdmin() resolves true. See the reveal + filter guard in the scripts
                          below. To release to all staff: remove data-admin-only, the .pd-admin-only
                          class and the inline display:none, and flip adminOnly in search-index.js. -->
-                    <a href="sustainability-module.html" data-module-id="sustainability" data-admin-only="true" style="display:none;" class="pd-module pd-admin-only group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="required" data-keywords="sustainability sustainable eco environment recycling paper recycling box waste reduction circular economy biodiversity conservation water energy climate action eco committee clothing swap junk kouture earth day single use plastic printing whole school 2026 2027 admin preview compulsory staff course green">
+                    <a href="sustainability-module.html" data-module-id="sustainability" data-admin-only="true" style="display:none;" class="pd-module pd-admin-only group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="essentials" data-keywords="sustainability sustainable eco environment recycling paper recycling box waste reduction circular economy biodiversity conservation water energy climate action eco committee clothing swap junk kouture earth day single use plastic printing whole school 2026 2027 admin preview compulsory staff course green">
                         <div class="h-1.5 bg-gradient-to-r from-green-500 to-lime-500"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -292,7 +428,7 @@
 
                     <!-- Module: AI Literacy — Teacher Readiness — REQUIRED for teachers assigned to
                          deliver AI Literacy. Released to staff 16 September 2026. -->
-                    <a href="ai-curriculum-readiness-module.html" data-module-id="ai-curriculum-readiness" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="required" data-keywords="adek ai literacy curriculum teacher readiness cascade internal training instructwin phases strands facilitation moves prompt inquiry critique practice reflect ms hana who is doing the thinking delivery plan proficient tiers responsible use escalation notice record report act review 21 september required">
+                    <a href="ai-curriculum-readiness-module.html" data-module-id="ai-curriculum-readiness" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-digital" data-required="true" data-keywords="adek ai literacy curriculum teacher readiness cascade internal training instructwin phases strands facilitation moves prompt inquiry critique practice reflect ms hana who is doing the thinking delivery plan proficient tiers responsible use escalation notice record report act review 21 september required">
                         <div class="h-1.5 bg-gradient-to-r from-indigo-600 to-amber-400"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -322,7 +458,7 @@
                     </a>
 
                     <!-- Module: AI Vision & Ethical Framework — REQUIRED -->
-                    <a href="ai-ethics-module.html" data-module-id="ai-ethics" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="required" data-keywords="ai artificial intelligence ethics policy governance principles data protection academic integrity scaffolding approved tools vision framework required">
+                    <a href="ai-ethics-module.html" data-module-id="ai-ethics" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-digital" data-required="true" data-keywords="ai artificial intelligence ethics policy governance principles data protection academic integrity scaffolding approved tools vision framework required">
                         <div class="h-1.5 bg-gradient-to-r from-emerald-500 to-emerald-700"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -351,7 +487,7 @@
                     </a>
 
                     <!-- Module: Return to School Emergency Protocol — REQUIRED -->
-                    <a href="return-to-school.html" data-module-id="return-to-school" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="required" data-keywords="return to school emergency protocol safety adek shelter drill safe zone reopening mandatory training wellbeing risk">
+                    <a href="return-to-school.html" data-module-id="return-to-school" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="safety" data-required="true" data-keywords="return to school emergency protocol safety adek shelter drill safe zone reopening mandatory training wellbeing risk">
                         <div class="h-1.5 bg-gradient-to-r from-red-500 to-red-700"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -386,7 +522,7 @@
                     </a>
 
                     <!-- Module: Child Safeguarding & Protection — REQUIRED -->
-                    <a href="safeguarding-module.html" data-module-id="safeguarding" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="orientation" data-keywords="safeguarding child protection abuse neglect disclosure dsl designated safeguarding lead reporting whistleblowing wadeema adek kcsie self harm suicide counsellor wellbeing mandatory annual training welfare confidentiality 5 rs receive reassure react record report orientation required onboarding new staff">
+                    <a href="safeguarding-module.html" data-module-id="safeguarding" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="safety" data-required="true" data-keywords="safeguarding child protection abuse neglect disclosure dsl designated safeguarding lead reporting whistleblowing wadeema adek kcsie self harm suicide counsellor wellbeing mandatory annual training welfare confidentiality 5 rs receive reassure react record report orientation required onboarding new staff">
                         <div class="h-1.5 bg-gradient-to-r from-indigo-500 to-violet-600"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -413,7 +549,7 @@
                     </a>
 
                     <!-- Module: Google Workspace Studio — AI TOOLS -->
-                    <a href="workspace-studio-module.html" data-module-id="workspace-studio" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-tools" data-keywords="google workspace studio flows skills starter steps no code automation ai agent gemini 3 trigger inbox briefing meeting prep brief permission slip filer attachment chat templates studio workspace google com new">
+                    <a href="workspace-studio-module.html" data-module-id="workspace-studio" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-digital" data-keywords="google workspace studio flows skills starter steps no code automation ai agent gemini 3 trigger inbox briefing meeting prep brief permission slip filer attachment chat templates studio workspace google com new">
                         <div class="h-1.5 bg-gradient-to-r from-blue-500 to-cyan-500"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -440,7 +576,7 @@
                     </a>
 
                     <!-- Module: NotebookLM for Presentations — AI TOOLS -->
-                    <a href="notebooklm-module.html" data-module-id="notebooklm" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-tools" data-keywords="notebooklm ai presentations powerpoint slides deck masterclass gemini lesson planning sandbox">
+                    <a href="notebooklm-module.html" data-module-id="notebooklm" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-digital" data-keywords="notebooklm ai presentations powerpoint slides deck masterclass gemini lesson planning sandbox">
                         <div class="h-1.5 bg-gradient-to-r from-purple-500 to-fuchsia-500"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -465,7 +601,7 @@
                     </a>
 
                     <!-- Module: Chalkie.ai Training — AI TOOLS -->
-                    <a href="chalkie-module.html" data-module-id="chalkie" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-tools" data-keywords="chalkie ai teaching assistant lesson planning slides worksheets dok depth of knowledge differentiation success criteria magicschool gemini accountability tool training">
+                    <a href="chalkie-module.html" data-module-id="chalkie" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="ai-digital" data-keywords="chalkie ai teaching assistant lesson planning slides worksheets dok depth of knowledge differentiation success criteria magicschool gemini accountability tool training">
                         <div class="h-1.5 bg-gradient-to-r from-teal-500 to-emerald-500"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -491,7 +627,7 @@
                     </a>
 
                     <!-- Module: Success Criteria — PEDAGOGY -->
-                    <a href="#module-objectives" data-module-id="success-criteria" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="pedagogy" data-keywords="objectives success criteria lesson planning goals cognitive tiered differentiation must watch">
+                    <a href="#module-objectives" data-module-id="success-criteria" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="teaching" data-keywords="objectives success criteria lesson planning goals cognitive tiered differentiation must watch">
                         <div class="h-1.5 bg-gradient-to-r from-indigo-500 to-blue-600"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -514,7 +650,7 @@
                     </a>
 
                     <!-- Module: AI & Assessment Design — PEDAGOGY -->
-                    <a href="ai-and-assessment.html" data-module-id="ai-and-assessment" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="pedagogy" data-keywords="ai assessment design academic integrity viva voce oral defense rubric aias scale perkins furze traffic light citation reflection prompting plagiarism cheat hallucination red team masterclass">
+                    <a href="ai-and-assessment.html" data-module-id="ai-and-assessment" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="teaching" data-keywords="ai assessment design academic integrity viva voce oral defense rubric aias scale perkins furze traffic light citation reflection prompting plagiarism cheat hallucination red team masterclass">
                         <div class="h-1.5 bg-gradient-to-r from-fuchsia-500 to-pink-500"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -538,7 +674,7 @@
                     </a>
 
                     <!-- Module: Payroll & Purchase Requisitions — ONBOARDING -->
-                    <a href="payroll-prf-module.html" data-module-id="payroll-prf" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="orientation" data-keywords="payroll purchase requisition prf finance accounts office salary bank account wps mohre wages protection system pay slip stub synergetics reimbursement stipend housing allowance annex new staff onboarding sheila gonzalez">
+                    <a href="payroll-prf-module.html" data-module-id="payroll-prf" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="essentials" data-keywords="payroll purchase requisition prf finance accounts office salary bank account wps mohre wages protection system pay slip stub synergetics reimbursement stipend housing allowance annex new staff onboarding sheila gonzalez">
                         <div class="h-1.5 bg-gradient-to-r from-amber-500 to-yellow-600"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -562,7 +698,7 @@
                     </a>
 
                     <!-- Module: Employment Visa & Emirates ID — ONBOARDING -->
-                    <a href="visa-emirates-id-module.html" data-module-id="visa-emirates-id" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="orientation" data-keywords="employment visa emirates id residence residency pro government relations ministry of labour mol moi immigration entry visa unemployment insurance iloe blood test medical fingerprints icp uae app visa sticker new staff onboarding">
+                    <a href="visa-emirates-id-module.html" data-module-id="visa-emirates-id" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="essentials" data-keywords="employment visa emirates id residence residency pro government relations ministry of labour mol moi immigration entry visa unemployment insurance iloe blood test medical fingerprints icp uae app visa sticker new staff onboarding">
                         <div class="h-1.5 bg-gradient-to-r from-sky-500 to-blue-600"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -586,7 +722,7 @@
                     </a>
 
                     <!-- Module: Campus Layout, Safety & Security — ONBOARDING -->
-                    <a href="campus-safety-module.html" data-module-id="campus-safety" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="orientation" data-keywords="campus layout safety security health osh high risk entity gates parking zones traffic management drop off pick up evacuation fire lockdown assembly point hassantuk first aid clinic doh emergency new staff onboarding map">
+                    <a href="campus-safety-module.html" data-module-id="campus-safety" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="safety" data-keywords="campus layout safety security health osh high risk entity gates parking zones traffic management drop off pick up evacuation fire lockdown assembly point hassantuk first aid clinic doh emergency new staff onboarding map">
                         <div class="h-1.5 bg-gradient-to-r from-emerald-500 to-green-600"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -610,7 +746,7 @@
                     </a>
 
                     <!-- Module: SharePoint WorkFlows — ORIENTATION -->
-                    <a href="sharepoint-workflows-module.html" data-module-id="sharepoint-workflows" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="orientation" data-keywords="sharepoint workflows workflow aisa hub leave request teachers business admin non faculty field trip work order request housing maintenance event equipment transport application form recycle bin principal admin manager health safety officer maintenance team save approval how to system forms orientation onboarding">
+                    <a href="sharepoint-workflows-module.html" data-module-id="sharepoint-workflows" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="essentials" data-keywords="sharepoint workflows workflow aisa hub leave request teachers business admin non faculty field trip work order request housing maintenance event equipment transport application form recycle bin principal admin manager health safety officer maintenance team save approval how to system forms orientation onboarding">
                         <div class="h-1.5 bg-gradient-to-r from-teal-500 to-cyan-600"></div>
                         <div class="p-5 flex flex-col h-full">
                             <div class="flex items-start justify-between gap-3 mb-3">
@@ -773,71 +909,101 @@
     </footer>
 
     <script>
+        /* ================================================================
+           BROWSE BAR behaviour.
+
+           Two axes, deliberately on different controls:
+             - PILLS  : "Required" (status) + four subject topics.
+             - SWITCH : "Hide completed", because completion cuts across
+                        every topic and is a view preference, not a
+                        category.
+
+           Completed modules are visible by DEFAULT. They used to be hidden
+           from every pill except a "Completed" one that only appeared once
+           you had finished something — so a module you had just passed
+           silently vanished from "All modules" with no explanation. Staff
+           read that as the Hub losing their work.
+           ================================================================ */
         (function() {
-            const input = document.getElementById('pd-search');
-            const clearBtn = document.getElementById('pd-search-clear');
-            const emptyMsg = document.getElementById('pd-search-empty');
-            const modules = document.querySelectorAll('.pd-module');
-            const filterBtns = document.querySelectorAll('.pd-filter');
+            const input     = document.getElementById('pd-search');
+            const clearBtn  = document.getElementById('pd-search-clear');
+            const emptyMsg  = document.getElementById('pd-search-empty');
+            const modules   = document.querySelectorAll('.pd-module');
+            const pills     = document.querySelectorAll('.browse-pill[data-cat]');
+            const hideDone  = document.getElementById('pd-hide-done');
+            const hideWrap  = document.getElementById('pd-hide-done-wrap');
+            const resultEl  = document.getElementById('pd-result-count');
+            const totalEl   = document.getElementById('pd-total-count');
+            const resetBtn  = document.getElementById('pd-reset');
             if (!input) return;
 
-            let activeFilter = 'all';
+            let activeCat = 'all';
+
+            function visibleToUser(card) {
+                // Admin-only previews stay hidden for everyone until
+                // isAdmin() resolves true. Guard here so no filter can
+                // un-hide them, and so they never reach the counts.
+                return !(card.dataset.adminOnly === 'true' && !window.__pdAdminRevealed);
+            }
 
             function applyFilter() {
                 const q = input.value.trim().toLowerCase();
-                let visible = 0;
+                const hidingDone = !!(hideDone && hideDone.checked);
+                let visible = 0, total = 0;
+
                 modules.forEach(card => {
-                    // Admin-only modules (e.g. unreleased previews) stay hidden
-                    // for everyone until isAdmin() reveals them. Guard here so
-                    // the filter never un-hides them for a non-admin.
-                    if (card.dataset.adminOnly === 'true' && !window.__pdAdminRevealed) {
-                        card.style.display = 'none';
-                        return;
-                    }
-                    const keywords = (card.getAttribute('data-keywords') || '').toLowerCase();
-                    const text = card.innerText.toLowerCase();
-                    const cat = (card.getAttribute('data-category') || '').toLowerCase();
-                    const isCompleted = card.dataset.completed === 'true';
+                    if (!visibleToUser(card)) { card.style.display = 'none'; return; }
+                    total++;
+
+                    const keywords  = (card.getAttribute('data-keywords') || '').toLowerCase();
+                    const text      = card.innerText.toLowerCase();
+                    const cat       = (card.getAttribute('data-category') || '').toLowerCase();
+                    const required  = card.getAttribute('data-required') === 'true';
+                    const done      = card.dataset.completed === 'true';
+
                     const textMatch = !q || text.includes(q) || keywords.includes(q);
-                    let catMatch;
-                    if (activeFilter === 'completed') {
-                        catMatch = isCompleted;
-                    } else if (isCompleted) {
-                        // Completed cards only appear under the Completed tab
-                        catMatch = false;
-                    } else if (activeFilter === 'all') {
-                        catMatch = true;
-                    } else {
-                        catMatch = cat === activeFilter;
-                    }
-                    const show = textMatch && catMatch;
+                    const catMatch  = (activeCat === 'all')      ? true
+                                    : (activeCat === 'required') ? required
+                                    : cat === activeCat;
+                    const doneMatch = !(hidingDone && done);
+
+                    const show = textMatch && catMatch && doneMatch;
                     card.style.display = show ? '' : 'none';
                     if (show) visible++;
                 });
+
+                if (resultEl) resultEl.textContent = visible;
+                if (totalEl)  totalEl.textContent  = total;
+
                 emptyMsg.classList.toggle('hidden', visible !== 0);
-                if (activeFilter === 'completed' && visible === 0) {
-                    emptyMsg.textContent = "You haven't completed any modules yet. Pick one and dive in!";
-                } else {
-                    emptyMsg.textContent = 'No modules match your search. Try a different keyword.';
+                if (visible === 0) {
+                    emptyMsg.textContent = hidingDone
+                        ? 'Nothing left here — you have completed everything that matches. Untick "Hide completed" to see it again.'
+                        : 'No modules match your search. Try a different keyword.';
                 }
-                clearBtn.classList.toggle('hidden', q.length === 0);
-                clearBtn.classList.toggle('flex', q.length > 0);
+
+                if (clearBtn) clearBtn.classList.toggle('is-visible', q.length > 0);
+                if (hideWrap) hideWrap.classList.toggle('is-off', !hidingDone);
+                if (resetBtn) resetBtn.classList.toggle('is-visible',
+                    activeCat !== 'all' || q.length > 0 || hidingDone);
             }
 
             // Expose so the completion loader (below) can re-run after marking cards
             window.__pdReapplyFilter = applyFilter;
 
-            filterBtns.forEach(btn => {
+            pills.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    activeFilter = btn.getAttribute('data-filter') || 'all';
-                    filterBtns.forEach(b => {
-                        const isActive = b === btn;
-                        b.classList.toggle('active', isActive);
-                        b.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                    activeCat = btn.getAttribute('data-cat') || 'all';
+                    pills.forEach(b => {
+                        const on = b === btn;
+                        b.classList.toggle('is-active', on);
+                        b.setAttribute('aria-pressed', on ? 'true' : 'false');
                     });
                     applyFilter();
                 });
             });
+
+            if (hideDone) hideDone.addEventListener('change', applyFilter);
 
             input.addEventListener('input', applyFilter);
             clearBtn.addEventListener('click', () => {
@@ -846,12 +1012,28 @@
                 input.focus();
             });
 
+            if (resetBtn) {
+                resetBtn.addEventListener('click', () => {
+                    activeCat = 'all';
+                    input.value = '';
+                    if (hideDone) hideDone.checked = false;
+                    pills.forEach(b => {
+                        const on = b.getAttribute('data-cat') === 'all';
+                        b.classList.toggle('is-active', on);
+                        b.setAttribute('aria-pressed', on ? 'true' : 'false');
+                    });
+                    applyFilter();
+                    input.focus();
+                });
+            }
+
             applyFilter();
 
             document.addEventListener('keydown', e => {
                 if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                     e.preventDefault();
                     input.focus();
+                    input.select();
                 }
                 if (e.key === 'Escape' && document.activeElement === input) {
                     input.value = '';
@@ -866,30 +1048,68 @@
             // not-yet-ready and the normal case. We use aisaReady so we still
             // get the synchronous cached read once aisaAuth becomes available.
 
+            /* Pill counts are totals, NOT "how many are left". They used to
+             * subtract completed modules, so the numbers shrank as you
+             * worked and never matched what the grid showed. A count next
+             * to a filter should say how many things that filter will
+             * show. Progress lives in the header strip instead. */
             function recomputeFilterCounts() {
                 const allCards = document.querySelectorAll('.pd-module');
-                const counts = { all: 0, completed: 0 };
+                const counts = { all: 0, required: 0 };
+                let done = 0, requiredDone = 0;
                 allCards.forEach(card => {
                     // Don't count admin-only modules that haven't been revealed
-                    // to this user — otherwise the filter chip totals would leak
-                    // the existence of an unreleased module to non-admins.
+                    // to this user — otherwise the pill totals would leak the
+                    // existence of an unreleased module to non-admins.
                     if (card.dataset.adminOnly === 'true' && !window.__pdAdminRevealed) return;
                     const cat = (card.getAttribute('data-category') || '').toLowerCase();
-                    const done = card.dataset.completed === 'true';
-                    if (done) {
-                        counts.completed++;
-                    } else {
-                        counts.all++;
-                        counts[cat] = (counts[cat] || 0) + 1;
-                    }
+                    const isRequired = card.getAttribute('data-required') === 'true';
+                    const isDone = card.dataset.completed === 'true';
+                    counts.all++;
+                    counts[cat] = (counts[cat] || 0) + 1;
+                    if (isRequired) counts.required++;
+                    if (isDone) done++;
+                    if (isDone && isRequired) requiredDone++;
                 });
-                document.querySelectorAll('.pd-filter-count').forEach(el => {
-                    const key = el.getAttribute('data-count-for');
+                document.querySelectorAll('.browse-pill .n').forEach(el => {
+                    const key = el.getAttribute('data-count');
                     el.textContent = String(counts[key] || 0);
                 });
+                updateProgress(done, counts.all, requiredDone, counts.required);
+            }
+
+            /* Header progress strip. Stays hidden until there is something
+             * real to show — no placeholder "0 of 0" while the backend
+             * request is still in flight. */
+            function updateProgress(done, total, requiredDone, requiredTotal) {
+                const wrap = document.getElementById('pd-progress');
+                const headline = document.getElementById('pd-progress-headline');
+                const fill = document.getElementById('pd-progress-fill');
+                const note = document.getElementById('pd-progress-note');
+                if (!wrap || !total) return;
+                /* Only reveal once we know the user's real completions.
+                 * The counts above are DOM-derived and always correct, but
+                 * `done` is 0 until the sync runs — showing the strip early
+                 * would tell a teacher who has finished eight modules that
+                 * they have done none, then correct itself a second later. */
+                if (window.__pdCompletionsKnown) wrap.classList.add('is-ready');
+                headline.textContent = done + ' of ' + total + ' modules complete';
+                fill.style.width = Math.round((done / total) * 100) + '%';
+                const owed = Math.max(0, requiredTotal - requiredDone);
+                if (owed > 0) {
+                    note.textContent = owed + ' required module' + (owed === 1 ? '' : 's') + ' still to do';
+                    note.classList.add('owed');
+                } else if (requiredTotal > 0) {
+                    note.textContent = 'All required modules done \u2713';
+                    note.classList.remove('owed');
+                } else {
+                    note.textContent = '';
+                    note.classList.remove('owed');
+                }
             }
 
             function applyCompletions(completedIds) {
+                window.__pdCompletionsKnown = true;
                 const completedSet = new Set(completedIds);
                 let count = 0;
                 document.querySelectorAll('.pd-module[data-module-id]').forEach(card => {
@@ -917,8 +1137,6 @@
                         });
                     }
                 });
-                const filterBtn = document.getElementById('pd-filter-completed');
-                if (filterBtn) filterBtn.classList.toggle('hidden', count === 0);
                 recomputeFilterCounts();
                 if (typeof window.__pdReapplyFilter === 'function') window.__pdReapplyFilter();
             }
@@ -957,6 +1175,15 @@
                     console.warn('AISA: could not load completions for PD overview', err);
                 });
             }
+
+            /* Populate the pill counts and the progress strip straight from
+             * the DOM before any network call. These numbers describe the
+             * cards on the page, not the backend, so they must never depend
+             * on a signed-in session or a reachable Apps Script: previously
+             * they only ran inside the completion sync, so a signed-out or
+             * offline visitor saw every pill reading "0". */
+            window.__pdRecomputeCounts = recomputeFilterCounts;
+            recomputeFilterCounts();
 
             if (window.aisaReady) {
                 window.aisaReady(runSync);

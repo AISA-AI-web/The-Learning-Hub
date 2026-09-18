@@ -92,6 +92,7 @@
         /* Tools */
         { title: 'Tools & Resources',                  desc: 'AI tools, templates, and reference materials',                  href: 'Tools%20and%20Resources/tools.html',                                               icon: '\u{1F6E0}', tag: 'Hub' },
         { title: 'Lesson Planning Tool',               desc: 'Excellent Teaching & Learning lesson planner',                  href: 'Tools%20and%20Resources/lesson-planning-tool.html',                                icon: '\u{1F4DD}', tag: 'Tool' },
+        { title: 'AI Growth Test guide',               desc: 'AI Lead & Proctor steps for the ADEK Baseline AI Growth Test',  href: 'Tools%20and%20Resources/ai-growth-test-guide.html',                                icon: '\u{1F9ED}', tag: 'Guide' },
         { title: 'My Personal Goal 2026\u201327',        desc: 'Secondary: set your one professional goal for the year',        href: 'Tools%20and%20Resources/secondary-teacher-goal.html',                              icon: '\u{1F3AF}', tag: 'Form' },
 
         /* Library */
@@ -104,6 +105,7 @@
         { title: 'Digital Tools Newsletter — May 4',   desc: 'Issue 1: digital tools deep-dives',                             href: 'Media%20Hub/may4.html',                                                            icon: '\u{1F4F0}', tag: 'Newsletter' },
         { title: 'Digital Lion Newsletter — May 11',   desc: 'Issue 2: Wired Wednesdays, Flows, Gemini in Workspace',         href: 'Media%20Hub/may11.html',                                                           icon: '\u{1F4F0}', tag: 'Newsletter' },
         { title: 'Digital Lion Newsletter — May 18',   desc: 'Issue 3: class visit schedule, AI integration snapshot form',   href: 'Media%20Hub/may18.html',                                                           icon: '\u{1F4F0}', tag: 'Newsletter' },
+        { title: 'Digital Lion Newsletter — September 18',  desc: 'Issue 5: AI Literacy starts 21 Sept, readiness module due 20 Sept',  href: 'Media%20Hub/sep18.html',                                                           icon: '\u{1F4F0}', tag: 'Newsletter' },
         { title: 'Classroom AI Integration Snapshot',  desc: 'Non-evaluative classroom-visit observation form (PDF)',         href: 'Media%20Hub/Classroom%20AI%20Integration%20Snapshot.pdf',                          icon: '\u{1F4CB}', tag: 'Reference' },
 
         /* Committees */

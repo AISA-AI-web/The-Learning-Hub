@@ -44,15 +44,65 @@ fail silently and the dependent UIs stay empty:
   action (no new endpoint, no new sheet): it accepts optional
   `send_email`, `email_link` and `email_link_label`, and replies with an
   `email: { sent, failed, skipped }` summary. `MailApp.sendEmail` is used,
-  so the first run after redeploying prompts for the Gmail/send-mail
-  authorisation scope — approve it once as the account that owns the
-  script. One personalised message per recipient (first name pulled from
+  so the send-mail scope has to be granted once by running
+  `authorizeMail()` from the editor as the account that owns the script
+  — clicking the button in the Hub will never prompt for it. One
+  personalised message per recipient (first name pulled from
   the `sessions` and `roster` tabs), `replyTo` set to the admin who sent
   it, and sends stop short of both the daily mail quota and the 6-minute
   execution cap, reporting anything unsent as `skipped`.
   Unlike the items above this one does **not** fail silently: until the
   redeploy, the tracker posts the bell notification and then warns the
   admin in red that no emails went out.
+
+- **Newsletter mail-out** — two new endpoints, `newsletter_status` and
+  `send_newsletter`. No new sheet: recipients are the `roster` tab plus
+  everyone in `sessions`, filtered to `@aisa.sch.ae`.
+
+  **Run `authorizeMail()` once from the Apps Script editor** (Run →
+  authorizeMail), signed in as the account that owns the script. It
+  mails that account and logs the remaining quota. This is not optional
+  and it is easy to miss: **a web app never shows an authorisation
+  prompt to the person clicking a button in the Hub**, so until the
+  owner grants the send-mail scope from the editor, every `MailApp`
+  call fails — including `getRemainingDailyQuota()`. The same grant
+  covers the reminder emails and the goal-form copies.
+
+  Note that `sendNewsletter` cannot usefully be run from the editor:
+  it takes the signed-in user and the page's payload, so run
+  `authorizeMail()` instead. It returns `not_callable_from_editor`
+  rather than throwing, to say so.
+
+  **Who can send is `NEWSLETTER_SENDERS` at the top of `apps-script.gs`**
+  — currently `bbaki@` and `hodai@`. Deliberately **not** the `admins`
+  tab: every SLT admin can post a bell notification, but mailing the
+  whole school is a bigger button. Edit that array to change it. The
+  send bar on the newsletter page hides itself for everyone else, but
+  that is cosmetic — `send_newsletter` re-checks server-side, which is
+  the check that matters, because the sign-in gate is client-side and
+  this repo is public.
+
+  Guard rails: a real send needs `confirm: '1'`, `test_only: '1'` mails
+  only the sender, and the loop stops short of the daily mail quota and
+  the 6-minute execution cap, reporting the remainder as `skipped` so
+  the sender knows to run it again rather than assuming everyone got it.
+  The email link is whatever `url` the page passes, and the page passes
+  its own `location.origin + location.pathname` — **so no production
+  host is hardcoded anywhere.** Keep it that way.
+
+  Until the redeploy this does **not** fail silently: `gate.js` maps
+  `unknown_action` through, and the bar reports "the Apps Script backend
+  has not been redeployed yet" in red. It names the other failures too —
+  missing mail permission, exhausted daily quota, hitting the 6-minute
+  cap — and each says what to do next.
+
+  **Never collapse a thrown quota read into a quota of zero.** Both
+  mailers read the quota through `_mailQuota()`, which keeps "the script
+  may not send mail" apart from "no sends left today", because the two
+  need opposite advice and the first one shipped once disguised as the
+  second: a test send to one person came back "0 sent, 1 skipped (quota
+  or time limit)" when the real problem was that the scope had never
+  been granted.
 
 - **Module free-text capture** — three new endpoints
   (`save_module_response`, `get_module_response`,
@@ -228,9 +278,20 @@ The `aisa_onboarding_v1` localStorage key is orphaned on staff devices.
 Harmless — nothing reads it.
 
 Note the cache-busting convention: `gate.js` is included as
-`auth/gate.js?v=N` by 44 pages, so **changing `gate.js` means bumping
+`auth/gate.js?v=N` by 45 pages, so **changing `gate.js` means bumping
 `N` on every one of them** or returning visitors keep running the
-cached copy. It is at `?v=20` as of 18 September 2026.
+cached copy. That change took it to `?v=19`; the September 18
+newsletter took it to `?v=20`, the newsletter mail-out to `?v=21`, and
+the request-transport rework below to `?v=22`.
+
+The same trap sits one level down. `gate.js` pulls its helpers with
+their own pins — `certificate.js?v=7`, `search-index.js?v=9`,
+`menu.js?v=15`, `dwell.js?v=2` — so **editing one of those helpers
+means bumping its pin inside `gate.js`, which is itself a change to
+`gate.js`, which means bumping `?v=N` on all 46 pages again.** Adding a
+page to the menu or the search index is enough to trigger the whole
+cascade. Skip it and returning staff keep the cached helper and never
+see the new entry.
 
 ## Reading timestamps out of the sheets
 
@@ -365,6 +426,22 @@ question.
 `data-required` is opt-in, so the modules that predate it are
 unaffected.
 
+**The cohort is per-module, and it cuts both ways.** A module carrying a
+`cohort` only counts for people in it:
+
+- Nobody outside the 62 is expected to complete AI Literacy, so it is
+  skipped in their "required done" and "fully complete". Without that
+  guard every other member of staff would read as permanently behind on
+  required training the moment this module was marked required.
+- Everyone inside the 62 is chased **even if they have never signed in**.
+  Scope the tracker to AI Literacy and it shows all 62 rows, stubbing in
+  anyone the Hub has never seen — that is precisely the person you need
+  to find before a deadline, and a plain roster filter would hide them.
+- The module bar reads "*n* of 62 assigned teachers", not "*n* of all
+  staff", and the readiness section counts started/not-started against 62.
+
+Other modules are untouched: no cohort means it applies to everybody.
+
 **Reading what teachers wrote:** admin dashboard → *AI Literacy
 readiness · what teachers wrote* (`#responses`). One card per teacher,
 people who asked for something or are blocked on InstrucTwin sorted to
@@ -417,6 +494,19 @@ between its stuck and natural positions as you scroll and no fixed
 bottom offset clears it at both ends. It flips to the left edge in
 Arabic.
 
+**Segment 2's time-allocation card carries both numbers.** ADEK's
+entitlement (one period a week for KG–5, two for Grades 6–12) and, below
+it, how AISA actually delivers that: Grades 6–12 get **one timetabled
+period a week with the remainder asynchronous**, elementary is unchanged.
+Added 18 Sept 2026, when the secondary model was decided — before that
+the card showed ADEK's two periods alone, which would have told every
+secondary teacher something their timetable contradicts. Keep both: the
+entitlement is what ADEK audits against, the delivery is what teachers
+plan around. Each paragraph is a separate `AR_BLOCKS` key, so editing
+either English string means editing its key in
+`ai-curriculum-readiness-ar.js` to match, or that paragraph silently
+falls back to English in the Arabic view.
+
 **Segment 4 does not depend on InstrucTwin.** A teacher picks their
 grade and sees that grade's Conceptual / Technical / Creation / Ethics
 focus — ADEK's own Scope and Sequence, held bilingually in the `GRADES`
@@ -456,8 +546,11 @@ Outstanding before it can be announced to staff:
    See that folder's README, which also covers why a screencast of
    InstrucTwin may not belong in a public repo. The written content
    stands alone, so shipping without videos is fine.
-4. **Confirm the cohort** — who has to complete it, per the ADEK
-   Implementation Form. That list drives the tracker's "outstanding".
+4. ~~Confirm the cohort~~ — done 18 Sept 2026. The 62 teachers named on
+   AISA's ADEK Implementation Form are in `AI_LITERACY_COHORT` at the top
+   of the `MODULES` block in `admin-dashboard.html`. **Edit that list to
+   change the cohort**; matching is by lower-cased email, the names are
+   only for display.
 
 **Resolved 15 Sept 2026:** `safeguarding-module.html` had the wrong
 elementary nurse — it listed Jothi Vinod, who is secondary. Corrected to
@@ -472,10 +565,282 @@ Content sourced verbatim from ADEK's Train-the-Trainer Day 1 deck and
 Participant Worksheet Packet — the Ms Hana case in segment 3 is
 Worksheet 3 unaltered, including its Grade 7 setting.
 
+## AI Growth Test guide — added 18 September 2026
+
+`Tools and Resources/ai-growth-test-guide.html` is ADEK's *AI Growth Test
+— AI Lead & Proctor User Guide* (v1.0, 12 Sept 2026) rebuilt as a
+screen-first reference. Reached from the **Assessment & Test Prep**
+category on `tools.html`, from `menu.js`, and from `search-index.js`.
+
+**It is deliberately not a PD module.** It is an operational runbook for
+a live assessment window, with no chapters, no quiz, no completion event
+and no certificate. It is *not* in any `MODULES` array, so it does not
+move the headline compliance numbers — keep it that way unless someone
+decides proctor training is itself PD.
+
+**The window dates are in the page, not in a sheet.** `OPEN` and `CLOSE`
+in the page script (`2026-09-14` / `2026-10-04`, Abu Dhabi offset) drive
+the banner, which recomputes on every load and flips through
+*opens in N days* → *window open, N days left* → *window closed*. When
+ADEK moves the window, change those two dates and the prose in the hero
+strip and the key-dates line; nothing else reads them.
+
+**Step numbers track section numbers** — Phase 1 is section 2, so its
+steps are 2.1–2.6. Cross-references ("see 2.4", "read section 4.3") are
+written out by hand. Reorder the sections and every one of them is
+wrong, so renumber both together.
+
+**Screenshots.** The 16 figures in `Tools and Resources/assets/aigt/`
+were extracted from ADEK's PDF (~940 KB total). Every one shows
+demonstration data only — "Test Student One", `test9900101@example.com`,
+`ailead@instructwin.com` — and was checked individually before being
+committed; no real student or staff name appears in any of them. They
+are still **ADEK's screenshots in a public repo**, so if ADEK would
+rather they weren't republished, deleting the folder and the
+`<figure class="shot">` blocks leaves the guide complete — the written
+steps stand alone.
+
+**English only.** There is no `-ar.js` and no `data-ar` markup. The
+global language toggle in `menu.js` sets `html[dir="rtl"]` on *every*
+page, which would mirror this one, so the content wrapper pins
+`dir="ltr"`. That is scoped to `.layout`, not `<body>`, so the Hub
+topbar still flips normally.
+
+**A `guide` type was added to `tools.html`** for this card. Since the
+browse-bar rebuild (below) the type chips are gone, so it now lives in
+just two places: the `.type-badge-guide` rule and the `<option
+value="guide">` in the Format select. Counts are derived from the DOM,
+so there is no third list to forget.
+
+Interactive bits, all client-side and all optional: a role filter
+(Everyone / AI Lead / Proctor / Student) that hides the steps that
+aren't yours, tick-off checklists, a copyable student briefing script,
+and click-to-enlarge figures. State lives in one localStorage key,
+`aisa_aigt_v1` (chosen role + ticked boxes) — per device, never sent
+anywhere, and carrying no names, which is what keeps this page outside
+the personal-data rules that govern `module_responses` and
+`survey_responses`.
+
+**Grid gotcha worth remembering:** the mobile jump strip is two
+`overflow-x:auto` rows, and the layout's mobile rule was
+`grid-template-columns:1fr`. A `1fr` track floors at its content's
+*min-content* width, and a `nowrap` flex row's min-content width is the
+entire row — so the page laid out 1578px wide and scrolled sideways on
+every phone. It is `minmax(0,1fr)` now. Any future scrolling strip in a
+grid column needs the same treatment.
+
+## Digital Lion — Issue No. 5, 18 September 2026
+
+`Media Hub/sep18.html`, the AI Literacy rollout issue. Bilingual like
+may18 and jun17, same house style (Poppins/Inter/Cairo, navy `#0b2545`,
+cyan, amber) — **deliberately not the AISA purple-and-gold brand**, so
+that the newsletter series stays internally consistent. Listed as the
+latest issue on `media.html`, and in `menu.js` and `search-index.js`.
+
+Nine sections, each labelled with who it is for: the AI Specialists
+thank-you, Monday's building meeting, the readiness module (the big
+one), how often the curriculum is taught, the AI Growth Test, Level 1
+for new staff, Level 1 certificates, the secondary goal form, and the
+student-data reminder.
+
+It is the **latest-newsletter card on `index.html`** as well as the
+Media Hub listing — that card already existed and pointed at jun17; it
+is pointed at each new issue rather than duplicated. Updating an issue
+means four places: `media.html` (promote, and archive the previous
+one), `index.html` (href, badge, date, summary, CTA), `menu.js` and
+`search-index.js`.
+
+It opens with a **"Do you have to do the training?" card** that checks the
+signed-in address against the AI Literacy cohort, shows a spinner, then
+settles on *Required*, *Not required*, or *Couldn't check*. It sits above
+everything else because that is the first question every reader has.
+
+**The cohort is duplicated there and must be kept in step.** The card
+holds the 62 addresses as **truncated SHA-256 hashes**, not as addresses:
+this is the most forwardable page on the Hub and it should not carry a
+copy-pasteable list of who is on ADEK's Implementation Form. Change
+`AI_LITERACY_COHORT` in `admin-dashboard.html` and the hashes have to be
+regenerated, or the newsletter tells someone the opposite of what the
+tracker does. The regeneration recipe is in the comment above `COHORT`
+in the page's own script.
+
+Treat the hashing as tidiness, not security: the addresses are
+first-initial-plus-surname, so anyone determined could hash their way
+through them. **It is not a permission gate and must never be used as
+one** — it decides what a card says, nothing more.
+
+Two things that bit while building it. The checking row is `display:flex`,
+and a class beats the `hidden` attribute's UA `display:none`, so the
+spinner stayed on screen underneath the verdict until
+`#status-card [hidden] { display:none }` was added. And the verdict is
+held back to a 650ms floor (`MIN_SPIN`) because hashing is instant and an
+unannounced flip reads as a glitch rather than a check.
+
+It carries a **mail-out bar** for the addresses in `NEWSLETTER_SENDERS`
+(see the pending-redeploy section). The copy the email sends is the
+`ISSUE`/`HEADLINE`/`INTRO`/`ITEMS` block in the page's own script, not
+scraped from the article — the email is the trailer, the page is the
+newsletter, and the trailer should stay blunter and shorter. A new issue
+needs that block rewritten or it will mail the previous issue's summary.
+
+**Every link out of it is relative** (`../PD%20Modules/…`), so the page
+does not hardcode a production host and keeps working wherever the Hub
+is served from. If this is ever re-cut as an email, those links have to
+become absolute — that is the one thing an email version needs that the
+page does not.
+
+**There is no page-local language toggle**, and there should not be:
+`menu.js` injects the canonical Hub-wide toggle into the topbar and owns
+the shared `aisa-newsletter-lang` key. The small inline script at the
+bottom only applies the saved choice on load, before `menu.js` arrives,
+so Arabic readers never get a flash of English. jun17 and may18 do the
+same thing — their `.lang-toggle` CSS and `#lang-toggle` lookup are
+leftovers from before the global toggle existed and match no element.
+
+**InstrucTwin is deliberately absent from this issue**, and that is not
+an oversight to be tidied up. As of 18 Sept 2026 staff accounts do not
+show the grades a teacher is assigned to, so sending anyone to the
+platform to open "their" Monday lesson would send the whole cohort to a
+dead end. The training section instead says the materials are coming and
+that chasing them is Brandon's job, and the Level 1 section names the
+course and the 30 September deadline without naming the platform. Two
+things have to be true before InstrucTwin goes back in: grade
+assignments visible in staff accounts, and the URL confirmed — the
+module uses `schools.instructwin.com`, the ADEK correspondence says
+`www.adek.instructwin.com`, and nobody has established which is right.
+
+**The module still names InstrucTwin, softened.** Segment 4 used to say
+"open your lesson before Monday", which no one could do; on 18 Sept 2026
+it was reworded to say that staff accounts are not yet showing assigned
+grades, that chasing it is Brandon's job, and to read the lesson against
+the plan *when it opens*. The "when you have access" steps and the
+"could not get into InstrucTwin" checkbox are unchanged and still worth
+keeping — the checkbox is the only signal of who tried. Put the
+"before Monday" urgency back only once grades are actually visible.
+
+Two facts in it came from Brandon rather than the repo. The **secondary
+delivery model** is one timetabled period a week for Grades 6–12 with
+the remainder asynchronous. And on the **AI Growth Test**, the only
+proctoring that is settled is **Grades 4 and 5, by the class’s own
+homeroom teacher** — Grades 6–12 are still open, and K–3 do not sit the
+test at all. That section links the AI Lead & Proctor guide but still
+carries **no AISA test dates**, deliberately: Brandon announces those
+himself, and the guide’s own banner is driven by ADEK’s window
+(`OPEN`/`CLOSE` in its page script), not by AISA’s. When the secondary
+arrangement and the dates land, both belong in the next issue rather
+than as an edit to this one.
+
+
 ## Next Digital Lion Newsletter — items to include
 
 - **NotebookLM ⇄ Google Drive auto-sync.** Files uploaded to NotebookLM
   now auto-sync from Google Drive — no more re-uploading after edits.
   Worth a dedicated section (huge daily-use win for teachers building
   unit packs and study guides). Link to Drive and to the existing
-  NotebookLM PD module.
+  NotebookLM PD module. **Held back from Issue No. 5** on 18 Sept 2026 —
+  that issue was entirely AI-literacy rollout and this did not fit.
+
+## Browse bar — pd.html + tools.html, 18 September 2026
+
+`PD Modules/pd.html` and `Tools and Resources/tools.html` were the two
+"index" pages staff use to find anything, and both had grown a stack of
+controls with no page title above them. `tools.html` was the worst: a
+*filter command bar* (search + seven type chips + an active-filter
+strip) sitting directly on top of a separate sticky *"Jump to"* nav
+whose pills looked identical but **scrolled** instead of filtering. Two
+rows of pills, two taxonomies, two behaviours, no labels.
+
+Both pages now share one component, **the browse bar** — teal on tools,
+indigo on PD, otherwise identical:
+
+```
+page header (eyebrow · H1 · one-line lede [· progress strip on PD])
+browse bar   (sticky, top:3.75rem)
+  row 1: search  ·  secondary control  ·  "n of N"  ·  Reset
+  row 2: ONE row of pills
+content
+```
+
+**The one rule: one row of pills.** Anything that is not the page's
+primary taxonomy goes in row 1 as a *differently shaped* control, never
+as a second pill row. On tools that secondary axis is the **Format**
+`<select>` (gem / web / module / guide / form / login); on PD it is the
+**"Hide completed"** checkbox. Add a second pill row and you have
+rebuilt exactly the thing this replaced.
+
+The bar sticks at `top: 3.75rem` because the `menu.js` topbar is
+`BAR_HEIGHT = 3.75rem` (60px). The old quick-jump bar used
+`top-[68px] md:top-[76px]`, which matched nothing.
+
+`.browse-pills` and `.browse-inner` both carry **`min-width: 0`**, and
+`.browse-bar input, select, button` carry **`box-sizing: border-box`**.
+Both are load-bearing: a `nowrap` flex row's min-content width is the
+whole row, and the padded pill-shaped input is 128px wider than its
+parent without border-box. Either one missing and the whole page
+scrolls sideways on a phone. Same trap as the AI Growth Test guide's
+jump strip.
+
+### tools.html specifics
+
+- The pill row **is** the six `<section class="tool-category">`
+  headings, so the control and the content share one taxonomy. Pills
+  filter in place: `All` shows every section, one category shows just
+  that section (headings kept — they give context), and search or a
+  Format choice flattens matches into `#tools-search-grid`.
+- Cards cross-listed into a second category carry
+  `data-canonical="false"`. They are dropped from the count and from
+  results **only when the category is `All`**, where they would repeat.
+  Inside a single category the cross-listed copy is that category's only
+  copy of the tool — dropping it there made *Assessment & Test Prep +
+  Gems* return nothing even though the IB Exam Format Generator sits in
+  that very section.
+- So "21 cards on screen, 18 tools" is correct and intended: three Gems
+  appear twice.
+- `#cat-*` in the URL now **selects that pill**, not just scrolls —
+  `Media Hub/may11.html` links to `tools.html#cat-gems`. The router
+  hashes (`#module-map`, `#module-twinkl`, …) are untouched and still
+  open their detail sections.
+- The "Request a Tool or Resource" CTA moved to **bottom**-right. At
+  `top-24` it sat inside the sticky bar and covered the result count.
+
+### pd.html specifics
+
+- `data-category` is now a pure **topic** (`ai-digital`, `teaching`,
+  `safety`, `essentials`) and **`data-required="true"`** is a separate
+  flag. They used to be one attribute, so "Required" swallowed the
+  topic: AI Literacy was `required` and therefore absent from `AI
+  Tools`. The `Required` pill is amber and divided off from the four
+  subject pills because it is a status, not a subject.
+- **The required list must match `MODULES` in `admin-dashboard.html`** —
+  currently `ai-curriculum-readiness`, `ai-ethics`, `return-to-school`,
+  `safeguarding`. Before this it did not: Safeguarding was tagged
+  `orientation` so it never appeared under Required, while Sustainability
+  (unreleased, not in `MODULES` at all) did. Change one, change both.
+- The old topic name `orientation` is gone. It collided with the
+  separate Orientation Hub in the main nav and had become a grab-bag of
+  five unrelated modules.
+- **Completed modules stay visible.** The old filter hid them from every
+  chip except a `Completed` one that was itself hidden until you had
+  finished something — so a module you had just passed silently vanished
+  from "All modules". Progress belongs in the header strip; the grid
+  shows what exists. "Hide completed" is opt-in.
+- **Pill counts are totals, not remainders.** They used to subtract
+  completed modules, so the numbers shrank as you worked and disagreed
+  with the grid.
+- Counts and the progress strip are computed **from the DOM on load**,
+  before any network call — they only ran inside the completion sync
+  before, so a signed-out or offline visitor saw every pill reading `0`.
+  The progress strip itself stays hidden until `applyCompletions()` has
+  run (`window.__pdCompletionsKnown`), so nobody is told "0 of 13" while
+  the request is still in flight.
+
+### Not touched
+
+No change to `gate.js`, `menu.js` or `search-index.js`, so **no `?v=N`
+cascade** — the 45 pages keep `auth/gate.js?v=21`. Keep it that way if
+you can: this was a two-file change precisely because it stayed out of
+the shared helpers.
+
+`Committees/committees.html` still has its own older `.filter-chip`
+styling and was left alone. If the browse bar is rolled out further,
+that page and the Library / Media / Orientation hubs are the candidates.
