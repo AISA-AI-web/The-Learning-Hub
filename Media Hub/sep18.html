@@ -73,6 +73,33 @@
         /* Latin runs inside Arabic sentences keep their own direction */
         .ltr { direction: ltr; unicode-bidi: isolate; }
 
+        /* Training-status card: spinner, then one of three verdicts. */
+        .status-spinner {
+            display: inline-block; width: 1.35rem; height: 1.35rem; flex: none;
+            border: 3px solid #cbd5e1; border-top-color: #0891b2;
+            border-radius: 50%; animation: statusSpin .8s linear infinite;
+        }
+        @keyframes statusSpin { to { transform: rotate(360deg); } }
+        @media (prefers-reduced-motion: reduce) {
+            .status-spinner { animation-duration: 2.4s; }
+        }
+        .status-badge {
+            display: inline-flex; align-items: center;
+            font-size: .72rem; font-weight: 800; letter-spacing: .08em;
+            text-transform: uppercase; border-radius: 999px;
+            padding: .35rem .85rem; border: 2px solid transparent;
+        }
+        /* The checking row is display:flex, and a class beats the hidden
+           attribute's UA display:none — so it stayed on screen underneath
+           the verdict. Scope-and-specificity beats it back. */
+        #status-card [hidden] { display: none; }
+        .status-badge-req { background: #fef3c7; color: #92400e; border-color: #f59e0b; }
+        .status-badge-not { background: #ecfdf5; color: #065f46; border-color: #10b981; }
+        .status-badge-unk { background: #f1f5f9; color: #334155; border-color: #94a3b8; }
+        html[lang="ar"] .status-badge { letter-spacing: normal; }
+        #status-card.is-req { border-top-color: #f59e0b; }
+        #status-card.is-not { border-top-color: #10b981; }
+
         /* Newsletter mail-out bar. Deliberately off-palette (AISA purple,
            not the Digital Lion navy) so it never reads as content. */
         #nl-send { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
@@ -189,6 +216,95 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </section>
+
+            <!-- ===================== TRAINING STATUS =====================
+                 Answers "is this me?" before anything else, because that is
+                 the first thing every reader wants to know. -->
+            <section id="status-card"
+                     class="bg-white rounded-2xl shadow-lg border-t-8 border-slate-300 p-7 md:p-9 mb-8"
+                     aria-live="polite">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-1">
+                    <span class="lang-en">For: you, whoever you are</span>
+                    <span class="lang-ar">لِمَن: لكم أنتم، أيًّا كنتم</span>
+                </p>
+                <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-4">
+                    <span class="lang-en">Do you have to do the training?</span>
+                    <span class="lang-ar">هل التدريب مطلوب منكم؟</span>
+                </h3>
+
+                <!-- checking -->
+                <div id="status-checking" class="flex items-center gap-3">
+                    <span class="status-spinner" aria-hidden="true"></span>
+                    <span class="text-gray-600">
+                        <span class="lang-en">Checking your training status…</span>
+                        <span class="lang-ar">جارٍ التحقّق من حالة تدريبكم…</span>
+                    </span>
+                </div>
+
+                <!-- required -->
+                <div id="status-required" hidden>
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="status-badge status-badge-req">
+                            <span class="lang-en">Required</span>
+                            <span class="lang-ar">مطلوب</span>
+                        </span>
+                        <span class="text-sm font-semibold text-gray-700" id="status-who-req"></span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed mb-4">
+                        <span class="lang-en">You are one of the 62 teachers named on AISA’s ADEK Implementation Form,
+                            so the readiness module is required for you. Please finish it by
+                            <strong>Sunday, September 20</strong>.</span>
+                        <span class="lang-ar">أنتم من بين الـ 62 معلّمًا المذكورين في استمارة التطبيق الخاصة بـ AISA
+                            لدى دائرة التعليم والمعرفة، لذا فإنّ وحدة الجاهزية مطلوبة منكم. يُرجى إنهاؤها بحلول
+                            <strong>الأحد ٢٠ سبتمبر</strong>.</span>
+                    </p>
+                    <a href="../PD%20Modules/ai-curriculum-readiness-module.html"
+                       class="hub-cta inline-flex items-center justify-center bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3 rounded-full font-bold hover:from-amber-600 hover:to-orange-600 transition-transform hover:scale-105">
+                        <span class="mr-2">🎓</span>
+                        <span class="lang-en">Open the module</span>
+                        <span class="lang-ar">افتحوا الوحدة</span>
+                    </a>
+                </div>
+
+                <!-- not required -->
+                <div id="status-not" hidden>
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="status-badge status-badge-not">
+                            <span class="lang-en">Not required</span>
+                            <span class="lang-ar">غير مطلوب</span>
+                        </span>
+                        <span class="text-sm font-semibold text-gray-700" id="status-who-not"></span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">
+                        <span class="lang-en">You are not on the list of teachers delivering the AI Literacy curriculum this
+                            term, so the readiness module is not required for you. You are welcome to
+                            work through it anyway — nothing stops you — but nobody is chasing you for it.
+                            The rest of this newsletter still applies.</span>
+                        <span class="lang-ar">لستم ضمن قائمة المعلّمين الذين يدرّسون منهج الثقافة في الذكاء
+                            الاصطناعي هذا الفصل، لذا فإنّ وحدة الجاهزية غير مطلوبة منكم. وبإمكانكم إنجازها إن
+                            أردتم — لا شيء يمنعكم — لكنّ أحدًا لن يطالبكم بها. وبقية هذه النشرة تعنيكم.</span>
+                    </p>
+                </div>
+
+                <!-- could not check -->
+                <div id="status-unknown" hidden>
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="status-badge status-badge-unk">
+                            <span class="lang-en">Couldn’t check</span>
+                            <span class="lang-ar">تعذّر التحقّق</span>
+                        </span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed">
+                        <span class="lang-en">Your status could not be checked in this browser. If you are delivering AI
+                            Literacy lessons this term, treat the module as required and finish it by
+                            <strong>Sunday, September 20</strong>. If you are not, it is not required for you.
+                            Email me if you are unsure.</span>
+                        <span class="lang-ar">تعذّر التحقّق من حالتكم في هذا المتصفّح. إن كنتم تدرّسون دروس الثقافة
+                            في الذكاء الاصطناعي هذا الفصل، فاعتبروا الوحدة مطلوبة وأنهوها بحلول
+                            <strong>الأحد ٢٠ سبتمبر</strong>. وإن لم تكونوا، فهي غير مطلوبة منكم. راسلوني إن لم تكونوا متأكّدين.</span>
+                    </p>
                 </div>
             </section>
 
@@ -612,6 +728,104 @@
             </p>
         </div>
     </footer>
+
+    <script>
+    (function () {
+        /* Who has to do the readiness module: the 62 teachers on AISA's ADEK
+           Implementation Form, the same list as AI_LITERACY_COHORT in
+           admin-dashboard.html. Stored as truncated SHA-256 of the lower-cased
+           address rather than the addresses themselves — this is the most
+           forwardable page on the Hub and it should not carry a copy-pasteable
+           directory of who is on that form. Treat it as tidiness, not security:
+           the addresses follow first-initial-plus-surname, so anyone determined
+           could hash their way through them. Nothing here is a permission gate.
+
+           Keep in step with admin-dashboard.html: change the cohort there and
+           these hashes have to be regenerated, or the newsletter tells people
+           something the tracker contradicts. To regenerate, from the repo root:
+
+             python3 -c "
+             import io,re,hashlib
+             s=io.open('admin-dashboard.html',encoding='utf-8').read()
+             m=re.search(r'const AI_LITERACY_COHORT = \[(.*?)\n        \];', s, re.S)
+             for h in sorted(hashlib.sha256(e.strip().lower().encode()).hexdigest()[:16]
+                             for e in re.findall(r'email:\s*\"([^\"]+)\"', m.group(1))):
+                 print(h)"
+        */
+        var COHORT = [
+            '03afd203169a1936','0bf1a8dee292009b','0cadf880e6a11a11','1976c658c130524b',
+            '24e2785d8d701538','29c1ae8e9f8fe30c','2f158e7a9b0938de','324fde0d915dea57',
+            '33420d6b184c6181','41eafd550d997b5e','47132fe92ab3036b','4a3ad5b5ace9fa1c',
+            '4de18673d73474d2','568ed8b25d0a06e7','57d378bce8a37423','5862909b1ece457d',
+            '5a019ff374270710','5cc820e9e3a036aa','5ffe6a7351b1d55b','62e9cce0d4fdcca5',
+            '634cb6dd65c891e4','636473af16bcb5b8','647789b73bf6a371','6c40a35e3fb9e4a3',
+            '811a611273a288e2','8184379433df6e42','81ae0ef9915c7bc0','8c9c66f59f1fe12e',
+            '8ec704cbccc4bcb6','8efbf6620bacaf62','8f6826587ce07d8c','913e834d668b8e3d',
+            '91b00caa00ca869a','96ba37dfb464dc5c','9b2214aee7e78090','9fc20fcf4118cd85',
+            '9fcfcb2c755c0637','a2794280e36a31f0','a4f5bb445b2daeaf','a513efbb7f95c470',
+            'a5f056cdea3b7cee','a790ffeb40eb8825','ac1624ea685f3d6c','b4040b00d0379642',
+            'b44569a4c5a5eb2c','ba743363f343a3d3','bd541eb727fd4b23','be788d461bfca2cf',
+            'c457888bf76a8186','c69bc06291e9a9d7','d37840b1e279889a','daf4b851588b4f92',
+            'e59f325eae3a90be','e96e6e1d67301568','e9f473a4fd50fbed','ed90a36f2eaf752c',
+            'ee523697dc60237b','f0c0e765225f574e','f5d969f0400b2040','f61e32f4534f9a1c',
+            'f86b7cbaee023d91','ffd024a1c256aa37'
+        ];
+
+        var MIN_SPIN = 650;   // let the spinner be seen; an instant flip reads as a glitch
+
+        var card     = document.getElementById('status-card');
+        var checking = document.getElementById('status-checking');
+        var panes    = {
+            req: document.getElementById('status-required'),
+            not: document.getElementById('status-not'),
+            unk: document.getElementById('status-unknown')
+        };
+        if (!card || !checking) return;
+
+        var startedAt = Date.now();
+
+        function show(which, email) {
+            var wait = Math.max(0, MIN_SPIN - (Date.now() - startedAt));
+            setTimeout(function () {
+                checking.hidden = true;
+                Object.keys(panes).forEach(function (k) { if (panes[k]) panes[k].hidden = (k !== which); });
+                if (which === 'req') card.classList.add('is-req');
+                if (which === 'not') card.classList.add('is-not');
+                if (email) {
+                    var el = document.getElementById(which === 'req' ? 'status-who-req' : 'status-who-not');
+                    if (el) el.textContent = email;
+                }
+            }, wait);
+        }
+
+        /* SHA-256 needs a secure context; over file:// or an old browser
+           crypto.subtle is simply absent. Say so rather than guessing. */
+        function sha256Hex(text) {
+            if (!(window.crypto && window.crypto.subtle && window.TextEncoder)) {
+                return Promise.reject(new Error('no subtle crypto'));
+            }
+            return window.crypto.subtle
+                .digest('SHA-256', new TextEncoder().encode(text))
+                .then(function (buf) {
+                    return Array.prototype.map
+                        .call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); })
+                        .join('');
+                });
+        }
+
+        if (!window.aisaReady) { show('unk'); return; }
+
+        window.aisaReady(function (auth) {
+            var user  = (auth && auth.getUser) ? auth.getUser() : null;
+            var email = (user && user.email ? String(user.email) : '').trim().toLowerCase();
+            if (!email) { show('unk'); return; }
+
+            sha256Hex(email).then(function (hex) {
+                show(COHORT.indexOf(hex.slice(0, 16)) !== -1 ? 'req' : 'not', email);
+            }).catch(function () { show('unk'); });
+        });
+    })();
+    </script>
 
     <!-- Mail-out bar. Rendered only for the addresses the server's
          NEWSLETTER_SENDERS allowlist names. Hiding it is a courtesy, not a

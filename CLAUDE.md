@@ -583,6 +583,32 @@ means four places: `media.html` (promote, and archive the previous
 one), `index.html` (href, badge, date, summary, CTA), `menu.js` and
 `search-index.js`.
 
+It opens with a **"Do you have to do the training?" card** that checks the
+signed-in address against the AI Literacy cohort, shows a spinner, then
+settles on *Required*, *Not required*, or *Couldn't check*. It sits above
+everything else because that is the first question every reader has.
+
+**The cohort is duplicated there and must be kept in step.** The card
+holds the 62 addresses as **truncated SHA-256 hashes**, not as addresses:
+this is the most forwardable page on the Hub and it should not carry a
+copy-pasteable list of who is on ADEK's Implementation Form. Change
+`AI_LITERACY_COHORT` in `admin-dashboard.html` and the hashes have to be
+regenerated, or the newsletter tells someone the opposite of what the
+tracker does. The regeneration recipe is in the comment above `COHORT`
+in the page's own script.
+
+Treat the hashing as tidiness, not security: the addresses are
+first-initial-plus-surname, so anyone determined could hash their way
+through them. **It is not a permission gate and must never be used as
+one** — it decides what a card says, nothing more.
+
+Two things that bit while building it. The checking row is `display:flex`,
+and a class beats the `hidden` attribute's UA `display:none`, so the
+spinner stayed on screen underneath the verdict until
+`#status-card [hidden] { display:none }` was added. And the verdict is
+held back to a 650ms floor (`MIN_SPIN`) because hashing is instant and an
+unannounced flip reads as a glitch rather than a check.
+
 It carries a **mail-out bar** for the addresses in `NEWSLETTER_SENDERS`
 (see the pending-redeploy section). The copy the email sends is the
 `ISSUE`/`HEADLINE`/`INTRO`/`ITEMS` block in the page's own script, not
