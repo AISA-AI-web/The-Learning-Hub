@@ -1381,8 +1381,19 @@
                     'The backend is running an older version that doesn’t have this ' +
                     'endpoint. It needs redeploying in the Apps Script editor.'
             };
-            document.getElementById('state-error-msg').textContent =
-                says[code] || 'The backend refused the request. Trying again may help.';
+            /* A backend error is a lower_snake_case code. Anything else —
+             * a TypeError from our own rendering, a ReferenceError from a
+             * typo — is this page crashing, and blaming the backend for it
+             * sends whoever reads this to go and prod Apps Script for no
+             * reason. This screen shipped saying "the backend refused the
+             * request" over exactly such a crash. */
+            var isPageBug = !/^[a-z][a-z0-9_]*$/.test(code);
+            document.getElementById('state-error-msg').textContent = isPageBug
+                ? 'The dashboard hit a bug while building the page. Nothing is ' +
+                  'wrong with your access or with the data — this is a fault in ' +
+                  'the Hub itself. The line below is what broke; send it to ' +
+                  'Brandon, and check the browser console for the full trace.'
+                : (says[code] || 'The backend refused the request. Trying again may help.');
             document.getElementById('state-error-code').textContent = code;
             showState('state-error');
         }

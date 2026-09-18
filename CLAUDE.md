@@ -244,6 +244,24 @@ The slowness behind it had three parts:
   read-only — `post_notification` sends real email, and a retry there
   would send it twice.
 
+**The transport block has to stay above `var existing = readSession()`
+in `gate.js`.** It shipped below it on 18 Sept 2026 and took the whole
+Hub's backend down for every signed-in visitor: a returning visitor
+takes the early return a few lines after that call, so every `var`
+declared further down the file is hoisted but never assigned.
+`MAX_INFLIGHT`, `queued` and `IDEMPOTENT_ACTIONS` were all `undefined`
+by the time `wireAutoTracking()` fired the first request, and every API
+call on every page died with *Cannot read properties of undefined
+(reading 'push')*. The admin dashboard then reported that as the backend
+refusing to answer, which is what made it look like a server problem.
+Function declarations hoist and were fine; only the values were not.
+There is a comment to this effect above the block — keep new transport
+state there, not beside whatever uses it.
+
+`state-error` now separates a page crash from a backend failure: a
+backend error is a `lower_snake_case` code, anything else is this page
+throwing, and it says so rather than blaming Apps Script.
+
 The dashboard's two free-text sections (`#responses`, `#goals`) now
 chain off `window.aisaAdminGate` rather than firing their own heavy
 reads immediately. **This is not the lazy-loading that the three-tabs
