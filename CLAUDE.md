@@ -244,6 +244,13 @@ The slowness behind it had three parts:
   read-only — `post_notification` sends real email, and a retry there
   would send it twice.
 
+**Run `node tests/gate-smoke.js` after touching `gate.js`.** No
+dependencies, no runner, exits non-zero on failure. It loads the real
+file in a stubbed browser as a returning signed-in visitor and checks
+that a request actually reaches `fetch`. `node --check` would not have
+caught the outage below — that file was valid syntax throughout. Only
+running it did.
+
 **The transport block has to stay above `var existing = readSession()`
 in `gate.js`.** It shipped below it on 18 Sept 2026 and took the whole
 Hub's backend down for every signed-in visitor: a returning visitor
