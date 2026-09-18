@@ -307,7 +307,8 @@ Note the cache-busting convention: `gate.js` is included as
 `N` on every one of them** or returning visitors keep running the
 cached copy. That change took it to `?v=19`; the September 18
 newsletter took it to `?v=20`, the newsletter mail-out to `?v=21`, and
-the request-transport rework below to `?v=22`.
+the request-transport rework to `?v=22`, and the fix for the outage it
+caused to `?v=23`.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
 their own pins — `certificate.js?v=7`, `search-index.js?v=9`,
