@@ -453,13 +453,22 @@ cards (training / Scope & Sequence / assessment tracker), InstrucTwin,
 the delivery model, the AI Growth Test, Level 1 AI Foundations,
 responsible use and safeguarding, and who to ask.
 
-**The assessment tracker link was not available when this shipped.**
-`TRACKER_URL` at the top of the page's own script is the single place to
-put it — paste the URL between the quotes and the third Start-here card
-turns into a live link, swaps its dashed border for a solid one and
-flips its badge from *Link coming* to *Open*. Nothing else changes
-anywhere. Left empty the card says the link is coming, which is the
-honest state; do not substitute a guessed URL.
+**The assessment tracker is `TRACKER_URL`**, the one constant at the top
+of the page's own script. Set, the third Start-here card is a live link,
+loses its dashed border and flips its badge from *Link coming* to
+*Open*, and an "opens in Google Sheets" note appears; emptied, it goes
+back to saying the link is coming. Nothing else changes either way, and
+that fallback is the honest state — never substitute a guessed URL.
+
+It was wired on 20 September 2026 to the Google Sheet Brandon shared.
+**The `ouid` parameter was stripped** — Google appends the owner's
+account id to a share URL, and **this repo is public**, so anything in
+that file is world-readable whatever the sign-in gate renders. Strip it
+again if the link is ever replaced. For the same reason the page is not
+what keeps the sheet private: anyone who views source has the link, so
+the sheet's own Google sharing setting has to be restricted to
+`@aisa.sch.ae` — that is the control that matters, and it lives in
+Drive, not here.
 
 **The status strip reads the teacher's own completion record** for
 `ai-curriculum-readiness` through `getCompletionsCached()` then

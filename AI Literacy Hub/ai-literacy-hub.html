@@ -228,6 +228,10 @@
                     <span class="lang-en">The tracker is being finalised and the link will be shared shortly. It will appear on this card the moment it does — nothing for you to do until then.</span>
                     <span class="lang-ar">يجري وضع المتتبّع في صيغته النهائية، وسيُشارَك الرابط قريباً. وسيظهر في هذه البطاقة فور توفّره — ولا شيء عليكم فعله حتى ذلك الحين.</span>
                 </p>
+                <p id="tracker-live" class="text-sm text-slate-500 leading-relaxed mt-2" hidden>
+                    <span class="lang-en">Opens in Google Sheets. Sign in with your <strong>@aisa.sch.ae</strong> account — if it asks you to request access, tell Brandon rather than requesting it from a personal address.</span>
+                    <span class="lang-ar">يُفتح في Google Sheets. سجّلوا الدخول بحساب <strong>@aisa.sch.ae</strong> — وإن طُلب منكم طلب صلاحية الوصول، فأبلغوا براندون بدلاً من إرسال الطلب من بريد شخصي.</span>
+                </p>
                 <div class="mt-auto pt-4">
                     <a id="tracker-link" href="#" data-track="ai-literacy:assessment-tracker" target="_blank" rel="noopener noreferrer" hidden
                        class="inline-flex items-center gap-1.5 text-indigo-700 font-heading font-bold text-sm">
@@ -475,8 +479,8 @@
         </div>
 
         <p class="text-sm text-slate-500 mt-3">
-            <span class="lang-en">The AI Literacy assessment tracker — where ongoing assessment is recorded — is the third card under <a class="font-semibold text-indigo-700 hover:underline" href="#start-here">Start here</a>. It goes live there as soon as the link is shared.</span>
-            <span class="lang-ar">أمّا متتبّع تقييم الثقافة في الذكاء الاصطناعي — حيث يُسجَّل التقييم المستمر — فهو البطاقة الثالثة ضمن <a class="font-semibold text-indigo-700 hover:underline" href="#start-here">ابدأوا هنا</a>، وسيعمل فور مشاركة الرابط.</span>
+            <span class="lang-en">The AI Literacy assessment tracker — where ongoing assessment is recorded — is the third card under <a class="font-semibold text-indigo-700 hover:underline" href="#start-here">Start here</a>.</span>
+            <span class="lang-ar">أمّا متتبّع تقييم الثقافة في الذكاء الاصطناعي — حيث يُسجَّل التقييم المستمر — فهو البطاقة الثالثة ضمن <a class="font-semibold text-indigo-700 hover:underline" href="#start-here">ابدأوا هنا</a>.</span>
         </p>
     </section>
 
@@ -675,20 +679,26 @@
     /* =================================================================
      * THE ASSESSMENT TRACKER LINK
      *
-     * Paste the tracker's URL between the quotes below and the third
-     * card under "Start here" turns into a live link. Nothing else
-     * needs changing anywhere.
+     * This one constant drives the third card under "Start here".
+     * Set, the card is a live link; emptied, it goes back to saying
+     * the link is coming, which is the honest state when there is no
+     * tracker to open. Nothing else needs changing either way.
      *
-     *     var TRACKER_URL = 'https://docs.google.com/spreadsheets/...';
+     * The `ouid` parameter Google appends to a share URL is the
+     * owner's account id. It is stripped here deliberately — **this
+     * repo is public**, so anything in this file is world-readable
+     * whatever the sign-in gate renders. Strip it again if the link
+     * is ever replaced.
      *
-     * Left empty the card renders as "link coming", which is the
-     * honest state — a guessed or dead link is worse than an
-     * acknowledged gap.
+     * What actually keeps the sheet private is its own Google sharing
+     * setting, not this page: the link is visible to anyone who views
+     * source. Restrict it to @aisa.sch.ae.
      * ================================================================= */
-    var TRACKER_URL = '';
+    var TRACKER_URL = 'https://docs.google.com/spreadsheets/d/1n7QVu0CJPWWQWLHgWIKb0NkXfmw3STnT/edit?usp=sharing&rtpof=true&sd=true';
 
     var link    = document.getElementById('tracker-link');
     var pending = document.getElementById('tracker-pending');
+    var live    = document.getElementById('tracker-live');
     var card    = document.getElementById('tracker-card');
     var badge   = document.getElementById('tracker-badge');
 
@@ -696,6 +706,7 @@
         link.href = TRACKER_URL;
         link.hidden = false;
         if (pending) pending.hidden = true;
+        if (live) live.hidden = false;
         if (card) card.className = card.className.replace('border-dashed border-slate-300', 'border-slate-200');
         if (badge) {
             badge.className = 'text-[10px] font-bold uppercase tracking-widest text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-full px-2.5 py-1';
