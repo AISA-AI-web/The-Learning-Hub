@@ -303,21 +303,31 @@ The `aisa_onboarding_v1` localStorage key is orphaned on staff devices.
 Harmless — nothing reads it.
 
 Note the cache-busting convention: `gate.js` is included as
-`auth/gate.js?v=N` by 45 pages, so **changing `gate.js` means bumping
+`auth/gate.js?v=N` by **47 pages**, so **changing `gate.js` means bumping
 `N` on every one of them** or returning visitors keep running the
 cached copy. That change took it to `?v=19`; the September 18
 newsletter took it to `?v=20`, the newsletter mail-out to `?v=21`, and
-the request-transport rework to `?v=22`, and the fix for the outage it
-caused to `?v=23`.
+the request-transport rework to `?v=22`, the fix for the outage it
+caused to `?v=23`, and the AI Literacy Hub to `?v=24`.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
-their own pins — `certificate.js?v=7`, `search-index.js?v=9`,
-`menu.js?v=15`, `dwell.js?v=2` — so **editing one of those helpers
+their own pins — `certificate.js?v=7`, `search-index.js?v=10`,
+`menu.js?v=16`, `dwell.js?v=2` — so **editing one of those helpers
 means bumping its pin inside `gate.js`, which is itself a change to
-`gate.js`, which means bumping `?v=N` on all 46 pages again.** Adding a
+`gate.js`, which means bumping `?v=N` on all 47 pages again.** Adding a
 page to the menu or the search index is enough to trigger the whole
 cascade. Skip it and returning staff keep the cached helper and never
 see the new entry.
+
+The count is easy to get wrong by hand. From the repo root:
+
+```
+grep -rl 'gate\.js?v=' --include='*.html' . | wc -l
+grep -rn 'gate\.js?v=' --include='*.html' . | grep -o 'v=[0-9]*' | sort -u
+```
+
+The second command should print exactly one version. Two means a page
+was missed.
 
 ## Reading timestamps out of the sheets
 
@@ -424,6 +434,85 @@ Nothing on the page does this today.
 The Survey Data tab carries an amber badge with the number of people
 who still owe a goal. The goals section fires an `aisa:goal-counts`
 CustomEvent on every render and the tab controller listens for it.
+
+## AI Literacy Hub — added 20 September 2026
+
+`AI Literacy Hub/ai-literacy-hub.html` is the front door for everything
+AI Literacy. It is **linked from the home page card grid, in the cell
+the paused Wired Wednesdays card used to hold** — that card is gone from
+`index.html` and recoverable from git history if those sessions ever come
+back. The Wired Wednesdays page and logo are untouched and still
+delisted from the nav and search.
+
+It is a **hub page, not a module**: no chapters, no quiz, no completion
+event, no certificate, and it is in no `MODULES` array, so it moves no
+compliance numbers. Everything on it links out.
+
+What it carries, in order: a training-status strip, the three Start-here
+cards (training / Scope & Sequence / assessment tracker), InstrucTwin,
+the delivery model, the AI Growth Test, Level 1 AI Foundations,
+responsible use and safeguarding, and who to ask.
+
+**The assessment tracker link was not available when this shipped.**
+`TRACKER_URL` at the top of the page's own script is the single place to
+put it — paste the URL between the quotes and the third Start-here card
+turns into a live link, swaps its dashed border for a solid one and
+flips its badge from *Link coming* to *Open*. Nothing else changes
+anywhere. Left empty the card says the link is coming, which is the
+honest state; do not substitute a guessed URL.
+
+**The status strip reads the teacher's own completion record** for
+`ai-curriculum-readiness` through `getCompletionsCached()` then
+`getCompletions()`, and settles on one of four states: complete (with
+the date), nothing recorded, not available (backend unconfigured), or
+could-not-check. A cached "complete" is never overwritten by a failed
+refresh. There is also a 20-second fallback, because `aisaReady` polls
+for a minute and then gives up *silently* — without it a visitor whose
+session never materialises would watch "Checking…" for ever. Timestamps
+go through `Date.parse`, never string comparison, for the reason in
+*Reading timestamps out of the sheets*.
+
+**Two facts on the page are copies and will drift if edited alone:**
+
+- The **InstrucTwin caveat** (staff accounts not showing assigned
+  grades, chasing it is Brandon's job) is the same statement as segment
+  4 of `ai-curriculum-readiness-module.html` and the training section of
+  `Media Hub/sep18.html`. When grades become visible, all three change
+  together.
+- The **safeguarding contacts and the 24-hour timescale** come from
+  `safeguarding-module.html` by way of the readiness module's segment 6.
+  Three files now, not two.
+
+**Both InstrucTwin addresses are offered on purpose.**
+`schools.instructwin.com` is what the module uses;
+`www.adek.instructwin.com` is what ADEK's correspondence says. Nobody
+has established which is authoritative, so the page names the first,
+offers the second as the fallback and asks staff to report which
+worked — rather than presenting a guess as fact. Delete the fallback the
+day it is settled. The AI Growth Test portal (`instructwin.com/aigt`) is
+a third, genuinely separate sign-in and is listed as such.
+
+**Bilingual**, using the site-wide `.lang-en` / `.lang-ar` span pattern
+and the global toggle in `menu.js` — there is no page-local toggle, only
+the small inline script that applies the saved choice before `menu.js`
+arrives, so Arabic readers get no flash of English. Every English string
+has an Arabic sibling; if you add one, add both or the sentence vanishes
+for half the staff. (Unlike the module, there is no `-ar.js` dictionary:
+the translations are inline, because this page is links and short prose
+rather than curriculum content.)
+
+Two layout rules the page depends on, both scars from elsewhere in this
+repo: `[hidden] { display: none !important; }` is declared because a
+class beats the `hidden` attribute's UA `display:none` — the tracker
+link is `inline-flex`, so without that rule it would show while still
+marked hidden. And the status strip's "complete" tint is a declared
+`.is-done` class rather than a Tailwind utility swapped in from script,
+since a utility that appears nowhere in the served HTML is not something
+to make the CDN's JIT responsible for.
+
+Listed in `auth/menu.js` (drawer nav + fallback palette, which also
+gained the Scope & Sequence) and `auth/search-index.js`. That is what
+triggered the `?v=` cascade to `?v=24`.
 
 ## AI Literacy module — RELEASED to staff, 16 September 2026
 
@@ -863,9 +952,10 @@ jump strip.
 ### Not touched
 
 No change to `gate.js`, `menu.js` or `search-index.js`, so **no `?v=N`
-cascade** — the 45 pages keep `auth/gate.js?v=21`. Keep it that way if
-you can: this was a two-file change precisely because it stayed out of
-the shared helpers.
+cascade** — at the time, the pages kept `auth/gate.js?v=21`. (They are
+on `?v=24` now; the AI Literacy Hub triggered the cascade in September.)
+Keep out of the shared helpers where you can: this was a two-file change
+precisely because it did.
 
 `Committees/committees.html` still has its own older `.filter-chip`
 styling and was left alone. If the browse bar is rolled out further,

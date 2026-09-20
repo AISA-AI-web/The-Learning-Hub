@@ -45,6 +45,7 @@
         { label: 'Learning Hub',      icon: '\u{1F3E0}', href: 'index.html' },
         { label: 'My Dashboard',      icon: '\u{1F4CA}', href: 'dashboard.html' },
         { label: 'PD Modules',        icon: '\u{1F393}', href: 'PD%20Modules/pd.html' },
+        { label: 'AI Literacy',       icon: '\u{1F9E0}', href: 'AI%20Literacy%20Hub/ai-literacy-hub.html' },
         { label: 'Orientation',       icon: '\u{1F9ED}', href: 'Orientation%20Hub/orientation-hub.html' },
         { label: 'Tools & Resources', icon: '\u{1F6E0}️', href: 'Tools%20and%20Resources/tools.html' },
         { label: 'Library',           icon: '\u{1F4DA}', href: 'Library%20Hub/library-hub.html' },
@@ -71,6 +72,8 @@
         /* PD modules */
         { title: 'PD Modules',                         desc: 'All professional development modules',                          href: 'PD%20Modules/pd.html',                                                             icon: '\u{1F393}', tag: 'Hub' },
         { title: 'AI Literacy: Teacher Readiness',      desc: 'Required by 20 Sept: teach your first ADEK AI lesson',        href: 'PD%20Modules/ai-curriculum-readiness-module.html',                                 icon: '\u{1F393}', tag: 'Module' },
+        { title: 'AI Literacy Hub',                     desc: 'Training, Scope & Sequence, InstrucTwin, assessment \u2014 all in one place', href: 'AI%20Literacy%20Hub/ai-literacy-hub.html',                     icon: '\u{1F9E0}', tag: 'Hub' },
+        { title: 'AI Literacy: Scope & Sequence',       desc: 'The KG\u2013Grade 12 curriculum map \u2014 progression and end-of-phase expectations', href: 'PD%20Modules/ai-literacy-scope-and-sequence.html',       icon: '\u{1F5FA}', tag: 'Reference' },
         { title: 'AI Ethics & Policy',                 desc: 'Required: AISA AI vision, principles, approved tools',          href: 'PD%20Modules/ai-ethics-module.html',                                               icon: '\u{1F9ED}', tag: 'Module' },
         { title: 'Return to School',                   desc: 'Required: ADEK protocols, drills, safety',                      href: 'PD%20Modules/return-to-school.html',                                               icon: '\u{1F6A8}', tag: 'Module' },
         { title: 'Workspace Studio',                   desc: 'Build Flows + Skills for everyday tasks in Google Workspace',   href: 'PD%20Modules/workspace-studio-module.html',                                        icon: '\u{1F6E0}', tag: 'Module' },

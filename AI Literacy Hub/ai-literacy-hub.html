@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | AI Literacy Hub</title>
+    <meta name="description" content="Everything for teaching the ADEK AI Literacy curriculum at AISA — the readiness training, the KG-12 Scope &amp; Sequence, InstrucTwin, the AI Growth Test, Level 1 AI Foundations, and responsible use.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+
+        /* --- Bilingual toggle: show only the active language.
+               The toggle itself lives in the global app-bar (auth/menu.js),
+               which owns the shared `aisa-newsletter-lang` key and sets
+               html[lang] / html[dir]. There is deliberately no page-local
+               toggle — see the newsletters, which do the same. --- */
+        html[lang="en"] .lang-ar { display: none !important; }
+        html[lang="ar"] .lang-en { display: none !important; }
+
+        html[lang="ar"] body,
+        html[lang="ar"] .font-heading { font-family: 'Cairo', 'Inter', sans-serif; }
+        html[lang="ar"] .uppercase { text-transform: none; letter-spacing: normal; }
+        html[lang="ar"] .tracking-widest,
+        html[lang="ar"] .tracking-wider { letter-spacing: normal; }
+
+        /* Directional arrows have to turn round in Arabic. */
+        html[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+
+        /* The quick-jump strip and the section anchors sit under the fixed
+           app-bar (auth/menu.js, BAR_HEIGHT = 3.75rem), so anchored
+           scrolling has to clear it or every heading lands behind the bar. */
+        html { scroll-behavior: smooth; }
+        [id] { scroll-margin-top: 5.5rem; }
+
+        .hub-card { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+        .hub-card:hover { transform: translateY(-3px); box-shadow: 0 22px 40px -22px rgba(30, 27, 75, .55); }
+
+        /* A class beats the `hidden` attribute's UA display:none, so an
+           inline-flex element carrying [hidden] still shows. The tracker
+           link is exactly that shape — this is the rule that keeps it
+           hidden until TRACKER_URL is filled in. Same trap that left the
+           newsletter's spinner on screen under its own verdict. */
+        [hidden] { display: none !important; }
+
+        /* Declared here rather than swapped in as a Tailwind utility: the
+           status strip's "complete" tint is applied from script, and a
+           class that appears nowhere in the served HTML is not something
+           to make the CDN's JIT responsible for. */
+        #status-strip.is-done { background: rgba(52, 211, 153, .18); border-color: rgba(167, 243, 208, .45); }
+
+        /* The jump strip wraps rather than scrolling sideways. A nowrap
+           scrolling row inside a grid/flex parent needs min-width:0 on the
+           parent or it sets the whole page's min-content width — the trap
+           that made the AI Growth Test guide 1578px wide on a phone. */
+        .jump-strip { flex-wrap: wrap; min-width: 0; }
+    </style>
+    <script src="../auth/gate.js?v=24"></script>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+<main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+    <!-- ===================== HERO ===================== -->
+    <header class="rounded-3xl bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-700 text-white p-6 sm:p-9 shadow-xl">
+        <p class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-indigo-200">
+            <span class="lang-en">ADEK curriculum &middot; Teaching from 21 September 2026</span>
+            <span class="lang-ar">منهج دائرة التعليم والمعرفة · التدريس اعتباراً من ٢١ سبتمبر ٢٠٢٦</span>
+        </p>
+        <h1 class="font-heading font-black text-3xl sm:text-4xl md:text-5xl leading-tight mt-2">
+            <span class="lang-en">AI Literacy</span>
+            <span class="lang-ar">الثقافة في الذكاء الاصطناعي</span>
+        </h1>
+        <p class="mt-3 text-indigo-100 text-base sm:text-lg leading-relaxed max-w-3xl">
+            <span class="lang-en">Everything in one place: the training, the curriculum map, the platform, the assessment, and what is due when. If you are teaching the AI Literacy curriculum this term, start at the top and work down.</span>
+            <span class="lang-ar">كل ما تحتاجونه في مكان واحد: التدريب، وخريطة المنهج، والمنصّة، والتقييم، وما هو مستحقّ ومتى. إن كنتم تدرّسون منهج الثقافة في الذكاء الاصطناعي هذا الفصل، فابدأوا من الأعلى وتابعوا نزولاً.</span>
+        </p>
+
+        <!-- Training status — filled in by the page script from this
+             person's own completion record. Starts in the "checking"
+             state and always settles on something, including when the
+             visitor is signed out or the backend cannot be reached. -->
+        <div id="status-strip" class="mt-5 rounded-2xl bg-white/10 border border-white/20 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+            <div class="flex items-center gap-3 flex-1 min-w-0">
+                <span id="status-icon" class="h-10 w-10 rounded-xl bg-white/15 flex items-center justify-center text-xl shrink-0" aria-hidden="true">⏳</span>
+                <div class="min-w-0">
+                    <p id="status-title" class="font-heading font-bold text-base sm:text-lg leading-tight">
+                        <span class="lang-en">Checking your training record&hellip;</span>
+                        <span class="lang-ar">جارٍ التحقّق من سجلّ تدريبكم…</span>
+                    </p>
+                    <p id="status-detail" class="text-sm text-indigo-100/90 leading-snug mt-0.5">
+                        <span class="lang-en">One moment.</span>
+                        <span class="lang-ar">لحظة من فضلكم.</span>
+                    </p>
+                </div>
+            </div>
+            <a href="../PD%20Modules/ai-curriculum-readiness-module.html" data-track="ai-literacy:status-cta"
+               class="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl bg-white text-indigo-800 font-heading font-bold text-sm px-5 py-3 hover:bg-indigo-50 transition-colors">
+                <span class="lang-en">Open the training</span>
+                <span class="lang-ar">افتحوا التدريب</span>
+                <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+            </a>
+        </div>
+    </header>
+
+    <!-- ===================== JUMP STRIP ===================== -->
+    <nav class="jump-strip flex gap-2 mt-5" aria-label="On this page">
+        <a href="#start-here"   class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">Start here</span><span class="lang-ar">ابدأوا هنا</span></a>
+        <a href="#instructwin"  class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">InstrucTwin</span><span class="lang-ar">InstrucTwin</span></a>
+        <a href="#teaching"     class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">How often you teach it</span><span class="lang-ar">كم مرّة تدرّسونه</span></a>
+        <a href="#assessment"   class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">Assessment</span><span class="lang-ar">التقييم</span></a>
+        <a href="#level-1"      class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">Level 1 certification</span><span class="lang-ar">شهادة المستوى الأوّل</span></a>
+        <a href="#responsible"  class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">Responsible use</span><span class="lang-ar">الاستخدام المسؤول</span></a>
+        <a href="#questions"    class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">Questions</span><span class="lang-ar">الأسئلة</span></a>
+    </nav>
+
+    <!-- ===================== START HERE ===================== -->
+    <section id="start-here" class="mt-9">
+        <h2 class="font-heading font-black text-2xl sm:text-3xl text-slate-900">
+            <span class="lang-en">Start here</span>
+            <span class="lang-ar">ابدأوا هنا</span>
+        </h2>
+        <p class="text-slate-600 mt-1.5 max-w-3xl">
+            <span class="lang-en">The three things every teacher delivering this curriculum needs. The training first, the curriculum map when you plan, the tracker when you assess.</span>
+            <span class="lang-ar">ثلاثة أمور يحتاجها كل معلّم يدرّس هذا المنهج: التدريب أوّلاً، ثم خريطة المنهج عند التخطيط، ثم متتبّع التقييم عند التقييم.</span>
+        </p>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-5">
+
+            <!-- 1 · The training -->
+            <a href="../PD%20Modules/ai-curriculum-readiness-module.html" data-track="ai-literacy:module"
+               class="hub-card block rounded-2xl bg-white border border-slate-200 hover:border-indigo-400 p-5 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <span class="h-12 w-12 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-2xl shrink-0" aria-hidden="true">🎓</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-amber-800 bg-amber-100 border border-amber-200 rounded-full px-2.5 py-1">
+                        <span class="lang-en">Required</span>
+                        <span class="lang-ar">مطلوب</span>
+                    </span>
+                </div>
+                <h3 class="font-heading font-extrabold text-lg text-slate-900 mt-3.5">
+                    <span class="lang-en">Revisit the training</span>
+                    <span class="lang-ar">راجعوا التدريب</span>
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed mt-1.5">
+                    <span class="lang-en">The self-paced readiness module — around 60 minutes end to end. It saves as you type, so reopening it brings back your own answers and the six-line plan you wrote for your first lesson.</span>
+                    <span class="lang-ar">وحدة الجاهزية الذاتية — نحو ٦٠ دقيقة من البداية إلى النهاية. يُحفَظ ما تكتبونه تلقائياً، لذا فإن إعادة فتحها تستعيد إجاباتكم وخطة الأسطر الستة التي كتبتموها لدرسكم الأوّل.</span>
+                </p>
+                <ul class="mt-3 flex flex-wrap gap-1.5">
+                    <li class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2.5 py-1"><span class="lang-en">≈ 60 minutes</span><span class="lang-ar">نحو ٦٠ دقيقة</span></li>
+                    <li class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2.5 py-1"><span class="lang-en">Saves as you type</span><span class="lang-ar">حفظ تلقائي</span></li>
+                    <li class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2.5 py-1"><span class="lang-en">English &amp; العربية</span><span class="lang-ar">بالعربية والإنجليزية</span></li>
+                    <li class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2.5 py-1"><span class="lang-en">Printable plan</span><span class="lang-ar">خطة قابلة للطباعة</span></li>
+                </ul>
+                <span class="mt-4 inline-flex items-center gap-1.5 text-indigo-700 font-heading font-bold text-sm">
+                    <span class="lang-en">Open the module</span>
+                    <span class="lang-ar">افتحوا الوحدة</span>
+                    <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                </span>
+            </a>
+
+            <!-- 2 · Scope & Sequence -->
+            <a href="../PD%20Modules/ai-literacy-scope-and-sequence.html" data-track="ai-literacy:scope-and-sequence"
+               class="hub-card block rounded-2xl bg-white border border-slate-200 hover:border-teal-400 p-5 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <span class="h-12 w-12 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center text-2xl shrink-0" aria-hidden="true">🗺️</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-teal-800 bg-teal-100 border border-teal-200 rounded-full px-2.5 py-1">
+                        <span class="lang-en">Reference</span>
+                        <span class="lang-ar">مرجع</span>
+                    </span>
+                </div>
+                <h3 class="font-heading font-extrabold text-lg text-slate-900 mt-3.5">
+                    <span class="lang-en">Scope &amp; Sequence, KG–Grade 12</span>
+                    <span class="lang-ar">النطاق والتتابع، من الروضة إلى الصف الثاني عشر</span>
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed mt-1.5">
+                    <span class="lang-en">The full curriculum map: the progression grade by grade, what students are expected to reach by the end of each phase, and how each of the four strands builds year on year.</span>
+                    <span class="lang-ar">خريطة المنهج الكاملة: التدرّج صفاً بصف، وما يُتوقَّع أن يبلغه الطلاب بنهاية كل مرحلة، وكيف يتنامى كل محور من المحاور الأربعة عاماً بعد عام.</span>
+                </p>
+                <p class="text-sm text-slate-500 leading-relaxed mt-2">
+                    <span class="lang-en">It is a reference, not a module — there is nothing to complete. Dip into your grade when you plan beyond your first lesson.</span>
+                    <span class="lang-ar">وهي مرجع لا وحدة تدريبية — لا شيء يُنجَز فيها. ارجعوا إلى صفّكم عند التخطيط لما بعد درسكم الأوّل.</span>
+                </p>
+                <span class="mt-4 inline-flex items-center gap-1.5 text-teal-700 font-heading font-bold text-sm">
+                    <span class="lang-en">Open Scope &amp; Sequence</span>
+                    <span class="lang-ar">افتحوا النطاق والتتابع</span>
+                    <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                </span>
+            </a>
+
+            <!-- 3 · Assessment tracker.
+                 The link had not been shared when this page was built, so
+                 the card renders as "coming" until TRACKER_URL near the
+                 bottom of this file is filled in. Paste the URL there and
+                 this card becomes a live link — nothing else changes. A
+                 guessed or dead link would be worse than an honest gap. -->
+            <div id="tracker-card"
+                 class="hub-card rounded-2xl bg-white border border-dashed border-slate-300 p-5 shadow-sm flex flex-col">
+                <div class="flex items-center gap-3">
+                    <span class="h-12 w-12 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center text-2xl shrink-0" aria-hidden="true">📋</span>
+                    <span id="tracker-badge" class="text-[10px] font-bold uppercase tracking-widest text-slate-600 bg-slate-100 border border-slate-200 rounded-full px-2.5 py-1">
+                        <span class="lang-en">Link coming</span>
+                        <span class="lang-ar">الرابط قريباً</span>
+                    </span>
+                </div>
+                <h3 class="font-heading font-extrabold text-lg text-slate-900 mt-3.5">
+                    <span class="lang-en">Assessment tracker</span>
+                    <span class="lang-ar">متتبّع التقييم</span>
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed mt-1.5">
+                    <span class="lang-en">Where AI Literacy assessment is recorded across the school.</span>
+                    <span class="lang-ar">المكان الذي يُسجَّل فيه تقييم الثقافة في الذكاء الاصطناعي على مستوى المدرسة.</span>
+                </p>
+                <p id="tracker-pending" class="text-sm text-slate-500 leading-relaxed mt-2">
+                    <span class="lang-en">The tracker is being finalised and the link will be shared shortly. It will appear on this card the moment it does — nothing for you to do until then.</span>
+                    <span class="lang-ar">يجري وضع المتتبّع في صيغته النهائية، وسيُشارَك الرابط قريباً. وسيظهر في هذه البطاقة فور توفّره — ولا شيء عليكم فعله حتى ذلك الحين.</span>
+                </p>
+                <div class="mt-auto pt-4">
+                    <a id="tracker-link" href="#" data-track="ai-literacy:assessment-tracker" target="_blank" rel="noopener noreferrer" hidden
+                       class="inline-flex items-center gap-1.5 text-indigo-700 font-heading font-bold text-sm">
+                        <span class="lang-en">Open the tracker</span>
+                        <span class="lang-ar">افتحوا المتتبّع</span>
+                        <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ===================== INSTRUCTWIN ===================== -->
+    <section id="instructwin" class="mt-10">
+        <h2 class="font-heading font-black text-2xl sm:text-3xl text-slate-900">
+            <span class="lang-en">InstrucTwin — lesson plans and student materials</span>
+            <span class="lang-ar">InstrucTwin — خطط الدروس وموادّ الطلاب</span>
+        </h2>
+        <p class="text-slate-600 mt-1.5 max-w-3xl">
+            <span class="lang-en">ADEK publishes the full AI Literacy lesson plans, teacher toolkits and student materials on InstrucTwin. The AI Growth Test runs there too, on a separate portal.</span>
+            <span class="lang-ar">تنشر دائرة التعليم والمعرفة خطط دروس الثقافة في الذكاء الاصطناعي كاملةً، وأدوات المعلّم، وموادّ الطلاب على منصّة InstrucTwin. كما يُجرى اختبار النمو في الذكاء الاصطناعي هناك، عبر بوّابة منفصلة.</span>
+        </p>
+
+        <!-- Known issue. Accurate as of 18 September 2026: staff accounts
+             were not showing the grades a teacher is assigned to. If that
+             is fixed, this box should go and the module's segment 4 wording
+             (PD Modules/ai-curriculum-readiness-module.html) changes with it
+             — the two say the same thing and must not drift apart. -->
+        <div class="mt-4 rounded-2xl bg-amber-50 border border-amber-200 p-4 sm:p-5">
+            <div class="flex items-start gap-3">
+                <span class="text-xl shrink-0" aria-hidden="true">⚠️</span>
+                <div>
+                    <h3 class="font-heading font-bold text-amber-900">
+                        <span class="lang-en">Known issue: your grades may not be showing yet</span>
+                        <span class="lang-ar">مسألة معروفة: قد لا تظهر صفوفكم بعد</span>
+                    </h3>
+                    <p class="text-sm text-amber-900/90 leading-relaxed mt-1">
+                        <span class="lang-en">As of 18 September 2026, staff accounts are not reliably showing the grades a teacher is assigned to, so you may sign in and find nothing of yours there. That is Brandon's to chase, not yours. Your first lesson does not depend on it: the curriculum focus for your grade is held inside the training module, and the plan you wrote there is complete on its own.</span>
+                        <span class="lang-ar">حتى ١٨ سبتمبر ٢٠٢٦، لا تُظهر حسابات الطاقم بشكل موثوق الصفوف المسنَدة إلى المعلّم، لذا قد تسجّلون الدخول ولا تجدون صفوفكم. ومتابعة ذلك من مسؤولية براندون لا من مسؤوليتكم. ودرسكم الأوّل لا يتوقّف على ذلك: فمحور المنهج الخاصّ بصفّكم موجود داخل وحدة التدريب، والخطة التي كتبتموها فيها كاملة بذاتها.</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+
+            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
+                <h3 class="font-heading font-extrabold text-lg text-slate-900">
+                    <span class="lang-en">Curriculum &amp; lesson plans</span>
+                    <span class="lang-ar">المنهج وخطط الدروس</span>
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed mt-1.5">
+                    <span class="lang-en">Sign in with your school username and password, find your grade, then your unit, then your lesson for the week.</span>
+                    <span class="lang-ar">سجّلوا الدخول باسم المستخدم وكلمة المرور الخاصّين بالمدرسة، ثم اعثروا على صفّكم، فوحدتكم، فدرسكم لذلك الأسبوع.</span>
+                </p>
+                <a href="https://schools.instructwin.com/" target="_blank" rel="noopener noreferrer" data-track="ai-literacy:instructwin-schools"
+                   class="mt-4 inline-flex items-center gap-2 rounded-xl bg-indigo-700 text-white font-heading font-bold text-sm px-4 py-2.5 hover:bg-indigo-800 transition-colors">
+                    <span class="lang-en">Open schools.instructwin.com</span>
+                    <span class="lang-ar">افتحوا schools.instructwin.com</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+                <!-- Two addresses are in circulation: the training module
+                     uses schools.instructwin.com, ADEK's correspondence
+                     says www.adek.instructwin.com. Nobody has established
+                     which is authoritative, so both are offered rather than
+                     one being presented as fact. Delete the alternate the
+                     day that is settled. -->
+                <p class="text-xs text-slate-500 leading-relaxed mt-3">
+                    <span class="lang-en">If that address does not recognise your account, try
+                        <a class="font-semibold text-indigo-700 hover:underline" href="https://www.adek.instructwin.com/" target="_blank" rel="noopener noreferrer">www.adek.instructwin.com</a>
+                        — ADEK's correspondence uses that one, and which of the two is the right door has not been settled. Tell Brandon which one worked for you.</span>
+                    <span class="lang-ar">إن لم يتعرّف هذا العنوان على حسابكم، فجرّبوا
+                        <a class="font-semibold text-indigo-700 hover:underline" href="https://www.adek.instructwin.com/" target="_blank" rel="noopener noreferrer">www.adek.instructwin.com</a>
+                        — فمراسلات دائرة التعليم والمعرفة تستخدم هذا العنوان، ولم يُحسَم أيّهما المدخل الصحيح. أبلغوا براندون بالعنوان الذي نجح معكم.</span>
+                </p>
+            </div>
+
+            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
+                <h3 class="font-heading font-extrabold text-lg text-slate-900">
+                    <span class="lang-en">AI Growth Test portal</span>
+                    <span class="lang-ar">بوّابة اختبار النمو في الذكاء الاصطناعي</span>
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed mt-1.5">
+                    <span class="lang-en">A separate sign-in, using your Training platform credentials. This is where AI Leads and proctors manage rosters, access codes and test sessions.</span>
+                    <span class="lang-ar">تسجيل دخول منفصل ببيانات منصّة التدريب. ومن هنا يدير قادة الذكاء الاصطناعي والمراقبون قوائم الطلاب ورموز الدخول وجلسات الاختبار.</span>
+                </p>
+                <a href="https://instructwin.com/aigt" target="_blank" rel="noopener noreferrer" data-track="ai-literacy:instructwin-aigt"
+                   class="mt-4 inline-flex items-center gap-2 rounded-xl bg-slate-900 text-white font-heading font-bold text-sm px-4 py-2.5 hover:bg-slate-800 transition-colors">
+                    <span class="lang-en">Open instructwin.com/aigt</span>
+                    <span class="lang-ar">افتحوا instructwin.com/aigt</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+                <p class="text-xs text-slate-500 leading-relaxed mt-3">
+                    <span class="lang-en">Step-by-step instructions for this portal are in the AI Lead &amp; Proctor guide, linked under Assessment below.</span>
+                    <span class="lang-ar">تجدون التعليمات خطوةً بخطوة لهذه البوّابة في دليل قائد الذكاء الاصطناعي والمراقب، المرتبط ضمن قسم التقييم أدناه.</span>
+                </p>
+            </div>
+
+        </div>
+
+        <div class="mt-4 rounded-2xl bg-slate-100 border border-slate-200 p-4 sm:p-5">
+            <h3 class="font-heading font-bold text-slate-900 text-base">
+                <span class="lang-en">If you cannot get in</span>
+                <span class="lang-ar">إن تعذّر عليكم الدخول</span>
+            </h3>
+            <ul class="mt-2 space-y-1.5 text-sm text-slate-700">
+                <li class="flex gap-2">
+                    <span class="text-slate-400 shrink-0" aria-hidden="true">1.</span>
+                    <span>
+                        <span class="lang-en">Tick the "I could not get into InstrucTwin" box in the training module. That is the only signal of who tried, and it reaches Brandon.</span>
+                        <span class="lang-ar">ضعوا علامة في مربّع «لم أتمكّن من الدخول إلى InstrucTwin» داخل وحدة التدريب. فهذه هي الإشارة الوحيدة التي تبيّن من حاول، وهي تصل إلى براندون.</span>
+                    </span>
+                </li>
+                <li class="flex gap-2">
+                    <span class="text-slate-400 shrink-0" aria-hidden="true">2.</span>
+                    <span>
+                        <span class="lang-en">Carry on teaching from the plan you wrote in the module. You have not lost anything.</span>
+                        <span class="lang-ar">واصلوا التدريس انطلاقاً من الخطة التي كتبتموها في الوحدة. فأنتم لم تفقدوا شيئاً.</span>
+                    </span>
+                </li>
+                <li class="flex gap-2">
+                    <span class="text-slate-400 shrink-0" aria-hidden="true">3.</span>
+                    <span>
+                        <span class="lang-en">For a platform fault rather than an access problem, InstrucTwin support is at <a class="font-semibold text-indigo-700 hover:underline" href="mailto:support@instructwin.com">support@instructwin.com</a>. If the site is blocked or slow on the school network, that one is for AISA IT.</span>
+                        <span class="lang-ar">أمّا إن كان العطل في المنصّة نفسها لا في الوصول إليها، فالدعم الفني لـ InstrucTwin على <a class="font-semibold text-indigo-700 hover:underline" href="mailto:support@instructwin.com">support@instructwin.com</a>. وإن كان الموقع محجوباً أو بطيئاً على شبكة المدرسة، فتلك من اختصاص قسم تقنية المعلومات في AISA.</span>
+                    </span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ===================== HOW OFTEN YOU TEACH IT ===================== -->
+    <section id="teaching" class="mt-10">
+        <h2 class="font-heading font-black text-2xl sm:text-3xl text-slate-900">
+            <span class="lang-en">How often you teach it</span>
+            <span class="lang-ar">كم مرّة تدرّسونه</span>
+        </h2>
+        <p class="text-slate-600 mt-1.5 max-w-3xl">
+            <span class="lang-en">Teaching started the week of 21 September 2026 — your lesson falls somewhere in the week, not necessarily on the Monday. Two numbers matter here: ADEK's entitlement, which is what ADEK audits against, and how AISA delivers it, which is what you plan around.</span>
+            <span class="lang-ar">بدأ التدريس في أسبوع ٢١ سبتمبر ٢٠٢٦ — ويقع درسكم في موضع ما من الأسبوع، وليس بالضرورة يوم الاثنين. وهناك رقمان مهمّان هنا: الاستحقاق المقرَّر من دائرة التعليم والمعرفة، وهو ما تُدقّق عليه الدائرة، وكيفية تطبيق AISA له، وهو ما تخطّطون على أساسه.</span>
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-full px-2.5 py-1">
+                    <span class="lang-en">KG – Grade 5</span>
+                    <span class="lang-ar">الروضة – الصف الخامس</span>
+                </span>
+                <h3 class="font-heading font-extrabold text-lg text-slate-900 mt-3">
+                    <span class="lang-en">One period a week</span>
+                    <span class="lang-ar">حصة واحدة أسبوعياً</span>
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed mt-1.5">
+                    <span class="lang-en">ADEK's entitlement is one period a week, and nothing changes at AISA: homeroom teachers deliver one timetabled, standalone AI lesson each week.</span>
+                    <span class="lang-ar">الاستحقاق المقرَّر من الدائرة هو حصة واحدة أسبوعياً، ولا شيء يتغيّر في AISA: يقدّم معلّمو الصف درساً مستقلاً مجدوَلاً واحداً في الأسبوع.</span>
+                </p>
+            </div>
+            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-full px-2.5 py-1">
+                    <span class="lang-en">Grades 6 – 12</span>
+                    <span class="lang-ar">الصفوف ٦ – ١٢</span>
+                </span>
+                <h3 class="font-heading font-extrabold text-lg text-slate-900 mt-3">
+                    <span class="lang-en">One timetabled period, the rest asynchronous</span>
+                    <span class="lang-ar">حصة واحدة مجدوَلة، والباقي غير متزامن</span>
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed mt-1.5">
+                    <span class="lang-en">ADEK's entitlement is two periods a week. AISA timetables one of them; the remainder of the entitlement is completed asynchronously.</span>
+                    <span class="lang-ar">الاستحقاق المقرَّر من الدائرة هو حصتان أسبوعياً. وتُجدوِل AISA إحداهما، ويُستكمل باقي الاستحقاق بشكل غير متزامن.</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== ASSESSMENT ===================== -->
+    <section id="assessment" class="mt-10">
+        <h2 class="font-heading font-black text-2xl sm:text-3xl text-slate-900">
+            <span class="lang-en">Assessment — the AI Growth Test</span>
+            <span class="lang-ar">التقييم — اختبار النمو في الذكاء الاصطناعي</span>
+        </h2>
+        <p class="text-slate-600 mt-1.5 max-w-3xl">
+            <span class="lang-en">ADEK's AI Growth Test is a baseline measure of where students are starting from. Every student in Grades 4–12 sits it; K–3 do not. ADEK's testing window closes on Sunday 4 October 2026, and AISA's dates for each grade are announced separately by Brandon.</span>
+            <span class="lang-ar">اختبار النمو في الذكاء الاصطناعي الصادر عن دائرة التعليم والمعرفة هو قياس مرجعي لنقطة انطلاق الطلاب. ويؤدّيه كل طالب في الصفوف ٤–١٢، ولا يؤدّيه طلاب الروضة حتى الصف الثالث. وتُغلَق نافذة الاختبار لدى الدائرة يوم الأحد ٤ أكتوبر ٢٠٢٦، أمّا مواعيد AISA لكل صف فيُعلنها براندون بشكل منفصل.</span>
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
+                <h3 class="font-heading font-extrabold text-lg text-slate-900">
+                    <span class="lang-en">Who runs the test</span>
+                    <span class="lang-ar">من يدير الاختبار</span>
+                </h3>
+                <ul class="mt-2.5 space-y-2 text-sm text-slate-700">
+                    <li class="flex gap-2.5">
+                        <span class="text-emerald-600 shrink-0" aria-hidden="true">●</span>
+                        <span>
+                            <span class="lang-en"><strong>Grades 4 and 5</strong> — proctored by the class's own homeroom teacher. Settled.</span>
+                            <span class="lang-ar"><strong>الصفّان الرابع والخامس</strong> — يراقبه معلّم الصف نفسه. وهذا أمر محسوم.</span>
+                        </span>
+                    </li>
+                    <li class="flex gap-2.5">
+                        <span class="text-amber-500 shrink-0" aria-hidden="true">●</span>
+                        <span>
+                            <span class="lang-en"><strong>Grades 6–12</strong> — arrangements are still open. You will hear before anything is asked of you.</span>
+                            <span class="lang-ar"><strong>الصفوف ٦–١٢</strong> — الترتيبات لم تُحسم بعد. وستصلكم التفاصيل قبل أن يُطلب منكم أي شيء.</span>
+                        </span>
+                    </li>
+                    <li class="flex gap-2.5">
+                        <span class="text-slate-400 shrink-0" aria-hidden="true">●</span>
+                        <span>
+                            <span class="lang-en"><strong>KG–Grade 3</strong> — do not sit this test at all.</span>
+                            <span class="lang-ar"><strong>الروضة – الصف الثالث</strong> — لا يؤدّون هذا الاختبار إطلاقاً.</span>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+
+            <a href="../Tools%20and%20Resources/ai-growth-test-guide.html" data-track="ai-literacy:aigt-guide"
+               class="hub-card block rounded-2xl bg-white border border-slate-200 hover:border-indigo-400 p-5 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <span class="h-12 w-12 rounded-xl bg-slate-900 text-white flex items-center justify-center text-2xl shrink-0" aria-hidden="true">🧭</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-600 bg-slate-100 border border-slate-200 rounded-full px-2.5 py-1">
+                        <span class="lang-en">Guide</span>
+                        <span class="lang-ar">دليل</span>
+                    </span>
+                </div>
+                <h3 class="font-heading font-extrabold text-lg text-slate-900 mt-3.5">
+                    <span class="lang-en">AI Lead &amp; Proctor guide</span>
+                    <span class="lang-ar">دليل قائد الذكاء الاصطناعي والمراقب</span>
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed mt-1.5">
+                    <span class="lang-en">ADEK's operational runbook, rebuilt for the screen: set-up, access codes, roster checks, what to say to students, test-day monitoring and incident reporting. Filter it to your role so you only read the steps that are yours.</span>
+                    <span class="lang-ar">الدليل التشغيلي الصادر عن الدائرة، مُعاد بناؤه للقراءة على الشاشة: التهيئة، ورموز الدخول، والتحقّق من قوائم الطلاب، وما تقولونه للطلاب، والمتابعة يوم الاختبار، والإبلاغ عن الحوادث. صفّوه بحسب دوركم لتقرأوا الخطوات التي تخصّكم وحدها.</span>
+                </p>
+                <p class="text-xs text-slate-500 mt-2">
+                    <span class="lang-en">English only.</span>
+                    <span class="lang-ar">متاح بالإنجليزية فقط.</span>
+                </p>
+                <span class="mt-4 inline-flex items-center gap-1.5 text-indigo-700 font-heading font-bold text-sm">
+                    <span class="lang-en">Open the guide</span>
+                    <span class="lang-ar">افتحوا الدليل</span>
+                    <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                </span>
+            </a>
+        </div>
+
+        <p class="text-sm text-slate-500 mt-3">
+            <span class="lang-en">The AI Literacy assessment tracker — where ongoing assessment is recorded — is the third card under <a class="font-semibold text-indigo-700 hover:underline" href="#start-here">Start here</a>. It goes live there as soon as the link is shared.</span>
+            <span class="lang-ar">أمّا متتبّع تقييم الثقافة في الذكاء الاصطناعي — حيث يُسجَّل التقييم المستمر — فهو البطاقة الثالثة ضمن <a class="font-semibold text-indigo-700 hover:underline" href="#start-here">ابدأوا هنا</a>، وسيعمل فور مشاركة الرابط.</span>
+        </p>
+    </section>
+
+    <!-- ===================== LEVEL 1 ===================== -->
+    <section id="level-1" class="mt-10">
+        <h2 class="font-heading font-black text-2xl sm:text-3xl text-slate-900">
+            <span class="lang-en">Level 1 AI Foundations (ADEK)</span>
+            <span class="lang-ar">أساسيات الذكاء الاصطناعي — المستوى الأوّل (دائرة التعليم والمعرفة)</span>
+        </h2>
+        <p class="text-slate-600 mt-1.5 max-w-3xl">
+            <span class="lang-en">Separate from the AISA readiness training above, and mandatory for every teacher — not only those delivering the AI curriculum. Seven self-paced modules, around 17 hours on average.</span>
+            <span class="lang-ar">هذا مستقلّ عن تدريب الجاهزية في AISA المذكور أعلاه، وهو إلزامي لكل معلّم — لا لمن يدرّسون منهج الذكاء الاصطناعي وحدهم. سبع وحدات ذاتية التعلّم، بمعدّل نحو ١٧ ساعة.</span>
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
+                <h3 class="font-heading font-extrabold text-lg text-slate-900">
+                    <span class="lang-en">New to AISA this year?</span>
+                    <span class="lang-ar">التحقتم بـ AISA هذا العام؟</span>
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed mt-1.5">
+                    <span class="lang-en">ADEK's deadline for completing Level 1 is <strong>Wednesday 30 September 2026</strong>. Seventeen hours is not an evening's work, so start now if you have not.</span>
+                    <span class="lang-ar">الموعد النهائي المحدَّد من الدائرة لإتمام المستوى الأوّل هو <strong>الأربعاء ٣٠ سبتمبر ٢٠٢٦</strong>. وسبع عشرة ساعة ليست عمل أمسية واحدة، فابدأوا الآن إن لم تكونوا قد بدأتم.</span>
+                </p>
+                <p class="text-sm text-slate-600 leading-relaxed mt-2">
+                    <span class="lang-en">Not enrolled yet? Email Brandon with your full name <em>exactly</em> as it appears in PASS, plus your PASS number — ADEK needs both to enrol you.</span>
+                    <span class="lang-ar">لم تُسجَّلوا بعد؟ راسلوا براندون باسمكم الكامل <em>كما هو تماماً</em> في نظام PASS، مع رقم PASS الخاص بكم — فالدائرة تحتاج الأمرين لتسجيلكم.</span>
+                </p>
+            </div>
+            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
+                <h3 class="font-heading font-extrabold text-lg text-slate-900">
+                    <span class="lang-en">Already finished it?</span>
+                    <span class="lang-ar">أتممتموه بالفعل؟</span>
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed mt-1.5">
+                    <span class="lang-en">ADEK is checking completion records before it issues certificates. The platform records time spent on each section, and sections clicked through quickly will be reset and have to be redone.</span>
+                    <span class="lang-ar">تتحقّق الدائرة من سجلّات الإتمام قبل إصدار الشهادات. فالمنصّة تسجّل الوقت المستغرَق في كل قسم، والأقسام التي جرى تخطّيها بسرعة ستُعاد إلى الصفر ويلزم إعادتها.</span>
+                </p>
+                <p class="text-sm text-slate-600 leading-relaxed mt-2">
+                    <span class="lang-en">ADEK will tell Brandon who is affected and he will contact those teachers directly. Otherwise there is nothing you need to do.</span>
+                    <span class="lang-ar">وستُبلغ الدائرة براندون بمن يشملهم الأمر، وسيتواصل معهم مباشرةً. وفيما عدا ذلك، لا شيء عليكم فعله.</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== RESPONSIBLE USE ===================== -->
+    <section id="responsible" class="mt-10">
+        <h2 class="font-heading font-black text-2xl sm:text-3xl text-slate-900">
+            <span class="lang-en">Responsible use, and who to tell</span>
+            <span class="lang-ar">الاستخدام المسؤول، ومَن تُبلغون</span>
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm">
+                <h3 class="font-heading font-extrabold text-lg text-slate-900">
+                    <span class="lang-en">Keep student details out of AI tools</span>
+                    <span class="lang-ar">لا تُدخلوا بيانات الطلاب في أدوات الذكاء الاصطناعي</span>
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed mt-1.5">
+                    <span class="lang-en">No names, photographs, assessment data or anything else that identifies a student goes into a general-purpose AI tool. This follows ADEK's School Digital Policy and UAE data protection law, and it applies to the tools you use to prepare a lesson as much as to the ones students use in it.</span>
+                    <span class="lang-ar">لا تُدخَل الأسماء ولا الصور ولا بيانات التقييم ولا أي شيء آخر يُعرّف بالطالب في أداة ذكاء اصطناعي عامة. وهذا التزامٌ بسياسة الدائرة الرقمية للمدارس وبقانون حماية البيانات في دولة الإمارات، وينطبق على الأدوات التي تستخدمونها في تحضير الدرس بقدر ما ينطبق على التي يستخدمها الطلاب فيه.</span>
+                </p>
+                <a href="../PD%20Modules/ai-ethics-module.html" data-track="ai-literacy:ai-ethics"
+                   class="mt-3.5 inline-flex items-center gap-1.5 text-indigo-700 font-heading font-bold text-sm hover:underline">
+                    <span class="lang-en">AI Vision &amp; Ethical Framework module</span>
+                    <span class="lang-ar">وحدة رؤية الذكاء الاصطناعي والإطار الأخلاقي</span>
+                    <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                </a>
+            </div>
+
+            <!-- Contacts and the 24-hour timescale are copied from
+                 PD Modules/safeguarding-module.html via segment 6 of the
+                 readiness module. If the DSLs or the timescale change,
+                 all three files change together or they drift. -->
+            <div class="rounded-2xl bg-rose-50 border border-rose-200 p-5">
+                <h3 class="font-heading font-extrabold text-lg text-rose-900">
+                    <span class="lang-en">An AI concern is a safeguarding concern</span>
+                    <span class="lang-ar">أي مخاوف تتعلّق بالذكاء الاصطناعي هي مخاوف تتعلّق بحماية الطفل</span>
+                </h3>
+                <p class="text-sm text-rose-900/90 leading-relaxed mt-1.5">
+                    <span class="lang-en">If a student discloses something through an AI task, or a tool returns something that worries you, it goes to your Safeguarding Lead — not to IT and not to the tool's support desk. Report it <strong>within 24 hours</strong>; if a child may be at immediate risk, contact them straight away.</span>
+                    <span class="lang-ar">إن باح طالب بشيء من خلال نشاط يتعلّق بالذكاء الاصطناعي، أو أعادت أداةٌ محتوىً يثير قلقكم، فالأمر يُرفَع إلى مسؤول حماية الطفل لديكم — لا إلى قسم تقنية المعلومات ولا إلى الدعم الفني للأداة. أبلغوا <strong>خلال ٢٤ ساعة</strong>؛ وإن كان الطفل معرّضاً لخطر مباشر، فتواصلوا معهم فوراً.</span>
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3.5">
+                    <div class="rounded-xl bg-white border border-rose-100 p-3">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-rose-700">
+                            <span class="lang-en">Elementary</span>
+                            <span class="lang-ar">المرحلة الابتدائية</span>
+                        </p>
+                        <p class="font-heading font-bold text-slate-900 text-sm mt-0.5">Alia Nejdawi</p>
+                        <a class="text-xs font-semibold text-rose-700 hover:underline break-all" href="mailto:anejdawi@aisa.sch.ae">anejdawi@aisa.sch.ae</a>
+                    </div>
+                    <div class="rounded-xl bg-white border border-rose-100 p-3">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-rose-700">
+                            <span class="lang-en">Secondary</span>
+                            <span class="lang-ar">المرحلة الثانوية</span>
+                        </p>
+                        <p class="font-heading font-bold text-slate-900 text-sm mt-0.5">Savvas Largatzis</p>
+                        <a class="text-xs font-semibold text-rose-700 hover:underline break-all" href="mailto:slargatzis@aisa.sch.ae">slargatzis@aisa.sch.ae</a>
+                    </div>
+                </div>
+                <p class="text-xs text-rose-900/80 leading-relaxed mt-3">
+                    <span class="lang-en">Segment 6 of the training module works through the first ten minutes of a disclosure, if you want the detail.</span>
+                    <span class="lang-ar">يتناول الجزء السادس من وحدة التدريب الدقائق العشر الأولى بعد البوح، إن أردتم التفاصيل.</span>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== QUESTIONS ===================== -->
+    <section id="questions" class="mt-10 mb-4">
+        <h2 class="font-heading font-black text-2xl sm:text-3xl text-slate-900">
+            <span class="lang-en">Questions</span>
+            <span class="lang-ar">الأسئلة</span>
+        </h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-5">
+            <div class="rounded-2xl bg-white border border-slate-200 p-5 shadow-sm md:col-span-2">
+                <h3 class="font-heading font-extrabold text-lg text-slate-900">
+                    <span class="lang-en">&ldquo;Do I actually have to do the training?&rdquo;</span>
+                    <span class="lang-ar">«هل التدريب مطلوب منّي فعلاً؟»</span>
+                </h3>
+                <p class="text-sm text-slate-600 leading-relaxed mt-1.5">
+                    <span class="lang-en">The readiness module is required for the teachers named on AISA's ADEK Implementation Form — the staff delivering AI Literacy lessons this term. It is not required for everyone else, and it does not count against anyone else's training record.</span>
+                    <span class="lang-ar">وحدة الجاهزية مطلوبة من المعلّمين المدرَجين في استمارة التطبيق التي قدّمتها AISA إلى الدائرة — أي الطاقم الذي يدرّس دروس الثقافة في الذكاء الاصطناعي هذا الفصل. وهي غير مطلوبة من سواهم، ولا تُحتسب على سجلّ تدريب أي شخص آخر.</span>
+                </p>
+                <p class="text-sm text-slate-600 leading-relaxed mt-2">
+                    <span class="lang-en">Issue No. 5 of the Digital Lion checks your own address against that list and tells you which side of it you are on.</span>
+                    <span class="lang-ar">يتحقّق العدد الخامس من نشرة ديجيتال لايون من عنوان بريدكم مقابل تلك القائمة، ويخبركم بأي الفريقين أنتم.</span>
+                </p>
+                <a href="../Media%20Hub/sep18.html#status-card" data-track="ai-literacy:cohort-check"
+                   class="mt-3.5 inline-flex items-center gap-1.5 text-indigo-700 font-heading font-bold text-sm hover:underline">
+                    <span class="lang-en">Check whether it applies to you</span>
+                    <span class="lang-ar">تحقّقوا إن كان ينطبق عليكم</span>
+                    <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                </a>
+            </div>
+
+            <div class="rounded-2xl bg-slate-900 text-white p-5 shadow-sm flex flex-col">
+                <h3 class="font-heading font-extrabold text-lg">
+                    <span class="lang-en">Ask me anything</span>
+                    <span class="lang-ar">اسألوني عن أي شيء</span>
+                </h3>
+                <p class="text-sm text-slate-300 leading-relaxed mt-1.5">
+                    <span class="lang-en">Access, enrolment, planning, a lesson that did not go the way you expected — all of it comes to me.</span>
+                    <span class="lang-ar">الوصول، والتسجيل، والتخطيط، أو درس لم يسر كما توقّعتم — كل ذلك يصل إليّ.</span>
+                </p>
+                <div class="mt-auto pt-4">
+                    <p class="font-heading font-bold">Brandon Baki</p>
+                    <p class="text-xs text-slate-400">
+                        <span class="lang-en">Head of AI &amp; Innovation</span>
+                        <span class="lang-ar">رئيس قسم الذكاء الاصطناعي والابتكار</span>
+                    </p>
+                    <a class="text-sm font-semibold text-indigo-300 hover:underline break-all" href="mailto:bbaki@aisa.sch.ae">bbaki@aisa.sch.ae</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 flex flex-wrap gap-2">
+            <a href="../Media%20Hub/sep18.html" data-track="ai-literacy:newsletter"
+               class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors">
+                <span class="lang-en">📰 Digital Lion, Issue No. 5</span>
+                <span class="lang-ar">📰 ديجيتال لايون، العدد الخامس</span>
+            </a>
+            <a href="../PD%20Modules/pd.html" data-track="ai-literacy:pd"
+               class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors">
+                <span class="lang-en">🎓 All PD modules</span>
+                <span class="lang-ar">🎓 جميع وحدات التطوير المهني</span>
+            </a>
+            <a href="../dashboard.html" data-track="ai-literacy:dashboard"
+               class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors">
+                <span class="lang-en">📊 My dashboard</span>
+                <span class="lang-ar">📊 لوحتي</span>
+            </a>
+        </div>
+    </section>
+
+    <footer class="mt-10 border-t border-slate-200 pt-5 pb-8 text-xs text-slate-500 flex flex-col sm:flex-row gap-1 sm:items-center sm:justify-between">
+        <p>
+            <span class="lang-en">&copy; 2026 American International School in Abu Dhabi &middot; Teaching &amp; Learning</span>
+            <span class="lang-ar">&copy; ٢٠٢٦ المدرسة الأمريكية الدولية في أبوظبي · التعليم والتعلّم</span>
+        </p>
+        <p>
+            <span class="lang-en">ADEK AI Literacy curriculum &middot; 2026–27</span>
+            <span class="lang-ar">منهج الثقافة في الذكاء الاصطناعي · ٢٠٢٦–٢٠٢٧</span>
+        </p>
+    </footer>
+
+</main>
+
+<script>
+(function () {
+    'use strict';
+
+    /* =================================================================
+     * THE ASSESSMENT TRACKER LINK
+     *
+     * Paste the tracker's URL between the quotes below and the third
+     * card under "Start here" turns into a live link. Nothing else
+     * needs changing anywhere.
+     *
+     *     var TRACKER_URL = 'https://docs.google.com/spreadsheets/...';
+     *
+     * Left empty the card renders as "link coming", which is the
+     * honest state — a guessed or dead link is worse than an
+     * acknowledged gap.
+     * ================================================================= */
+    var TRACKER_URL = '';
+
+    var link    = document.getElementById('tracker-link');
+    var pending = document.getElementById('tracker-pending');
+    var card    = document.getElementById('tracker-card');
+    var badge   = document.getElementById('tracker-badge');
+
+    if (TRACKER_URL && link) {
+        link.href = TRACKER_URL;
+        link.hidden = false;
+        if (pending) pending.hidden = true;
+        if (card) card.className = card.className.replace('border-dashed border-slate-300', 'border-slate-200');
+        if (badge) {
+            badge.className = 'text-[10px] font-bold uppercase tracking-widest text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-full px-2.5 py-1';
+            badge.innerHTML = '<span class="lang-en">Open</span><span class="lang-ar">متاح</span>';
+        }
+    }
+
+    /* =================================================================
+     * TRAINING STATUS
+     *
+     * Reads this person's own completion record for the readiness
+     * module and settles the strip in the hero. Every path ends in a
+     * definite state: signed out, no record, completed, or "could not
+     * check". A spinner that never resolves would be the one outcome
+     * worse than any of them.
+     * ================================================================= */
+    var MODULE_ID = 'ai-curriculum-readiness';
+    var settled   = false;
+
+    var iconEl   = document.getElementById('status-icon');
+    var titleEl  = document.getElementById('status-title');
+    var detailEl = document.getElementById('status-detail');
+    var stripEl  = document.getElementById('status-strip');
+
+    function setStatus(icon, titleEn, titleAr, detailEn, detailAr) {
+        if (iconEl)  iconEl.textContent = icon;
+        if (titleEl) titleEl.innerHTML =
+            '<span class="lang-en">' + titleEn + '</span>' +
+            '<span class="lang-ar">' + titleAr + '</span>';
+        if (detailEl) detailEl.innerHTML =
+            '<span class="lang-en">' + detailEn + '</span>' +
+            '<span class="lang-ar">' + detailAr + '</span>';
+    }
+
+    /* Timestamps out of the sheet arrive as ISO strings that may end in
+     * Z or +04:00, and older rows differ from newer ones. Parse to a
+     * number and format from that — never compare or sort the raw
+     * string. */
+    function formatDate(raw) {
+        var ms = Date.parse(raw);
+        if (!raw || isNaN(ms)) return '';
+        try {
+            return new Date(ms).toLocaleDateString(
+                document.documentElement.getAttribute('lang') === 'ar' ? 'ar-AE' : 'en-GB',
+                { day: 'numeric', month: 'long', year: 'numeric' }
+            );
+        } catch (e) {
+            return '';
+        }
+    }
+
+    function render(items) {
+        var done = null;
+        (items || []).forEach(function (item) {
+            if (!item || item.module_id !== MODULE_ID) return;
+            /* Keep the most recent completion, comparing numbers. */
+            if (!done || (Date.parse(item.completed_at) || 0) > (Date.parse(done.completed_at) || 0)) {
+                done = item;
+            }
+        });
+
+        if (done) {
+            var when = formatDate(done.completed_at);
+            if (stripEl) stripEl.classList.add('is-done');
+            setStatus('✅',
+                'Training complete',
+                'التدريب مكتمل',
+                when ? 'Recorded on ' + when + '. Reopen it any time — your answers and your plan are still there.'
+                     : 'Recorded against your name. Reopen it any time — your answers and your plan are still there.',
+                when ? 'مُسجَّل بتاريخ ' + when + '. أعيدوا فتحها متى شئتم — فإجاباتكم وخطتكم لا تزال محفوظة.'
+                     : 'مُسجَّل باسمكم. أعيدوا فتحها متى شئتم — فإجاباتكم وخطتكم لا تزال محفوظة.');
+        } else {
+            setStatus('📌',
+                'No completion recorded yet',
+                'لم يُسجَّل الإتمام بعد',
+                'If you are delivering AI Literacy lessons this term, this one is required. It takes about an hour and saves as you go.',
+                'إن كنتم تدرّسون دروس الثقافة في الذكاء الاصطناعي هذا الفصل، فهذه الوحدة مطلوبة. تستغرق نحو ساعة، وتُحفَظ أوّلاً بأوّل.');
+        }
+    }
+
+    function unknown(titleEn, titleAr, detailEn, detailAr) {
+        setStatus('ℹ️', titleEn, titleAr, detailEn, detailAr);
+    }
+
+    function start(auth) {
+        if (!auth || !auth.isConfigured || !auth.isConfigured()) {
+            unknown('Your training record is not available here',
+                    'سجلّ تدريبكم غير متاح هنا',
+                    'Everything on this page still works. Open the module to see where you left off.',
+                    'كل ما في هذه الصفحة يعمل رغم ذلك. افتحوا الوحدة لترَوا أين توقّفتم.');
+            return;
+        }
+
+        /* Paint from the device cache first so the strip starts in the
+         * right shape, then refresh from the server. */
+        var cached = null;
+        try { cached = auth.getCompletionsCached && auth.getCompletionsCached(); } catch (e) {}
+        if (cached) render(cached);
+
+        auth.getCompletions().then(render).catch(function (err) {
+            console.warn('AISA: could not read completions for the AI Literacy hub', err);
+            if (cached) return;   /* the cached paint is better than an error */
+            unknown('Could not check your training record',
+                    'تعذّر التحقّق من سجلّ تدريبكم',
+                    'That is this page, not you — open the module and it will tell you where you are.',
+                    'المشكلة في هذه الصفحة لا فيكم — افتحوا الوحدة وستخبركم بموضعكم بالضبط.');
+        });
+    }
+
+    if (window.aisaReady) {
+        /* aisaReady polls for a minute and then gives up silently, so on
+         * its own it can leave the strip saying "checking" for ever. Settle
+         * it ourselves well before that. The callback still repaints when
+         * it does arrive — `settled` only stops this fallback from
+         * overwriting a real answer. */
+        window.aisaReady(function (auth) { settled = true; start(auth); });
+        setTimeout(function () {
+            if (settled) return;
+            unknown('Your training record is not available here',
+                    'سجلّ تدريبكم غير متاح هنا',
+                    'Sign in from the bar at the top to see it. Everything else on this page works either way.',
+                    'سجّلوا الدخول من الشريط العلوي لعرضه. وكل ما عدا ذلك في هذه الصفحة يعمل في الحالتين.');
+        }, 20000);
+    } else if (window.aisaAuth) {
+        settled = true;
+        start(window.aisaAuth);
+    } else {
+        start(null);
+    }
+})();
+</script>
+
+<!-- Apply the saved language before menu.js arrives, so an Arabic
+     reader never gets a flash of English. The toggle itself is the
+     global one in the app-bar; this only reads what it stored. -->
+<script>
+    (function () {
+        var TITLES = { en: 'AISA | AI Literacy Hub', ar: 'AISA | مركز الثقافة في الذكاء الاصطناعي' };
+        function syncTitle() {
+            var lang = document.documentElement.getAttribute('lang') === 'ar' ? 'ar' : 'en';
+            document.title = TITLES[lang];
+        }
+        try {
+            var saved = localStorage.getItem('aisa-newsletter-lang') === 'ar' ? 'ar' : 'en';
+            document.documentElement.setAttribute('lang', saved);
+            document.documentElement.setAttribute('dir', saved === 'ar' ? 'rtl' : 'ltr');
+        } catch (e) {}
+        syncTitle();
+        document.addEventListener('aisa:lang-change', syncTitle);
+    })();
+</script>
+
+</body>
+</html>

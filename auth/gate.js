@@ -116,7 +116,7 @@
         if (auxLoaded) return;
         auxLoaded = true;
         if (!GATE_SCRIPT_SRC) return;
-        ['certificate.js?v=7', 'search-index.js?v=9', 'menu.js?v=15', 'dwell.js?v=2'].forEach(function (name) {
+        ['certificate.js?v=7', 'search-index.js?v=10', 'menu.js?v=16', 'dwell.js?v=2'].forEach(function (name) {
             var url = GATE_SCRIPT_SRC.replace(/gate\.js(\?.*)?$/, name);
             if (url === GATE_SCRIPT_SRC) return;  // pattern didn't match — skip safely
             var s = document.createElement('script');
