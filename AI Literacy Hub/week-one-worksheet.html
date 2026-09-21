@@ -104,9 +104,10 @@
     </header>
 
     <div class="bar noprint">
-        <button type="button" class="primary" id="print">Print / save as PDF</button>
+        <button type="button" class="primary" id="save">Save to the Hub</button>
+        <button type="button" id="print">Print / save as PDF</button>
         <button type="button" id="clear">Clear this sheet</button>
-        <span class="saved" id="saved">Saves to this device as you type.</span>
+        <span class="saved" id="saved">Saves as you type.</span>
     </div>
 
     <!-- ===== 1 ===== -->
@@ -216,8 +217,10 @@
     </section>
 
     <footer class="end">
-        <p><strong>Before you close this:</strong> hit <em>Print / save as PDF</em>. This sheet saves to this
-        device only — it is not sent anywhere and it will not follow you to another laptop.</p>
+        <p><strong>This sheet saves to the Hub against your name</strong>, so the AI Lead can see what the
+        room came up with and what people are still stuck on. It also keeps a copy on this device, so a
+        dropped connection never costs you what you typed. <em>Print / save as PDF</em> if you want it on
+        paper for the lesson.</p>
         <p>Everything else lives on the
         <a href="ai-literacy-hub.html">AI Literacy hub</a> — the training, the Scope &amp; Sequence,
         the assessment tracker and who to ask.</p>
@@ -270,9 +273,12 @@
     }
     sel.addEventListener('change', paintFocus);
 
-    /* Local only. No backend: the Apps Script mail/capture endpoints are
-     * mid-redeploy, and a worksheet that fails to save in front of a room
-     * is worse than one that never claimed to. */
+    /* Two saves, deliberately. The device copy is written on every
+     * keystroke and is what protects a teacher from gym wifi; the Hub
+     * copy is what the AI Lead can read afterwards. The device copy is
+     * never blocked on the network one, so a failed request costs a
+     * badge, not an answer. */
+    var MODULE_ID = 'ai-literacy-week-one';
     var KEY = 'aisa_week_one_v1';
     var FIELDS = ['grade','outcome','hook','task','move','partner-name','feedback','fix','date','evidence','stuck'];
     var saved = document.getElementById('saved');
@@ -286,19 +292,93 @@
         });
         paintFocus();
     }
-    var t;
-    function store() {
+    function collect() {
         var data = {};
         FIELDS.forEach(function (id) {
             var el = document.getElementById(id);
             if (el) data[id] = el.value;
         });
+        return data;
+    }
+    function filledIn(data) {
+        return FIELDS.some(function (k) { return (data[k] || '').trim(); });
+    }
+
+    var t, pushT, dirty = false, inFlight = false;
+
+    /* One status line, two facts. The device save fires on a 400ms
+     * debounce and the Hub save resolves whenever the network says so,
+     * so whichever landed last used to win — which meant pressing
+     * "Save to the Hub" could finish by reading "Saved on this device",
+     * and a real failure could be wiped by a routine keystroke. The
+     * renderer holds both states instead of racing them. */
+    var deviceAt = null, hub = { state: 'idle', at: null, msg: '' };
+    /* What was actually sent, so a debounce that lands after a
+     * successful save does not falsely mark the sheet as edited-since. */
+    var pushedSnapshot = null;
+
+    function render() {
+        var bits = [];
+        if (hub.state === 'saving')      { bits.push('Saving to the Hub…'); }
+        else if (hub.state === 'saved')  { bits.push('Saved to the Hub · ' + hub.at); }
+        else if (hub.state === 'error')  { bits.push(hub.msg); }
+        if (deviceAt && hub.state !== 'saving') {
+            bits.push(hub.state === 'saved' ? 'device copy kept' : 'Saved on this device · ' + deviceAt);
+        }
+        if (!bits.length) bits.push('Saves as you type.');
+        saved.textContent = bits.join(' · ');
+        saved.style.color = hub.state === 'error' ? '#a3341f' : (hub.state === 'saved' ? '#1d6b3f' : '');
+    }
+    function say(msg, tone) {          /* one-off notices that are not a save */
+        saved.textContent = msg;
+        saved.style.color = tone === 'bad' ? '#a3341f' : (tone === 'good' ? '#1d6b3f' : '');
+    }
+
+    /* Push to the Hub. Never called with an empty sheet — an untouched
+     * worksheet should not create a row with somebody's name on it. */
+    function push(explicit) {
+        var data = collect();
+        if (!filledIn(data)) {
+            if (explicit) say('Nothing to save yet — fill something in first.');
+            return;
+        }
+        if (!window.aisaAuth || !window.aisaAuth.saveModuleResponse) {
+            say('Saved on this device. Sign in to send it to the Hub.', 'bad');
+            return;
+        }
+        if (inFlight) { dirty = true; return; }
+        inFlight = true;
+        if (explicit) { hub.state = 'saving'; render(); }
+        window.aisaAuth.saveModuleResponse(MODULE_ID, 'week-one', data, { completed: true })
+            .then(function () {
+                inFlight = false;
+                pushedSnapshot = JSON.stringify(data);
+                hub.state = 'saved'; hub.at = new Date().toLocaleTimeString();
+                render();
+                if (dirty) { dirty = false; schedulePush(); }
+            })
+            .catch(function (err) {
+                inFlight = false;
+                var code = (err && (err.code || err.message)) || 'unknown';
+                hub.state = 'error';
+                hub.msg = 'Not saved to the Hub yet (' + code + ') — your answers are safe on this '
+                        + 'device. Press Save to the Hub again in a moment.';
+                render();
+            });
+    }
+    function schedulePush() { clearTimeout(pushT); pushT = setTimeout(function () { push(false); }, 4000); }
+
+    function store() {
+        var data = collect();
         try {
             localStorage.setItem(KEY, JSON.stringify(data));
-            saved.textContent = 'Saved on this device · ' + new Date().toLocaleTimeString();
+            deviceAt = new Date().toLocaleTimeString();
+            if (hub.state === 'saved' && JSON.stringify(data) !== pushedSnapshot) hub.state = 'idle';
+            render();
         } catch (e) {
-            saved.textContent = 'Could not save on this device — print before you close the tab.';
+            say('Could not save on this device — print before you close the tab.', 'bad');
         }
+        schedulePush();
     }
     FIELDS.forEach(function (id) {
         var el = document.getElementById(id);
@@ -307,7 +387,13 @@
         el.addEventListener('change', store);
     });
 
+    document.getElementById('save').addEventListener('click', function () { push(true); });
     document.getElementById('print').addEventListener('click', function () { window.print(); });
+
+    /* Last chance on the way out — best effort, no promises. */
+    window.addEventListener('pagehide', function () {
+        if (filledIn(collect())) { try { push(false); } catch (e) {} }
+    });
     document.getElementById('clear').addEventListener('click', function () {
         if (!window.confirm('Clear everything on this sheet? This cannot be undone.')) return;
         FIELDS.forEach(function (id) { var el = document.getElementById(id); if (el) el.value = ''; });
@@ -317,6 +403,25 @@
     });
 
     restore();
+
+    /* If this teacher already saved a sheet — on another device, or
+     * earlier today — prefer what the Hub holds over an empty local one,
+     * so they are not staring at a blank page they know they filled in. */
+    if (window.aisaReady) {
+        window.aisaReady(function (auth) {
+            if (!auth || !auth.getModuleResponse) return;
+            auth.getModuleResponse(MODULE_ID).then(function (r) {
+                var d = r && (r.data || (r.response && r.response.data));
+                if (!d || filledIn(collect())) return;      // local wins if it has anything
+                FIELDS.forEach(function (id) {
+                    var el = document.getElementById(id);
+                    if (el && typeof d[id] === 'string' && d[id]) el.value = d[id];
+                });
+                paintFocus();
+                say('Picked up the copy saved against your name.');
+            }).catch(function () { /* nothing saved yet, or offline: fine */ });
+        });
+    }
 })();
 </script>
 </body>
