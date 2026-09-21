@@ -504,11 +504,17 @@ day it is settled. The AI Growth Test portal (`instructwin.com/aigt`) is
 a third, genuinely separate sign-in and is listed as such.
 
 **The face-to-face session** is the first section on the page
-(`#session`), added 21 September 2026 when the audience changed. Who has
-to attend is now **all secondary staff, plus KG and Elementary homeroom
-teachers** — wider than the original "anyone who received the email",
-and the block says so in as many words, because staff who read the first
-email were told something narrower.
+(`#session`), added 21 September 2026 when the audience changed. It runs
+**3:10–4:25 pm in the Secondary Gym**, and who has to attend is **all
+secondary teaching staff, plus KG and Elementary homeroom teachers** —
+wider than the original "anyone who received the email", and the block
+says so in as many words, because staff who read the first email were
+told something narrower. Teaching staff, note, not all secondary staff.
+
+**The Secondary Gym and the Big Gym are the same room.** Issue No. 5 went
+out naming the Big Gym and the reminder names the Secondary Gym, so both
+pages now say "the same room as the Big Gym" once, rather than leaving
+staff to work out whether there are two venues.
 
 Date, time and venue are static text so they stay true in print and after
 the day. Only the small pill beside the badge is computed, and it carries
@@ -516,10 +522,25 @@ the day. Only the small pill beside the badge is computed, and it carries
 freeze a "today" that stops being today.
 
 `SESSION` and `COPY` at the top of the page's session script are the two
-things to change when the session moves. `SESSION.end` is an
-**assumption** (start + 2 hours); no finish time was given. It only
-decides when the pill stops saying "happening now" and when the mail bar
-locks, so set it to the real one when it is known.
+things to change when the session moves.
+
+**The session's audience is deliberately wider than the module's, and
+they are not the same list.** The readiness module is still required only
+of the teachers on the ADEK Implementation Form — the 62 in
+`AI_LITERACY_COHORT`. The face-to-face went school-wide across secondary
+so the whole division could pick the curriculum up if timetabling or
+staffing shifts later in the year; it is contingency, not a new teaching
+assignment, and the page says as much so nobody reads attendance as
+being added to the roster.
+
+**So do not "fix" the mismatch by widening the cohort.** Changing
+`AI_LITERACY_COHORT` moves the compliance tracker, the "required done"
+and "fully complete" headline numbers, and the newsletter's
+*Do you have to do the training?* card — it would start telling several
+dozen secondary teachers they are behind on required training they were
+never assigned. The hub's "Before you come" step is written to match:
+finish the module if you are teaching AI Literacy, and if you are not it
+is not required of you, though the session builds on it.
 
 **The mail bar on this page sends the reminder** through the same
 `send_newsletter` endpoint the newsletter uses, held to
@@ -934,12 +955,18 @@ keeping — the checkbox is the only signal of who tried. Put the
 "before Monday" urgency back only once grades are actually visible.
 
 **Corrected on the day, 21 September 2026.** The Monday session section
-and the key-dates row said *Big Gym* and *anyone who received the email*;
-both were wrong by the morning of the session. They now read **Secondary
-Gym** and **all secondary staff · KG & Elementary homeroom teachers**,
-carry "bring your device, charged", and the line telling people without
-the email to ignore it is gone. The issue's own `ITEMS` mail-out summary
-was updated to match, or a re-send would have mailed the old venue.
+and the key-dates row said *anyone who received the email*, which was
+wrong by the morning of the session. They now read **all secondary
+teaching staff · KG & Elementary homeroom teachers**, give the full
+**3:10–4:25 pm**, carry "bring your device, charged", and the line
+telling people without the email to ignore it is gone. The issue's own
+`ITEMS` mail-out summary was updated to match, or a re-send would have
+mailed the old audience.
+
+The room is named **Secondary Gym** here and on the hub, with "the same
+room as the Big Gym" alongside it — the venue did not move, it is the
+same hall under two names, and the issue had already gone out using the
+other one.
 
 This is the exception to "the next issue, not an edit to this one":
 that rule is about *new* material. A published fact that has since
