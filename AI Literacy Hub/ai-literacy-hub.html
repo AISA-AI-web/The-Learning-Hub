@@ -68,6 +68,34 @@
            parent or it sets the whole page's min-content width — the trap
            that made the AI Growth Test guide 1578px wide on a phone. */
         .jump-strip { flex-wrap: wrap; min-width: 0; }
+
+        /* Dropped from the PDF: a computed "today" that would freeze. */
+        .no-print:empty { display: none; }
+
+        /* Mail-out bar. Styled here rather than in Tailwind because a
+           control that reports failures has to stay legible even if the
+           CDN never answers. Same shape as the newsletter's. */
+        #nl-send {
+            position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+            background: #17203a; color: #e9e4f7; border-top: 1px solid #2f3a5e;
+            font-family: 'Inter', sans-serif;
+        }
+        #nl-send .nl-inner {
+            max-width: 72rem; margin: 0 auto; padding: .7rem 1rem;
+            display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+        }
+        #nl-send .nl-kicker {
+            font-size: .62rem; font-weight: 800; letter-spacing: .09em;
+            text-transform: uppercase; color: #a9b0ff;
+        }
+        #nl-send button {
+            font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer;
+            border-radius: .6rem; padding: .45rem .9rem; border: 1px solid #47507a;
+            background: transparent; color: #e9e4f7;
+        }
+        #nl-send button.nl-go { background: #4f46e5; border-color: #4f46e5; color: #fff; }
+        #nl-send button:disabled { opacity: .5; cursor: default; }
+        #nl-send .nl-msg { flex-basis: 100%; margin: .2rem 0 0; font-size: .78rem; line-height: 1.4; }
     </style>
     <script src="../auth/gate.js?v=24"></script>
 </head>
@@ -119,6 +147,7 @@
 
     <!-- ===================== JUMP STRIP ===================== -->
     <nav class="jump-strip flex gap-2 mt-5" aria-label="On this page">
+        <a href="#session"      class="rounded-full border border-indigo-300 bg-indigo-50 px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-indigo-800 hover:border-indigo-500 transition-colors"><span class="lang-en">The training session</span><span class="lang-ar">جلسة التدريب</span></a>
         <a href="#start-here"   class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">Start here</span><span class="lang-ar">ابدأوا هنا</span></a>
         <a href="#instructwin"  class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">InstrucTwin</span><span class="lang-ar">InstrucTwin</span></a>
         <a href="#teaching"     class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">How often you teach it</span><span class="lang-ar">كم مرّة تدرّسونه</span></a>
@@ -127,6 +156,134 @@
         <a href="#responsible"  class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">Responsible use</span><span class="lang-ar">الاستخدام المسؤول</span></a>
         <a href="#questions"    class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">Questions</span><span class="lang-ar">الأسئلة</span></a>
     </nav>
+
+    <!-- ===================== THE SESSION =====================
+         The face-to-face training. Everything factual here is static so
+         it stays true in print and after the day; only the small status
+         pill is computed, and it carries .no-print so the PDF does not
+         freeze a "today" that stops being today. Change SESSION at the
+         bottom of this file to move it. -->
+    <section id="session" class="mt-8">
+        <div class="rounded-2xl border-2 border-indigo-300 bg-indigo-50 p-5 sm:p-6">
+            <div class="flex items-center gap-2 flex-wrap">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-white bg-indigo-700 rounded-full px-2.5 py-1">
+                    <span class="lang-en">Face-to-face training</span>
+                    <span class="lang-ar">تدريب حضوري</span>
+                </span>
+                <span id="session-when" class="no-print text-[10px] font-bold uppercase tracking-widest text-indigo-800 bg-white border border-indigo-200 rounded-full px-2.5 py-1"></span>
+            </div>
+
+            <h2 class="font-heading font-black text-2xl sm:text-3xl text-slate-900 mt-3">
+                <span class="lang-en">Monday 21 September, 3:10 pm — Secondary Gym</span>
+                <span class="lang-ar">الاثنين ٢١ سبتمبر، ٣:١٠ مساءً — الصالة الرياضية بالمرحلة الثانوية</span>
+            </h2>
+            <p class="text-slate-700 mt-1.5 max-w-3xl">
+                <span class="lang-en">One session, in the room, building on the readiness module you completed. The questions you wrote in the module are what set the agenda.</span>
+                <span class="lang-ar">جلسة واحدة، حضورياً، تُبنى على وحدة الجاهزية التي أنهيتموها. والأسئلة التي كتبتموها في الوحدة هي ما يحدّد جدول الأعمال.</span>
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+                <div class="rounded-xl bg-white border border-indigo-100 p-3.5">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-700">
+                        <span class="lang-en">When</span><span class="lang-ar">الموعد</span>
+                    </p>
+                    <p class="font-heading font-bold text-slate-900 mt-0.5">
+                        <span class="lang-en">3:10 pm, Monday 21 September</span>
+                        <span class="lang-ar">٣:١٠ مساءً، الاثنين ٢١ سبتمبر</span>
+                    </p>
+                </div>
+                <div class="rounded-xl bg-white border border-indigo-100 p-3.5">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-700">
+                        <span class="lang-en">Where</span><span class="lang-ar">المكان</span>
+                    </p>
+                    <p class="font-heading font-bold text-slate-900 mt-0.5">
+                        <span class="lang-en">Secondary Gym</span>
+                        <span class="lang-ar">الصالة الرياضية بالمرحلة الثانوية</span>
+                    </p>
+                </div>
+                <div class="rounded-xl bg-white border border-indigo-100 p-3.5">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-700">
+                        <span class="lang-en">Bring</span><span class="lang-ar">أحضروا معكم</span>
+                    </p>
+                    <p class="font-heading font-bold text-slate-900 mt-0.5">
+                        <span class="lang-en">Your device, charged</span>
+                        <span class="lang-ar">جهازكم مشحوناً</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Who has to be there. This is the part that changed, so it
+                 says so — staff who read the original email were told
+                 something narrower. -->
+            <div class="rounded-xl bg-white border border-indigo-200 p-4 mt-3">
+                <h3 class="font-heading font-extrabold text-lg text-slate-900">
+                    <span class="lang-en">Who has to attend</span>
+                    <span class="lang-ar">من يجب أن يحضر</span>
+                </h3>
+                <ul class="mt-2 space-y-2 text-sm text-slate-700">
+                    <li class="flex gap-2.5">
+                        <span class="text-indigo-600 shrink-0" aria-hidden="true">●</span>
+                        <span>
+                            <span class="lang-en"><strong>All secondary staff</strong> — required, whether or not you are delivering AI Literacy lessons yourself.</span>
+                            <span class="lang-ar"><strong>جميع موظّفي المرحلة الثانوية</strong> — الحضور إلزامي، سواء كنتم تدرّسون دروس الثقافة في الذكاء الاصطناعي أم لا.</span>
+                        </span>
+                    </li>
+                    <li class="flex gap-2.5">
+                        <span class="text-indigo-600 shrink-0" aria-hidden="true">●</span>
+                        <span>
+                            <span class="lang-en"><strong>KG and Elementary — homeroom teachers only.</strong> If you are not a homeroom teacher in KG or Elementary, this session is not for you.</span>
+                            <span class="lang-ar"><strong>رياض الأطفال والمرحلة الابتدائية — معلّمو الصفوف فقط.</strong> وإن لم تكونوا معلّمي صفوف في هاتين المرحلتين، فهذه الجلسة لا تخصّكم.</span>
+                        </span>
+                    </li>
+                </ul>
+                <p class="text-sm text-indigo-900 bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-2 mt-3">
+                    <span class="lang-en"><strong>This has changed.</strong> Attendance is no longer limited to the people who received the original email — if you are secondary, you are expected there.</span>
+                    <span class="lang-ar"><strong>طرأ تغيير.</strong> لم يعد الحضور مقتصراً على من وصلتهم الرسالة الأولى — فإن كنتم في المرحلة الثانوية، فحضوركم متوقَّع.</span>
+                </p>
+            </div>
+
+            <div class="rounded-xl bg-white border border-indigo-100 p-4 mt-3">
+                <h3 class="font-heading font-extrabold text-lg text-slate-900">
+                    <span class="lang-en">Before you come</span>
+                    <span class="lang-ar">قبل الحضور</span>
+                </h3>
+                <ul class="mt-2 space-y-2 text-sm text-slate-700">
+                    <li class="flex gap-2.5">
+                        <span class="text-indigo-600 shrink-0" aria-hidden="true">1.</span>
+                        <span>
+                            <span class="lang-en"><strong>Finish the readiness module</strong> if you have not — about 60 minutes, and it saves as you type, so a part-finished one picks up where you left off.</span>
+                            <span class="lang-ar"><strong>أنهوا وحدة الجاهزية</strong> إن لم تكونوا قد فعلتم — نحو ٦٠ دقيقة، وتُحفَظ أوّلاً بأوّل، فالوحدة غير المكتملة تُستأنف من حيث توقّفتم.</span>
+                        </span>
+                    </li>
+                    <li class="flex gap-2.5">
+                        <span class="text-indigo-600 shrink-0" aria-hidden="true">2.</span>
+                        <span>
+                            <span class="lang-en"><strong>Bring your first-lesson plan.</strong> The six-line plan you wrote in the module prints from the end of it — on paper or on screen, have it with you.</span>
+                            <span class="lang-ar"><strong>أحضروا خطة درسكم الأوّل.</strong> خطة الأسطر الستة التي كتبتموها في الوحدة قابلة للطباعة من نهايتها — ورقياً أو على الشاشة، لتكن معكم.</span>
+                        </span>
+                    </li>
+                    <li class="flex gap-2.5">
+                        <span class="text-indigo-600 shrink-0" aria-hidden="true">3.</span>
+                        <span>
+                            <span class="lang-en"><strong>Bring your device, charged</strong> — and its charger if it does not hold a full afternoon. You will be working on it in the room.</span>
+                            <span class="lang-ar"><strong>أحضروا جهازكم مشحوناً</strong> — ومعه الشاحن إن كانت بطاريته لا تكفي فترة بعد الظهر. فستعملون عليه داخل القاعة.</span>
+                        </span>
+                    </li>
+                </ul>
+                <p class="text-sm text-slate-500 mt-3">
+                    <span class="lang-en">Teaching starts this week — your first lesson falls somewhere in the week of 21 September, not necessarily on the Monday.</span>
+                    <span class="lang-ar">يبدأ التدريس هذا الأسبوع — ويقع درسكم الأوّل في موضع ما من أسبوع ٢١ سبتمبر، وليس بالضرورة يوم الاثنين.</span>
+                </p>
+            </div>
+
+            <a href="../PD%20Modules/ai-curriculum-readiness-module.html" data-track="ai-literacy:session-module"
+               class="mt-4 inline-flex items-center gap-2 rounded-xl bg-indigo-700 text-white font-heading font-bold text-sm px-5 py-3 hover:bg-indigo-800 transition-colors">
+                <span class="lang-en">Open the readiness module</span>
+                <span class="lang-ar">افتحوا وحدة الجاهزية</span>
+                <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+            </a>
+        </div>
+    </section>
 
     <!-- ===================== START HERE ===================== -->
     <section id="start-here" class="mt-9">
@@ -678,6 +835,195 @@
     </footer>
 
 </main>
+
+<!-- Mail-out bar. Rendered only for the addresses the server's
+     NEWSLETTER_SENDERS allowlist names, and hiding it is a courtesy, not
+     a control — send_newsletter re-checks the caller server-side,
+     because the sign-in gate is client-side and this repo is public. -->
+<div id="nl-send" hidden>
+    <div class="nl-inner">
+        <span class="nl-kicker">Training reminder</span>
+        <span id="nl-count" style="font-size:.82rem;"></span>
+        <span style="flex:1"></span>
+        <button type="button" id="nl-test">Send me a test</button>
+        <button type="button" class="nl-go" id="nl-go">Email all staff</button>
+        <p class="nl-msg" id="nl-msg"></p>
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    /* =================================================================
+     * THE SESSION, AND THE REMINDER EMAIL ABOUT IT
+     *
+     * One place to change the date, time and venue: they drive the
+     * status pill at the top, and the mail bar refuses to send once the
+     * session is over, so a stale reminder cannot go out to the whole
+     * school by accident.
+     *
+     * The email copy is here rather than scraped from the page because
+     * the mail is a nudge and the page is the detail — and because the
+     * newsletter learned this the hard way: a send block left unedited
+     * mails the previous message. If you move the session, change
+     * SESSION *and* re-read COPY below.
+     * ================================================================= */
+    var SESSION = {
+        start: '2026-09-21T15:10:00+04:00',
+        /* No finish time was given, so this is an assumption used only to
+         * decide when the pill stops saying "happening now" and the mail
+         * bar locks. Set it to the real end time when you know it. */
+        end:   '2026-09-21T17:10:00+04:00'
+    };
+
+    var COPY = {
+        subject:  'Today 3:10 pm, Secondary Gym \u2014 AI Literacy training',
+        issue:    'AI Literacy \u00b7 Monday 21 September',
+        headline: 'Face-to-face training today, 3:10 pm, Secondary Gym',
+        intro:    'Required for all secondary staff, and for KG and Elementary homeroom teachers. '
+                + 'Please bring your device, charged \u2014 you will be working on it in the room.',
+        items: [
+            'Who: all secondary staff, plus KG and Elementary homeroom teachers. This has widened \u2014 it is no longer only the people who got the original email.',
+            'When and where: today, Monday 21 September, 3:10 pm, in the Secondary Gym.',
+            'Bring your device, charged, and its charger if it will not last the afternoon.',
+            'Before you arrive: finish the 60-minute readiness module if you have not. The session builds on it, and the questions you wrote there set the agenda.',
+            'Bring your first-lesson plan \u2014 the six-line plan from the module prints from the end of it.',
+            'Teaching starts this week: your first lesson falls somewhere in the week of 21 September.'
+        ],
+        linkLabel: 'Open the AI Literacy Hub'
+    };
+
+    /* ---- the status pill ---- */
+    var startMs = Date.parse(SESSION.start);
+    var endMs   = Date.parse(SESSION.end);
+
+    function sameDay(a, b) {
+        return a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+    }
+    function renderPill() {
+        var el = document.getElementById('session-when');
+        if (!el || isNaN(startMs)) return;
+        var now = Date.now(), ar = document.documentElement.getAttribute('lang') === 'ar';
+        var txt;
+        if (now >= endMs)        txt = ar ? 'انتهت هذه الجلسة' : 'This session has taken place';
+        else if (now >= startMs) txt = ar ? 'جارية الآن'       : 'Happening now';
+        else if (sameDay(new Date(now), new Date(startMs))) {
+            var mins = Math.round((startMs - now) / 60000);
+            var hrs  = Math.floor(mins / 60);
+            txt = ar
+                ? (hrs >= 1 ? 'اليوم · بعد نحو ' + hrs + ' ساعة' : 'اليوم · بعد ' + mins + ' دقيقة')
+                : (hrs >= 1 ? 'Today · in about ' + hrs + (hrs === 1 ? ' hour' : ' hours')
+                            : 'Today · in ' + mins + ' minutes');
+        } else {
+            var days = Math.ceil((startMs - now) / 86400000);
+            txt = days > 0
+                ? (ar ? 'بعد ' + days + ' يوم' : 'In ' + days + (days === 1 ? ' day' : ' days'))
+                : (ar ? 'انتهت هذه الجلسة' : 'This session has taken place');
+        }
+        el.textContent = txt;
+    }
+    renderPill();
+    setInterval(renderPill, 60000);
+    document.addEventListener('aisa:lang-change', renderPill);
+
+    /* ---- the mail bar ---- */
+    var bar  = document.getElementById('nl-send');
+    var msg  = document.getElementById('nl-msg');
+    var go   = document.getElementById('nl-go');
+    var test = document.getElementById('nl-test');
+    var cnt  = document.getElementById('nl-count');
+    if (!bar || !window.aisaReady) return;
+
+    function say(t, tone) {
+        msg.textContent = t || '';
+        msg.style.color = tone === 'bad' ? '#ffb4b4' : (tone === 'good' ? '#bdf5c8' : '#e9e4f7');
+    }
+    function busy(on) { go.disabled = on; test.disabled = on; }
+
+    /* Name the failure and the fix. The one that bites first is mail
+     * authorisation: a web app never shows an auth prompt to the person
+     * clicking the button, so the script owner grants it from the editor. */
+    function explain(r) {
+        var e = (r && r.error) || 'unknown error';
+        if (e === 'mail_not_authorized') {
+            return 'The Apps Script project has not been given permission to send email. Open the '
+                 + 'Apps Script editor and run authorizeMail() once, as the account that owns the '
+                 + 'script, then try again.';
+        }
+        if (e === 'unknown_action') {
+            return 'The Apps Script backend has not been redeployed yet \u2014 Deploy \u2192 Manage '
+                 + 'deployments \u2192 New version. Nothing was sent.';
+        }
+        if (e === 'not_newsletter_sender') return 'Your account is not on the sender list.';
+        if (e === 'no_recipients') {
+            return 'No recipients found \u2014 the roster and sessions tabs are both empty of '
+                 + '@aisa.sch.ae addresses.';
+        }
+        return 'Not sent: ' + e + (r && r.message ? ' (' + r.message + ')' : '');
+    }
+
+    /* The page's own address, so no production host is hardcoded. */
+    function hubUrl() { return location.origin + location.pathname + '#session'; }
+
+    function send(opts) {
+        busy(true);
+        say(opts.testOnly ? 'Sending you a test\u2026' : 'Sending\u2026');
+        window.aisaAuth.sendNewsletter({
+            url: hubUrl(), subject: COPY.subject, issue: COPY.issue,
+            headline: COPY.headline, intro: COPY.intro, items: COPY.items,
+            linkLabel: COPY.linkLabel,
+            testOnly: !!opts.testOnly, confirm: !opts.testOnly
+        }).then(function (r) {
+            busy(false);
+            if (!r || r.ok === false || r.error) { say(explain(r), 'bad'); return; }
+            var bits = [r.sent + ' sent'];
+            if (r.failed)  bits.push(r.failed + ' failed');
+            if (r.skipped) bits.push(r.skipped + ' skipped'
+                + (r.reason === 'daily_quota_exhausted'
+                    ? ' \u2014 today\u2019s mail quota is used up, try again tomorrow'
+                    : ' \u2014 hit the 6-minute limit, click again to send the rest'));
+            say((r.test_only ? 'Test: ' : 'Done: ') + bits.join(', ') + '.',
+                (r.failed || r.skipped) ? 'bad' : 'good');
+        }).catch(function (e) { busy(false); say('Not sent: ' + e, 'bad'); });
+    }
+
+    test.addEventListener('click', function () { send({ testOnly: true }); });
+    go.addEventListener('click', function () {
+        if (Date.now() >= endMs) {
+            say('This session is over. Update SESSION and COPY in this page before sending again '
+                + '\u2014 otherwise every member of staff gets a reminder for a meeting that has '
+                + 'already happened.', 'bad');
+            return;
+        }
+        if (!window.confirm('Email this reminder to all AISA staff?\n\nIt goes to everyone on the '
+            + 'roster, not just the people who have to attend \u2014 the email says who does. '
+            + 'Send yourself a test first if you have not.')) return;
+        send({ testOnly: false });
+    });
+
+    window.aisaReady(function (auth) {
+        if (!auth || !auth.newsletterStatus) return;
+        auth.newsletterStatus().then(function (r) {
+            if (!r || !r.may_send) return;      // not a sender: the bar stays hidden
+            bar.hidden = false;
+            document.body.style.paddingBottom = '6rem';
+            cnt.textContent = (r.recipients || 0) + ' staff on the list';
+            if (Date.now() >= endMs) {
+                say('This session is over \u2014 sending is locked. Update SESSION and COPY in this '
+                    + 'page first.', 'bad');
+                go.disabled = true;
+            } else if (r.mail_authorized === false) {
+                say('Email is not switched on yet: run authorizeMail() once from the Apps Script '
+                    + 'editor, as the account that owns the script. Nothing will send until you do.', 'bad');
+            } else if (r.quota_left != null && r.quota_left < (r.recipients || 0)) {
+                say('Heads up: ' + r.quota_left + ' emails left in today\u2019s quota, '
+                    + (r.recipients || 0) + ' recipients. Anything over reports as skipped.', 'bad');
+            }
+        }).catch(function () { /* no backend yet: leave the bar hidden */ });
+    });
+})();
+</script>
 
 <script>
 (function () {

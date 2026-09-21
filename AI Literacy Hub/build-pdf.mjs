@@ -185,6 +185,11 @@ const printCss = (lang) => `
 
   svg { display: none !important; }
 
+  /* Anything computed at page-load time that would be frozen wrong in a
+     file — the session's "today / in 3 hours" pill. The date, time and
+     venue beside it are static, so the block still reads correctly. */
+  .no-print { display: none !important; }
+
   /* The round icon tiles are decoration, and my card rule above turns
      them into empty bordered boxes. Out. The inline emoji in callouts
      and list bullets are untouched — they carry meaning. */

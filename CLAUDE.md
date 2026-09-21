@@ -503,6 +503,42 @@ worked — rather than presenting a guess as fact. Delete the fallback the
 day it is settled. The AI Growth Test portal (`instructwin.com/aigt`) is
 a third, genuinely separate sign-in and is listed as such.
 
+**The face-to-face session** is the first section on the page
+(`#session`), added 21 September 2026 when the audience changed. Who has
+to attend is now **all secondary staff, plus KG and Elementary homeroom
+teachers** — wider than the original "anyone who received the email",
+and the block says so in as many words, because staff who read the first
+email were told something narrower.
+
+Date, time and venue are static text so they stay true in print and after
+the day. Only the small pill beside the badge is computed, and it carries
+`.no-print`, which `build-pdf.mjs` strips — otherwise every PDF would
+freeze a "today" that stops being today.
+
+`SESSION` and `COPY` at the top of the page's session script are the two
+things to change when the session moves. `SESSION.end` is an
+**assumption** (start + 2 hours); no finish time was given. It only
+decides when the pill stops saying "happening now" and when the mail bar
+locks, so set it to the real one when it is known.
+
+**The mail bar on this page sends the reminder** through the same
+`send_newsletter` endpoint the newsletter uses, held to
+`NEWSLETTER_SENDERS` server-side. Two things about it:
+
+- **It mails everyone on the roster**, not just the people who have to
+  attend — the Hub has no way to mail a subset. The subject and the
+  first line therefore say who the session is for, and the confirm
+  dialog says so too before anything goes out.
+- **It locks itself once `SESSION.end` has passed** and says to update
+  `SESSION` and `COPY` first. Without that, a click months later mails
+  the whole school a reminder for a meeting that already happened —
+  which is exactly the trap the newsletter note describes, made worse by
+  the fact that this page is not obviously an "issue".
+
+Everything the bar can fail with is named on screen with the fix: no
+redeploy (`unknown_action`), no mail scope (`mail_not_authorized`, the
+one that bites first), not a sender, no recipients, quota.
+
 **The page names the role, not the person.** Every reference that was
 *Brandon*, *me* or *I* reads **the AI Lead** (Arabic: *قائد الذكاء
 الاصطناعي*), changed 21 September 2026 at Brandon's request so the page
@@ -896,6 +932,20 @@ the plan *when it opens*. The "when you have access" steps and the
 "could not get into InstrucTwin" checkbox are unchanged and still worth
 keeping — the checkbox is the only signal of who tried. Put the
 "before Monday" urgency back only once grades are actually visible.
+
+**Corrected on the day, 21 September 2026.** The Monday session section
+and the key-dates row said *Big Gym* and *anyone who received the email*;
+both were wrong by the morning of the session. They now read **Secondary
+Gym** and **all secondary staff · KG & Elementary homeroom teachers**,
+carry "bring your device, charged", and the line telling people without
+the email to ignore it is gone. The issue's own `ITEMS` mail-out summary
+was updated to match, or a re-send would have mailed the old venue.
+
+This is the exception to "the next issue, not an edit to this one":
+that rule is about *new* material. A published fact that has since
+changed, about something happening today, on the most forwarded page on
+the Hub, is a correction — leave it and the newsletter actively
+misdirects people. New material still waits for the next issue.
 
 Two facts in it came from Brandon rather than the repo. The **secondary
 delivery model** is one timetabled period a week for Grades 6–12 with
