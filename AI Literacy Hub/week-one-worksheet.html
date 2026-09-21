@@ -100,7 +100,7 @@
     <header class="hero">
         <p class="eyebrow">AI Literacy · face-to-face training · 21 September</p>
         <h1>Week One — ready to teach</h1>
-        <p>Twenty minutes. You leave with the first ten minutes of a lesson you could teach tomorrow.</p>
+        <p>Twenty minutes. You already wrote the plan &mdash; today we finish the parts a six-line plan never contains.</p>
     </header>
 
     <div class="bar noprint">
@@ -114,12 +114,12 @@
     <section class="step">
         <div class="head">
             <span class="n">1</span>
-            <h2>The outcome, in your own words</h2>
-            <span class="mins">3 minutes · on your own</span>
+            <h2>Open your plan &mdash; two minutes, then put it down</h2>
+            <span class="mins">2 minutes · on your own</span>
         </div>
-        <p class="why">ADEK's wording says what the lesson is for. Yours says what you will actually see in the room.</p>
+        <p class="why">You wrote six lines in the training module. We are not writing them again. We only need line 5 &mdash; the part you said you were least sure about.</p>
 
-        <label class="q" for="grade">Which grade are you planning for?</label>
+        <label class="q" for="grade">Which grade is this lesson for?</label>
         <select id="grade">
             <option value="">Choose your grade…</option>
         </select>
@@ -130,77 +130,66 @@
             <ul id="focus-list" hidden></ul>
         </div>
 
-        <label class="q" for="outcome">Finish this sentence.
-            <span class="hint">"By the end of this lesson, my students can…" — one sentence, something you could see or hear.</span>
+        <label class="q" for="unsure">The one part you are least sure about
+            <span class="hint">Copy it from your plan, or say it better now that you have sat with it. No plan written? Name the part of Friday's lesson you are least confident about.</span>
         </label>
-        <textarea id="outcome" rows="2"></textarea>
+        <textarea id="unsure" rows="2"></textarea>
     </section>
 
     <!-- ===== 2 ===== -->
     <section class="step">
         <div class="head">
             <span class="n">2</span>
-            <h2>Your first ten minutes</h2>
-            <span class="mins">5 minutes · on your own</span>
+            <h2>Troubleshoot it with your partner</h2>
+            <span class="mins">7 minutes · in pairs</span>
         </div>
-        <p class="why">Not the whole lesson. The opening — the part that decides whether the rest works.</p>
+        <p class="why">Read each other's line. Your job is to ask, not to redesign their lesson.</p>
 
-        <label class="q" for="hook">The hook — what happens in the first two minutes?
-            <span class="hint">A question, an object, a wrong answer to argue with, a demo that fails. Something they respond to before you explain anything.</span>
-        </label>
-        <textarea id="hook" rows="2"></textarea>
-
-        <label class="q" for="task">The first task — what are students doing by minute ten?
-            <span class="hint">Doing, not listening. Unplugged is fine, and for KG–Grade 3 it is expected.</span>
-        </label>
-        <textarea id="task" rows="2"></textarea>
-
-        <label class="q" for="move">Which facilitation move are you leaning on, and where?</label>
-        <input type="text" id="move" placeholder="e.g. critique &amp; evaluate — when they compare the two outputs">
-
-        <div class="aide">
-            <strong>The five moves, from the module:</strong>
-            <div class="moves">
-                <span>Prompt</span><span>Inquiry</span><span>Critique &amp; evaluate</span><span>Practice</span><span>Reflect</span>
-            </div>
+        <div class="partner">
+            <ol>
+                <li>Who is doing the thinking there &mdash; the student, or the machine?</li>
+                <li>What would you see or hear that tells you it worked?</li>
+                <li>What is the smallest change that would fix it?</li>
+            </ol>
         </div>
+
+        <label class="q" for="partner-name">Who worked on it with you?</label>
+        <input type="text" id="partner-name" placeholder="Name — useful when you want a second opinion in week three">
+
+        <label class="q" for="fix">What are you changing?
+            <span class="hint">One change, not five. The smallest one that makes the difference.</span>
+        </label>
+        <textarea id="fix" rows="3"></textarea>
     </section>
 
     <!-- ===== 3 ===== -->
     <section class="step">
         <div class="head">
             <span class="n">3</span>
-            <h2>Partner check</h2>
-            <span class="mins">7 minutes · in pairs</span>
+            <h2>When it wobbles</h2>
+            <span class="mins">5 minutes · on your own</span>
         </div>
-        <p class="why">Swap sheets. Read your partner's outcome and opening, then ask them these three. Write what they tell you — it is their lesson, not yours.</p>
+        <p class="why">First lesson, unfamiliar subject, a room of thirty. Something goes sideways in the first five minutes. Deciding now what you do is the difference between a wobble and a write-off.</p>
 
-        <div class="partner">
-            <ol>
-                <li>Who is doing the thinking — you or the students?</li>
-                <li>What will you actually see or hear that proves they got there?</li>
-                <li>What goes wrong in the first five minutes, and what do you do then?</li>
-            </ol>
-        </div>
+        <label class="q" for="wobble">What is most likely to go wrong in the first five minutes?
+            <span class="hint">Devices do not log in. They have all used it before. Nobody has used it before. The example falls flat.</span>
+        </label>
+        <textarea id="wobble" rows="2"></textarea>
 
-        <label class="q" for="partner-name">Who checked yours?</label>
-        <input type="text" id="partner-name" placeholder="Name — useful when you want a second opinion in week three">
-
-        <label class="q" for="feedback">What did they say that was worth keeping?</label>
-        <textarea id="feedback" rows="3"></textarea>
+        <label class="q" for="planb">And then what do you do?
+            <span class="hint">Your plan B only has to be good enough to keep the lesson moving. Unplugged is always a legitimate answer.</span>
+        </label>
+        <textarea id="planb" rows="2"></textarea>
     </section>
 
     <!-- ===== 4 ===== -->
     <section class="step">
         <div class="head">
             <span class="n">4</span>
-            <h2>Fix one thing, then commit to a date</h2>
-            <span class="mins">5 minutes · on your own</span>
+            <h2>Teach it, then prove it</h2>
+            <span class="mins">4 minutes · on your own</span>
         </div>
-        <p class="why">One change, not five. Then put it in the calendar — a lesson with a date is a lesson that happens.</p>
-
-        <label class="q" for="fix">The one thing you are changing</label>
-        <textarea id="fix" rows="2"></textarea>
+        <p class="why">This is the part that goes in the assessment tracker, so decide it now rather than trying to remember in May.</p>
 
         <label class="q" for="date">When are you teaching this?
             <span class="hint">Elementary: your timetabled Friday lesson. Secondary: the period in the arrangement Mr Kelley is sharing.</span>
@@ -208,11 +197,13 @@
         <input type="text" id="date" placeholder="e.g. Friday 25 September, period 3">
 
         <label class="q" for="evidence">What will you keep as evidence of student work?
-            <span class="hint">A photo of the unplugged sort, three sample outputs, a screenshot of the task — this is what goes in the assessment tracker.</span>
+            <span class="hint">A photo of the unplugged sort, three sample outputs, a screenshot of the task. Two or three per unit is plenty.</span>
         </label>
         <textarea id="evidence" rows="2"></textarea>
 
-        <label class="q" for="stuck">Still stuck on anything? <span class="hint">This is the question to bring to the AI Lead, so write it while it is fresh.</span></label>
+        <label class="q" for="stuck">Still stuck on anything?
+            <span class="hint">This goes straight to the AI Lead, and every one of them gets an answer this week.</span>
+        </label>
         <textarea id="stuck" rows="2"></textarea>
     </section>
 
@@ -280,7 +271,7 @@
      * badge, not an answer. */
     var MODULE_ID = 'ai-literacy-week-one';
     var KEY = 'aisa_week_one_v1';
-    var FIELDS = ['grade','outcome','hook','task','move','partner-name','feedback','fix','date','evidence','stuck'];
+    var FIELDS = ['grade','unsure','partner-name','fix','wobble','planb','date','evidence','stuck'];
     var saved = document.getElementById('saved');
 
     function restore() {
