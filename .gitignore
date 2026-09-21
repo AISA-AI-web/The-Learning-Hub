@@ -14,3 +14,8 @@ Thumbs.db
 node_modules
 package.json
 package-lock.json
+
+# AI Literacy Hub PDF build — the cached Google Fonts woff2 files and the
+# --png layout proofs. The PDFs themselves ARE committed; these are not.
+AI Literacy Hub/.fontcache/
+AI Literacy Hub/*.png

@@ -484,10 +484,12 @@ go through `Date.parse`, never string comparison, for the reason in
 **Two facts on the page are copies and will drift if edited alone:**
 
 - The **InstrucTwin caveat** (staff accounts not showing assigned
-  grades, chasing it is Brandon's job) is the same statement as segment
-  4 of `ai-curriculum-readiness-module.html` and the training section of
-  `Media Hub/sep18.html`. When grades become visible, all three change
-  together.
+  grades, chasing it is the AI Lead's job) is the same statement as
+  segment 4 of `ai-curriculum-readiness-module.html` and the training
+  section of `Media Hub/sep18.html`. When grades become visible, all
+  three change together. Note the wording now differs on purpose — see
+  *The page names the role, not the person* below — so compare the
+  substance, not the sentence.
 - The **safeguarding contacts and the 24-hour timescale** come from
   `safeguarding-module.html` by way of the readiness module's segment 6.
   Three files now, not two.
@@ -500,6 +502,59 @@ offers the second as the fallback and asks staff to report which
 worked — rather than presenting a guess as fact. Delete the fallback the
 day it is settled. The AI Growth Test portal (`instructwin.com/aigt`) is
 a third, genuinely separate sign-in and is listed as such.
+
+**The page names the role, not the person.** Every reference that was
+*Brandon*, *me* or *I* reads **the AI Lead** (Arabic: *قائد الذكاء
+الاصطناعي*), changed 21 September 2026 at Brandon's request so the page
+survives a change of postholder. The contact card is the post — *The AI
+Lead · Head of AI & Innovation, AISA* — with `bbaki@aisa.sch.ae` as the
+route; **that mailbox is the one thing to change if the role changes
+hands**, and nothing else on the page names anyone.
+
+The two **Safeguarding Leads are still named** and must stay named: you
+report a concern to a person, not to a job title.
+
+`ai-curriculum-readiness-module.html` and `Media Hub/sep18.html` still
+say *Brandon* and still speak in the first person — they were not part
+of that request. That is a knowing divergence, not drift. If the same
+treatment is wanted there, the module's segment 4 and the newsletter's
+training section are where it lives.
+
+**The PDF.** `build-pdf.mjs` renders `ai-literacy-hub-en.pdf` and
+`ai-literacy-hub-ar.pdf` — six A4 pages each, for handing out and for
+Google Drive:
+
+```
+NODE_PATH=$(npm root -g) node "AI Literacy Hub/build-pdf.mjs"
+NODE_PATH=$(npm root -g) node "AI Literacy Hub/build-pdf.mjs" --png
+```
+
+It **renders the real page** rather than carrying its own copy of the
+words, which is the whole point: edit the page, re-run it, and the PDF
+follows. Nothing in it needs editing when the content changes. It loads
+`ai-literacy-hub.html` from disk, drops the other language's spans, the
+status strip (personal and dynamic) and the jump strip, restyles what is
+left for print, and appends an index of every link. `--png` also writes
+a full-height layout proof, which is how you check it without a PDF
+viewer — the container this was built in had none.
+
+The print CSS hooks onto the **Tailwind class names in the markup**
+(`[class*="rounded-2xl"]`) rather than on Tailwind itself, which is a
+CDN script the build deliberately does not load. Those class names are
+in the source file, so they hold whether or not the CDN answers. Rename
+a utility on a card and the print styling of that card goes with it.
+
+**`SITE_BASE` in that script is the only production host in the repo,
+and it has to be.** Every link on the page is relative so the Hub works
+wherever it is served from; a PDF in Google Drive has no origin, so its
+links must be absolute. Same exception the newsletter note records for
+an emailed issue. It defaults to the GitHub Pages URL and takes
+`--base`. Re-run the build if the Hub ever moves.
+
+Fonts come from Google Fonts on first run and are cached in
+`.fontcache/` (gitignored) — that is what gives the Arabic PDF real
+Cairo shaping instead of the boxes a system fallback produces. The
+`--png` proofs are gitignored too; the PDFs are committed.
 
 **Bilingual**, using the site-wide `.lang-en` / `.lang-ar` span pattern
 and the global toggle in `menu.js` — there is no page-local toggle, only
