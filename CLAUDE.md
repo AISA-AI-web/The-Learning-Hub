@@ -513,7 +513,7 @@ told something narrower. Teaching staff, note, not all secondary staff.
 
 **The Secondary Gym and the Big Gym are the same room.** Issue No. 5 went
 out naming the Big Gym and the reminder names the Secondary Gym, so both
-pages now say "the same room as the Big Gym" once, rather than leaving
+pages now say "aka the Big Gym" once, rather than leaving
 staff to work out whether there are two venues.
 
 Date, time and venue are static text so they stay true in print and after
