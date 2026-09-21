@@ -547,8 +547,8 @@ window.AR_BLOCKS = {
         "<strong>الخلاصة في سطر واحد:</strong> المعلّم يصوغ ويستقصي؛ والمتعلمون يختارون ويتحقّقون ويبرّرون ويُنقّحون.",
     "<strong>Screencast to follow.</strong> The written steps below cover the same ground.":
         "<strong>تسجيل الشاشة سيُضاف لاحقًا.</strong> والخطوات المكتوبة أدناه تغطي المحتوى نفسه.",
-    "Sign in at <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\">schools.instructwin.com</a> with your school username and password.":
-        "سجّل الدخول عبر <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\" class=\"ltr\">schools.instructwin.com</a> باسم المستخدم وكلمة المرور الخاصين بالمدرسة.",
+    "Sign in at <a href=\"https://www.adek.instructwin.com/\" target=\"_blank\" rel=\"noopener\">adek.instructwin.com</a> with your school username and password.":
+        "سجّل الدخول عبر <a href=\"https://www.adek.instructwin.com/\" target=\"_blank\" rel=\"noopener\" class=\"ltr\">adek.instructwin.com</a> باسم المستخدم وكلمة المرور الخاصين بالمدرسة.",
     "3 · Two facilitation moves you'll use, and where <span class=\"hint\">Prompt · inquiry · critique &amp; evaluate · practice · reflect</span>":
         "3 · حركتا تيسير ستستخدمهما، وأين <span class=\"hint\">التوجيه · الاستقصاء · النقد والتقييم · التطبيق · التأمّل</span>",
     "5 · The one part you're least sure about <span class=\"hint\">This sets the agenda for 21 September. Be honest — it is more useful than being tidy.</span>":
@@ -610,8 +610,8 @@ window.AR_BLOCKS = {
     "<strong>Fairness</strong> — check outputs for bias and unfair assumptions.":
         "<strong>العدالة</strong> — افحص المخرجات بحثًا عن التحيّز والافتراضات غير العادلة.",
     "<strong>Notice → Record → Report → Act → Review.</strong> A memory aid for the shape of a response — not the reporting route.":
-        "<strong>لاحِظ ← سجّل ← أبلِغ ← تصرّف ← راجِع.</strong> وسيلة تذكّر لشكل الاستجابة — لا مسار الإبلاغ.",    "ADEK has published the full lesson plans and student materials on <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\">InstrucTwin</a>. Staff accounts are not yet showing the grades you are assigned to, so you may not be able to reach yours today. That is mine to chase, not yours — when it opens, read your lesson against the plan you just wrote.":
-        "نشرت دائرة التعليم والمعرفة خطط الدروس الكاملة ومواد الطلاب على <a href=\"https://schools.instructwin.com/\" target=\"_blank\" rel=\"noopener\" class=\"ltr\">InstrucTwin</a>. غير أنّ حسابات الطاقم لا تُظهر بعد الصفوف المُسنَدة إليك، لذا قد لا تتمكّن من الوصول إلى درسك اليوم. ومتابعة هذا من مسؤوليتي لا من مسؤوليتك — وحين يُتاح، اقرأ درسك في ضوء الخطة التي كتبتَها للتو.",
+        "<strong>لاحِظ ← سجّل ← أبلِغ ← تصرّف ← راجِع.</strong> وسيلة تذكّر لشكل الاستجابة — لا مسار الإبلاغ.",    "ADEK has published the full lesson plans and student materials on <a href=\"https://www.adek.instructwin.com/\" target=\"_blank\" rel=\"noopener\">InstrucTwin</a>. Staff accounts are not yet showing the grades you are assigned to, so you may not be able to reach yours today. That is mine to chase, not yours — when it opens, read your lesson against the plan you just wrote.":
+        "نشرت دائرة التعليم والمعرفة خطط الدروس الكاملة ومواد الطلاب على <a href=\"https://www.adek.instructwin.com/\" target=\"_blank\" rel=\"noopener\" class=\"ltr\">InstrucTwin</a>. غير أنّ حسابات الطاقم لا تُظهر بعد الصفوف المُسنَدة إليك، لذا قد لا تتمكّن من الوصول إلى درسك اليوم. ومتابعة هذا من مسؤوليتي لا من مسؤوليتك — وحين يُتاح، اقرأ درسك في ضوء الخطة التي كتبتَها للتو.",
     "<strong>Can't get in?</strong> You have not lost anything — your plan above is the part that matters, and it is already saved. Tick the box below so I know, and finish the module. Access is mine to chase, and I would rather know today than on the 20th.":
         "<strong>لا تستطيع الدخول؟</strong> لم تخسر شيئًا — فخطتك أعلاه هي الجزء المهم، وقد حُفظت بالفعل. ضع علامة في المربع أدناه لأعرف، وأكمل الوحدة. فمتابعة الدخول مسؤوليتي أنا، وأفضّل أن أعرف اليوم لا في العشرين.",
     "Teaching begins <strong>the week of 21 September 2026</strong> — your first lesson falls somewhere in that week, not necessarily on the Monday. The full curriculum, lesson plans and teacher toolkits are already on InstrucTwin.":

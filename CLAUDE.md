@@ -494,14 +494,32 @@ go through `Date.parse`, never string comparison, for the reason in
   `safeguarding-module.html` by way of the readiness module's segment 6.
   Three files now, not two.
 
-**Both InstrucTwin addresses are offered on purpose.**
-`schools.instructwin.com` is what the module uses;
-`www.adek.instructwin.com` is what ADEK's correspondence says. Nobody
-has established which is authoritative, so the page names the first,
-offers the second as the fallback and asks staff to report which
-worked — rather than presenting a guess as fact. Delete the fallback the
-day it is settled. The AI Growth Test portal (`instructwin.com/aigt`) is
-a third, genuinely separate sign-in and is listed as such.
+**The InstrucTwin address is settled: `adek.instructwin.com`.** ADEK
+confirmed on 21 September 2026 that this is where the curriculum is
+released, so the page names it outright and the old hedge is gone. Until
+then two were in circulation — the module used `schools.instructwin.com`
+and ADEK's correspondence said `www.adek.instructwin.com` — and the page
+offered both rather than presenting a guess as fact.
+
+The **href keeps ADEK's own `www.` form** while the label drops it,
+because that is what a teacher types. If `www.` ever turns out to matter,
+the label is the thing to change, not the link.
+
+`schools.instructwin.com` is gone from the module, from its Arabic
+dictionary and from the hub, bar one line telling anyone who bookmarked
+it to replace it — the 62 were pointed at it for several days.
+
+**Changing that URL means changing four places, not one.** The module's
+English, the matching **key** in `ai-curriculum-readiness-ar.js` (the key
+*is* the English string — change one without the other and the console
+warns and that paragraph silently stays English), the Arabic value, and
+the hub. And **bump `ai-curriculum-readiness-ar.js?v=N` in the module**,
+or returning staff keep the cached dictionary and the old address with
+it. That pin went to `?v=2` here; it is per-page and separate from the
+`gate.js` helper pins.
+
+The AI Growth Test portal (`instructwin.com/aigt`) is a third, genuinely
+separate sign-in and is listed as such — it did not change.
 
 **The face-to-face session** is the first section on the page
 (`#session`), added 21 September 2026 when the audience changed. It runs
@@ -940,10 +958,11 @@ platform to open "their" Monday lesson would send the whole cohort to a
 dead end. The training section instead says the materials are coming and
 that chasing them is Brandon's job, and the Level 1 section names the
 course and the 30 September deadline without naming the platform. Two
-things have to be true before InstrucTwin goes back in: grade
-assignments visible in staff accounts, and the URL confirmed — the
-module uses `schools.instructwin.com`, the ADEK correspondence says
-`www.adek.instructwin.com`, and nobody has established which is right.
+things had to be true before InstrucTwin went back in: grade
+assignments visible in staff accounts, and the URL confirmed. **The URL
+is now confirmed** — ADEK settled it as `adek.instructwin.com` on 21
+September 2026 — but grades are still not showing, so InstrucTwin stays
+out of this issue. One condition down, one to go.
 
 **The module still names InstrucTwin, softened.** Segment 4 used to say
 "open your lesson before Monday", which no one could do; on 18 Sept 2026
