@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AISA | Week One — ready to teach</title>
+<meta name="description" content="The 20-minute working session from the AI Literacy face-to-face training: turn your grade's outcome into a lesson you can teach this week.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
+<style>
+    /* Self-contained: no Tailwind. This has to render in a gym on school
+       wifi, so the only network call is the font, and it degrades to
+       system sans if that fails. */
+    :root {
+        --ink: #17203a; --muted: #5b6480; --line: #d9dced;
+        --indigo: #2c2a86; --indigo-soft: #eef0fb; --amber: #fffaeb; --amber-line: #f2d68a;
+    }
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        color: var(--ink); background: #f6f7fb; margin: 0; line-height: 1.55;
+    }
+    /* English-only, like the AI Growth Test guide: menu.js flips dir on
+       every page, and mirroring a worksheet people are writing into
+       would make it unusable. Scoped to the wrapper so the Hub topbar
+       still flips normally. */
+    .sheet { direction: ltr; text-align: left; max-width: 52rem; margin: 0 auto; padding: 1.25rem 1rem 4rem; }
+    h1, h2, h3, .h { font-family: 'Poppins', system-ui, sans-serif; }
+
+    header.hero { background: var(--indigo); color: #fff; border-radius: 14px; padding: 1.25rem 1.4rem; }
+    header.hero .eyebrow { font-size: .68rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #bfc0ee; margin: 0 0 .3rem; }
+    header.hero h1 { font-size: 1.85rem; line-height: 1.15; margin: 0 0 .4rem; font-weight: 800; }
+    header.hero p { margin: 0; color: #dcdcf5; font-size: .95rem; }
+
+    .bar { display: flex; gap: .5rem; flex-wrap: wrap; margin: .9rem 0 0; }
+    .bar button {
+        font: inherit; font-size: .82rem; font-weight: 700; cursor: pointer;
+        border: 1px solid var(--line); background: #fff; color: var(--ink);
+        border-radius: 9px; padding: .5rem .9rem;
+    }
+    .bar button.primary { background: var(--indigo); border-color: var(--indigo); color: #fff; }
+    .bar .saved { font-size: .78rem; color: var(--muted); align-self: center; }
+
+    .step { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 1.1rem 1.2rem; margin: .9rem 0; }
+    .step > .head { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; margin-bottom: .2rem; }
+    .step .n {
+        font-family: 'Poppins', sans-serif; font-weight: 800; font-size: .78rem;
+        background: var(--indigo); color: #fff; border-radius: 999px; padding: .15rem .6rem;
+    }
+    .step h2 { font-size: 1.12rem; margin: 0; font-weight: 700; }
+    .step .mins { font-size: .75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+    .step .why { color: var(--muted); font-size: .9rem; margin: .1rem 0 .8rem; }
+
+    label.q { display: block; font-weight: 700; font-size: .92rem; margin: .8rem 0 .3rem; }
+    label.q .hint { display: block; font-weight: 400; font-size: .82rem; color: var(--muted); margin-top: .1rem; }
+    input[type="text"], textarea, select {
+        font: inherit; font-size: .95rem; width: 100%; border: 1px solid var(--line);
+        border-radius: 9px; padding: .55rem .7rem; background: #fff; color: var(--ink);
+    }
+    textarea { resize: vertical; min-height: 4.2rem; }
+    input:focus, textarea:focus, select:focus { outline: 2px solid #8b8ade; outline-offset: 1px; border-color: #8b8ade; }
+
+    .focus {
+        background: var(--indigo-soft); border: 1px solid #ccd0f2; border-radius: 10px;
+        padding: .8rem .95rem; margin: .7rem 0 0; font-size: .9rem;
+    }
+    .focus .t { font-weight: 800; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--indigo); margin-bottom: .35rem; }
+    .focus ul { margin: 0; padding-inline-start: 1.1rem; }
+    .focus li { margin-bottom: .2rem; }
+    .focus .empty { color: var(--muted); }
+
+    .aide { background: var(--amber); border: 1px solid var(--amber-line); border-radius: 10px; padding: .8rem .95rem; font-size: .88rem; margin: .9rem 0 0; }
+    .aide strong { font-weight: 800; }
+    .moves { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .4rem; }
+    .moves span { background: #fff; border: 1px solid var(--amber-line); border-radius: 999px; padding: .15rem .55rem; font-size: .78rem; font-weight: 700; }
+
+    .partner { background: #f5f6fa; border: 1px solid var(--line); border-radius: 10px; padding: .8rem .95rem; margin: .2rem 0 .6rem; }
+    .partner ol { margin: .3rem 0 0; padding-inline-start: 1.2rem; }
+    .partner li { margin-bottom: .25rem; font-weight: 600; }
+
+    footer.end { color: var(--muted); font-size: .82rem; margin-top: 1.4rem; border-top: 1px solid var(--line); padding-top: .9rem; }
+    footer.end a { color: var(--indigo); font-weight: 700; }
+
+    @media print {
+        body { background: #fff; }
+        .sheet { max-width: none; padding: 0; }
+        .bar, .noprint { display: none !important; }
+        .step { break-inside: avoid; border-color: #bbb; }
+        header.hero { background: #fff !important; color: #000 !important; border: 1px solid #000; }
+        header.hero h1, header.hero p, header.hero .eyebrow { color: #000 !important; }
+        textarea, input[type="text"] { min-height: 3.5rem; }
+    }
+</style>
+<script src="../auth/gate.js?v=24"></script>
+</head>
+<body>
+<div class="sheet">
+
+    <header class="hero">
+        <p class="eyebrow">AI Literacy · face-to-face training · 21 September</p>
+        <h1>Week One — ready to teach</h1>
+        <p>Twenty minutes. You leave with the first ten minutes of a lesson you could teach tomorrow.</p>
+    </header>
+
+    <div class="bar noprint">
+        <button type="button" class="primary" id="print">Print / save as PDF</button>
+        <button type="button" id="clear">Clear this sheet</button>
+        <span class="saved" id="saved">Saves to this device as you type.</span>
+    </div>
+
+    <!-- ===== 1 ===== -->
+    <section class="step">
+        <div class="head">
+            <span class="n">1</span>
+            <h2>The outcome, in your own words</h2>
+            <span class="mins">3 minutes · on your own</span>
+        </div>
+        <p class="why">ADEK's wording says what the lesson is for. Yours says what you will actually see in the room.</p>
+
+        <label class="q" for="grade">Which grade are you planning for?</label>
+        <select id="grade">
+            <option value="">Choose your grade…</option>
+        </select>
+
+        <div class="focus" id="focus">
+            <div class="t">Your grade's focus — ADEK end-of-phase expectations</div>
+            <p class="empty" id="focus-empty">Pick a grade and the four strands for it appear here.</p>
+            <ul id="focus-list" hidden></ul>
+        </div>
+
+        <label class="q" for="outcome">Finish this sentence.
+            <span class="hint">"By the end of this lesson, my students can…" — one sentence, something you could see or hear.</span>
+        </label>
+        <textarea id="outcome" rows="2"></textarea>
+    </section>
+
+    <!-- ===== 2 ===== -->
+    <section class="step">
+        <div class="head">
+            <span class="n">2</span>
+            <h2>Your first ten minutes</h2>
+            <span class="mins">5 minutes · on your own</span>
+        </div>
+        <p class="why">Not the whole lesson. The opening — the part that decides whether the rest works.</p>
+
+        <label class="q" for="hook">The hook — what happens in the first two minutes?
+            <span class="hint">A question, an object, a wrong answer to argue with, a demo that fails. Something they respond to before you explain anything.</span>
+        </label>
+        <textarea id="hook" rows="2"></textarea>
+
+        <label class="q" for="task">The first task — what are students doing by minute ten?
+            <span class="hint">Doing, not listening. Unplugged is fine, and for KG–Grade 3 it is expected.</span>
+        </label>
+        <textarea id="task" rows="2"></textarea>
+
+        <label class="q" for="move">Which facilitation move are you leaning on, and where?</label>
+        <input type="text" id="move" placeholder="e.g. critique &amp; evaluate — when they compare the two outputs">
+
+        <div class="aide">
+            <strong>The five moves, from the module:</strong>
+            <div class="moves">
+                <span>Prompt</span><span>Inquiry</span><span>Critique &amp; evaluate</span><span>Practice</span><span>Reflect</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== 3 ===== -->
+    <section class="step">
+        <div class="head">
+            <span class="n">3</span>
+            <h2>Partner check</h2>
+            <span class="mins">7 minutes · in pairs</span>
+        </div>
+        <p class="why">Swap sheets. Read your partner's outcome and opening, then ask them these three. Write what they tell you — it is their lesson, not yours.</p>
+
+        <div class="partner">
+            <ol>
+                <li>Who is doing the thinking — you or the students?</li>
+                <li>What will you actually see or hear that proves they got there?</li>
+                <li>What goes wrong in the first five minutes, and what do you do then?</li>
+            </ol>
+        </div>
+
+        <label class="q" for="partner-name">Who checked yours?</label>
+        <input type="text" id="partner-name" placeholder="Name — useful when you want a second opinion in week three">
+
+        <label class="q" for="feedback">What did they say that was worth keeping?</label>
+        <textarea id="feedback" rows="3"></textarea>
+    </section>
+
+    <!-- ===== 4 ===== -->
+    <section class="step">
+        <div class="head">
+            <span class="n">4</span>
+            <h2>Fix one thing, then commit to a date</h2>
+            <span class="mins">5 minutes · on your own</span>
+        </div>
+        <p class="why">One change, not five. Then put it in the calendar — a lesson with a date is a lesson that happens.</p>
+
+        <label class="q" for="fix">The one thing you are changing</label>
+        <textarea id="fix" rows="2"></textarea>
+
+        <label class="q" for="date">When are you teaching this?
+            <span class="hint">Elementary: your timetabled Friday lesson. Secondary: the period in the arrangement Mr Kelley is sharing.</span>
+        </label>
+        <input type="text" id="date" placeholder="e.g. Friday 25 September, period 3">
+
+        <label class="q" for="evidence">What will you keep as evidence of student work?
+            <span class="hint">A photo of the unplugged sort, three sample outputs, a screenshot of the task — this is what goes in the assessment tracker.</span>
+        </label>
+        <textarea id="evidence" rows="2"></textarea>
+
+        <label class="q" for="stuck">Still stuck on anything? <span class="hint">This is the question to bring to the AI Lead, so write it while it is fresh.</span></label>
+        <textarea id="stuck" rows="2"></textarea>
+    </section>
+
+    <footer class="end">
+        <p><strong>Before you close this:</strong> hit <em>Print / save as PDF</em>. This sheet saves to this
+        device only — it is not sent anywhere and it will not follow you to another laptop.</p>
+        <p>Everything else lives on the
+        <a href="ai-literacy-hub.html">AI Literacy hub</a> — the training, the Scope &amp; Sequence,
+        the assessment tracker and who to ask.</p>
+    </footer>
+
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    /* The same grade focus the training module uses — ADEK's end-of-phase
+     * expectations. Kept here as its own copy on purpose: this worksheet
+     * has to open in a gym with bad wifi and nothing else loaded, so it
+     * does not reach into the module for them. If ADEK revises these,
+     * the module's GRADES object is the other place to change. */
+    var GRADES = {
+        "KG1": ["Understanding physical cause and effect and the role of sensors.", "Using physical sequencing (unplugged).", "Following 1-step verbal instructions (unplugged).", "Recognising personal information and trusted adults."],
+        "KG2": ["Understanding that digital tools use information.", "Using multi-attribute grouping (unplugged).", "Following 2–3 step verbal instructions (unplugged).", "Recognising privacy basics and differences between human and machine communication."],
+        "Grade 1": ["Understanding that machines follow rules using inputs and outputs.", "Using basic logic sequences.", "Completing guided digital tasks to solve simple problems.", "Practising safe information sharing and following class rules."],
+        "Grade 2": ["Understanding rules and choices in digital systems.", "Using simple decision logic.", "Creating simple rule-based solutions to automate tasks.", "Recognising fairness and unfairness in simple digital examples."],
+        "Grade 3": ["Understanding how rules can be combined to make more complex decisions.", "Applying multi-step decision logic (sequencing and simple conditions).", "Creating multi-step rule-based solutions to solve problems.", "Recognising how rules affect outcomes and identifying potential unfairness."],
+        "Grade 4": ["Understanding how data is represented and used in digital systems.", "Using pattern recognition and simple data labelling.", "Creating solutions using block-based code to simulate decision logic.", "Evaluating output fairness based on input data."],
+        "Grade 5": ["Understanding how data is used to generate outputs in learning systems.", "Using prompting and output checking to interact with AI tools.", "Creating and refining outputs using structured prompts.", "Evaluating information reliability and recognising misinformation."],
+        "Grade 6": ["Understanding the difference between rule-based and learning systems.", "Applying introductory ML concepts, including training and testing datasets.", "Building structured AI solutions and simple model training tasks.", "Recognising bias in outputs and identifying privacy and safety risks."],
+        "Grade 7": ["Understanding how AI systems are structured as workflows.", "Developing workflow design using input, process, and output structures.", "Developing simple AI solutions using structured workflows.", "Analysing risks in AI system responses."],
+        "Grade 8": ["Understanding how AI models are evaluated and improved.", "Applying iterative refinement techniques.", "Designing and refining AI solutions based on performance.", "Applying strategies to mitigate bias and risk."],
+        "Grade 9": ["Understanding how AI system components interact.", "Applying input-output modelling.", "Designing structured AI workflows.", "Analysing ethical risks in AI applications."],
+        "Grade 10": ["Understanding how AI systems operate as integrated solutions.", "Applying systems thinking to combine tools and data.", "Designing multi-step AI solutions.", "Evaluating bias and fairness in AI systems."],
+        "Grade 11": ["Understanding how AI solutions are optimised for performance.", "Applying performance evaluation techniques.", "Improving AI solutions for efficiency and usability.", "Analysing the impact of AI solutions."],
+        "Grade 12": ["Understanding how AI systems are designed for strategic use.", "Applying evaluation and decision-making frameworks.", "Designing and refining multi-component AI systems.", "Evaluating governance and societal impact."]
+    };
+
+    var sel = document.getElementById('grade');
+    Object.keys(GRADES).forEach(function (g) {
+        var o = document.createElement('option');
+        o.value = g; o.textContent = g;
+        sel.appendChild(o);
+    });
+
+    var list = document.getElementById('focus-list');
+    var empty = document.getElementById('focus-empty');
+    function paintFocus() {
+        var g = sel.value;
+        if (!g || !GRADES[g]) { list.hidden = true; empty.hidden = false; return; }
+        list.innerHTML = GRADES[g].map(function (t) {
+            return '<li>' + t.replace(/</g, '&lt;') + '</li>';
+        }).join('');
+        list.hidden = false; empty.hidden = true;
+    }
+    sel.addEventListener('change', paintFocus);
+
+    /* Local only. No backend: the Apps Script mail/capture endpoints are
+     * mid-redeploy, and a worksheet that fails to save in front of a room
+     * is worse than one that never claimed to. */
+    var KEY = 'aisa_week_one_v1';
+    var FIELDS = ['grade','outcome','hook','task','move','partner-name','feedback','fix','date','evidence','stuck'];
+    var saved = document.getElementById('saved');
+
+    function restore() {
+        var data = {};
+        try { data = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
+        FIELDS.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el && typeof data[id] === 'string') el.value = data[id];
+        });
+        paintFocus();
+    }
+    var t;
+    function store() {
+        var data = {};
+        FIELDS.forEach(function (id) {
+            var el = document.getElementById(id);
+            if (el) data[id] = el.value;
+        });
+        try {
+            localStorage.setItem(KEY, JSON.stringify(data));
+            saved.textContent = 'Saved on this device · ' + new Date().toLocaleTimeString();
+        } catch (e) {
+            saved.textContent = 'Could not save on this device — print before you close the tab.';
+        }
+    }
+    FIELDS.forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', function () { clearTimeout(t); t = setTimeout(store, 400); });
+        el.addEventListener('change', store);
+    });
+
+    document.getElementById('print').addEventListener('click', function () { window.print(); });
+    document.getElementById('clear').addEventListener('click', function () {
+        if (!window.confirm('Clear everything on this sheet? This cannot be undone.')) return;
+        FIELDS.forEach(function (id) { var el = document.getElementById(id); if (el) el.value = ''; });
+        try { localStorage.removeItem(KEY); } catch (e) {}
+        paintFocus();
+        saved.textContent = 'Cleared.';
+    });
+
+    restore();
+})();
+</script>
+</body>
+</html>
