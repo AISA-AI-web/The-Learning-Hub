@@ -269,6 +269,36 @@ state there, not beside whatever uses it.
 backend error is a `lower_snake_case` code, anything else is this page
 throwing, and it says so rather than blaming Apps Script.
 
+### `http_404` means the deployment is gone, not that the backend is busy
+
+Reported again 22 September 2026, this time as a hard failure rather than
+slowness. `http_404` had no entry in the message map, so it fell through
+to *“The backend refused the request. Trying again may help.”* — which is
+wrong twice over: nothing refused anything, and retrying is the one thing
+that cannot work.
+
+**Tell these two apart.** `unknown_action` is a live script answering in
+JSON: the deployed *version* is old. An `http_*` code is the deployment
+answering *before any of our code ran*, so the version is not the
+question. A 404 on the `/exec` URL means `API_URL` in `gate.js` no longer
+names a live deployment at all.
+
+The usual cause is a redeploy made as **Deploy → New deployment**, which
+mints a fresh `/exec` URL, instead of **Manage deployments → ✏️ → Version:
+New version**, which keeps it. That is why the redeploy note at the top of
+this file says the URL stays the same — it is an instruction, not an
+observation. Fix it by restoring that deployment or by pasting the new URL
+into `gate.js` (which is a `gate.js` change, so it triggers the `?v=N`
+cascade across every page).
+
+**A 404 is a whole-Hub outage, and everywhere except this dashboard it is
+silent.** Every other caller — `record_pageview`, `get_completions`, the
+teacher dashboard, the AI Literacy status strip — handles a failure with a
+bare `console.warn`. While the URL is dead, staff can finish a module and
+have the completion dropped with nothing on screen to say so. The admin
+dashboard is the only page that admits anything is wrong, which is why
+this looked like an admin-only problem for as long as it did.
+
 The dashboard's two free-text sections (`#responses`, `#goals`) now
 chain off `window.aisaAdminGate` rather than firing their own heavy
 reads immediately. **This is not the lazy-loading that the three-tabs

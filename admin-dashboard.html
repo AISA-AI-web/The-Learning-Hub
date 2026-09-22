@@ -1379,7 +1379,30 @@
                     'is nothing to load from.',
                 unknown_action:
                     'The backend is running an older version that doesn’t have this ' +
-                    'endpoint. It needs redeploying in the Apps Script editor.'
+                    'endpoint. It needs redeploying in the Apps Script editor.',
+                /* `unknown_action` above is a live script answering. An
+                 * `http_*` code is the opposite: the deployment answered
+                 * before any of our code ran, so the version that is
+                 * deployed is not the question. 404 is the one that bites,
+                 * and it is not this page’s problem — it takes the whole
+                 * Hub down, silently everywhere else, completions
+                 * included. Retrying is the one thing that cannot fix it. */
+                http_404:
+                    'The Hub’s backend URL no longer points at a live Apps Script ' +
+                    'deployment. Nothing can load anywhere on the Hub while that is ' +
+                    'true — not just this page, and module completions are being ' +
+                    'dropped rather than saved. The usual cause is a redeploy made ' +
+                    'as “New deployment”, which mints a fresh URL, instead of a new ' +
+                    'version of the existing one. Either restore that deployment or ' +
+                    'paste the new /exec URL into auth/gate.js.',
+                http_403:
+                    'The deployment answered but would not serve the Hub. Check ' +
+                    '“Who has access” on the Apps Script deployment — it has to be ' +
+                    '“Anyone”, because the Hub calls it without a Google session.',
+                http_401:
+                    'The deployment answered but would not serve the Hub. Check ' +
+                    '“Who has access” on the Apps Script deployment — it has to be ' +
+                    '“Anyone”, because the Hub calls it without a Google session.'
             };
             /* A backend error is a lower_snake_case code. Anything else —
              * a TypeError from our own rendering, a ReferenceError from a
@@ -1393,7 +1416,10 @@
                   'wrong with your access or with the data — this is a fault in ' +
                   'the Hub itself. The line below is what broke; send it to ' +
                   'Brandon, and check the browser console for the full trace.'
-                : (says[code] || 'The backend refused the request. Trying again may help.');
+                : (says[code] || (/^http_5/.test(code)
+                    ? 'The backend crashed while answering, before it could send ' +
+                      'any data. That is usually temporary — try again in a moment.'
+                    : 'The backend refused the request. Trying again may help.'));
             document.getElementById('state-error-code').textContent = code;
             showState('state-error');
         }
