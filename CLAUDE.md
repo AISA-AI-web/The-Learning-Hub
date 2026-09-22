@@ -625,14 +625,42 @@ of that request. That is a knowing divergence, not drift. If the same
 treatment is wanted there, the module's segment 4 and the newsletter's
 training section are where it lives.
 
-**The PDF.** `build-pdf.mjs` renders `ai-literacy-hub-en.pdf` and
-`ai-literacy-hub-ar.pdf` — six A4 pages each, for handing out and for
-Google Drive:
+**The PDFs.** `build-pdf.mjs` renders **three** documents, all into
+`AI Literacy Hub/` beside the script:
+
+| target | output | what it is |
+|---|---|---|
+| `hub` | `ai-literacy-hub-en.pdf`, `-ar.pdf` | the hub, both languages |
+| `aigt` | `ai-growth-test-guide.pdf` | the AI Growth Test guide, every role |
+| `module` | `ai-teacher-readiness-training.pdf` | the readiness training, all 8 segments |
 
 ```
 NODE_PATH=$(npm root -g) node "AI Literacy Hub/build-pdf.mjs"
-NODE_PATH=$(npm root -g) node "AI Literacy Hub/build-pdf.mjs" --png
+NODE_PATH=$(npm root -g) node "AI Literacy Hub/build-pdf.mjs" --only module --png
 ```
+
+The last two were built for **ADEK evidence folders**, which is why they
+are rendered *unfiltered and ungated*: a guide showing one role's steps,
+or a module showing whichever segment you happen to be on, evidences
+nothing. `aigt` drops the role filter so every step prints; `module`
+loads with `?preview=1` and forces all eight chapters visible.
+
+**Neither carries anybody's answers.** The build stubs `aisaAuth` so no
+saved response is ever fetched, and `prepare()` additionally blanks every
+textarea, text input and select before rendering. Keep both: the stub is
+the guarantee, the blanking is the belt. An evidence PDF must show the
+instrument, never a named teacher's writing — those rows are personal
+data under UAE Federal Decree-Law No. 45 of 2021.
+
+**Two print stylesheets fight back, and both had to be beaten:**
+
+- The module's own `@media print` is built for the teacher's one-pager:
+  `body > *:not(#onepager) { display: none !important }`. That hides the
+  chapters' *ancestor*, so no rule on `[data-chapter]` can undo it — the
+  override has to work at the same level, and must exclude `script`,
+  `style` and `link` or forcing them to `block` prints their source.
+- The guide's own print rules already hide its sidebar and buttons,
+  which is wanted; only the role filter needed removing on top.
 
 It **renders the real page** rather than carrying its own copy of the
 words, which is the whole point: edit the page, re-run it, and the PDF

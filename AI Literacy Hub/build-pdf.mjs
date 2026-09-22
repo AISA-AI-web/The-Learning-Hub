@@ -1,8 +1,21 @@
 /*
- * Build the printable / shareable PDF of the AI Literacy Hub.
+ * Build the printable / shareable PDFs of the Hub's AI Literacy material.
  *
  *   NODE_PATH=$(npm root -g) node "AI Literacy Hub/build-pdf.mjs"
+ *   NODE_PATH=$(npm root -g) node "AI Literacy Hub/build-pdf.mjs" --only module
  *   NODE_PATH=$(npm root -g) node "AI Literacy Hub/build-pdf.mjs" --base https://example.org/hub/
+ *
+ * Three documents, `--only <hub|aigt|module>` to build one:
+ *
+ *   hub     the AI Literacy hub, English and Arabic
+ *   aigt    the AI Growth Test AI Lead & Proctor guide, every role's steps
+ *   module  the Teacher Readiness training, all eight segments end to end
+ *
+ * The last two exist for ADEK evidence folders, which is why they are
+ * built UNFILTERED and UNGATED: a guide showing only one role's steps,
+ * or a module showing only the segment you happen to be on, evidences
+ * nothing. Neither carries anybody's answers — see the note on the
+ * module target below.
  *
  * Needs Playwright's Chromium and one fetch of Google Fonts (cached in
  * .fontcache/ after the first run, which is gitignored).
@@ -101,6 +114,88 @@ async function fontCss() {
     }
     return css;
 }
+
+/* ---------------- what gets built ----------------
+ * `page` is the file on disk; `pathOnSite` is where it lives when
+ * served, which is what the links in the PDF are made absolute
+ * against. `langs` drives one render per language. */
+const TARGETS = {
+    hub: {
+        page: path.join(HERE, 'ai-literacy-hub.html'),
+        pathOnSite: 'AI Literacy Hub/ai-literacy-hub.html',
+        langs: ['en', 'ar'],
+        out: { en: 'ai-literacy-hub-en.pdf', ar: 'ai-literacy-hub-ar.pdf' },
+        title: { en: 'AISA — AI Literacy Hub', ar: 'AISA — مركز الثقافة في الذكاء الاصطناعي' },
+    },
+    aigt: {
+        page: path.join(HERE, '..', 'Tools and Resources', 'ai-growth-test-guide.html'),
+        pathOnSite: 'Tools and Resources/ai-growth-test-guide.html',
+        langs: ['en'],
+        out: { en: 'ai-growth-test-guide.pdf' },
+        title: { en: 'AISA — AI Growth Test: AI Lead & Proctor Guide' },
+        evidence: 'Operational guide for ADEK\u2019s Baseline AI Growth Test, as issued to AISA staff.',
+    },
+    module: {
+        page: path.join(HERE, '..', 'PD Modules', 'ai-curriculum-readiness-module.html'),
+        pathOnSite: 'PD Modules/ai-curriculum-readiness-module.html',
+        query: '?preview=1',          // unlocks every segment and reveals the answers
+        langs: ['en'],
+        out: { en: 'ai-teacher-readiness-training.pdf' },
+        title: { en: 'AISA — AI Literacy: Teacher Readiness Training' },
+        evidence: 'The internal training every AISA teacher delivering the ADEK AI Literacy '
+                + 'curriculum completed before teaching began, reproduced in full.',
+    },
+};
+
+/* Extra CSS per target, on top of the shared print stylesheet. */
+const EXTRA_CSS = {
+    aigt: `
+      /* The role filter hides the steps that are not yours. For evidence
+         every step has to be on the page, so the filter goes and the
+         steps all show. */
+      .rolebar, .rolebar-hint { display: none !important; }
+      .step { display: block !important; }
+      .step[data-role] { break-inside: avoid; }
+      figure.shot { break-inside: avoid; }
+      figure.shot img { max-width: 100%; height: auto; }
+      /* Tick boxes print as empty boxes, which is what a checklist is. */
+      input[type="checkbox"] { width: 12px; height: 12px; }
+    `,
+    module: `
+      /* The module's own print stylesheet is built for the teacher's
+         one-pager: it hides every direct child of <body> except
+         #onepager. That hides the chapters' ANCESTOR, so no rule on the
+         chapters themselves can bring them back — this has to undo it at
+         the same level. Scripts and styles are excluded by name, or
+         forcing them to block prints their source. */
+      @media print {
+        body > *:not(#onepager):not(script):not(style):not(link):not(template) {
+          display: block !important;
+        }
+        #onepager { display: none !important; }
+      }
+
+      /* training.js shows one [data-chapter] at a time. A document has to
+         show all of them, in order. */
+      .aisa-train-managed [data-chapter],
+      [data-chapter] { display: block !important; animation: none !important; }
+      [data-chapter] { break-before: page; break-inside: auto; }
+      [data-chapter]:first-of-type { break-before: auto; }
+      /* Reader chrome: the sidebar, the prev/next bar, the progress rail.
+         None of it means anything on paper. */
+      .aisa-train-nav, .aisa-train-chapter-list, .aisa-train-sidebar,
+      #progress-bar, .video-slot, .completion-actions,
+      .scope-float, .module-checkbox { display: none !important; }
+      /* What teachers are asked to write. The boxes print empty and that
+         is the point — this evidences the instrument, not a person. */
+      textarea, input[type="text"], select {
+        border: 1px solid #b9bed4 !important; border-radius: 4px;
+        min-height: 46px; width: 100%; background: #fff !important;
+      }
+      .field { break-inside: avoid; }
+      .aisa-quiz-option.is-correct { font-weight: 700; }
+    `,
+};
 
 /* ---------------- print stylesheet ---------------- */
 const printCss = (lang) => `
@@ -220,25 +315,58 @@ const printCss = (lang) => `
 
 /* ---------------- DOM preparation ----------------
  * Runs inside the page. Everything here is about turning a live,
- * signed-in, interactive page into a document that stands alone. */
-function prepare({ lang, base, pageOnSite, strings }) {
+ * signed-in, interactive page into a document that stands alone. *//* ---------------- DOM preparation ----------------
+ * Runs inside the page. Turning a live, signed-in, interactive page
+ * into a document that stands on its own. */
+function prepare({ target, lang, pageOnSite, strings }) {
     const doc = document;
     doc.documentElement.setAttribute('lang', lang);
     doc.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
 
-    /* Keep one language only — the other is not merely hidden, it is
-     * gone, so it cannot be selected, searched or extracted out of the
-     * PDF as invisible text. */
-    const drop = lang === 'ar' ? '.lang-en' : '.lang-ar';
-    doc.querySelectorAll(drop).forEach((el) => el.remove());
+    let sectionNames = [];
 
-    /* Browser-only furniture. The status strip reads a signed-in
-     * teacher's own training record, which is meaningless in a file
-     * passed around, and the jump strip is replaced by a contents box. */
-    doc.getElementById('status-strip')?.remove();
-    const jump = doc.querySelector('nav.jump-strip');
-    const sectionNames = jump ? [...jump.querySelectorAll('a')].map((a) => a.textContent.trim()) : [];
-    jump?.remove();
+    if (target === 'hub') {
+        /* Keep one language only — the other is not merely hidden, it is
+         * gone, so it cannot be selected, searched or extracted out of
+         * the PDF as invisible text. */
+        doc.querySelectorAll(lang === 'ar' ? '.lang-en' : '.lang-ar').forEach((el) => el.remove());
+
+        /* The status strip reads a signed-in teacher's own training
+         * record, which is meaningless in a file passed around. */
+        doc.getElementById('status-strip')?.remove();
+        const jump = doc.querySelector('nav.jump-strip');
+        sectionNames = jump ? [...jump.querySelectorAll('a')].map((a) => a.textContent.trim()) : [];
+        jump?.remove();
+    }
+
+    if (target === 'aigt') {
+        /* Every role's steps, not the reader's. The filter is gone (CSS)
+         * but the buttons also carry counts that would now be wrong. */
+        doc.querySelectorAll('.rolebar, .rolebar-hint').forEach((el) => el.remove());
+        sectionNames = [...doc.querySelectorAll('h2')].slice(0, 9).map((h) => h.textContent.trim());
+    }
+
+    if (target === 'module') {
+        /* The reader chrome training.js injects. The chapters themselves
+         * are unhidden by CSS, so they print in order. */
+        doc.querySelectorAll('.aisa-train-nav, .aisa-train-chapter-list, .aisa-train-sidebar')
+           .forEach((el) => el.remove());
+        /* Review-mode's own banner explains a URL flag, which means
+         * nothing in a document. */
+        [...doc.querySelectorAll('.callout')]
+            .filter((el) => /Review mode is on/i.test(el.textContent))
+            .forEach((el) => el.remove());
+        sectionNames = [...doc.querySelectorAll('[data-chapter]')]
+            .map((el) => el.getAttribute('data-chapter-title')).filter(Boolean);
+
+        /* Belt and braces on the promise made in the reply: if anything
+         * ever did load a teacher's saved answers, this empties them
+         * before the page is rendered. */
+        doc.querySelectorAll('textarea').forEach((t) => { t.value = ''; t.textContent = ''; });
+        doc.querySelectorAll('input[type="text"]').forEach((i) => { i.value = ''; });
+        doc.querySelectorAll('select').forEach((sel) => { sel.selectedIndex = 0; });
+    }
+
     doc.querySelectorAll('[hidden]').forEach((el) => el.remove());
 
     /* Relative on the web, absolute in a file with no origin. */
@@ -249,36 +377,34 @@ function prepare({ lang, base, pageOnSite, strings }) {
         try { a.href = new URL(href, pageOnSite).href; } catch {}
     });
 
-    /* Contents, from the strip that was just removed. */
+    const first = doc.querySelector('main > header') || doc.querySelector('header') || doc.body.firstElementChild;
+
     if (sectionNames.length) {
         const box = doc.createElement('div');
         box.className = 'print-contents';
         box.innerHTML = '<strong>' + strings.contents + '</strong>' + sectionNames.join(' · ');
-        doc.querySelector('main > header')?.insertAdjacentElement('afterend', box);
+        first?.insertAdjacentElement('afterend', box);
     }
 
-    /* Provenance, so a copy found on a shared drive in six months says
-     * where it came from and how old it is. */
+    /* Provenance, so a copy found in a shared folder in six months says
+     * what it is, where it came from and how old it is. */
     const meta = doc.createElement('p');
     meta.className = 'print-meta';
     meta.innerHTML = strings.meta;
-    doc.querySelector('main > header')?.appendChild(meta);
+    if (first) first.appendChild(meta);
 
-    /* Show the URL under standalone links (the calls to action), and
-     * collect every link for the index at the back. */
+    /* Show the URL under standalone links, and collect every link for
+     * the index at the back. */
     const index = [];
     const seen = new Set();
-    doc.querySelectorAll('main a[href]').forEach((a) => {
+    doc.querySelectorAll('a[href]').forEach((a) => {
         const href = a.href;
-        /* Several links wrap a whole card, so a.textContent is the
-         * card's entire prose. The heading is the name of the thing. */
         const raw = (a.querySelector('h3') || a).textContent.replace(/\s+/g, ' ').trim();
         const text = raw.length > 72 ? raw.slice(0, 71).trimEnd() + '…' : raw;
         if (!text) return;
         if (!seen.has(href)) { seen.add(href); index.push({ text, href }); }
 
-        const inProse = !!a.closest('p:not(.print-meta), li');
-        if (inProse || href.startsWith('mailto:')) return;
+        if (a.closest('p:not(.print-meta), li, td, figcaption') || href.startsWith('mailto:')) return;
         const u = doc.createElement('span');
         u.className = 'print-url';
         u.textContent = href.replace(/^https?:\/\//, '');
@@ -294,97 +420,116 @@ function prepare({ lang, base, pageOnSite, strings }) {
             '<li><span class="t">' + i.text.replace(/</g, '&lt;') + '</span>' +
             '<span class="u">' + i.href.replace(/</g, '&lt;') + '</span></li>').join('') +
         '</ol>';
-    doc.querySelector('main')?.appendChild(sec);
+    (doc.querySelector('main') || doc.body).appendChild(sec);
 
     return index.length;
 }
 
-const STRINGS = {
+const BASE_STRINGS = {
     en: {
         contents: 'In this document',
         indexTitle: 'Every link in this document',
         indexLede: 'In the order they appear. The links above are clickable; these are written out so a printed copy is still usable.',
-        meta:
-            'AISA Teaching &amp; Learning &middot; printed from the AI Literacy Hub on the Learning Hub. ' +
-            'The Hub is the live version — check it before relying on a date in this file.<br>' +
-            '<span style="word-break:break-all">' + '{{url}}' + '</span> &middot; generated {{date}}',
-        file: 'ai-literacy-hub-en.pdf',
-        title: 'AISA — AI Literacy Hub',
+        metaTail: 'The Hub is the live version — check it before relying on a date in this file.',
     },
     ar: {
         contents: 'في هذه الوثيقة',
         indexTitle: 'كل الروابط الواردة في هذه الوثيقة',
         indexLede: 'بترتيب ورودها. الروابط أعلاه قابلة للنقر، وهذه مكتوبة بالكامل ليبقى النسخة المطبوعة صالحة للاستخدام.',
-        meta:
-            'التعليم والتعلّم في AISA · مطبوعة من مركز الثقافة في الذكاء الاصطناعي على مركز التعلم. ' +
-            'والنسخة الحيّة هي المرجع — راجعوها قبل الاعتماد على أي تاريخ في هذا الملف.<br>' +
-            '<span style="word-break:break-all;direction:ltr;display:inline-block">' + '{{url}}' + '</span> · صدرت بتاريخ {{date}}',
-        file: 'ai-literacy-hub-ar.pdf',
-        title: 'AISA — مركز الثقافة في الذكاء الاصطناعي',
+        metaTail: 'والنسخة الحيّة هي المرجع — راجعوها قبل الاعتماد على أي تاريخ في هذا الملف.',
     },
 };
 
+function stringsFor(name, spec, lang, url, date) {
+    const s = { ...BASE_STRINGS[lang] };
+    const head = lang === 'ar'
+        ? 'التعليم والتعلّم في AISA · مطبوعة من مركز التعلم. '
+        : 'AISA Teaching &amp; Learning &middot; printed from the Learning Hub. ';
+    s.meta = head + (spec.evidence ? '<b>' + spec.evidence + '</b> ' : '') + s.metaTail
+        + '<br><span style="word-break:break-all' + (lang === 'ar' ? ';direction:ltr;display:inline-block' : '') + '">'
+        + url + '</span> &middot; '
+        + (lang === 'ar' ? 'صدرت بتاريخ ' : 'generated ') + date;
+    s.file = spec.out[lang];
+    s.title = spec.title[lang];
+    return s;
+}
+
 /* ---------------- run ---------------- */
+const only = argOf('--only', null);
+const names = only ? [only] : Object.keys(TARGETS);
+for (const n of names) {
+    if (!TARGETS[n]) { console.error(`unknown target "${n}" — one of: ${Object.keys(TARGETS).join(', ')}`); process.exit(1); }
+}
+
 const css = await fontCss();
 const browser = await chromium.launch();
 
-for (const lang of ['en', 'ar']) {
-    const page = await browser.newPage();
-    const errs = [];
-    page.on('pageerror', (e) => errs.push(String(e)));
+for (const name of names) {
+    const spec = TARGETS[name];
+    const onSite = new URL(encodeURI(spec.pathOnSite), base).href;
 
-    /* The page's own scripts expect the sign-in gate. Stub it so it
-     * settles instead of polling for a session that will never arrive;
-     * the strip it feeds is removed anyway. */
-    await page.addInitScript(() => {
-        window.aisaAuth = {
-            isConfigured: () => false,
-            getCompletionsCached: () => null,
-            getCompletions: () => Promise.resolve([]),
-        };
-        window.aisaReady = (cb) => cb(window.aisaAuth);
-    });
-    await page.route('**/auth/gate.js*', (r) => r.fulfill({ status: 200, contentType: 'application/javascript', body: '' }));
-    await page.goto(pathToFileURL(PAGE).href, { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(300);
+    for (const lang of spec.langs) {
+        const page = await browser.newPage();
+        const errs = [];
+        page.on('pageerror', (e) => errs.push(String(e)));
 
-    const s = { ...STRINGS[lang] };
-    const today = new Intl.DateTimeFormat(lang === 'ar' ? 'ar-AE' : 'en-GB',
-        { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
-    s.meta = s.meta.replace('{{url}}', pageOnSite).replace('{{date}}', today);
+        /* The pages expect the sign-in gate. Stub it so they settle
+         * instead of polling for a session that will never arrive — and
+         * so NOTHING a teacher has saved is ever fetched into a file
+         * that goes in an evidence folder. */
+        await page.addInitScript(() => {
+            window.aisaAuth = {
+                isConfigured: () => false,
+                getCompletionsCached: () => null,
+                getCompletions: () => Promise.resolve([]),
+                getModuleResponse: () => Promise.resolve({}),
+                saveModuleResponse: () => Promise.resolve({}),
+                recordEvent: () => Promise.resolve({}),
+                wireModule: () => {},
+                trackPageView: () => {},
+                trackClick: () => {},
+            };
+            window.aisaReady = (cb) => cb(window.aisaAuth);
+        });
+        await page.route('**/auth/gate.js*', (r) => r.fulfill({ status: 200, contentType: 'application/javascript', body: '' }));
+        await page.goto(pathToFileURL(spec.page).href + (spec.query || ''), { waitUntil: 'domcontentloaded' });
+        await page.waitForTimeout(600);
 
-    const links = await page.evaluate(prepare, { lang, base, pageOnSite, strings: s });
-    await page.addStyleTag({ content: css });
-    await page.addStyleTag({ content: printCss(lang) });
-    await page.evaluate((t) => { document.title = t; }, s.title);
-    await page.emulateMedia({ media: 'print' });
-    await page.waitForTimeout(400);
+        const today = new Intl.DateTimeFormat(lang === 'ar' ? 'ar-AE' : 'en-GB',
+            { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date());
+        const s = stringsFor(name, spec, lang, onSite, today);
 
-    const out = path.join(HERE, s.file);
-    await page.pdf({
-        path: out,
-        format: 'A4',
-        printBackground: true,
-        displayHeaderFooter: true,
-        headerTemplate: '<div></div>',
-        footerTemplate:
-            '<div style="width:100%;font-size:7pt;color:#8d95ad;font-family:sans-serif;' +
-            'padding:0 14mm;display:flex;justify-content:space-between;">' +
-            '<span>' + (lang === 'ar' ? 'مركز الثقافة في الذكاء الاصطناعي — AISA' : 'AI Literacy Hub — AISA') + '</span>' +
-            '<span class="pageNumber"></span></div>',
-        margin: { top: '14mm', bottom: '16mm', left: '14mm', right: '14mm' },
-    });
-    /* --png also writes a full-height screenshot of the same prepared
-     * DOM. A PDF viewer is not always to hand (the container this was
-     * built in had none), and this is the only way to actually look at
-     * the layout rather than trust the byte count. */
-    if (argv.includes('--png')) {
-        await page.setViewportSize({ width: 794, height: 1123 });   // A4 at 96dpi
-        await page.screenshot({ path: out.replace(/\.pdf$/, '.png'), fullPage: true });
+        const links = await page.evaluate(prepare, { target: name, lang, pageOnSite: onSite, strings: s });
+        await page.addStyleTag({ content: css });
+        await page.addStyleTag({ content: printCss(lang) });
+        if (EXTRA_CSS[name]) await page.addStyleTag({ content: EXTRA_CSS[name] });
+        await page.evaluate((t) => { document.title = t; }, s.title);
+        await page.emulateMedia({ media: 'print' });
+        await page.waitForTimeout(500);
+
+        const out = path.join(HERE, s.file);
+        await page.pdf({
+            path: out,
+            format: 'A4',
+            printBackground: true,
+            displayHeaderFooter: true,
+            headerTemplate: '<div></div>',
+            footerTemplate:
+                '<div style="width:100%;font-size:7pt;color:#8d95ad;font-family:sans-serif;' +
+                'padding:0 14mm;display:flex;justify-content:space-between;">' +
+                '<span>' + s.title.replace(/&/g, '&amp;') + '</span>' +
+                '<span class="pageNumber"></span></div>',
+            margin: { top: '14mm', bottom: '16mm', left: '14mm', right: '14mm' },
+        });
+
+        if (argv.includes('--png')) {
+            await page.setViewportSize({ width: 794, height: 1123 });
+            await page.screenshot({ path: out.replace(/\.pdf$/, '.png'), fullPage: true });
+        }
+
+        console.log(`${s.file}: ${links} links` + (errs.length ? ` — page errors: ${errs.join(' | ')}` : ''));
+        await page.close();
     }
-
-    console.log(`${s.file}: ${links} links` + (errs.length ? ` — page errors: ${errs.join(' | ')}` : ''));
-    await page.close();
 }
 
 await browser.close();
