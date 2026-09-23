@@ -40,7 +40,7 @@
         @media (prefers-reduced-motion: reduce) { .dash-tab:hover { transform: none; } }
         .matrix thead .sticky-col { z-index: 2; background:#fff; }
     </style>
-    <script src="auth/gate.js?v=24"></script>
+    <script src="auth/gate.js?v=25"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
@@ -82,6 +82,21 @@
                 </div>
                 <h2 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">Admin Console</h2>
                 <p class="text-slate-500 font-medium mt-1">Training compliance, engagement, and the forms staff fill in on the Hub.</p>
+                <!-- How old the numbers on screen are, and a way to get newer
+                     ones. Covers every tab: the whole page comes from one
+                     request. While a saved copy from the last visit is showing,
+                     it says so and that the live read is on its way. -->
+                <div id="data-status" class="hidden mt-3 flex flex-wrap items-center gap-x-3 gap-y-2">
+                    <span id="data-status-text" class="inline-flex items-center gap-2 text-xs font-semibold text-slate-500">
+                        <span id="data-status-spin" class="hidden inline-block w-3 h-3 border-2 border-slate-300 border-t-slate-700 rounded-full animate-spin flex-shrink-0" aria-hidden="true"></span>
+                        <span id="data-status-msg" role="status" aria-live="polite"></span>
+                    </span>
+                    <button id="data-refresh" type="button"
+                            class="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 border border-indigo-200 bg-white hover:bg-indigo-50 disabled:opacity-50 disabled:cursor-wait rounded-lg px-2.5 py-1 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+                        <span id="data-refresh-label">Refresh</span>
+                    </button>
+                </div>
             </div>
 
             <!-- ==========================================================
@@ -143,7 +158,7 @@
             </div>
 
             <div id="panel-pd" role="tabpanel" aria-labelledby="tab-pd" tabindex="0" class="focus:outline-none">
-                <p class="text-sm text-slate-500 font-medium mb-6">Completion status across all staff. <span id="generated-at"></span></p>
+                <p class="text-sm text-slate-500 font-medium mb-6">Completion status across all staff.</p>
 
             <!-- Summary cards — each one deep-links into admin-charts.html
                  with an anchor jumping to the relevant chart, so admins can
@@ -304,7 +319,7 @@
                     <tbody id="dwell-body"></tbody>
                 </table>
             </div>
-            <p id="dwell-empty" class="text-center text-slate-400 py-8">No engagement data yet — dwell time appears as teachers work through PD modules.</p>
+            <p id="dwell-empty" class="text-center text-slate-400 py-8">Loading engagement…</p>
             <p id="dwell-needs-migration" class="hidden mt-3 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
                 <strong>Heads up:</strong> the dwell sheet still has the old per-chapter layout. Run
                 <code class="font-mono bg-amber-100 px-1.5 py-0.5 rounded">migrateDwellToPerModule()</code>
@@ -346,9 +361,7 @@
                 <div id="resp-stats" class="grid grid-cols-2 sm:grid-cols-5 gap-3 mb-4"></div>
                 <div id="resp-list" class="space-y-3"></div>
 
-                <p id="resp-empty" class="text-center text-slate-400 py-8">
-                    No responses yet &mdash; answers appear here as teachers work through the module.
-                </p>
+                <p id="resp-empty" class="text-center text-slate-400 py-8">Loading responses&hellip;</p>
                 <p id="resp-no-endpoint" class="hidden mt-3 text-sm text-rose-800 bg-rose-50 border border-rose-200 rounded-xl px-4 py-3">
                     <strong>The backend doesn&rsquo;t have the response endpoints yet.</strong>
                     Paste <code class="font-mono bg-rose-100 px-1.5 py-0.5 rounded">auth/apps-script.gs</code>
@@ -416,9 +429,7 @@
 
                 <div id="goal-list" class="space-y-3"></div>
 
-                <p id="goal-empty" class="text-center text-slate-400 py-8">
-                    No goals yet &mdash; they appear here as teachers submit them.
-                </p>
+                <p id="goal-empty" class="text-center text-slate-400 py-8">Loading goals&hellip;</p>
 
                 <!-- Who still owes one, and a one-click nudge. -->
                 <details id="goal-outstanding-wrap" class="hidden mt-4 bg-white rounded-2xl border border-amber-200 shadow-sm px-4 py-3">
@@ -936,12 +947,18 @@
 
         function buildTrackerOptions() {
             const opt = m => '<option value="' + escapeHtml(m.id) + '">' + escapeHtml(m.title) + '</option>';
-            document.getElementById('tracker-module').innerHTML =
+            /* The page draws twice on a return visit (the saved copy, then
+             * the live read), so whatever training the admin has picked in
+             * between must survive the redraw. */
+            const sel = document.getElementById('tracker-module');
+            const keep = sel.value;
+            sel.innerHTML =
                 '<option value="' + ALL_SCOPE + '">All trainings (' + MODULES.length + ')</option>' +
                 '<option value="' + REQUIRED_SCOPE + '">Required only (' + REQUIRED.length + ')</option>' +
                 '<optgroup label="Required">' + MODULES.filter(m => m.required).map(opt).join('') + '</optgroup>' +
                 '<optgroup label="Recommended">' + MODULES.filter(m => !m.required).map(opt).join('') + '</optgroup>' +
                 '<optgroup label="Other">' + EXTRA.map(opt).join('') + '</optgroup>';
+            if (keep && sel.querySelector('option[value="' + keep + '"]')) sel.value = keep;
         }
 
         function scopeValue() {
@@ -1287,10 +1304,6 @@
             renderModuleBars(DATA.list);
             buildTrackerOptions();
             renderMatrix();
-            if (payload.generated_at) {
-                document.getElementById('generated-at').textContent =
-                    'Updated ' + new Date(payload.generated_at).toLocaleString('en-GB');
-            }
             /* Export CSV sits in the tracker's filter bar; reveal it once
              * there is data to export. It carries its own display class,
              * so only `hidden` comes off. */
@@ -1359,9 +1372,8 @@
          * quota trip, a network blink — is a failure to find out, and
          * showing it as a permissions verdict is how an admin ends up
          * being told they have no access to their own dashboard. */
-        function showLoadFailure(err) {
+        function describeLoadFailure(err) {
             var code = (err && err.message) || 'api_error';
-            if (code === 'not_admin') { showState('state-denied'); return; }
             var says = {
                 request_timeout:
                     'The backend didn’t answer in time. It gets slow when the ' +
@@ -1374,6 +1386,12 @@
                     'The backend replied with something that wasn’t data — usually ' +
                     'an Apps Script error page, which means it crashed or has hit ' +
                     'its daily quota.',
+                /* The script threw — nearly always Google Sheets timing out
+                 * under load. It has already been retried once by gate.js. */
+                server_error:
+                    'The backend hit an error reading the spreadsheet, usually ' +
+                    'Google Sheets timing out while the Hub is busy. Trying again ' +
+                    'in a minute usually works.',
                 aisa_api_not_configured:
                     'This copy of the Hub has no backend URL configured, so there ' +
                     'is nothing to load from.',
@@ -1411,7 +1429,7 @@
              * reason. This screen shipped saying "the backend refused the
              * request" over exactly such a crash. */
             var isPageBug = !/^[a-z][a-z0-9_]*$/.test(code);
-            document.getElementById('state-error-msg').textContent = isPageBug
+            return isPageBug
                 ? 'The dashboard hit a bug while building the page. Nothing is ' +
                   'wrong with your access or with the data — this is a fault in ' +
                   'the Hub itself. The line below is what broke; send it to ' +
@@ -1420,61 +1438,284 @@
                     ? 'The backend crashed while answering, before it could send ' +
                       'any data. That is usually temporary — try again in a moment.'
                     : 'The backend refused the request. Trying again may help.'));
-            document.getElementById('state-error-code').textContent = code;
+        }
+
+        function errorCode(err) {
+            var code = (err && err.message) || 'api_error';
+            return code + (err && err.serverMessage ? ' — ' + err.serverMessage : '');
+        }
+
+        function showLoadFailure(err) {
+            if (err && err.message === 'not_admin') { showState('state-denied'); return; }
+            document.getElementById('state-error-msg').textContent = describeLoadFailure(err);
+            document.getElementById('state-error-code').textContent = errorCode(err);
             showState('state-error');
         }
 
         document.getElementById('state-error-retry')
             .addEventListener('click', function () { location.reload(); });
 
-        /* The two free-text sections further down are admin reads as well,
-         * and they used to fire the instant the page loaded — so four
-         * heavy spreadsheet scans raced each other and the compliance
-         * view, the one thing the page cannot render without, waited its
-         * turn behind them. They chain off this instead. Nothing became
-         * lazy: they still run unconditionally on page load, just after
-         * the read that decides whether there is a dashboard at all.
-         * Resolves false when there isn't, so they don't fire two more
-         * requests that are already known to be doomed. */
-        var adminGateSettle;
-        window.aisaAdminGate = new Promise(function (resolve) { adminGateSettle = resolve; });
+        /* ==========================================================
+         * Loading — one request for the whole page.
+         *
+         * Audited 23 September 2026 after "sometimes it loads quickly,
+         * sometimes extremely slowly or not at all". This page used to
+         * send admin_overview, then admin_dwell, then admin_module_
+         * responses and admin_survey_responses (the last one twice when
+         * the roster had a `secondary` tag). Every one of them paid for
+         * its own Apps Script cold start, re-read the whole sessions tab
+         * to find out who was asking, re-read the admins tab, and then
+         * read its sheets end to end — while every other member of staff
+         * browsing the Hub queued on the same script and spreadsheet.
+         * How long that took depended on how busy the school was, which
+         * is why it varied so much.
+         *
+         * Now:
+         *   1. The last good compliance read is drawn at once from this
+         *      device (auth.readAdminSnapshot), marked as a saved copy.
+         *   2. ONE request, admin_dashboard, brings everything — and the
+         *      backend answers most of it from its own cache.
+         *   3. The free-text sections below take their share of that
+         *      same answer through window.aisaAdminData rather than
+         *      fetching for themselves.
+         *   4. Refresh asks the backend to skip its cache and read the
+         *      sheets — for after a hand edit to the spreadsheet.
+         *
+         * A backend that hasn't been redeployed answers `unknown_action`
+         * to admin_dashboard; the page then falls back to the separate
+         * endpoints, exactly as before (legacyLoad), so nothing breaks in
+         * the gap between pushing this and redeploying the script.
+         * ========================================================== */
+        var ADMIN_PARTS = {
+            /* Must match MODULE_ID in the #responses section and SURVEY_ID
+             * in the #goals section — they check before using the data. */
+            moduleId: 'ai-curriculum-readiness',
+            surveyId: 'secondary-teacher-goal-2026-27'
+        };
 
-        if (window.aisaReady) {
-            window.aisaReady(function (auth) {
-                if (!auth.isConfigured()) {
-                    showLoadFailure(new Error('aisa_api_not_configured'));
-                    adminGateSettle(false);
+        /* The sections further down subscribe here. on(fn) calls fn with
+         * each answer that arrives — first load and every Refresh — and at
+         * once with the latest if one already has. A load that fails
+         * before anything arrived is passed on as { failed: err }. */
+        window.aisaAdminData = (function () {
+            var latest = null, subs = [];
+            function deliver(fn, b) {
+                try { fn(b); } catch (e) { console.warn('AISA: an admin section failed to draw', e); }
+            }
+            return {
+                on: function (fn) { subs.push(fn); if (latest) deliver(fn, latest); },
+                publish: function (b) { latest = b; subs.forEach(function (fn) { deliver(fn, b); }); },
+                fail: function (err) {
+                    if (latest && !latest.failed) return;   // keep what the sections already show
+                    latest = { failed: err };
+                    subs.forEach(function (fn) { deliver(fn, latest); });
+                }
+            };
+        })();
+
+        /* Resolves 'bundle' when admin_dashboard answered (sections wait
+         * for aisaAdminData), 'legacy' when the page fell back to the
+         * separate endpoints (sections fetch for themselves, as before),
+         * false when there is no dashboard to fill. */
+        var adminGateSettle, adminGateDone = false;
+        window.aisaAdminGate = new Promise(function (resolve) { adminGateSettle = resolve; });
+        function settleGate(mode) {
+            if (adminGateDone) return;
+            adminGateDone = true;
+            adminGateSettle(mode);
+        }
+
+        var loadMode   = null;   // 'bundle' | 'legacy', once known
+        var liveAt     = 0;      // when the data on screen was fetched live, this visit
+        var snapshotAt = 0;      // when the saved copy on screen was saved, while it is showing
+        var loading    = false;
+
+        function fmtWhen(ms) {
+            if (!ms) return '';
+            var d = new Date(ms);
+            var time = d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+            if (d.toDateString() === new Date().toDateString()) return time;
+            return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' }) + ', ' + time;
+        }
+
+        /* 'saved'   a copy from last time is showing; the live read is on its way
+         * 'loading' Refresh was pressed
+         * 'ok'      live data; arg = its generated_at
+         * 'failed'  the live read failed but there is data on screen; arg = err */
+        function setStatus(state, arg) {
+            var text  = document.getElementById('data-status-text');
+            var busy  = (state === 'saved' || state === 'loading');
+            var btn   = document.getElementById('data-refresh');
+            document.getElementById('data-status').classList.remove('hidden');
+            document.getElementById('data-status-spin').classList.toggle('hidden', !busy);
+            text.classList.toggle('text-amber-800', state === 'failed');
+            text.classList.toggle('text-slate-500', state !== 'failed');
+            btn.disabled = busy;
+            /* After a failure the button retries as normal, cache and all;
+             * otherwise it is a Refresh, which skips the backend's cache. */
+            btn.setAttribute('data-fresh', state === 'failed' ? '0' : '1');
+            document.getElementById('data-refresh-label').textContent = state === 'failed' ? 'Try again' : 'Refresh';
+
+            var msg = '';
+            if (state === 'saved') {
+                msg = 'Showing the copy saved ' + fmtWhen(snapshotAt) + ' — getting the latest…';
+            } else if (state === 'loading') {
+                msg = 'Getting the latest from the spreadsheet…';
+            } else if (state === 'ok') {
+                msg = 'Updated ' + fmtWhen(Date.parse(arg) || Date.now());
+            } else if (state === 'failed') {
+                var shown = liveAt ? 'what was loaded at ' + fmtWhen(liveAt) : 'the copy saved ' + fmtWhen(snapshotAt);
+                msg = 'Couldn’t get the latest, so this is ' + shown + '. ' +
+                      describeLoadFailure(arg) + ' (' + errorCode(arg) + ')';
+            }
+            document.getElementById('data-status-msg').textContent = msg;
+        }
+
+        function applyDwell(dw) {
+            if (!dw) return;
+            var migrate = document.getElementById('dwell-needs-migration');
+            if (dw.ok) {
+                migrate.classList.add('hidden');
+                if (window.renderDwell) window.renderDwell(dw.rows || []);
+            } else if (dw.error === 'dwell_sheet_needs_migration') {
+                migrate.classList.remove('hidden');
+                document.getElementById('dwell-empty').textContent = 'No engagement data to show until the dwell sheet is migrated.';
+            } else {
+                console.warn('AISA: admin dwell failed', dw);
+                document.getElementById('dwell-empty').textContent =
+                    'Couldn’t load engagement (' + (dw.error || 'error') + '). Use Refresh at the top to try again.';
+            }
+        }
+
+        /* Everything that follows an answer with data in it. */
+        function acceptLive(overview, dwell) {
+            render(overview);
+            applyDwell(dwell);
+            AUTH.saveAdminSnapshot(overview, dwell);
+            liveAt = Date.now();
+            snapshotAt = 0;
+            setStatus('ok', overview.generated_at);
+        }
+
+        function loadFailed(err) {
+            var code = err && err.message;
+            if (code === 'not_admin') {
+                AUTH.clearAdminSnapshot();
+                showState('state-denied');
+                settleGate(false);
+                window.aisaAdminData.fail(err);
+                return;
+            }
+            console.warn('AISA: admin dashboard load failed', err);
+            /* Something is already on screen (a saved copy, or the last good
+             * load before a Refresh): keep it, and say plainly it is not live. */
+            if (rendered) setStatus('failed', err);
+            else showLoadFailure(err);
+            settleGate(false);
+            window.aisaAdminData.fail(err);
+        }
+
+        function load(fresh) {
+            if (loading) return;
+            if (loadMode === 'legacy') { location.reload(); return; }
+            loading = true;
+            if (rendered) setStatus(snapshotAt && !liveAt ? 'saved' : 'loading');
+            AUTH.adminDashboard({
+                moduleId: ADMIN_PARTS.moduleId,
+                surveyId: ADMIN_PARTS.surveyId,
+                fresh:    !!fresh
+            }).then(function (b) {
+                loading = false;
+                var ov = b && b.overview;
+                if (!ov || ov.ok === false) {
+                    var e = new Error((ov && ov.error) || 'api_error');
+                    if (ov && ov.message) e.serverMessage = ov.message;
+                    throw e;
+                }
+                loadMode = 'bundle';
+                acceptLive(ov, b.dwell);
+                settleGate('bundle');
+                window.aisaAdminData.publish(b);
+            }).catch(function (err) {
+                loading = false;
+                if (err && err.message === 'unknown_action' && loadMode !== 'bundle') {
+                    legacyLoad();
                     return;
                 }
-                AUTH = auth;
-                auth.adminOverview().then(function (payload) {
-                    render(payload);
-                    adminGateSettle(true);
-                    /* Engagement is not on the critical path — a stale
-                     * dwell sheet shouldn't block the compliance view —
-                     * so it goes after the render rather than alongside it. */
-                    if (auth.getAdminDwell) {
-                        auth.getAdminDwell().then(function (payload) {
-                            if (payload && payload.ok) {
-                                renderDwell(payload.rows || []);
-                            } else if (payload && payload.error === 'dwell_sheet_needs_migration') {
-                                var n = document.getElementById('dwell-needs-migration');
-                                if (n) n.classList.remove('hidden');
-                            }
-                        }).catch(function (err) {
-                            console.warn('AISA: admin dwell failed', err);
-                        });
-                    }
-                }).catch(function (err) {
-                    console.warn('AISA: admin overview failed', err);
-                    showLoadFailure(err);
-                    adminGateSettle(false);
-                });
+                loadFailed(err);
             });
-        } else {
-            showLoadFailure(new Error('aisa_api_not_configured'));
-            adminGateSettle(false);
         }
+
+        /* The backend predates admin_dashboard: the separate endpoints, one
+         * after another, as this page always used to. Refresh reloads. */
+        function legacyLoad() {
+            loadMode = 'legacy';
+            if (rendered) setStatus('saved');
+            AUTH.adminOverview().then(function (payload) {
+                acceptLive(payload, null);
+                settleGate('legacy');
+                /* Engagement is not on the critical path — a stale dwell
+                 * sheet shouldn't block the compliance view — so it goes
+                 * after the render rather than alongside it. */
+                if (AUTH.getAdminDwell) {
+                    AUTH.getAdminDwell().then(function (dw) {
+                        applyDwell(dw);
+                        AUTH.saveAdminSnapshot(payload, dw);
+                    }).catch(function (err) {
+                        console.warn('AISA: admin dwell failed', err);
+                        applyDwell({ ok: false, error: (err && err.message) || 'error' });
+                    });
+                }
+            }).catch(loadFailed);
+        }
+
+        document.getElementById('data-refresh').addEventListener('click', function () {
+            load(this.getAttribute('data-fresh') !== '0');
+        });
+
+        function boot(auth) {
+            if (!auth.isConfigured()) {
+                showLoadFailure(new Error('aisa_api_not_configured'));
+                settleGate(false);
+                return;
+            }
+            AUTH = auth;
+            var snap = auth.readAdminSnapshot ? auth.readAdminSnapshot() : null;
+            if (snap) {
+                try {
+                    render(snap.overview);
+                    if (snap.dwell) applyDwell(snap.dwell);
+                    snapshotAt = snap.savedAt;
+                    setStatus('saved');
+                } catch (e) {
+                    /* A copy saved by an older version of this page that it
+                     * can no longer draw. Drop it and wait for the live read. */
+                    console.warn('AISA: saved dashboard copy unusable', e);
+                    auth.clearAdminSnapshot();
+                    rendered = false;
+                    snapshotAt = 0;
+                    showState('state-loading');
+                }
+            }
+            if (auth.adminDashboard) load(false);
+            else legacyLoad();
+        }
+
+        /* After the whole page has parsed, not now: for a returning visitor
+         * aisaReady fires synchronously, before the engagement, responses
+         * and goals scripts below exist — and the saved copy wants to draw
+         * into them. The wait is the few milliseconds it takes to parse
+         * the rest of this file. */
+        function start() {
+            if (window.aisaReady) {
+                window.aisaReady(boot);
+            } else {
+                showLoadFailure(new Error('aisa_api_not_configured'));
+                settleGate(false);
+            }
+        }
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
+        else start();
     </script>
 
     <script>
@@ -1516,6 +1757,7 @@
         function buildModuleFilter(rows) {
             const sel = document.getElementById('dwell-module-filter');
             if (!sel) return;
+            const keep = sel.value;
             const ids = {};
             rows.forEach(function (r) { ids[r.module_id] = true; });
             sel.innerHTML = '<option value="">All modules</option>' +
@@ -1523,6 +1765,7 @@
                     return '<option value="' + escapeAttr(id) + '">' +
                         escapeHtml(moduleLabel(id)) + '</option>';
                 }).join('');
+            if (keep && ids[keep]) sel.value = keep;
         }
 
         function escapeHtml(s) {
@@ -1621,6 +1864,8 @@
 
         window.renderDwell = function (rows) {
             ALL_ROWS = Array.isArray(rows) ? rows : [];
+            const empty = document.getElementById('dwell-empty');
+            if (empty) empty.textContent = 'No engagement data yet — dwell time appears as teachers work through PD modules.';
             buildModuleFilter(ALL_ROWS);
             rerender();
         };
@@ -1864,33 +2109,59 @@
         document.getElementById('resp-search').addEventListener('input', rerender);
         document.getElementById('resp-export').addEventListener('click', exportCsv);
 
-        /* Wait for the compliance view to load before adding another
-         * heavy admin read to the pile — see the note beside
-         * aisaAdminGate. Falls through immediately if the gate never got
-         * defined, so a failure up there can't silently mute this
-         * section. */
+        function applyResponses(payload) {
+            rows = (payload && payload.responses) || [];
+            renderStats();
+            rerender();
+        }
+
+        function showFailure(err) {
+            var code = (err && err.message) || 'error';
+            /* An un-deployed backend is the likely cause and the one worth
+             * naming, because it also means teachers are losing work. */
+            if (code === 'unknown_action') {
+                document.getElementById('resp-no-endpoint').classList.remove('hidden');
+                document.getElementById('resp-empty').classList.add('hidden');
+                return;
+            }
+            if (code === 'not_admin') return;   // the whole page says so
+            document.getElementById('resp-empty').textContent =
+                'Couldn’t load the responses (' + code + '). Use Refresh at the top of the page to try again.';
+        }
+
+        /* This section's data arrives in the page's one admin_dashboard
+         * answer — see the loading notes in the main script — and again
+         * on every Refresh. */
+        if (window.aisaAdminData) {
+            window.aisaAdminData.on(function (b) {
+                if (b.failed) { showFailure(b.failed); return; }
+                var p = b.module_responses;
+                if (!p) return;
+                if (p.ok === false) { showFailure(new Error(p.error || 'error')); return; }
+                if (p.module_id && p.module_id !== MODULE_ID) {
+                    console.warn('AISA: dashboard loaded responses for ' + p.module_id + ', this section shows ' + MODULE_ID);
+                    return;
+                }
+                applyResponses(p);
+            });
+        }
+
+        /* A backend without admin_dashboard: fetch for ourselves, after the
+         * compliance view has loaded, as this section always used to.
+         * Falls through immediately if the gate never got defined, so a
+         * failure up there can't silently mute this section. */
         function afterAdminGate(fn) {
             var gate = window.aisaAdminGate;
             if (!gate || typeof gate.then !== 'function') { fn(); return; }
-            gate.then(function (ok) { if (ok) fn(); });
+            gate.then(function (mode) { if (mode === 'legacy') fn(); });
         }
 
         if (window.aisaReady) {
             window.aisaReady(function (auth) {
                 if (!auth.adminModuleResponses) return;
                 afterAdminGate(function () {
-                    auth.adminModuleResponses(MODULE_ID).then(function (payload) {
-                        rows = (payload && payload.responses) || [];
-                        renderStats();
-                        rerender();
-                    }).catch(function (err) {
-                        /* An un-deployed backend is the likely cause and
-                         * the one worth naming, because it also means
-                         * teachers are losing work right now. */
-                        if (err && err.message === 'unknown_action') {
-                            document.getElementById('resp-no-endpoint').classList.remove('hidden');
-                            document.getElementById('resp-empty').classList.add('hidden');
-                        }
+                    auth.adminModuleResponses(MODULE_ID).then(applyResponses).catch(function (err) {
+                        showFailure(err);
                         console.warn('AISA: module responses failed', err);
                     });
                 });
@@ -2219,46 +2490,115 @@
             });
         }
 
+        /* The focus-area filter lists the areas actually chosen, so it is
+         * rebuilt with each answer, keeping the current choice. */
+        function fillAreaOptions() {
+            var areaSel = document.getElementById('goal-area');
+            var chosen = areaSel.value;
+            areaSel.innerHTML = '<option value="">All focus areas</option>';
+            areaCounts().forEach(function (item) {
+                var o = document.createElement('option');
+                o.value = item.area;
+                o.textContent = item.area + ' (' + item.n + ')';
+                areaSel.appendChild(o);
+            });
+            areaSel.value = chosen;
+        }
+
+        /* The cohort filter lists the roster's tags. Returns true the first
+         * time it is filled, which is when `secondary` becomes the default. */
+        function fillTagOptions(tags) {
+            var tagSel = document.getElementById('goal-tag');
+            if (tagSel.options.length !== 1) return false;
+            (tags || []).forEach(function (t) {
+                var o = document.createElement('option');
+                o.value = t;
+                o.textContent = 'Cohort: ' + t;
+                tagSel.appendChild(o);
+            });
+            return true;
+        }
+
+        /* Default to `secondary` when the roster has it — this is a
+         * secondary form, so that is the cohort the principal means by
+         * "outstanding". */
+        function defaultTag() {
+            return document.getElementById('goal-tag').querySelector('option[value="secondary"]') ? 'secondary' : '';
+        }
+
+        /* ---- From the page's one admin_dashboard answer ----
+         * `outstanding` there is the whole roster minus whoever has
+         * submitted, each person with their tags, so changing the cohort
+         * is a filter on what is already here — it used to be another
+         * request, and the page used to make that request on every load
+         * just to switch to `secondary`. */
+        var outstandingAll = null;
+
+        function narrowOutstanding() {
+            outstanding = (outstandingAll || []).filter(function (p) {
+                return !rosterTag || !Array.isArray(p.tags) || p.tags.indexOf(rosterTag) !== -1;
+            });
+        }
+
+        function applyBundle(payload) {
+            rows           = payload.responses   || [];
+            fields         = payload.fields      || [];
+            outstandingAll = payload.outstanding || [];
+            if (fillTagOptions(payload.roster_tags) && !rosterTag) rosterTag = defaultTag();
+            document.getElementById('goal-tag').value = rosterTag;
+            narrowOutstanding();
+            fillAreaOptions();
+            rerender();
+        }
+
+        function showFailure(err) {
+            var code = (err && err.message) || 'error';
+            /* An un-deployed backend is the likely cause and the one worth
+             * naming, because it also means the form is turning teachers
+             * away right now. */
+            if (code === 'unknown_action' || code === 'unknown_survey') {
+                document.getElementById('goal-no-endpoint').classList.remove('hidden');
+                document.getElementById('goal-empty').classList.add('hidden');
+                return;
+            }
+            if (code === 'not_admin') return;   // the whole page says so
+            document.getElementById('goal-empty').textContent =
+                'Couldn’t load the goals (' + code + '). Use Refresh at the top of the page to try again.';
+        }
+
+        if (window.aisaAdminData) {
+            window.aisaAdminData.on(function (b) {
+                if (b.failed) { showFailure(b.failed); return; }
+                var p = b.survey;
+                if (!p) return;
+                if (p.ok === false) { showFailure(new Error(p.error || 'error')); return; }
+                if (p.survey_id && p.survey_id !== SURVEY_ID) {
+                    console.warn('AISA: dashboard loaded survey ' + p.survey_id + ', this section shows ' + SURVEY_ID);
+                    return;
+                }
+                applyBundle(p);
+            });
+        }
+
+        /* ---- A backend without admin_dashboard: fetch for ourselves,
+         * narrowing by tag on the server, as this section always did. ---- */
+        var legacyAuth = null;
+
         function load(auth) {
             return auth.adminSurveyResponses(SURVEY_ID, { rosterTag: rosterTag })
                 .then(function (payload) {
-                    rows        = (payload && payload.responses)   || [];
-                    outstanding = (payload && payload.outstanding) || [];
-                    fields      = (payload && payload.fields)      || [];
+                    rows           = (payload && payload.responses)   || [];
+                    outstanding    = (payload && payload.outstanding) || [];
+                    fields         = (payload && payload.fields)      || [];
+                    outstandingAll = null;
 
-                    /* Populate the two directories the server owns: the
-                     * roster tags (so the cohort can be narrowed) and the
-                     * focus areas actually chosen. */
-                    var tagSel = document.getElementById('goal-tag');
-                    if (tagSel.options.length === 1) {
-                        ((payload && payload.roster_tags) || []).forEach(function (t) {
-                            var o = document.createElement('option');
-                            o.value = t;
-                            o.textContent = 'Cohort: ' + t;
-                            tagSel.appendChild(o);
-                        });
-                        /* Default to `secondary` when the roster has it —
-                         * this is a secondary form, so that is the cohort
-                         * the principal means by "outstanding". */
-                        if (!rosterTag && tagSel.querySelector('option[value="secondary"]')) {
-                            tagSel.value = 'secondary';
-                            rosterTag = 'secondary';
-                            return load(auth);
-                        }
+                    if (fillTagOptions(payload && payload.roster_tags) && !rosterTag && defaultTag()) {
+                        rosterTag = defaultTag();
+                        document.getElementById('goal-tag').value = rosterTag;
+                        return load(auth);
                     }
-                    tagSel.value = rosterTag;
-
-                    var areaSel = document.getElementById('goal-area');
-                    var chosen = areaSel.value;
-                    areaSel.innerHTML = '<option value="">All focus areas</option>';
-                    areaCounts().forEach(function (item) {
-                        var o = document.createElement('option');
-                        o.value = item.area;
-                        o.textContent = item.area + ' (' + item.n + ')';
-                        areaSel.appendChild(o);
-                    });
-                    areaSel.value = chosen;
-
+                    document.getElementById('goal-tag').value = rosterTag;
+                    fillAreaOptions();
                     rerender();
                 });
         }
@@ -2268,6 +2608,12 @@
         document.getElementById('goal-search').addEventListener('input', rerender);
         document.getElementById('goal-export').addEventListener('click', exportCsv);
         document.getElementById('goal-remind').addEventListener('click', remindOutstanding);
+
+        document.getElementById('goal-tag').addEventListener('change', function (e) {
+            rosterTag = e.target.value;
+            if (outstandingAll) { narrowOutstanding(); rerender(); return; }
+            if (legacyAuth) load(legacyAuth).catch(function (err) { showFailure(err); });
+        });
 
         /* Clicking a bar filters to that area — the distribution is a
          * way in to the goals, not just a picture. */
@@ -2280,35 +2626,20 @@
             rerender();
         });
 
-        /* Wait for the compliance view to load before adding another
-         * heavy admin read to the pile — see the note beside
-         * aisaAdminGate. Falls through immediately if the gate never got
-         * defined, so a failure up there can't silently mute this
-         * section. */
+        /* Legacy only — see the same function in the responses section. */
         function afterAdminGate(fn) {
             var gate = window.aisaAdminGate;
             if (!gate || typeof gate.then !== 'function') { fn(); return; }
-            gate.then(function (ok) { if (ok) fn(); });
+            gate.then(function (mode) { if (mode === 'legacy') fn(); });
         }
 
         if (window.aisaReady) {
             window.aisaReady(function (auth) {
                 if (!auth.adminSurveyResponses) return;
-
-                document.getElementById('goal-tag').addEventListener('change', function (e) {
-                    rosterTag = e.target.value;
-                    load(auth).catch(function () {});
-                });
-
                 afterAdminGate(function () {
+                    legacyAuth = auth;
                     load(auth).catch(function (err) {
-                        /* An un-deployed backend is the likely cause and
-                         * the one worth naming, because it also means the
-                         * form is turning teachers away right now. */
-                        if (err && (err.message === 'unknown_action' || err.message === 'unknown_survey')) {
-                            document.getElementById('goal-no-endpoint').classList.remove('hidden');
-                            document.getElementById('goal-empty').classList.add('hidden');
-                        }
+                        showFailure(err);
                         console.warn('AISA: survey responses failed', err);
                     });
                 });

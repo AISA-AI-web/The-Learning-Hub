@@ -196,6 +196,33 @@ fail silently and the dependent UIs stay empty:
   stays slow, and the client-side work described below only stops it
   *lying* about why.
 
+- **Read cache + one-request admin dashboard (23 September 2026).** The
+  backend now answers most reads from `CacheService` and has a new
+  `admin_dashboard` endpoint — see *Data loading — audited 23 September
+  2026* below. Redeploy the usual way (**Manage deployments → ✏️ →
+  Version: New version**, never *New deployment*, which changes the URL).
+  No new sheet, no data migration, and **no new permission**:
+  `CacheService` needs no authorisation, so the redeploy asks for nothing.
+
+  Until the redeploy it does **not** fail: `admin_dashboard` answers
+  `unknown_action`, and the dashboard and charts fall back to the
+  separate endpoints they always used — same data, same speed as before.
+  The browser-side half (analytics no longer blocking the page, the admin
+  check and the bell no longer asked on every page view, the saved copy
+  that draws the dashboard instantly) works from the moment it is pushed.
+
+  Two optional extras, both safe to skip:
+  1. **Keep it warm.** Triggers (clock icon) → Add Trigger → function
+     `warmHubCache` → Time-driven → Minutes timer → **Every 5 minutes**.
+     Then the first admin load of the day is as quick as the second. It
+     reads only, and does nothing outside 06:00–20:00 Abu Dhabi.
+  2. **After editing the spreadsheet by hand**, either press **Refresh**
+     on the dashboard, or run `flushHubCache()` from the editor to make the
+     whole Hub re-read everything at once (it also re-checks every
+     session, so a session row you deleted stops working immediately).
+     Otherwise a hand edit shows up when its cache entry expires — see
+     the TTL table below.
+
 ## Admin dashboard — "takes forever, then says I'm not an admin"
 
 Reported and fixed 18 September 2026. The message was a lie: the boot
@@ -299,13 +326,141 @@ have the completion dropped with nothing on screen to say so. The admin
 dashboard is the only page that admits anything is wrong, which is why
 this looked like an admin-only problem for as long as it did.
 
-The dashboard's two free-text sections (`#responses`, `#goals`) now
-chain off `window.aisaAdminGate` rather than firing their own heavy
-reads immediately. **This is not the lazy-loading that the three-tabs
-note forbids** — they still run unconditionally on page load, whichever
-tab is open, just after the read that decides whether there is a
-dashboard to fill at all. The gate resolves `false` when it isn't, so
-they don't fire two more requests already known to be doomed.
+The dashboard's two free-text sections (`#responses`, `#goals`) no longer
+fetch at all: since 23 September 2026 they take their part of the page's
+one `admin_dashboard` answer through `window.aisaAdminData.on(fn)`, first
+load and every Refresh (see *Data loading* below). `window.aisaAdminGate`
+now resolves `'bundle'`, `'legacy'` or `false`, and the sections fetch
+for themselves only on `'legacy'` — a backend that hasn't been redeployed.
+**This is not the lazy-loading that the three-tabs note forbids** — the
+data still arrives on page load, whichever tab is open.
+
+## Data loading — audited 23 September 2026
+
+Reported as: the admin dashboard "sometimes loads quickly and other times
+loads extremely slowly or not at all". The Apps Script was up to date.
+**The cause was the whole Hub, not the dashboard.**
+
+- **Every request re-read the entire `sessions` tab** just to learn who was
+  asking (`verifySessionToken`). That tab grows by a row per sign-in per
+  device and is never pruned, so everything got slower as the year went on.
+- **Every page view cost 3–4 executions per member of staff**:
+  `record_pageview`, `whoami` (the menu's admin check, asked on every page
+  even when already known), `get_notifications` (notifications + the
+  whole `notification_reads` tab + roster) and, on module and hub pages,
+  `get_completions` (the whole `events` tab). pd.html and menu.js each
+  asked `whoami`, so twice.
+- **All of them run as the script owner**, so they share one execution
+  quota and one spreadsheet with the admin dashboard, and Apps Script
+  queues them where the browser can't see. The dashboard's own five or six
+  full-sheet reads waited behind everybody else's — quick when school was
+  quiet, slow or timing out when it was busy (a PD session in the gym is
+  the worst case). That is the variability.
+
+### The backend: a read cache that only ever holds copies
+
+`apps-script.gs` has a *Read cache* section. `CacheService.getScriptCache()`
+is shared by every execution and answers in milliseconds. The rules, which
+`tests/apps-script-sim.js` enforces:
+
+1. **Copies only.** Nothing goes in that isn't already in a sheet; every
+   read falls back to the sheet on a miss or any cache error; every entry
+   expires (6 h at most). Losing the cache costs speed, never data. **No
+   write path changed what it writes or where.**
+2. **Every new sheet read goes through `_cachedRead(key, ttl, compute)`**,
+   keyed by `_dataKey(name, [domains])`.
+3. **Every write bumps its domain with `_bump(domain)` — after the sheet
+   write, never before.** Readers key their entries by generation, so the
+   Hub's own writes show on the very next read, and a reader that raced
+   the write can only file its result under the old generation.
+4. **Row hints are hints.** Remembered row numbers (session, dwell,
+   module-response and survey rows) are always read back and checked —
+   right token, right email and module — before anything is written there.
+   Rows move: `sign_out` deletes one, and people sort sheets by hand.
+5. **Hand edits** are invisible to generations. They show when the TTL
+   runs out, on the dashboard's **Refresh** (`fresh: '1'`, honoured only on
+   admin reads, after the admin check), or after `flushHubCache()`.
+
+| Cached | Invalidated by | TTL |
+|---|---|---|
+| a session, per token | `sign_out`; `flushHubCache()` | 1 h |
+| `admins` tab | hand edits only → TTL | 10 min |
+| `roster` tab | hand edits only → TTL | 15 min |
+| who has signed in + last seen | new session / sign-out | 10 min |
+| completions index (`events`) | `record_event` | 1 h |
+| dwell rows | TTL only (written every 30 s) | 10 min |
+| `module_responses` | `save_module_response` | 1 h |
+| `survey_responses` | `save_survey_response` | 1 h |
+| notifications | post / delete / system notifications | 1 h |
+| one person's read receipts | that person marking read | 30 min |
+
+`last_seen` on the tracker can therefore lag by up to ~15 minutes (it
+already lagged 5, and the tracker shows a date). `generated_at` on the
+overview is the *as-of* time of the oldest part that can drift, so the
+dashboard's "Updated 10:32" is honest.
+
+**Personal data:** module and survey responses sit in the script's own
+cache for at most an hour — private to this script, inside the same Google
+account as the spreadsheet — and only admin requests read them. They are
+**never** put in browser storage.
+
+`admin_dashboard` returns `overview`, `dwell`, `module_responses` and
+`survey` in one execution (`parts=` narrows it; charts ask for two). Each
+part fails on its own as `{ ok:false, error }`. The survey's `outstanding`
+is the whole roster minus submitters **with each person's tags**, so the
+cohort dropdown filters in the page — it used to cost a second request on
+every load just to switch to `secondary`.
+
+A thrown exception is now `{ error: 'server_error', message }`. It used to
+be the exception text itself, which the dashboard (rightly) reads as its
+own crash because it isn't `lower_snake_case`.
+
+Measured in the simulator: the same scenario does 62 sheet reads instead
+of 184, and a warm dashboard load reads **no sheet at all**.
+
+### The browser: `gate.js`
+
+- **Two lanes.** `record_pageview`, `record_click`, `record_dwell` and
+  `whoami` are background and get one of the two slots at most, so
+  whatever the page is waiting on never queues behind analytics.
+- **Shared reads.** Identical read-only calls in flight share one request.
+  Re-auth retries call `sendApiCall`, not `apiCall` — going back through
+  `apiCall` would find the call in `inflightReads` and wait on itself.
+- **Fewer questions.** The admin flag is re-checked every 30 minutes, not
+  every page view; the bell's list is reused for 90 seconds per tab and
+  cleared by anything that changes it.
+- **The dashboard's saved copy.** `aisa_admin_snapshot_v1` holds the last
+  good overview + dwell (never free text), for 7 days, cleared on sign-out.
+  The dashboard and charts draw it instantly, say it is a saved copy, then
+  replace it with the live read. If the live read fails, the data stays
+  and an amber line says why and offers *Try again* — the error page is
+  only for when there is nothing to show.
+
+**Two latent bugs of the 18 September kind were in `gate.js` all along:**
+`COMPLETIONS_CACHE_KEY` and `pendingReAuthResolvers` were declared below
+`var existing = readSession()`. For every returning visitor the completions
+cache has lived at `localStorage["undefined"]` (now `aisa_completions_v2`;
+the stray key is removed on load), and a session the server revoked threw
+*Cannot read properties of undefined (reading 'push')* instead of showing
+the sign-in screen. Both declarations now sit with the transport state.
+**All state in `gate.js` goes above that line.**
+
+### Tests
+
+```
+node tests/apps-script-sim.js                         # after touching apps-script.gs
+node tests/apps-script-sim.js --baseline <old.gs>     # to compare with an older backend
+node tests/gate-smoke.js                              # after touching gate.js
+```
+
+The simulator runs the real `apps-script.gs` against a fake spreadsheet and
+cache, each request in a fresh copy of the script (Apps Script keeps no
+globals between requests; a test that did would hide the bugs worth
+finding). It runs one long scenario with the cache working and with the
+cache throwing on every call, and demands identical responses and an
+identical final spreadsheet. `git show <commit>:auth/apps-script.gs >
+old.gs` gives a baseline. Both files break loudly when a planted bug — a
+missing `_bump`, an unchecked row hint — is put in.
 
 ## First-login popups — removed 17 September 2026
 
@@ -333,18 +488,19 @@ The `aisa_onboarding_v1` localStorage key is orphaned on staff devices.
 Harmless — nothing reads it.
 
 Note the cache-busting convention: `gate.js` is included as
-`auth/gate.js?v=N` by **47 pages**, so **changing `gate.js` means bumping
+`auth/gate.js?v=N` by **46 pages**, so **changing `gate.js` means bumping
 `N` on every one of them** or returning visitors keep running the
 cached copy. That change took it to `?v=19`; the September 18
 newsletter took it to `?v=20`, the newsletter mail-out to `?v=21`, and
 the request-transport rework to `?v=22`, the fix for the outage it
-caused to `?v=23`, and the AI Literacy Hub to `?v=24`.
+caused to `?v=23`, the AI Literacy Hub to `?v=24`, and the data-loading
+audit (23 September 2026) to `?v=25`.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
 their own pins — `certificate.js?v=7`, `search-index.js?v=10`,
 `menu.js?v=16`, `dwell.js?v=2` — so **editing one of those helpers
 means bumping its pin inside `gate.js`, which is itself a change to
-`gate.js`, which means bumping `?v=N` on all 47 pages again.** Adding a
+`gate.js`, which means bumping `?v=N` on all 46 pages again.** Adding a
 page to the menu or the search index is enough to trigger the whole
 cascade. Skip it and returning staff keep the cached helper and never
 see the new entry.
@@ -454,10 +610,11 @@ used to be one `<a>` wrapping the card with two more `<a>`s inside;
 nested anchors are invalid, the browser closed the outer one early, and
 the card rendered split with its icon floating next to an empty box.
 
-Both panels stay in the DOM and every section's script runs and fetches
-on page load whichever tab is open. That is deliberate: nothing is lazy,
-so nothing can be left half-initialised, and switching tabs costs no
-requests. It also means **no section may measure layout** (offsetWidth,
+Both panels stay in the DOM and every section's data arrives on page load
+whichever tab is open — all of it in one `admin_dashboard` request, which
+the sections share through `window.aisaAdminData`. That is deliberate:
+nothing is lazy, so nothing can be left half-initialised, and switching
+tabs costs no requests. It also means **no section may measure layout** (offsetWidth,
 getBoundingClientRect) during setup — a closed panel has no dimensions.
 Nothing on the page does this today.
 

@@ -24,7 +24,7 @@
         .fade-in { animation: fadeIn 0.5s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
-    <script src="auth/gate.js?v=24"></script>
+    <script src="auth/gate.js?v=25"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
@@ -333,7 +333,9 @@
                 const score = s => (s.status !== 'complete' && s.role === 'manager') ? 0
                                  : (s.status !== 'complete' && s.role === 'staff') ? 1 : 2;
                 const d = score(a) - score(b);
-                return d !== 0 ? d : (a.updated_at_iso < b.updated_at_iso ? 1 : -1);
+                /* Newest first by instant, never a string compare: "Z" and
+                 * "+04:00" timestamps don't sort as text. */
+                return d !== 0 ? d : (Date.parse(b.updated_at_iso) || 0) - (Date.parse(a.updated_at_iso) || 0);
             });
             list.innerHTML = items.map(evalCard).join('');
             wrap.classList.remove('hidden');

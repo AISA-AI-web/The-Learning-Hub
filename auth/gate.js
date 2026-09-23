@@ -189,8 +189,22 @@
      *    Apps Script never answers left the page spinning forever.
      *
      * 3. One retry, for the failures a second attempt can actually fix.
+     *
+     * Two more, from the 23 September 2026 audit:
+     *
+     * 4. Two lanes. Page views, clicks, dwell flushes and the background
+     *    admin re-check are analytics: nobody is waiting on them. They
+     *    get one slot at most, so whatever the page IS waiting on (the
+     *    admin dashboard's data, a module's completions) always has a
+     *    slot free the moment it asks. Before this, the dashboard's own
+     *    read queued behind its page view and the menu's admin check.
+     *
+     * 5. One request, not two. Identical read-only calls made while one is
+     *    already on the wire share it. pd.html and menu.js both ask
+     *    "am I an admin?" on the same load, and used to ask twice.
      */
     var MAX_INFLIGHT       = 2;
+    var MAX_BACKGROUND     = 1;
     /* Deliberately generous. A full-sheet admin read against a large
      * spreadsheet is genuinely slow, and a tight timeout would turn a
      * load that was merely slow into one that fails. This is here to
@@ -199,22 +213,70 @@
     var RETRY_LIMIT        = 1;
     var RETRY_DELAY_MS     = 1200;
 
-    var inFlight = 0;
-    var queued   = [];
+    var BACKGROUND_ACTIONS = {
+        record_pageview: 1, record_click: 1, record_dwell: 1, whoami: 1
+    };
 
-    function withSlot(run) {
+    var inFlight   = 0;
+    var bgInFlight = 0;
+    var queued     = [];   // foreground: something on screen is waiting
+    var bgQueued   = [];   // background: analytics
+    var inflightReads = {};
+
+    /* Client-side caches. Their keys and lifetimes live up here with the
+     * rest of the state, for the reason in the comment above this block:
+     * `COMPLETIONS_CACHE_KEY` used to be declared further down, and for
+     * every returning visitor it was undefined — the completions cache has
+     * been living under the localStorage key "undefined" ever since. */
+    var COMPLETIONS_CACHE_KEY = 'aisa_completions_v2';
+    var ADMIN_CACHE_KEY       = 'aisa_is_admin_v1';
+    /* How long "yes, you're an admin" is trusted before asking again. It
+     * only decides whether the menu shows the Admin link — every admin
+     * endpoint checks for itself — so it doesn't need asking on every
+     * page view, which is what it used to do for everybody. */
+    var ADMIN_RECHECK_MS      = 30 * 60 * 1000;
+    /* The notification bell's list, per tab (sessionStorage). A new
+     * notification still shows within this; marking one read clears it. */
+    var NOTIFS_CACHE_KEY      = 'aisa_notifs_v1';
+    var NOTIFS_CACHE_MS       = 90 * 1000;
+    /* The admin dashboard's last good compliance read, shown instantly on
+     * the next visit while the fresh one loads. Compliance and engagement
+     * only — never the free-text answers, which are personal data and
+     * stay on the server. Cleared on sign-out. */
+    var ADMIN_SNAPSHOT_KEY    = 'aisa_admin_snapshot_v1';
+    var ADMIN_SNAPSHOT_MAX_MS = 7 * 24 * 60 * 60 * 1000;
+
+    /* Resolvers waiting for a successful (re-)sign-in. Also declared up
+     * here: triggerReAuth() pushes onto it for returning visitors too, and
+     * when it lived below the early return, a session the server had
+     * revoked threw a TypeError instead of showing the sign-in screen. */
+    var pendingReAuthResolvers = [];
+
+    function pump() {
+        while (inFlight < MAX_INFLIGHT) {
+            if (queued.length) { queued.shift()(); continue; }
+            if (bgQueued.length && bgInFlight < MAX_BACKGROUND) { bgQueued.shift()(); continue; }
+            return;
+        }
+    }
+
+    function withSlot(run, background) {
         return new Promise(function (resolve, reject) {
             function start() {
                 inFlight++;
-                run().then(function (v) { release(); resolve(v); },
-                           function (e) { release(); reject(e); });
+                if (background) bgInFlight++;
+                var p;
+                try { p = run(); } catch (e) { p = Promise.reject(e); }
+                p.then(function (v) { release(); resolve(v); },
+                       function (e) { release(); reject(e); });
             }
             function release() {
                 inFlight--;
-                var next = queued.shift();
-                if (next) next();
+                if (background) bgInFlight--;
+                pump();
             }
-            if (inFlight < MAX_INFLIGHT) start(); else queued.push(start);
+            (background ? bgQueued : queued).push(start);
+            pump();
         });
     }
 
@@ -230,10 +292,12 @@
      * matters most for `post_notification`, which sends real email. */
     var IDEMPOTENT_ACTIONS = {
         whoami: 1, get_completions: 1, admin_overview: 1, admin_dwell: 1,
+        admin_dashboard: 1,
         get_line_managers: 1, get_form_submission: 1, list_my_submissions: 1,
         get_module_response: 1, admin_module_responses: 1,
         get_survey_response: 1, admin_survey_responses: 1,
-        get_notifications: 1, admin_notification_stats: 1, admin_list_tags: 1
+        get_notifications: 1, admin_notification_stats: 1, admin_list_tags: 1,
+        newsletter_status: 1
     };
 
     function isRetryable(err, action) {
@@ -241,12 +305,14 @@
         /* The lock was never taken, so nothing was written. Always safe. */
         if (code === 'busy_try_again') return true;
         if (!Object.prototype.hasOwnProperty.call(IDEMPOTENT_ACTIONS, action)) return false;
-        if (code === 'request_timeout' || code === 'bad_response') return true;
+        /* server_error: the script threw — usually Sheets timing out under
+         * load. For a read, a second go is the right answer. */
+        if (code === 'request_timeout' || code === 'bad_response' || code === 'server_error') return true;
         if (/^http_5/.test(code)) return true;
         return err instanceof TypeError;   // how fetch reports a network failure
     }
 
-    function postJson(body) {
+    function postJson(body, background) {
         return withSlot(function () {
             var opts = {
                 method: 'POST',
@@ -284,17 +350,35 @@
                 if (e && e.name === 'AbortError') throw new Error('request_timeout');
                 throw e;
             });
-        });
+        }, background);
     }
 
     function apiCall(action, extra, _attempt) {
         if (!API_URL) {
             return Promise.reject(new Error('aisa_api_not_configured'));
         }
+        /* Share an identical read that is already on the wire. Retries
+         * (_attempt > 0) never land here: they belong to the call that
+         * owns the entry. */
+        if (!_attempt && Object.prototype.hasOwnProperty.call(IDEMPOTENT_ACTIONS, action)) {
+            var key = action + '|' + JSON.stringify(extra || {});
+            if (inflightReads[key]) return inflightReads[key];
+            var shared = sendApiCall(action, extra, 0);
+            inflightReads[key] = shared;
+            var forget = function () { delete inflightReads[key]; };
+            shared.then(forget, forget);
+            return shared;
+        }
+        return sendApiCall(action, extra, _attempt || 0);
+    }
 
+    function sendApiCall(action, extra, attempt) {
         var session = readSession();
         if (!session || !session.sessionToken) {
-            return triggerReAuth().then(function () { return apiCall(action, extra); });
+            /* sendApiCall, not apiCall, here and below: this call may be the
+             * shared entry in inflightReads, and going back through apiCall
+             * would find itself there and wait on itself for ever. */
+            return triggerReAuth().then(function () { return sendApiCall(action, extra, 0); });
         }
 
         var body = { action: action, session_token: session.sessionToken };
@@ -304,15 +388,15 @@
             }
         }
 
-        var attempt = _attempt || 0;
+        var background = Object.prototype.hasOwnProperty.call(BACKGROUND_ACTIONS, action);
 
-        return postJson(body).then(function (json) {
+        return postJson(body, background).then(function (json) {
             if (json && json.ok) return json;
             /* Server rejected our session (revoked, expired on its end,
              * or someone tampered with localStorage). Wipe and re-auth. */
             if (json && (json.error === 'invalid_session' || json.error === 'invalid_token')) {
                 clearSession();
-                return triggerReAuth().then(function () { return apiCall(action, extra); });
+                return triggerReAuth().then(function () { return sendApiCall(action, extra, 0); });
             }
             /* Carry the server's extra detail on the Error. Validation
              * failures answer with the field keys that are missing or
@@ -323,16 +407,43 @@
             err.detail = json || null;
             if (json && json.missing) err.missing = json.missing;
             if (json && json.invalid) err.invalid = json.invalid;
+            if (json && json.message) err.serverMessage = String(json.message);
             throw err;
         }).catch(function (err) {
             if (attempt < RETRY_LIMIT && isRetryable(err, action)) {
                 return sleep(RETRY_DELAY_MS * (attempt + 1)).then(function () {
-                    return apiCall(action, extra, attempt + 1);
+                    return sendApiCall(action, extra, attempt + 1);
                 });
             }
             throw err;
         });
     }
+
+    /* Small, forgiving storage helpers. Storage can be full, disabled or
+     * blocked (private windows, some school-managed browsers); every
+     * caller treats "nothing there" and "couldn't read" the same way. */
+    function storeGet(store, key) {
+        try {
+            var raw = window[store].getItem(key);
+            return raw ? JSON.parse(raw) : null;
+        } catch (e) { return null; }
+    }
+    function storeSet(store, key, value) {
+        try { window[store].setItem(key, JSON.stringify(value)); } catch (e) {}
+    }
+    function storeDel(store, key) {
+        try { window[store].removeItem(key); } catch (e) {}
+    }
+
+    /* The completions cache lived at localStorage["undefined"] for
+     * returning visitors (see COMPLETIONS_CACHE_KEY above). Tidy that up
+     * once, and only if it is recognisably ours. */
+    (function () {
+        var stray = storeGet('localStorage', 'undefined');
+        if (stray && typeof stray === 'object' && Array.isArray(stray.completions)) {
+            storeDel('localStorage', 'undefined');
+        }
+    })();
 
     var existing = readSession();
     if (existing) {
@@ -425,9 +536,9 @@
         if (style) style.remove();
     }
 
-    /* Queue of resolvers waiting for a successful (re-)sign-in. Each entry
-     * is a function that gets called once handleCredential completes. */
-    var pendingReAuthResolvers = [];
+    /* pendingReAuthResolvers — the queue of resolvers waiting for a
+     * successful (re-)sign-in — is declared with the transport state near
+     * the top of this file, so it exists for returning visitors too. */
 
     /* Re-show the gate UI in "session expired" mode and return a promise
      * that resolves once the user signs back in successfully. If the gate
@@ -655,8 +766,10 @@
      * writes the result to localStorage. Pages can synchronously read
      * the cached value at load time so the UI starts in the correct
      * state instead of flashing through "nothing completed" first.
+     *
+     * COMPLETIONS_CACHE_KEY is declared with the transport state at the
+     * top of this file — see the note there for why not here.
      * ------------------------------------------------------------------ */
-    var COMPLETIONS_CACHE_KEY = 'aisa_completions_v1';
 
     function readCachedCompletions() {
         try {
@@ -687,6 +800,17 @@
     function clearCachedCompletions() {
         try { localStorage.removeItem(COMPLETIONS_CACHE_KEY); } catch (e) {}
     }
+
+    /* Everything this file keeps about the signed-in person on the device.
+     * Sign-out calls it; so does the "clear admin cache" button. */
+    function clearLocalCaches() {
+        clearCachedCompletions();
+        storeDel('localStorage', ADMIN_CACHE_KEY);
+        storeDel('localStorage', ADMIN_SNAPSHOT_KEY);
+        storeDel('sessionStorage', NOTIFS_CACHE_KEY);
+    }
+
+    function clearNotifsCache() { storeDel('sessionStorage', NOTIFS_CACHE_KEY); }
 
     function addCompletionToCache(moduleId, version) {
         try {
@@ -731,7 +855,7 @@
                     } catch (e) {}
                 }
                 clearSession();
-                clearCachedCompletions();
+                clearLocalCaches();
                 try {
                     if (window.google && window.google.accounts && window.google.accounts.id) {
                         window.google.accounts.id.disableAutoSelect();
@@ -892,15 +1016,88 @@
                 return apiCall('admin_overview');
             },
 
-            /* ----- Notifications ----- */
+            /* Admin-only: everything the admin dashboard shows, in ONE
+             * request — overview, dwell, module responses, survey — where
+             * it used to take four or five, each paying its own cold start
+             * and session check. Each part comes back as the matching
+             * single endpoint would have answered, or as { ok:false, error }
+             * on its own if only that part failed.
+             *
+             *   opts = { moduleId, surveyId, parts: ['overview','dwell'],
+             *            fresh: true }   // Refresh: skip the backend cache
+             *
+             * Rejects with 'unknown_action' on a backend that predates it;
+             * callers fall back to the single endpoints. */
+            adminDashboard: function (opts) {
+                opts = opts || {};
+                var body = {};
+                if (opts.moduleId) body.module_id = opts.moduleId;
+                if (opts.surveyId) body.survey_id = opts.surveyId;
+                if (opts.parts)    body.parts     = [].concat(opts.parts).join(',');
+                if (opts.fresh)    body.fresh     = '1';
+                return apiCall('admin_dashboard', body);
+            },
+
+            /* The last good compliance + engagement read, for drawing the
+             * dashboard instantly on the next visit while the fresh read
+             * loads. { savedAt, overview, dwell } or null. Tied to the
+             * signed-in email, dropped after ADMIN_SNAPSHOT_MAX_MS, cleared
+             * on sign-out, and never holds free-text answers. */
+            readAdminSnapshot: function () {
+                var session = readSession();
+                var snap = storeGet('localStorage', ADMIN_SNAPSHOT_KEY);
+                if (!snap || !session || snap.email !== session.email) return null;
+                if (!snap.savedAt || Date.now() - snap.savedAt > ADMIN_SNAPSHOT_MAX_MS) return null;
+                if (!snap.overview || !Array.isArray(snap.overview.people)) return null;
+                return snap;
+            },
+            saveAdminSnapshot: function (overview, dwell) {
+                var session = readSession();
+                if (!session || !overview || overview.ok === false) return;
+                storeSet('localStorage', ADMIN_SNAPSHOT_KEY, {
+                    email:    session.email,
+                    savedAt:  Date.now(),
+                    overview: overview,
+                    dwell:    (dwell && dwell.ok !== false) ? dwell : null
+                });
+            },
+            clearAdminSnapshot: function () {
+                storeDel('localStorage', ADMIN_SNAPSHOT_KEY);
+            },
+
+            /* Forget everything cached about this person on this device
+             * (completions, admin flag, dashboard snapshot, bell). */
+            clearLocalCaches: function () {
+                clearLocalCaches();
+            },
+
+            /* ----- Notifications -----
+             *
+             * The bell asks on every page load, for everyone. Within
+             * NOTIFS_CACHE_MS the answer is reused from this tab, so
+             * clicking through a few pages costs one request, not one per
+             * page. Anything that changes the list clears it first. */
             getNotifications: function () {
-                return apiCall('get_notifications');
+                var session = readSession();
+                var hit = storeGet('sessionStorage', NOTIFS_CACHE_KEY);
+                if (hit && session && hit.email === session.email &&
+                        Date.now() - (hit.at || 0) < NOTIFS_CACHE_MS && hit.data) {
+                    return Promise.resolve(hit.data);
+                }
+                return apiCall('get_notifications').then(function (r) {
+                    if (session) storeSet('sessionStorage', NOTIFS_CACHE_KEY, { email: session.email, at: Date.now(), data: r });
+                    return r;
+                });
             },
             markNotificationRead: function (id) {
-                return apiCall('mark_notification_read', { notification_id: id });
+                clearNotifsCache();
+                return apiCall('mark_notification_read', { notification_id: id })
+                    .then(function (r) { clearNotifsCache(); return r; });
             },
             markAllNotificationsRead: function () {
-                return apiCall('mark_all_notifications_read');
+                clearNotifsCache();
+                return apiCall('mark_all_notifications_read')
+                    .then(function (r) { clearNotifsCache(); return r; });
             },
             /* `options` is optional and backwards compatible:
              *   { sendEmail: true, emailLink: '<absolute url>',
@@ -921,9 +1118,11 @@
                     if (o.emailLink)      payload.email_link       = o.emailLink;
                     if (o.emailLinkLabel) payload.email_link_label = o.emailLinkLabel;
                 }
+                clearNotifsCache();
                 return apiCall('post_notification', payload);
             },
             deleteNotification: function (id) {
+                clearNotifsCache();
                 return apiCall('delete_notification', { notification_id: id });
             },
             adminNotificationStats: function () {
@@ -971,24 +1170,23 @@
              * (e.g. the menu link) can render without flashing. */
             isAdmin: function () {
                 var session = readSession();
-                var cacheKey = 'aisa_is_admin_v1';
-                var cached = null;
-                try {
-                    var raw = localStorage.getItem(cacheKey);
-                    if (raw) {
-                        var parsed = JSON.parse(raw);
-                        if (parsed && session && parsed.email === session.email) {
-                            cached = !!parsed.is_admin;
-                        }
-                    }
-                } catch (e) {}
+                var cached = null, checkedAt = 0;
+                var parsed = storeGet('localStorage', ADMIN_CACHE_KEY);
+                if (parsed && session && parsed.email === session.email) {
+                    cached = !!parsed.is_admin;
+                    checkedAt = Number(parsed.checked_at) || 0;
+                }
+                /* Checked recently: that is the answer. This used to ask
+                 * the backend on every page view, for everyone, to decide
+                 * whether to show one menu link. */
+                if (cached !== null && Date.now() - checkedAt < ADMIN_RECHECK_MS) {
+                    return Promise.resolve(cached);
+                }
                 var refresh = this.whoami().then(function (r) {
                     var val = !!(r && r.is_admin);
-                    try {
-                        localStorage.setItem(cacheKey, JSON.stringify({
-                            email: session ? session.email : '', is_admin: val
-                        }));
-                    } catch (e) {}
+                    storeSet('localStorage', ADMIN_CACHE_KEY, {
+                        email: session ? session.email : '', is_admin: val, checked_at: Date.now()
+                    });
                     return val;
                 }).catch(function () { return cached === null ? false : cached; });
                 /* Return cached synchronously-ish via a resolved promise

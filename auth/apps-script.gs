@@ -312,6 +312,254 @@ function _isoOut(v) {
   return String(v);
 }
 
+// ---------- Read cache ----------
+//
+// WHY. Every request used to rebuild its answer from whole-sheet reads, and
+// the first of those was always the entire `sessions` tab, just to find out
+// who was asking. The Hub sends three or four requests per page view for
+// every member of staff (pageview, admin check, notification bell,
+// completions) and every one of them runs as the script owner, so they all
+// share one spreadsheet and one execution quota with the admin dashboard.
+// That is why the dashboard was quick when the school was quiet and slow, or
+// dead, when it was busy: its own six heavy reads queued behind everybody
+// else's.
+//
+// WHAT. CacheService's script cache is shared by every execution, answers in
+// milliseconds where a sheet read takes hundreds, and here it holds COPIES
+// ONLY:
+//   - nothing goes into it that is not already in a sheet;
+//   - every read falls back to the sheet on a miss or on any cache error;
+//   - every entry expires on its own, after six hours at the very most.
+// Losing the whole cache costs speed and never data. The spreadsheet is still
+// the single source of truth, and no write changed what it writes or where.
+//
+// FRESHNESS. Every write the Hub makes bumps a "generation" for the data it
+// touched, and cached reads are keyed by generation, so the Hub's own writes
+// show up on the very next read. A generation cannot see someone editing the
+// spreadsheet BY HAND. Those edits show up when the entry's TTL runs out
+// (CACHE_TTL below, minutes), when an admin presses Refresh on the dashboard,
+// or at once after running flushHubCache() from the editor.
+
+const CACHE_NS         = 'hub1';   // change to orphan every cached entry at once
+const CACHE_CHUNK      = 30000;    // chars per entry: the cap is 100 KB, and one char can be 3 bytes
+const CACHE_MAX_CHUNKS = 60;       // ~1.8M chars; anything bigger is re-read each time instead
+const CACHE_MAX_TTL_S  = 21600;    // CacheService's own ceiling (6 h)
+
+/* Seconds. The short ones are the data people edit by hand in the
+ * spreadsheet, or that drifts on every request (last seen); the long ones
+ * are invalidated precisely by the write that changes them. */
+const CACHE_TTL = {
+  session:     3600,  // one signed-in token; sign_out removes it at once
+  admins:       600,  // the admins tab: hand-edited
+  roster:       900,  // the roster tab: hand-edited
+  people:       600,  // who has signed in, and last seen
+  completions: 3600,  // events: bumped by record_event
+  dwell:        600,  // written every 30 s per reader, so TTL, not generation
+  responses:   3600,  // module_responses: bumped on save
+  surveys:     3600,  // survey_responses: bumped on save
+  notifs:      3600,  // notifications: bumped on post and delete
+  reads:       1800,  // one person's read receipts: bumped on mark-read
+  rowhint:    21600   // "this person's row is row N" hints, verified before use
+};
+
+/* Set per request, for an admin's Refresh: recompute from the sheets and
+ * store the result, rather than serving what is cached. Apps Script starts
+ * every execution with fresh globals, so this cannot leak between people. */
+let _REQ_FRESH = false;
+let _cacheHandle;          // undefined until first asked for; null if unavailable
+const _MEMO = {};          // per-execution: one cache read per key per request
+
+function _cache() {
+  if (_cacheHandle === undefined) {
+    try { _cacheHandle = CacheService.getScriptCache(); } catch (e) { _cacheHandle = null; }
+  }
+  return _cacheHandle;
+}
+
+/* Not Math.random: that feeds session tokens and notification ids, and the
+ * cache has no business moving their sequence. Lower-case hex only, which
+ * the chunk manifest in _cacheGet relies on. */
+function _newStamp() {
+  return Utilities.getUuid().replace(/[^0-9a-f]/gi, '').slice(0, 12).toLowerCase();
+}
+
+/* The epoch plus one generation per domain, as one string for a cache key.
+ * A missing epoch or generation (never set, expired, evicted) is minted on
+ * the spot, which reads as "everything under it is stale" — the safe way
+ * round. Returns null when the cache is unavailable, which callers treat as
+ * "don't cache". */
+function _stamp(domains) {
+  const c = _cache();
+  if (!c) return null;
+  try {
+    const keys = [CACHE_NS + ':epoch'].concat((domains || []).map(function (d) {
+      return CACHE_NS + ':gen:' + d;
+    }));
+    const got = c.getAll(keys) || {};
+    const minted = {};
+    let any = false;
+    const vals = keys.map(function (k) {
+      if (got[k]) return got[k];
+      const v = _newStamp();
+      minted[k] = v;
+      any = true;
+      return v;
+    });
+    if (any) c.putAll(minted, CACHE_MAX_TTL_S);
+    return vals.join('.');
+  } catch (e) {
+    return null;
+  }
+}
+
+/* Call AFTER the sheet write, never before: a reader that fetched the old
+ * generation can then only ever file its result under the old one. */
+function _bump(domain) {
+  const c = _cache();
+  if (!c) return;
+  const k = CACHE_NS + ':gen:' + domain;
+  try { c.put(k, _newStamp(), CACHE_MAX_TTL_S); }
+  catch (e) { try { c.remove(k); } catch (e2) {} }
+}
+
+function _dataKey(name, domains) {
+  const st = _stamp(domains);
+  return st ? CACHE_NS + ':' + name + ':' + st : null;
+}
+
+function _cacheGet(key) {
+  const c = _cache();
+  if (!c || !key) return null;
+  try {
+    const head = c.get(key);
+    if (head == null) return null;
+    if (head.charAt(0) !== '#') return JSON.parse(head);
+    /* '#<nonce>:<n>' — too big for one entry, stored in n chunks. */
+    const m = /^#([a-z0-9]+):(\d+)$/.exec(head);
+    if (!m) return null;
+    const n = Number(m[2]);
+    const keys = [];
+    for (let i = 0; i < n; i++) keys.push(key + '#' + m[1] + '#' + i);
+    const parts = c.getAll(keys) || {};
+    let s = '';
+    for (let i = 0; i < n; i++) {
+      const p = parts[keys[i]];
+      if (p == null) return null;   // a chunk was evicted: a miss, not an error
+      s += p;
+    }
+    return JSON.parse(s);
+  } catch (e) {
+    return null;
+  }
+}
+
+function _cachePut(key, value, ttlS) {
+  const c = _cache();
+  if (!c || !key || key.length > 200) return;
+  try {
+    const s = JSON.stringify(value);
+    const ttl = Math.max(1, Math.min(CACHE_MAX_TTL_S, Math.floor(ttlS) || 1));
+    if (s.length <= CACHE_CHUNK) { c.put(key, s, ttl); return; }
+    const nonce = _newStamp();
+    const parts = {};
+    let n = 0, i = 0;
+    while (i < s.length) {
+      let end = Math.min(i + CACHE_CHUNK, s.length);
+      /* Never split a surrogate pair: each half is an invalid string on
+       * its own and would not survive the round trip. */
+      const code = s.charCodeAt(end - 1);
+      if (end < s.length && code >= 0xD800 && code <= 0xDBFF) end--;
+      parts[key + '#' + nonce + '#' + n] = s.slice(i, end);
+      n++;
+      i = end;
+      if (n > CACHE_MAX_CHUNKS) return;
+    }
+    /* Chunks first, and outliving the manifest, so a live manifest never
+     * points at chunks that are not there yet or already gone. The nonce
+     * keeps two concurrent writers from interleaving each other's chunks. */
+    c.putAll(parts, Math.min(CACHE_MAX_TTL_S, ttl + 60));
+    c.put(key, '#' + nonce + ':' + n, ttl);
+  } catch (e) {
+    /* Too big, over quota, service hiccup: the next read recomputes. */
+  }
+}
+
+function _cacheDel(key) {
+  const c = _cache();
+  if (!c || !key) return;
+  try { c.remove(key); } catch (e) {}
+  delete _MEMO[key];
+}
+
+/* The one way data is read through the cache. `compute` must read the
+ * sheet and return plain JSON-able data; it runs on a miss, on a cache
+ * error, when the cache is unavailable (key null), or when forced. */
+function _cachedRead(key, ttlS, compute, force) {
+  const fresh = !!(force || _REQ_FRESH);
+  if (key && !fresh) {
+    if (Object.prototype.hasOwnProperty.call(_MEMO, key)) return _MEMO[key];
+    const hit = _cacheGet(key);
+    if (hit !== null) { _MEMO[key] = hit; return hit; }
+  }
+  const v = compute();
+  if (key) { _cachePut(key, v, ttlS); _MEMO[key] = v; }
+  return v;
+}
+
+/* Row hints: "this person's row in that sheet is row N". Only ever a hint —
+ * whoever uses one reads that row back and checks it really is the right
+ * person before touching it, so a stale hint (rows deleted or sorted by
+ * hand) costs one extra read and never a write to the wrong row. */
+function _rowHint(key) {
+  const v = _cacheGet(key);
+  return (typeof v === 'number' && v >= 2) ? v : 0;
+}
+function _setRowHint(key, row) {
+  if (row >= 2) _cachePut(key, row, CACHE_TTL.rowhint);
+}
+
+/**
+ * Run from the Apps Script editor (Run → flushHubCache) after editing the
+ * spreadsheet by hand, to make the Hub read everything fresh right away
+ * instead of when the cache would have expired anyway. Also re-verifies
+ * every session against the `sessions` tab, so a session row deleted by
+ * hand stops working immediately. Changes no data.
+ */
+function flushHubCache() {
+  const c = _cache();
+  if (!c) { Logger.log('CacheService is unavailable — nothing to flush.'); return 'unavailable'; }
+  c.put(CACHE_NS + ':epoch', _newStamp(), CACHE_MAX_TTL_S);
+  Logger.log('Hub cache flushed. The next request for each thing reads it from the sheets.');
+  return 'ok';
+}
+
+/**
+ * OPTIONAL. Point a time-driven trigger at this (Triggers → Add Trigger →
+ * warmHubCache → Time-driven → Minutes timer → Every 5 minutes) and the
+ * admin dashboard is fast on its first load of the day as well as its
+ * second. Without it the Hub still works; the first admin load after a
+ * quiet spell just pays for the sheet reads, as every load used to.
+ *
+ * Refreshes the parts that expire by time (last seen, roster, admins,
+ * engagement) and fills in anything else that has fallen out. Reads only.
+ * Does nothing outside school hours so it isn't spending quota overnight.
+ */
+function warmHubCache() {
+  const hour = Number(Utilities.formatDate(new Date(), TIMEZONE, 'H'));
+  if (hour < 6 || hour >= 20) return 'outside_hours';
+  const started = Date.now();
+  _adminSetPart(true);
+  _rosterPart(true);
+  _sessionPeople(true);
+  _dwellPart(true);
+  _completionsIndex(false);
+  _moduleResponsesPart(false);
+  _surveysPart(false);
+  readActiveNotifications();
+  Logger.log('Hub cache warmed in ' + (Date.now() - started) + ' ms.');
+  return 'ok';
+}
+
 // ---------- HTTP entry points ----------
 
 function doGet(e) {
@@ -360,7 +608,15 @@ function doPost(e) {
         return jsonOut(recordDwell(claims, body));
       case 'admin_dwell':
         if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
+        _REQ_FRESH = _wantsFresh(body);
         return jsonOut(adminDwell());
+
+      // Everything the admin dashboard shows, in one execution: one session
+      // check, one admin check, one cold start, instead of six of each.
+      case 'admin_dashboard':
+        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
+        _REQ_FRESH = _wantsFresh(body);
+        return jsonOut(adminDashboard(body));
 
       // ----- Performance-review form workflow -----
       case 'get_line_managers':
@@ -381,6 +637,7 @@ function doPost(e) {
         return jsonOut(getModuleResponse(claims, body));
       case 'admin_module_responses':
         if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
+        _REQ_FRESH = _wantsFresh(body);
         return jsonOut(adminModuleResponses(body));
 
       // ----- Surveys (required-entry forms filled in on the Hub) -----
@@ -390,6 +647,7 @@ function doPost(e) {
         return jsonOut(getSurveyResponse(claims, body));
       case 'admin_survey_responses':
         if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
+        _REQ_FRESH = _wantsFresh(body);
         return jsonOut(adminSurveyResponses(body));
       case 'whoami':
         return jsonOut({
@@ -401,6 +659,7 @@ function doPost(e) {
         });
       case 'admin_overview':
         if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
+        _REQ_FRESH = _wantsFresh(body);
         return jsonOut(adminOverview());
 
       // ----- Notifications -----
@@ -439,8 +698,19 @@ function doPost(e) {
         return jsonOut({ ok: false, error: 'unknown_action' });
     }
   } catch (err) {
-    return jsonOut({ ok: false, error: String(err) });
+    /* A code the pages can switch on, with the exception alongside. The
+     * raw exception text used to be the code, and the admin dashboard —
+     * which reads anything that isn't lower_snake_case as its OWN crash —
+     * then blamed itself for a spreadsheet timeout on Google's side. */
+    return jsonOut({ ok: false, error: 'server_error', message: String(err && err.message || err) });
   }
+}
+
+/* An admin's Refresh button. Honoured only on the admin reads, after the
+ * admin check, so nobody else can make the backend skip its cache. */
+function _wantsFresh(body) {
+  const f = body && body.fresh;
+  return f === true || String(f || '') === '1';
 }
 
 // ---------- Google ID token verification ----------
@@ -493,7 +763,8 @@ function createSession(claims, userAgent) {
   const nowIso = isoLocal(now);
   const expIso = isoLocal(expiresAt);
 
-  getSessionsSheet().appendRow([
+  const sheet = getSessionsSheet();
+  sheet.appendRow([
     token,
     claims.email,
     claims.name || '',
@@ -502,41 +773,120 @@ function createSession(claims, userAgent) {
     nowIso,
     String(userAgent || '').slice(0, 300)
   ]);
+  _bump('sessions');   // a new person may have just appeared on the tracker
+
+  /* Prime the session cache so the first request after sign-in doesn't
+   * scan the sheet. The row number is a guess under concurrent sign-ins,
+   * which is fine: it is checked before anything is written to it. */
+  _cacheSession(token, {
+    e: claims.email, n: claims.name || '', x: expiresAt.getTime(),
+    r: sheet.getLastRow(), w: now.getTime()
+  });
 
   return { token: token, expiresAt: expIso };
 }
 
+function _sessionKey(token) { return CACHE_NS + ':s:' + token; }
+
+/* Cached per token: { e: email, n: name, x: expires ms, r: sheet row,
+ * w: when last_used was last written, ep: epoch }. `ep` ties the entry to
+ * the current epoch, so flushHubCache() re-verifies every session at once. */
+function _cacheSession(token, v) {
+  const ep = _stamp([]);
+  if (!ep || !v || !v.x) return;
+  v.ep = ep;
+  const ttl = Math.min(CACHE_TTL.session, Math.floor((v.x - Date.now()) / 1000));
+  if (ttl > 0) _cachePut(_sessionKey(token), v, ttl);
+}
+
 /**
- * Looks the token up in the sessions sheet, checks expiry, and
- * returns the associated claims (email + name). Best-effort updates
- * last_used_iso on each call.
+ * Who is this token? The answer is cached for up to CACHE_TTL.session, so
+ * the common case reads no sheet at all — this runs before every single
+ * action the Hub offers, and it used to read the whole `sessions` tab each
+ * time.
+ *
+ * last_used_iso is still written at most every LAST_USED_WRITE_INTERVAL_MS,
+ * exactly as before, but only after reading that one row back and seeing
+ * this token in it: rows move when a session is signed out (deleteRow), so a
+ * remembered row number is a hint, never an address to write to blindly.
  */
 function verifySessionToken(token) {
-  if (!token || typeof token !== 'string') return null;
+  if (!token || typeof token !== 'string' || token.length > 200) return null;
+  const skey = _sessionKey(token);
+  const c = _cache();
+  let hit = null;
+  if (c) {
+    try {
+      const ekey = CACHE_NS + ':epoch';
+      const got = c.getAll([ekey, skey]) || {};
+      if (got[ekey] && got[skey]) {
+        const v = JSON.parse(got[skey]);
+        if (v && v.ep === got[ekey] && v.e) hit = v;
+      }
+    } catch (e) { hit = null; }
+  }
+  if (!hit) return _verifySessionFromSheet(token);
+
+  const now = Date.now();
+  if (!hit.x || now > hit.x) { _cacheDel(skey); return null; }
+  if (!hit.w || now - hit.w > LAST_USED_WRITE_INTERVAL_MS) {
+    if (!_touchSessionRow(hit.r, token)) {
+      /* The row moved or is gone. Ask the sheet, which is the authority:
+       * a session deleted by hand stops working here. */
+      _cacheDel(skey);
+      return _verifySessionFromSheet(token);
+    }
+    hit.w = now;
+    _cacheSession(token, hit);
+  }
+  return { email: hit.e, name: hit.n };
+}
+
+/* The full check against the `sessions` tab — what every request used to
+ * do. Reads six columns, not seven: user_agent is the widest and nothing
+ * here needs it. */
+function _verifySessionFromSheet(token) {
   const sheet = getSessionsSheet();
   const last = sheet.getLastRow();
   if (last < 2) return null;
 
-  const values = sheet.getRange(2, 1, last - 1, SESSION_HEADERS.length).getValues();
+  const values = sheet.getRange(2, 1, last - 1, 6).getValues();
   for (let i = 0; i < values.length; i++) {
     const row = values[i];
     if (row[0] !== token) continue;
 
-    const expiresAtMs = new Date(row[4]).getTime();
+    const expiresAtMs = new Date(row[4]).getTime();   // unchanged from before the cache
     if (!expiresAtMs || Date.now() > expiresAtMs) return null;
 
-    const lastUsedMs = _tsMs(row[5]);
-    if (!lastUsedMs || (Date.now() - lastUsedMs) > LAST_USED_WRITE_INTERVAL_MS) {
-      try { sheet.getRange(i + 2, 6).setValue(nowIsoLocal()); } catch (_) {}
+    let wroteMs = _tsMs(row[5]);
+    if (!wroteMs || (Date.now() - wroteMs) > LAST_USED_WRITE_INTERVAL_MS) {
+      try { sheet.getRange(i + 2, 6).setValue(nowIsoLocal()); wroteMs = Date.now(); } catch (_) {}
     }
 
+    _cacheSession(token, { e: row[1], n: row[2], x: expiresAtMs, r: i + 2, w: wroteMs });
     return { email: row[1], name: row[2] };
   }
   return null;
 }
 
+/* Write last_used on the remembered row — but only if that row still holds
+ * this token. False means "don't trust the hint, go and look". */
+function _touchSessionRow(row, token) {
+  if (!row || row < 2) return false;
+  let sheet;
+  try {
+    sheet = getSessionsSheet();
+    if (sheet.getRange(row, 1).getValue() !== token) return false;
+  } catch (e) {
+    return false;
+  }
+  try { sheet.getRange(row, 6).setValue(nowIsoLocal()); } catch (_) {}
+  return true;
+}
+
 function revokeSession(token) {
   if (!token) return;
+  _cacheDel(_sessionKey(token));   // first, so it stops working even if the sheet write fails
   const sheet = getSessionsSheet();
   const last = sheet.getLastRow();
   if (last < 2) return;
@@ -544,6 +894,7 @@ function revokeSession(token) {
   for (let i = 0; i < tokens.length; i++) {
     if (tokens[i][0] === token) {
       sheet.deleteRow(i + 2);
+      _bump('sessions');
       return;
     }
   }
@@ -583,6 +934,7 @@ function recordEvent(claims, body) {
     version,
     userAgent
   ]);
+  _bump('events');   // the teacher's own dashboard and the tracker see it on the next read
   return { ok: true };
 }
 
@@ -700,12 +1052,19 @@ function recordDwell(claims, body) {
   if (chaptersSeen === 0) return { ok: true, written: 0 };
 
   const sheet = getDwellSheet();
-  if (dwellSheetIsLegacy(sheet)) {
-    return {
-      ok: false,
-      error: 'dwell_sheet_needs_migration',
-      hint: 'Run migrateDwellToPerModule() once from the Apps Script editor.'
-    };
+  /* The layout check reads the header row; once it has passed, remember
+   * that for an hour rather than re-reading it every 30 seconds per reader.
+   * Only the "already migrated" answer is remembered, never the other. */
+  const layoutKey = CACHE_NS + ':dwell_layout_ok';
+  if (_cacheGet(layoutKey) !== 1) {
+    if (dwellSheetIsLegacy(sheet)) {
+      return {
+        ok: false,
+        error: 'dwell_sheet_needs_migration',
+        hint: 'Run migrateDwellToPerModule() once from the Apps Script editor.'
+      };
+    }
+    _cachePut(layoutKey, 1, 3600);
   }
   const idx = {
     updated:    DWELL_HEADERS.indexOf('updated_at_iso'),
@@ -723,21 +1082,38 @@ function recordDwell(claims, body) {
   const now        = nowIsoLocal();
   const avg        = Math.round((totalSeconds / chaptersSeen) * 10) / 10;
 
-  /* Locate the existing (email × module) row, if any. Scanning the whole
-   * sheet is cheap at this scale (steady-state ~1.4k rows). */
-  const lastRow = sheet.getLastRow();
-  let existing = [];
-  if (lastRow >= 2) {
-    existing = sheet.getRange(2, 1, lastRow - 1, DWELL_HEADERS.length).getValues();
-  }
+  /* Locate the existing (email × module) row, if any. This runs every 30
+   * seconds for everyone reading a module, so try the remembered row first
+   * — one row read, checked for the right person and module — and only
+   * scan the sheet when that hint is missing or wrong. */
+  const hintKey = CACHE_NS + ':dwrow:' + emailLower + '|' + moduleId;
   let foundRow = 0, firstSeen = now;
-  for (let i = 0; i < existing.length; i++) {
-    const r = existing[i];
-    if (String(r[idx.email] || '').toLowerCase() !== emailLower) continue;
-    if (String(r[idx.module] || '') !== moduleId) continue;
-    foundRow = i + 2;
-    firstSeen = String(r[idx.first] || now);
-    break;
+  const hinted = _rowHint(hintKey);
+  if (hinted) {
+    try {
+      const r = sheet.getRange(hinted, 1, 1, DWELL_HEADERS.length).getValues()[0];
+      if (String(r[idx.email] || '').toLowerCase() === emailLower &&
+          String(r[idx.module] || '') === moduleId) {
+        foundRow = hinted;
+        /* _isoOut, not String(): a date-typed cell used to come back as
+         * "Mon Mar 02 2026 …" and be written back into the sheet so. */
+        firstSeen = _isoOut(r[idx.first]) || now;
+      }
+    } catch (e) { /* past the end of the sheet — fall through to the scan */ }
+  }
+  if (!foundRow) {
+    const lastRow = sheet.getLastRow();
+    if (lastRow >= 2) {
+      const existing = sheet.getRange(2, 1, lastRow - 1, DWELL_HEADERS.length).getValues();
+      for (let i = 0; i < existing.length; i++) {
+        const r = existing[i];
+        if (String(r[idx.email] || '').toLowerCase() !== emailLower) continue;
+        if (String(r[idx.module] || '') !== moduleId) continue;
+        foundRow = i + 2;
+        firstSeen = _isoOut(r[idx.first]) || now;
+        break;
+      }
+    }
   }
 
   const rowValues = [
@@ -748,24 +1124,42 @@ function recordDwell(claims, body) {
     sheet.getRange(foundRow, 1, 1, DWELL_HEADERS.length).setValues([rowValues]);
   } else {
     sheet.appendRow(rowValues);
+    /* Probably our row; if a concurrent append beat us to it, the check
+     * above rejects the hint next time and the scan finds the real one. */
+    foundRow = sheet.getLastRow();
   }
+  _setRowHint(hintKey, foundRow);
   return { ok: true, written: 1, total_seconds: totalSeconds, chapters_seen: chaptersSeen, avg_secs_per_chapter: avg };
 }
 
 /* Admin view: flat per-teacher × per-module rows. The dashboard renders
  * a sortable table directly from this — no client-side pivot needed. */
 function adminDwell() {
-  const sheet = getDwellSheet();
-  if (dwellSheetIsLegacy(sheet)) {
+  const part = _dwellPart(false);
+  if (part.legacy) {
     return {
       ok: false,
       error: 'dwell_sheet_needs_migration',
       hint: 'Run migrateDwellToPerModule() once from the Apps Script editor.'
     };
   }
+  return { ok: true, generated_at: part.at, rows: part.rows };
+}
+
+/* The dwell rows as the admin views read them. Cached by TTL rather than by
+ * generation: every reader of a module writes to this sheet every 30
+ * seconds, so a generation would be bumped faster than anyone could read
+ * it. Engagement ten minutes old is still engagement; Refresh gets it live. */
+function _dwellPart(force) {
+  return _cachedRead(_dataKey('dwell', ['dwell']), CACHE_TTL.dwell, _readDwellRows, force);
+}
+
+function _readDwellRows() {
+  const sheet = getDwellSheet();
+  if (dwellSheetIsLegacy(sheet)) return { at: nowIsoLocal(), legacy: true, rows: [] };
   const lastRow = sheet.getLastRow();
   if (lastRow < 2) {
-    return { ok: true, generated_at: nowIsoLocal(), rows: [] };
+    return { at: nowIsoLocal(), rows: [] };
   }
   const values = sheet.getRange(2, 1, lastRow - 1, DWELL_HEADERS.length).getValues();
   const idx = {
@@ -786,11 +1180,11 @@ function adminDwell() {
       total_seconds:         Number(r[idx.seconds] || 0) | 0,
       chapters_seen:         Number(r[idx.seen] || 0) | 0,
       avg_secs_per_chapter:  Number(r[idx.avg] || 0),
-      first_seen:            String(r[idx.first] || ''),
+      first_seen:            _isoOut(r[idx.first]),
       last_seen:             _isoOut(r[idx.updated])
     };
   });
-  return { ok: true, generated_at: nowIsoLocal(), rows: rows };
+  return { at: nowIsoLocal(), rows: rows };
 }
 
 /* ----- One-time migration: per-chapter rows → per-module rows. -----
@@ -894,6 +1288,7 @@ function migrateDwellToPerModule() {
     written++;
   });
 
+  _bump('dwell');
   Logger.log('Migrated ' + written + ' per-module row(s). Backup: ' + backupName);
   return { ok: true, migrated: written, backup_sheet: backupName };
 }
@@ -964,19 +1359,49 @@ function getModuleResponsesSheet() {
 /* Find the row index (1-based, including the header row) for this
  * person's row in this module, or 0 if they have never saved. */
 function _findModuleResponseRow(sheet, email, moduleId) {
+  return _findRowByPair(sheet, MODULE_RESPONSE_HEADERS, 'email', 'module_id', email, moduleId);
+}
+
+/* Row (1-based, header included) whose `keyA` column is `a` (compared
+ * trimmed and lower-cased — it is an email) and whose `keyB` column is `b`
+ * (trimmed), or 0. One read across both columns rather than one each. */
+function _findRowByPair(sheet, headers, keyA, keyB, a, b) {
   const last = sheet.getLastRow();
   if (last < 2) return 0;
-  const emailCol  = MODULE_RESPONSE_HEADERS.indexOf('email') + 1;
-  const moduleCol = MODULE_RESPONSE_HEADERS.indexOf('module_id') + 1;
-  const emails  = sheet.getRange(2, emailCol,  last - 1, 1).getValues();
-  const modules = sheet.getRange(2, moduleCol, last - 1, 1).getValues();
-  for (let i = 0; i < emails.length; i++) {
-    if (String(emails[i][0]).trim().toLowerCase() === email &&
-        String(modules[i][0]).trim() === moduleId) {
+  const colA = headers.indexOf(keyA), colB = headers.indexOf(keyB);
+  const from = Math.min(colA, colB);
+  const width = Math.abs(colA - colB) + 1;
+  const vals = sheet.getRange(2, from + 1, last - 1, width).getValues();
+  for (let i = 0; i < vals.length; i++) {
+    if (String(vals[i][colA - from]).trim().toLowerCase() === a &&
+        String(vals[i][colB - from]).trim() === b) {
       return i + 2;
     }
   }
   return 0;
+}
+
+/* This person's whole row, via the remembered row number when it still
+ * checks out, else by scanning. Returns { row, values } or { row: 0 }. */
+function _findOwnRow(sheet, headers, keyA, keyB, a, b, hintKey) {
+  const hinted = _rowHint(hintKey);
+  if (hinted) {
+    try {
+      const v = sheet.getRange(hinted, 1, 1, headers.length).getValues()[0];
+      if (String(v[headers.indexOf(keyA)]).trim().toLowerCase() === a &&
+          String(v[headers.indexOf(keyB)]).trim() === b) {
+        return { row: hinted, values: v };
+      }
+    } catch (e) { /* past the end of the sheet: scan */ }
+  }
+  const row = _findRowByPair(sheet, headers, keyA, keyB, a, b);
+  if (!row) return { row: 0 };
+  _setRowHint(hintKey, row);
+  return { row: row, values: sheet.getRange(row, 1, 1, headers.length).getValues()[0] };
+}
+
+function _moduleRowHintKey(email, moduleId) {
+  return CACHE_NS + ':mrrow:' + email + '|' + moduleId;
 }
 
 /**
@@ -1001,13 +1426,19 @@ function saveModuleResponse(claims, body) {
   try { lock.waitLock(10000); } catch (e) { return { ok: false, error: 'busy_try_again' }; }
 
   try {
-    const rowIdx = _findModuleResponseRow(sheet, email, moduleId);
+    /* The lock is global, so everything done while holding it holds up
+     * every other teacher's save. The row hint turns "scan two columns,
+     * then read the row" into "read the row". */
+    const hintKey = _moduleRowHintKey(email, moduleId);
+    const found  = _findOwnRow(sheet, MODULE_RESPONSE_HEADERS, 'email', 'module_id',
+                               email, moduleId, hintKey);
+    const rowIdx = found.row;
     let blob = {};
     let firstSaved = now;
     let completedAt = '';
 
     if (rowIdx) {
-      const existing = sheet.getRange(rowIdx, 1, 1, MODULE_RESPONSE_HEADERS.length).getValues()[0];
+      const existing = found.values;
       const rawJson  = String(existing[MODULE_RESPONSE_HEADERS.indexOf('data_json')] || '');
       try { blob = rawJson ? JSON.parse(rawJson) : {}; } catch (e) { blob = {}; }
       firstSaved  = existing[MODULE_RESPONSE_HEADERS.indexOf('first_saved_iso')] || now;
@@ -1040,7 +1471,11 @@ function saveModuleResponse(claims, body) {
       sheet.getRange(rowIdx, 1, 1, MODULE_RESPONSE_HEADERS.length).setValues([row]);
     } else {
       sheet.appendRow(row);
+      /* Only this function appends here, always under the script lock,
+       * so the last row is ours. */
+      _setRowHint(hintKey, sheet.getLastRow());
     }
+    _bump('responses');
 
     /* "What do you need before go-live?" is the one answer that is
      * useless if it sits unread until after the deadline — push it at
@@ -1086,10 +1521,11 @@ function getModuleResponse(claims, body) {
 
   const email  = String(claims.email || '').trim().toLowerCase();
   const sheet  = getModuleResponsesSheet();
-  const rowIdx = _findModuleResponseRow(sheet, email, moduleId);
-  if (!rowIdx) return { ok: true, found: false, data: {} };
+  const found  = _findOwnRow(sheet, MODULE_RESPONSE_HEADERS, 'email', 'module_id',
+                             email, moduleId, _moduleRowHintKey(email, moduleId));
+  if (!found.row) return { ok: true, found: false, data: {} };
 
-  const r = sheet.getRange(rowIdx, 1, 1, MODULE_RESPONSE_HEADERS.length).getValues()[0];
+  const r = found.values;
   let blob = {};
   try { blob = JSON.parse(String(r[MODULE_RESPONSE_HEADERS.indexOf('data_json')] || '') || '{}'); }
   catch (e) { blob = {}; }
@@ -1108,10 +1544,27 @@ function getModuleResponse(claims, body) {
  * pre-session read. Admin-gated by the router.
  */
 function adminModuleResponses(body) {
-  const moduleId = String(body.module_id || '').slice(0, 80).trim();
+  const moduleId = String((body && body.module_id) || '').slice(0, 80).trim();
+  const part = _moduleResponsesPart(false);
+  const responses = moduleId
+    ? part.rows.filter(function (r) { return String(r.module_id).trim() === moduleId; })
+    : part.rows;
+  return { ok: true, module_id: moduleId, responses: responses, generated_at: part.at };
+}
+
+/* Every module's responses, parsed. Cached by generation: saveModuleResponse
+ * bumps it, so a teacher's latest answer is on the dashboard at its next
+ * read. Personal data — it lives in this script's own cache and nowhere
+ * else, for an hour at most, and only admins' requests ever read it. */
+function _moduleResponsesPart(force) {
+  return _cachedRead(_dataKey('responses', ['responses']), CACHE_TTL.responses,
+                     _readModuleResponseRows, force);
+}
+
+function _readModuleResponseRows() {
   const sheet = getModuleResponsesSheet();
   const last  = sheet.getLastRow();
-  if (last < 2) return { ok: true, responses: [] };
+  if (last < 2) return { at: nowIsoLocal(), rows: [] };
 
   const rows = sheet.getRange(2, 1, last - 1, MODULE_RESPONSE_HEADERS.length).getValues();
   const idx = {};
@@ -1119,7 +1572,6 @@ function adminModuleResponses(body) {
 
   const out = [];
   rows.forEach(function (r) {
-    if (moduleId && String(r[idx.module_id]).trim() !== moduleId) return;
     let blob = {};
     try { blob = JSON.parse(String(r[idx.data_json] || '') || '{}'); } catch (e) { blob = {}; }
     out.push({
@@ -1135,7 +1587,7 @@ function adminModuleResponses(body) {
     });
   });
 
-  return { ok: true, responses: out };
+  return { at: nowIsoLocal(), rows: out };
 }
 
 // ---------- Surveys (required-entry forms filled in on the Hub) ----------
@@ -1169,19 +1621,14 @@ function getSurveysSheet() {
 /* Row index (1-based, header included) for this person's response to
  * this survey, or 0 if they have never saved one. */
 function _findSurveyRow(sheet, email, surveyId) {
-  const last = sheet.getLastRow();
-  if (last < 2) return 0;
-  const emailCol  = SURVEY_HEADERS.indexOf('email') + 1;
-  const surveyCol = SURVEY_HEADERS.indexOf('survey_id') + 1;
-  const emails  = sheet.getRange(2, emailCol,  last - 1, 1).getValues();
-  const surveys = sheet.getRange(2, surveyCol, last - 1, 1).getValues();
-  for (let i = 0; i < emails.length; i++) {
-    if (String(emails[i][0]).trim().toLowerCase() === email &&
-        String(surveys[i][0]).trim() === surveyId) {
-      return i + 2;
-    }
-  }
-  return 0;
+  return _findRowByPair(sheet, SURVEY_HEADERS, 'email', 'survey_id', email, surveyId);
+}
+
+/* The surveys sheet can live in its own spreadsheet, so the hint key says
+ * which one — a row number from one workbook is meaningless in another. */
+function _surveyRowHintKey(email, surveyId) {
+  return CACHE_NS + ':svrow:' + String(SURVEYS_SPREADSHEET_ID || 'bound').slice(0, 12) +
+         ':' + email + '|' + surveyId;
 }
 
 /* Normalise one submitted value. Arrays (checkbox groups) come back as
@@ -1279,14 +1726,17 @@ function saveSurveyResponse(claims, body) {
   try { lock.waitLock(10000); } catch (e) { return { ok: false, error: 'busy_try_again' }; }
 
   try {
-    const rowIdx = _findSurveyRow(sheet, email, surveyId);
+    const hintKey = _surveyRowHintKey(email, surveyId);
+    const found   = _findOwnRow(sheet, SURVEY_HEADERS, 'email', 'survey_id',
+                                email, surveyId, hintKey);
+    const rowIdx  = found.row;
     let firstSaved  = now;
     let submittedAt = '';
     let revision    = 0;
     let existingData = {};
 
     if (rowIdx) {
-      const existing = sheet.getRange(rowIdx, 1, 1, SURVEY_HEADERS.length).getValues()[0];
+      const existing = found.values;
       firstSaved  = existing[SURVEY_HEADERS.indexOf('first_saved_iso')] || now;
       submittedAt = existing[SURVEY_HEADERS.indexOf('submitted_at_iso')] || '';
       revision    = Number(existing[SURVEY_HEADERS.indexOf('revision')] || 0) || 0;
@@ -1334,7 +1784,9 @@ function saveSurveyResponse(claims, body) {
       sheet.getRange(rowIdx, 1, 1, SURVEY_HEADERS.length).setValues([row]);
     } else {
       sheet.appendRow(row);
+      _setRowHint(hintKey, sheet.getLastRow());   // sole writer, under the lock
     }
+    _bump('surveys');
 
     const out = {
       ok: true, status: status, revision: revision,
@@ -1363,10 +1815,11 @@ function getSurveyResponse(claims, body) {
 
   const email  = String(claims.email || '').trim().toLowerCase();
   const sheet  = getSurveysSheet();
-  const rowIdx = _findSurveyRow(sheet, email, surveyId);
-  if (!rowIdx) return { ok: true, found: false, data: {}, status: 'none' };
+  const found  = _findOwnRow(sheet, SURVEY_HEADERS, 'email', 'survey_id',
+                             email, surveyId, _surveyRowHintKey(email, surveyId));
+  if (!found.row) return { ok: true, found: false, data: {}, status: 'none' };
 
-  const r = sheet.getRange(rowIdx, 1, 1, SURVEY_HEADERS.length).getValues()[0];
+  const r = found.values;
   let blob = {};
   try { blob = JSON.parse(String(r[SURVEY_HEADERS.indexOf('data_json')] || '') || '{}'); }
   catch (e) { blob = {}; }
@@ -1396,38 +1849,29 @@ function adminSurveyResponses(body) {
   if (!surveyId) return { ok: false, error: 'missing_survey_id' };
 
   const spec  = SURVEY_SPECS[surveyId] || null;
-  const sheet = getSurveysSheet();
-  const last  = sheet.getLastRow();
-
-  const idx = {};
-  SURVEY_HEADERS.forEach(function (h, i) { idx[h] = i; });
+  const part  = _surveysPart(false);
 
   const out = [];
   const answered = {};
-  if (last >= 2) {
-    const rows = sheet.getRange(2, 1, last - 1, SURVEY_HEADERS.length).getValues();
-    rows.forEach(function (r) {
-      if (String(r[idx.survey_id]).trim() !== surveyId) return;
-      let blob = {};
-      try { blob = JSON.parse(String(r[idx.data_json] || '') || '{}'); } catch (e) { blob = {}; }
-      const email  = String(r[idx.email] || '');
-      const status = String(r[idx.status] || 'draft');
-      if (status === 'submitted') answered[email.toLowerCase()] = true;
-      out.push({
-        email:        email,
-        name:         String(r[idx.name] || ''),
-        survey_id:    surveyId,
-        status:       status,
-        revision:     Number(r[idx.revision] || 0) || 0,
-        first_saved:  _isoOut(r[idx.first_saved_iso]),
-        updated_at:   _isoOut(r[idx.updated_at_iso]),
-        submitted_at: _isoOut(r[idx.submitted_at_iso]),
-        data:         blob
-      });
+  part.rows.forEach(function (r) {
+    if (r.sid !== surveyId) return;
+    if (r.status === 'submitted') answered[String(r.email).toLowerCase()] = true;
+    out.push({
+      email:        r.email,
+      name:         r.name,
+      survey_id:    surveyId,
+      status:       r.status,
+      revision:     r.revision,
+      first_saved:  r.first_saved,
+      updated_at:   r.updated_at,
+      submitted_at: r.submitted_at,
+      data:         r.data
     });
-  }
+  });
 
-  /* Who still owes one. Tag defaults to nothing = the whole roster. */
+  /* Who still owes one. Tag defaults to nothing = the whole roster.
+   * Each entry carries its roster tags, so the dashboard can switch
+   * cohort without asking again. */
   const wantTag = String(body.roster_tag || '').trim().toLowerCase();
   const roster  = getRosterIndex();
   const outstanding = [];
@@ -1435,7 +1879,7 @@ function adminSurveyResponses(body) {
     if (answered[email]) return;
     const person = roster.byEmail[email];
     if (wantTag && (person.tags || []).indexOf(wantTag) === -1) return;
-    outstanding.push({ email: person.email, name: person.name });
+    outstanding.push({ email: person.email, name: person.name, tags: person.tags || [] });
   });
 
   return {
@@ -1446,8 +1890,50 @@ function adminSurveyResponses(body) {
     responses:    out,
     outstanding:  outstanding,
     roster_tags:  roster.allTags,
-    generated_at: nowIsoLocal()
+    /* The roster is the part that can be stale (hand-edited, TTL-cached);
+     * the responses are bumped by every save, so they are current. */
+    generated_at: roster.at || nowIsoLocal()
   };
+}
+
+/* Every survey row, parsed. Bumped by saveSurveyResponse. Personal data,
+ * same handling as _moduleResponsesPart. */
+function _surveysPart(force) {
+  return _cachedRead(_dataKey('surveys', ['surveys']), CACHE_TTL.surveys, _readSurveyRows, force);
+}
+
+function _readSurveyRows() {
+  const sheet = getSurveysSheet();
+  const last  = sheet.getLastRow();
+  const idx = {};
+  SURVEY_HEADERS.forEach(function (h, i) { idx[h] = i; });
+  const rows = [];
+  if (last >= 2) {
+    sheet.getRange(2, 1, last - 1, SURVEY_HEADERS.length).getValues().forEach(function (r) {
+      let blob = {};
+      try { blob = JSON.parse(String(r[idx.data_json] || '') || '{}'); } catch (e) { blob = {}; }
+      rows.push({
+        sid:          String(r[idx.survey_id]).trim(),
+        email:        String(r[idx.email] || ''),
+        name:         String(r[idx.name] || ''),
+        status:       String(r[idx.status] || 'draft'),
+        revision:     Number(r[idx.revision] || 0) || 0,
+        first_saved:  _isoOut(r[idx.first_saved_iso]),
+        updated_at:   _isoOut(r[idx.updated_at_iso]),
+        submitted_at: _isoOut(r[idx.submitted_at_iso]),
+        data:         blob
+      });
+    });
+  }
+  return { at: nowIsoLocal(), rows: rows };
+}
+
+/* The earlier of two ISO timestamps — "as of" for an answer assembled from
+ * parts cached at different moments. */
+function _olderIso(a, b) {
+  if (!a) return b || nowIsoLocal();
+  if (!b) return a;
+  return _tsMs(a) <= _tsMs(b) ? a : b;
 }
 
 /* The teacher's own copy of what they submitted, in the Hub's email
@@ -1530,6 +2016,7 @@ function _fireSystemNotification(authorEmail, authorName, title, body, targetEma
   row[NOTIF_HEADERS.indexOf('target_emails')]  = (targetEmails || []).join(',');
   row[NOTIF_HEADERS.indexOf('active')]         = true;
   getNotifsSheet().appendRow(row);
+  _bump('notifs');
   return id;
 }
 
@@ -1700,8 +2187,8 @@ function listMySubmissions(claims) {
     if (me !== staffE && me !== mgrE) continue;
     out.push({
       submission_id:    String(r[idx.submission_id] || ''),
-      created_at_iso:   String(r[idx.created_at_iso] || ''),
-      updated_at_iso:   String(r[idx.updated_at_iso] || ''),
+      created_at_iso:   _isoOut(r[idx.created_at_iso]),
+      updated_at_iso:   _isoOut(r[idx.updated_at_iso]),
       status:           String(r[idx.status] || ''),
       form_id:          String(r[idx.form_id] || ''),
       form_url:         String(r[idx.form_url] || ''),
@@ -1710,11 +2197,13 @@ function listMySubmissions(claims) {
       staff_name:       String(r[idx.staff_name] || ''),
       manager_email:    mgrE,
       manager_name:     String(r[idx.manager_name] || ''),
-      completed_at_iso: String(r[idx.completed_at_iso] || ''),
+      completed_at_iso: _isoOut(r[idx.completed_at_iso]),
       role:             (me === staffE) ? 'staff' : 'manager'
     });
   }
-  out.sort(function (a, b) { return a.updated_at_iso < b.updated_at_iso ? 1 : -1; });
+  /* Newest first, by instant — see "Reading timestamps out of the sheets"
+   * in CLAUDE.md for why this is never a string compare. */
+  out.sort(function (a, b) { return _tsMs(b.updated_at_iso) - _tsMs(a.updated_at_iso); });
   return { ok: true, submissions: out };
 }
 
@@ -1722,35 +2211,70 @@ function listMySubmissions(claims) {
 
 function getCompletionsFor(email) {
   email = String(email || '').trim().toLowerCase();
+  const idx = _completionsIndex(false);
+  const out = [];
+  for (let i = 0; i < idx.list.length; i++) {
+    const e = idx.list[i];
+    if (e[0] !== email) continue;
+    out.push({ module_id: e[1], completed_at: e[2], version: e[3] });
+  }
+  return out;
+}
+
+/* The latest 'completed' event per person x module, for everybody — what
+ * both get_completions (a teacher's own dashboard, every module page) and
+ * admin_overview used to work out by reading the entire events sheet on
+ * every call. Now read once and cached until record_event bumps it.
+ *
+ *   list : [[emailLower, module_id, completed_at_iso, version], ...] in the
+ *          order each person x module first appears in the sheet
+ *   names: { emailLower: first non-empty name on a completed row }
+ *
+ * The rules are exactly the ones both callers used: emails trimmed and
+ * lower-cased, "latest" by instant through _tsMs (never a string compare),
+ * and on a tie the earlier row wins. */
+function _completionsIndex(force) {
+  return _cachedRead(_dataKey('completions', ['events']), CACHE_TTL.completions,
+                     _readCompletionsIndex, force);
+}
+
+function _readCompletionsIndex() {
   const sheet = getEventsSheet();
   const last = sheet.getLastRow();
-  if (last < 2) return [];
-  const values = sheet.getRange(2, 1, last - 1, EVENT_HEADERS.length).getValues();
-
-  const idx = {
-    ts:      EVENT_HEADERS.indexOf('timestamp_iso'),
-    email:   EVENT_HEADERS.indexOf('email'),
-    module:  EVENT_HEADERS.indexOf('module_id'),
-    event:   EVENT_HEADERS.indexOf('event'),
-    version: EVENT_HEADERS.indexOf('version')
-  };
-
-  const seen = {};
-  for (let i = 0; i < values.length; i++) {
-    const row = values[i];
-    if (String(row[idx.email] || '').trim().toLowerCase() !== email) continue;
-    if (row[idx.event] !== 'completed') continue;
-    const moduleId = String(row[idx.module]);
-    const ts = _isoOut(row[idx.ts]);
-    if (!seen[moduleId] || _tsMs(ts) > _tsMs(seen[moduleId].completed_at)) {
-      seen[moduleId] = {
-        module_id:    moduleId,
-        completed_at: ts,
-        version:      String(row[idx.version] || '')
-      };
+  const list = [], pos = {}, names = {};
+  if (last >= 2) {
+    /* Up to `version` (column 7). user_agent is the widest column and
+     * nothing here reads it. */
+    const width = EVENT_HEADERS.indexOf('version') + 1;
+    const values = sheet.getRange(2, 1, last - 1, width).getValues();
+    const idx = {
+      ts:      EVENT_HEADERS.indexOf('timestamp_iso'),
+      email:   EVENT_HEADERS.indexOf('email'),
+      name:    EVENT_HEADERS.indexOf('name'),
+      module:  EVENT_HEADERS.indexOf('module_id'),
+      event:   EVENT_HEADERS.indexOf('event'),
+      version: EVENT_HEADERS.indexOf('version')
+    };
+    for (let i = 0; i < values.length; i++) {
+      const row = values[i];
+      if (row[idx.event] !== 'completed') continue;
+      const email    = String(row[idx.email] || '').trim().toLowerCase();
+      const moduleId = String(row[idx.module] || '');
+      const ts       = _isoOut(row[idx.ts] || '');
+      const version  = String(row[idx.version] || '');
+      if (email && row[idx.name] && !names[email]) names[email] = String(row[idx.name]);
+      const key = email + '|' + moduleId;
+      const at = pos[key];
+      if (at === undefined) {
+        pos[key] = list.length;
+        list.push([email, moduleId, ts, version]);
+      } else if (_tsMs(ts) > _tsMs(list[at][2])) {
+        list[at][2] = ts;
+        list[at][3] = version;
+      }
     }
   }
-  return Object.keys(seen).map(function (k) { return seen[k]; });
+  return { at: nowIsoLocal(), list: list, names: names };
 }
 
 // ---------- Admin allowlist ----------
@@ -1771,7 +2295,19 @@ function getAdminsSheet() {
   return sheet;
 }
 
+/* Cached for CACHE_TTL.admins. The tab is only ever edited by hand, so a
+ * change takes up to that long to land — or run flushHubCache(). */
 function getAdminEmailSet() {
+  return _adminSetPart(false).set;
+}
+
+function _adminSetPart(force) {
+  return _cachedRead(_dataKey('admins', ['admins']), CACHE_TTL.admins, function () {
+    return { at: nowIsoLocal(), set: _readAdminEmailSet() };
+  }, force);
+}
+
+function _readAdminEmailSet() {
   const sheet = getAdminsSheet();
   const last = sheet.getLastRow();
   const set = {};
@@ -1812,64 +2348,102 @@ function adminOverview() {
     }
   }
 
+  /* Assembled from three cached parts, in the same order and by the same
+   * rules as when this read all three sheets itself on every call. */
+
   // Everyone who has signed in (sessions tab).
-  const sess = getSessionsSheet();
-  const sLast = sess.getLastRow();
-  if (sLast >= 2) {
-    const rows = sess.getRange(2, 1, sLast - 1, SESSION_HEADERS.length).getValues();
-    // SESSION_HEADERS: token, email, name, created, expires, last_used, ua
-    for (let i = 0; i < rows.length; i++) {
-      touch(rows[i][1], rows[i][2], _isoOut(rows[i][5] || rows[i][3] || ''));
-    }
-  }
+  const signedIn = _sessionPeople(false);
+  signedIn.people.forEach(function (p) { touch(p[0], p[1], p[2]); });
 
   // Optional roster tab (email, name) so staff who never signed in
   // still show up as outstanding.
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const roster = ss.getSheetByName(ROSTER_SHEET);
-  if (roster) {
-    const rLast = roster.getLastRow();
-    if (rLast >= 2) {
-      const rows = roster.getRange(2, 1, rLast - 1, 2).getValues();
-      for (let i = 0; i < rows.length; i++) touch(rows[i][0], rows[i][1], '');
-    }
-  }
+  const roster = _rosterPart(false);
+  roster.rows.forEach(function (r) { touch(r[0], r[1], ''); });
 
   // Latest 'completed' per person × module.
-  const ev = getEventsSheet();
-  const eLast = ev.getLastRow();
+  const ci = _completionsIndex(false);
   const completions = [];
-  if (eLast >= 2) {
-    const rows = ev.getRange(2, 1, eLast - 1, EVENT_HEADERS.length).getValues();
-    const idx = {
-      ts:     EVENT_HEADERS.indexOf('timestamp_iso'),
-      email:  EVENT_HEADERS.indexOf('email'),
-      name:   EVENT_HEADERS.indexOf('name'),
-      module: EVENT_HEADERS.indexOf('module_id'),
-      event:  EVENT_HEADERS.indexOf('event')
-    };
-    const seen = {};  // emailLower|module -> { email, module_id, completed_at }
-    for (let i = 0; i < rows.length; i++) {
-      const row = rows[i];
-      if (row[idx.event] !== 'completed') continue;
-      const email = String(row[idx.email] || '').trim().toLowerCase();
-      const moduleId = String(row[idx.module] || '');
-      const ts = _isoOut(row[idx.ts] || '');
-      touch(email, row[idx.name], ts);  // ensure the person exists
-      const key = email + '|' + moduleId;
-      if (!seen[key] || _tsMs(ts) > _tsMs(seen[key].completed_at)) {
-        seen[key] = { email: email, module_id: moduleId, completed_at: ts };
-      }
-    }
-    Object.keys(seen).forEach(function (k) { completions.push(seen[k]); });
-  }
+  ci.list.forEach(function (e) {
+    touch(e[0], ci.names[e[0]] || '', e[2]);  // ensure the person exists
+    completions.push({ email: e[0], module_id: e[1], completed_at: e[2] });
+  });
 
   return {
     ok: true,
-    generated_at: nowIsoLocal(),
+    /* As of the oldest part that can drift. Completions are bumped by
+     * every record_event, so they are current whenever they were read. */
+    generated_at: _olderIso(signedIn.at, roster.at),
     people: Object.keys(people).map(function (k) { return people[k]; }),
     completions: completions
   };
+}
+
+/**
+ * Everything admin-dashboard.html shows, in one request.
+ *
+ * The page used to fire admin_overview, admin_dwell, admin_module_responses
+ * and admin_survey_responses (twice, when the roster had a `secondary` tag)
+ * one after another, and each paid its own cold start, session check,
+ * admin check and full-sheet reads. Here they share one of each.
+ *
+ * Every part is independent: one that throws comes back as
+ * { ok: false, error, message } and the rest still arrive, so a problem in
+ * the survey sheet can't blank the compliance tracker. The individual
+ * endpoints are unchanged, and the page falls back to them if this one is
+ * missing (a backend that hasn't been redeployed yet).
+ *
+ *   parts      comma list, default all four: overview,dwell,module_responses,survey
+ *   module_id  for module_responses
+ *   survey_id  for survey; its `outstanding` is the whole roster with tags,
+ *              and the page narrows it by tag itself
+ *   fresh      '1' = the Refresh button: re-read the sheets
+ */
+function adminDashboard(body) {
+  body = body || {};
+  const want = _parseList(body.parts || 'overview,dwell,module_responses,survey');
+  const out = { ok: true, generated_at: nowIsoLocal() };
+  function part(name, fn) {
+    if (want.indexOf(name) === -1) return;
+    try { out[name] = fn(); }
+    catch (e) { out[name] = { ok: false, error: 'server_error', message: String(e && e.message || e) }; }
+  }
+  part('overview', adminOverview);
+  part('dwell', adminDwell);
+  part('module_responses', function () { return adminModuleResponses({ module_id: body.module_id }); });
+  part('survey', function () { return adminSurveyResponses({ survey_id: body.survey_id, roster_tag: '' }); });
+  return out;
+}
+
+/* One entry per person who has ever signed in: [emailLower, name,
+ * last_seen_iso], name being the first non-empty one in sheet order and
+ * last_seen the latest last_used (or created) by instant. Bumped when a
+ * session is created or revoked; last seen itself drifts on every request,
+ * so the TTL is what keeps it honest. */
+function _sessionPeople(force) {
+  return _cachedRead(_dataKey('people', ['sessions']), CACHE_TTL.people, function () {
+    const sess = getSessionsSheet();
+    const sLast = sess.getLastRow();
+    const byEmail = {}, order = [];
+    if (sLast >= 2) {
+      // Columns 2-6: email, name, created, expires, last_used. Not the token,
+      // not user_agent.
+      const rows = sess.getRange(2, 2, sLast - 1, 5).getValues();
+      for (let i = 0; i < rows.length; i++) {
+        const key = String(rows[i][0] || '').trim().toLowerCase();
+        if (!key) continue;
+        const name = rows[i][1] ? String(rows[i][1]) : '';
+        const ts = _isoOut(rows[i][4] || rows[i][2] || '');
+        const p = byEmail[key];
+        if (!p) { byEmail[key] = { name: name, ts: ts }; order.push(key); continue; }
+        if (name && !p.name) p.name = name;
+        if (ts && _tsMs(ts) > _tsMs(p.ts)) p.ts = ts;
+      }
+    }
+    return {
+      at: nowIsoLocal(),
+      people: order.map(function (k) { return [k, byEmail[k].name, byEmail[k].ts]; })
+    };
+  }, force);
 }
 
 // ---------- Roster (email → tags lookup) ----------
@@ -1892,32 +2466,43 @@ function _parseList(v) {
 }
 
 function getRosterIndex() {
-  // Returns { byEmail: { emailLower: { email, name, tags:[...] } }, allTags: [sorted unique] }
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const sheet = ss.getSheetByName(ROSTER_SHEET);
-  const result = { byEmail: {}, allTags: [] };
-  if (!sheet) return result;
-  const last = sheet.getLastRow();
-  if (last < 2) return result;
-  // Read at most ROSTER_HEADERS.length columns; tolerate older sheets
-  // with only [email, name].
-  const width = Math.min(sheet.getLastColumn(), ROSTER_HEADERS.length);
-  const rows = sheet.getRange(2, 1, last - 1, width).getValues();
+  // Returns { byEmail: { emailLower: { email, name, tags:[...] } }, allTags: [sorted unique], at }
+  const part = _rosterPart(false);
+  const result = { byEmail: {}, allTags: [], at: part.at };
   const tagSet = {};
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i];
-    const email = String(row[0] || '').trim().toLowerCase();
-    if (!email) continue;
-    const tags = _parseList(row[2]);
-    result.byEmail[email] = {
-      email: email,
-      name:  String(row[1] || ''),
-      tags:  tags
-    };
-    for (let j = 0; j < tags.length; j++) tagSet[tags[j]] = true;
-  }
+  part.rows.forEach(function (r) {
+    result.byEmail[r[0]] = { email: r[0], name: r[1], tags: r[2] };
+    for (let j = 0; j < r[2].length; j++) tagSet[r[2][j]] = true;
+  });
   result.allTags = Object.keys(tagSet).sort();
   return result;
+}
+
+/* The roster as rows, in sheet order, duplicates and all: [emailLower,
+ * name, tags[]]. Kept as rows rather than a map because its two readers
+ * disagree on duplicates — getRosterIndex keeps the last, the tracker the
+ * first non-empty name — and both keep working as they always have. The
+ * tab is hand-edited, so this lives for CACHE_TTL.roster; the dashboard's
+ * Refresh button, or flushHubCache(), gets an edit in sooner. */
+function _rosterPart(force) {
+  return _cachedRead(_dataKey('roster', ['roster']), CACHE_TTL.roster, function () {
+    const out = { at: nowIsoLocal(), rows: [] };
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(ROSTER_SHEET);
+    if (!sheet) return out;
+    const last = sheet.getLastRow();
+    if (last < 2) return out;
+    // Read at most ROSTER_HEADERS.length columns; tolerate older sheets
+    // with only [email, name].
+    const width = Math.min(sheet.getLastColumn(), ROSTER_HEADERS.length);
+    const rows = sheet.getRange(2, 1, last - 1, width).getValues();
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      const email = String(row[0] || '').trim().toLowerCase();
+      if (!email) continue;
+      out.rows.push([email, String(row[1] || ''), _parseList(row[2])]);
+    }
+    return out;
+  }, force);
 }
 
 function getTagsForEmail(email) {
@@ -1962,6 +2547,12 @@ function isActiveFlag(v) {
  *  (pre-targeting). Each notification carries its target_tags and
  *  target_emails arrays so callers can decide who receives it. */
 function readActiveNotifications() {
+  /* Every page load reads this for the notification bell, for everyone.
+   * Posting or deleting a notification bumps it. */
+  return _cachedRead(_dataKey('notifs', ['notifs']), CACHE_TTL.notifs, _readActiveNotificationsFromSheet);
+}
+
+function _readActiveNotificationsFromSheet() {
   const sheet = getNotifsSheet();
   const last = sheet.getLastRow();
   if (last < 2) return [];
@@ -1986,7 +2577,7 @@ function readActiveNotifications() {
     if (!isActiveFlag(activeVal)) continue;
     out.push({
       id:            String(r[i_id]),
-      created_at:    String(r[i_ts]),
+      created_at:    _isoOut(r[i_ts]),
       author_name:   String(r[i_name] || ''),
       title:         String(r[i_title] || ''),
       body:          String(r[i_body] || ''),
@@ -1994,7 +2585,9 @@ function readActiveNotifications() {
       target_emails: _parseList(i_em   < width ? r[i_em]   : '')
     });
   }
-  out.sort(function (a, b) { return a.created_at < b.created_at ? 1 : -1; });
+  /* Newest first by instant. A string compare put "Z" rows and "+04:00"
+   * rows in the wrong order, and a date-typed cell sorted by weekday name. */
+  out.sort(function (a, b) { return _tsMs(b.created_at) - _tsMs(a.created_at); });
   return out;
 }
 
@@ -2013,14 +2606,21 @@ function userReceivesNotification(email, n, userTags) {
   return false;
 }
 
-/** Set of notification ids this email has already read. */
+/** Set of notification ids this email has already read. Cached per person,
+ *  and bumped per person when they mark something read — the reads tab is
+ *  the one that grows with every notification times every reader. */
 function readIdsFor(email) {
+  const target = String(email || '').trim().toLowerCase();
+  const key = target ? _dataKey('reads:' + target, ['reads:' + target]) : null;
+  return _cachedRead(key, CACHE_TTL.reads, function () { return _readIdsFromSheet(target); });
+}
+
+function _readIdsFromSheet(target) {
   const sheet = getNotifReadsSheet();
   const last = sheet.getLastRow();
   const set = {};
   if (last < 2) return set;
-  const rows = sheet.getRange(2, 1, last - 1, NOTIF_READ_HEADERS.length).getValues();
-  const target = String(email || '').trim().toLowerCase();
+  const rows = sheet.getRange(2, 1, last - 1, 2).getValues();   // id, email
   for (let i = 0; i < rows.length; i++) {
     if (String(rows[i][1] || '').trim().toLowerCase() === target) {
       set[String(rows[i][0])] = true;
@@ -2067,6 +2667,7 @@ function postNotification(claims, body) {
   row[NOTIF_HEADERS.indexOf('target_emails')]  = target_emails.join(',');
   row[NOTIF_HEADERS.indexOf('active')]         = true;
   getNotifsSheet().appendRow(row);
+  _bump('notifs');
 
   const out = {
     ok: true, id: id,
@@ -2102,28 +2703,12 @@ function _namesForEmails(emails) {
   const want = {};
   emails.forEach(function (e) { want[e] = ''; });
 
-  const sess = getSessionsSheet();
-  const sLast = sess.getLastRow();
-  if (sLast >= 2) {
-    // SESSION_HEADERS: token, email, name, created, expires, last_used, ua
-    const rows = sess.getRange(2, 1, sLast - 1, SESSION_HEADERS.length).getValues();
-    for (let i = 0; i < rows.length; i++) {
-      const e = String(rows[i][1] || '').trim().toLowerCase();
-      if (e in want && !want[e] && rows[i][2]) want[e] = String(rows[i][2]).trim();
-    }
-  }
-
-  const roster = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(ROSTER_SHEET);
-  if (roster) {
-    const rLast = roster.getLastRow();
-    if (rLast >= 2) {
-      const rows = roster.getRange(2, 1, rLast - 1, 2).getValues();
-      for (let i = 0; i < rows.length; i++) {
-        const e = String(rows[i][0] || '').trim().toLowerCase();
-        if (e in want && !want[e] && rows[i][1]) want[e] = String(rows[i][1]).trim();
-      }
-    }
-  }
+  _sessionPeople(false).people.forEach(function (p) {
+    if (p[0] in want && !want[p[0]] && p[1]) want[p[0]] = String(p[1]).trim();
+  });
+  _rosterPart(false).rows.forEach(function (r) {
+    if (r[0] in want && !want[r[0]] && r[1]) want[r[0]] = String(r[1]).trim();
+  });
   return want;
 }
 
@@ -2318,13 +2903,7 @@ function _allStaffEmails() {
 
   const roster = getRosterIndex();
   Object.keys(roster.byEmail).forEach(push);
-
-  const sess = getSessionsSheet();
-  const last = sess.getLastRow();
-  if (last >= 2) {
-    const rows = sess.getRange(2, 2, last - 1, 1).getValues();   // email column
-    for (let i = 0; i < rows.length; i++) push(rows[i][0]);
-  }
+  _sessionPeople(false).people.forEach(function (p) { push(p[0]); });
   return Object.keys(seen).sort();
 }
 
@@ -2476,6 +3055,7 @@ function markNotificationRead(claims, body) {
   // Avoid duplicate read rows for the same person + notification.
   if (readIdsFor(claims.email)[id]) return { ok: true, already: true };
   getNotifReadsSheet().appendRow([id, claims.email, nowIsoLocal()]);
+  _bump('reads:' + String(claims.email || '').trim().toLowerCase());
   return { ok: true };
 }
 
@@ -2496,6 +3076,7 @@ function markAllNotificationsRead(claims) {
   }
   if (toAdd.length) {
     sheet.getRange(sheet.getLastRow() + 1, 1, toAdd.length, NOTIF_READ_HEADERS.length).setValues(toAdd);
+    _bump('reads:' + String(claims.email || '').trim().toLowerCase());
   }
   return { ok: true, marked: toAdd.length };
 }
@@ -2511,6 +3092,7 @@ function deleteNotification(body) {
     if (String(ids[i][0]) === id) {
       // Soft delete: flip the active column to FALSE.
       sheet.getRange(i + 2, NOTIF_HEADERS.indexOf('active') + 1).setValue(false);
+      _bump('notifs');
       return { ok: true };
     }
   }
@@ -2562,10 +3144,14 @@ function adminNotificationStats() {
     return Object.keys(matched).length;
   }
 
+  /* Copies, not the notifications themselves: those are the cached list
+   * other callers in this request may still be reading. */
   const items = notifs.map(function (n) {
-    n.read_count     = counts[n.id] || 0;
-    n.recipient_count = resolveAudience(n);
-    return n;
+    const o = {};
+    Object.keys(n).forEach(function (k) { o[k] = n[k]; });
+    o.read_count      = counts[n.id] || 0;
+    o.recipient_count = resolveAudience(n);
+    return o;
   });
   return {
     ok: true,
@@ -2607,6 +3193,8 @@ function adminListTags() {
  *     read side by side with the dashboard.
  */
 function auditHubData() {
+  /* A diagnostic has to look at the sheets, not at what is cached. */
+  _REQ_FRESH = true;
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   const out = [];
   const say = (s) => { out.push(s); };
@@ -2614,6 +3202,8 @@ function auditHubData() {
   say('AISA Learning Hub — data audit');
   say('Generated ' + nowIsoLocal());
   say('Spreadsheet: ' + ss.getName());
+  say('Read cache: ' + (_cache() ? 'available (every number below is read from the sheets, not the cache)'
+                                 : 'UNAVAILABLE — the Hub is reading the sheets on every request'));
   say('');
 
   // ---- 1. Header drift -------------------------------------------------
