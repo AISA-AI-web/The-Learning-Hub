@@ -515,6 +515,21 @@ grep -rn 'gate\.js?v=' --include='*.html' . | grep -o 'v=[0-9]*' | sort -u
 The second command should print exactly one version. Two means a page
 was missed.
 
+## Logo — sharpened 26 September 2026
+
+`AISA_logo.png` was a 224 px navy seal on an opaque white square: soft on
+high-DPI screens, and a white box in every dark footer. It is now a 256 px
+navy seal on transparent, generated from the originals Brandon supplied,
+which live in `assets/brand/` with a README saying which file goes where.
+Same filename, so the top bar, drawer, certificates, forms and PD cards
+picked it up with no markup change and **no `?v=` cascade**.
+
+The 20 dark footers (`h-8 w-8 opacity-90`) now point at
+`assets/brand/aisa-seal-white.png`. **A white logo must never have
+`AISA_logo` in its filename** — `certificate.js` takes the first
+`img[src*="AISA_logo"]` on the page, and white on the cream certificate is
+invisible.
+
 ## Reading timestamps out of the sheets
 
 **Never compare a timestamp cell as a string.** Put it through `_tsMs()`
