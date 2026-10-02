@@ -1236,6 +1236,37 @@ arrangement and the dates land, both belong in the next issue rather
 than as an edit to this one.
 
 
+## Safeguarding — offline edition, 2 October 2026
+
+`PD Modules/safeguarding-offline.html` is the Safeguarding module for
+people who must do it but **cannot sign in**: individual assistants
+employed by families, volunteers, contractors — anyone without an
+`@aisa.sch.ae` account, which both `gate.js` and `verifyIdToken()` refuse.
+Asked for by the Head of Inclusion for an assistant's orientation day.
+
+One self-contained file: no `gate.js`, no CDN, no network, logo inlined as
+a data URI, so it works emailed or off a USB stick. Nothing typed leaves
+the device; progress sits in `aisa_safeguarding_offline_v1` (expires after
+3 days, and the record screen has a *clear this device* button, because
+these are often shared school laptops).
+
+**Completion is logged by hand.** The record screen prints a signable
+completion record and offers a **Copy row** button that yields one
+tab-separated row in `EVENT_HEADERS` order (`module_id` `safeguarding`,
+`event` `completed`, `version` `offline-v1`, the facilitator in
+`user_agent`) to paste into the `events` tab. The tracker reads it like
+any other completion; add a `roster` row tagged `individual-assistant` to
+keep the person on it. They will read as outstanding on the other required
+modules — the tracker has no per-person module scope.
+
+**It is a copy of the module's wording and will drift.** The DSLs,
+counsellors, nurses and the 24-hour timescale are now in this file as well
+as `safeguarding-module.html` and the AI Literacy readiness module and hub.
+Change them together. The briefing video is on staff-only Drive, so it is
+an optional, facilitator-attested tick here, and the record says whether
+it was watched. Not linked from any page or the search index, so **no
+`?v=` cascade**; hand the file over directly.
+
 ## Next Digital Lion Newsletter — items to include
 
 - **NotebookLM ⇄ Google Drive auto-sync.** Files uploaded to NotebookLM

@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AISA Safeguarding Training · Offline Edition</title>
+<!--
+  OFFLINE EDITION of PD Modules/safeguarding-module.html, for people who
+  must do the safeguarding training but cannot sign in to the Hub because
+  they have no @aisa.sch.ae account (e.g. family-employed individual
+  assistants). One self-contained file: no Hub sign-in, no network, no
+  backend. Nothing typed here leaves the device.
+
+  It is a COPY of the module's wording. If the module, the DSLs, the
+  counsellors or the 24-hour timescale change, change this file too.
+
+  The completion is logged by hand: the record screen produces one row in
+  the exact column order of the `events` tab (EVENT_HEADERS in
+  auth/apps-script.gs) for the facilitator to paste in.
+
+  Fully self-contained: the AISA logo is inlined as a data: URI so the
+  file still works when emailed or copied to a USB stick.
+-->
+<style>
+  :root {
+    --ink: #1e1b2e; --muted: #5b5872; --line: #e4e1f0;
+    --page: #f5f5fb; --card: #ffffff;
+    --violet: #6d28d9; --violet-d: #4c1d95; --violet-l: #ede9fe; --violet-ll: #f7f5ff;
+    --indigo: #4338ca; --rose: #be123c; --rose-l: #fff1f2; --rose-b: #fecdd3;
+    --amber: #92400e; --amber-l: #fffbeb; --amber-b: #fde68a;
+    --green: #047857; --green-l: #ecfdf5; --green-b: #a7f3d0;
+    --slate-l: #f8fafc; --slate-b: #e2e8f0;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--page); color: var(--ink);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 16px 64px; }
+  h1, h2, h3, h4 { line-height: 1.25; margin: 0; }
+  p { margin: 0 0 .75rem; }
+  ul, ol { margin: 0; padding-left: 1.2rem; }
+  li { margin: .25rem 0; }
+  a { color: var(--violet); }
+  strong { font-weight: 700; }
+
+  /* Header */
+  .hero {
+    margin: 24px 0 16px; border-radius: 20px; padding: 28px 24px; color: #fff;
+    background: linear-gradient(135deg, #4338ca, #6d28d9 55%, #7c3aed);
+  }
+  .hero-top { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+  .hero-top img { width: 52px; height: 52px; background: #fff; border-radius: 50%; padding: 3px; flex: none; }
+  .eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #ddd6fe; }
+  .hero h1 { font-size: 1.75rem; font-weight: 800; }
+  .hero p { color: #ede9fe; margin: .5rem 0 0; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chip { background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 3px 12px; font-size: .8rem; font-weight: 600; }
+
+  /* Sticky progress */
+  .progress {
+    position: sticky; top: 0; z-index: 5; background: rgba(245,245,251,.95);
+    border-bottom: 1px solid var(--line); margin: 0 -16px 20px; padding: 10px 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .progress b { font-size: .85rem; white-space: nowrap; }
+  .bar { flex: 1; height: 10px; background: var(--violet-l); border-radius: 999px; overflow: hidden; }
+  .bar span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #6366f1, #8b5cf6); transition: width .4s; }
+  #progress-text { font-size: .8rem; font-weight: 700; color: var(--violet); min-width: 7.5rem; text-align: right; }
+
+  /* Cards */
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; margin-bottom: 20px; overflow: hidden; }
+  .card-head { padding: 16px 20px; color: #fff; background: linear-gradient(90deg, #4338ca, #6d28d9); }
+  .card-head.rose { background: linear-gradient(90deg, #be123c, #6d28d9); }
+  .card-head.pink { background: linear-gradient(90deg, #be123c, #db2777); }
+  .card-head.green { background: linear-gradient(90deg, #047857, #6d28d9); }
+  .card-head.quiz { background: linear-gradient(90deg, #8b5cf6, #6366f1); }
+  .card-head .eyebrow { color: rgba(255,255,255,.8); }
+  .card-head h2 { font-size: 1.25rem; font-weight: 800; margin-top: 2px; }
+  .card-head p { margin: 4px 0 0; color: rgba(255,255,255,.88); font-size: .9rem; }
+  .card-body { padding: 20px; }
+  .card-body > * + * { margin-top: 14px; }
+  .card.done { border-color: var(--green-b); }
+
+  .box { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; font-size: .93rem; }
+  .box h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+  .box p:last-child { margin-bottom: 0; }
+  .violet { background: var(--violet-ll); border-color: #ddd6fe; }
+  .rose { background: var(--rose-l); border-color: var(--rose-b); }
+  .amber { background: var(--amber-l); border-color: var(--amber-b); }
+  .green { background: var(--green-l); border-color: var(--green-b); }
+  .slate { background: var(--slate-l); border-color: var(--slate-b); }
+  .solid-rose { background: #be123c; border-color: #be123c; color: #fff; }
+  .solid-indigo { background: #312e81; border-color: #312e81; color: #fff; }
+  .left-rule { border-left: 4px solid currentColor; border-radius: 0 12px 12px 0; }
+  .grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .tag { text-align: center; font-weight: 700; font-size: .88rem; background: #fff; border: 1px solid var(--rose-b); color: var(--rose); border-radius: 10px; padding: 8px 6px; }
+  .step { display: flex; gap: 12px; align-items: flex-start; }
+  .step-n { flex: none; width: 2rem; height: 2rem; border-radius: 50%; background: var(--violet); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: .85rem; }
+  .contacts .box { background: rgba(255,255,255,.1); border: 0; }
+  .contacts small { display: block; color: #c7d2fe; text-transform: uppercase; letter-spacing: .06em; font-size: .7rem; }
+  .contacts b { font-size: 1.05rem; word-break: break-all; }
+  .note { font-size: .82rem; color: var(--muted); }
+
+  /* "I have read this" tick */
+  .read-tick {
+    display: flex; align-items: center; gap: 10px; margin-top: 18px; padding: 12px 14px;
+    border: 2px dashed #c4b5fd; border-radius: 12px; cursor: pointer; font-weight: 600; font-size: .93rem;
+    background: var(--violet-ll);
+  }
+  .read-tick input { width: 20px; height: 20px; accent-color: var(--green); flex: none; }
+  .read-tick.on { border-style: solid; border-color: var(--green-b); background: var(--green-l); color: var(--green); }
+
+  /* Forms */
+  label.field { display: block; font-size: .85rem; font-weight: 700; margin-bottom: 4px; }
+  label.field .opt { font-weight: 400; color: var(--muted); }
+  input[type=text], input[type=email], select {
+    width: 100%; font: inherit; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 10px; background: #fff; color: var(--ink);
+  }
+  input:focus, select:focus, button:focus-visible { outline: 3px solid #c4b5fd; outline-offset: 1px; }
+  .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .check-line { display: flex; gap: 10px; align-items: flex-start; font-size: .93rem; cursor: pointer; }
+  .check-line input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--violet); flex: none; }
+
+  /* Quiz */
+  .q { font-weight: 700; margin-bottom: 12px; }
+  .opt-btn {
+    display: flex; width: 100%; gap: 12px; align-items: center; text-align: left; font: inherit; font-size: .93rem;
+    background: #fff; border: 1px solid #d4d4e0; border-radius: 12px; padding: 12px 14px; margin-top: 10px; cursor: pointer; color: var(--ink);
+  }
+  .opt-btn:hover:not(:disabled) { border-color: #a78bfa; background: var(--violet-ll); }
+  .opt-btn .l { flex: none; width: 1.9rem; height: 1.9rem; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .82rem; color: var(--muted); }
+  .opt-btn.wrong { border-color: #fda4af; background: var(--rose-l); }
+  .opt-btn.wrong .l { background: #be123c; color: #fff; }
+  .opt-btn.right { border-color: #6ee7b7; background: var(--green-l); }
+  .opt-btn.right .l { background: #047857; color: #fff; }
+  .opt-btn:disabled { cursor: default; }
+  .feedback { margin-top: 12px; border-radius: 10px; padding: 12px 14px; font-size: .9rem; }
+  .feedback.ok { background: var(--green-l); color: var(--green); border: 1px solid var(--green-b); }
+  .feedback.no { background: var(--rose-l); color: var(--rose); border: 1px solid var(--rose-b); }
+
+  /* Buttons */
+  .btn { font: inherit; font-weight: 700; border: 0; border-radius: 12px; padding: 12px 20px; cursor: pointer; background: var(--violet); color: #fff; }
+  .btn:hover:not(:disabled) { background: var(--violet-d); }
+  .btn:disabled { background: #c4b5fd; cursor: not-allowed; }
+  .btn.ghost { background: #fff; color: var(--violet); border: 1px solid #c4b5fd; }
+  .btn.ghost:hover { background: var(--violet-ll); }
+  .btns { display: flex; flex-wrap: wrap; gap: 10px; }
+  .missing { font-size: .88rem; color: var(--amber); background: var(--amber-l); border: 1px solid var(--amber-b); border-radius: 10px; padding: 10px 14px; }
+  .missing ul { margin-top: 4px; }
+
+  /* Completion record */
+  .record { border: 2px solid var(--violet); border-radius: 16px; background: #fff; padding: 24px; }
+  .record-head { display: flex; align-items: center; gap: 14px; border-bottom: 1px solid var(--line); padding-bottom: 14px; margin-bottom: 14px; }
+  .record-head img { width: 56px; height: 56px; flex: none; }
+  .record-head h2 { font-size: 1.2rem; font-weight: 800; }
+  .record table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  .record th { text-align: left; width: 38%; color: var(--muted); font-weight: 600; padding: 6px 8px 6px 0; vertical-align: top; }
+  .record td { padding: 6px 0; vertical-align: top; }
+  .record tr + tr th, .record tr + tr td { border-top: 1px solid #f1f0f6; }
+  .sigs { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 28px; font-size: .82rem; color: var(--muted); }
+  .sigs div { border-top: 1px solid #94a3b8; padding-top: 6px; }
+  .rowbox { font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: var(--slate-l); border: 1px solid var(--slate-b); border-radius: 10px; padding: 10px 12px; overflow-x: auto; white-space: pre; }
+  .facil { border: 1px dashed #94a3b8; border-radius: 12px; padding: 16px; background: #fff; }
+  .facil h3 { font-size: 1rem; margin-bottom: 8px; }
+  .facil table { border-collapse: collapse; font-size: .8rem; width: 100%; }
+  .facil td, .facil th { border: 1px solid var(--slate-b); padding: 4px 6px; text-align: left; vertical-align: top; }
+  .facil th { background: var(--slate-l); }
+  #copy-status { font-size: .85rem; font-weight: 600; color: var(--green); }
+
+  footer { text-align: center; font-size: .8rem; color: var(--muted); margin-top: 32px; }
+
+  @media (max-width: 640px) {
+    .grid2, .fields, .sigs { grid-template-columns: minmax(0, 1fr); }
+    .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hero h1 { font-size: 1.4rem; }
+    #progress-text { min-width: 0; }
+  }
+
+  /* Print: only the completion record (or, before finishing, a note). */
+  @media print {
+    @page { margin: 14mm; }
+    body { background: #fff; font-size: 12pt; }
+    .no-print, .hero, .progress, .card, footer { display: none !important; }
+    .wrap { max-width: none; padding: 0; }
+    #record-wrap { display: block !important; }
+    .record { border: 2px solid #4c1d95; break-inside: avoid; }
+    .print-only { display: block !important; }
+  }
+  .print-only { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-top">
+      <img src="data:image/png;base64,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" alt="AISA">
+      <div>
+        <div class="eyebrow">AISA · Required Safeguarding Training · Offline edition</div>
+        <h1>Child Safeguarding &amp; Protection</h1>
+      </div>
+    </div>
+    <p>Safeguarding is everyone's responsibility. Learn to recognise concerns, respond well, and report them. The welfare of the child is always paramount.</p>
+    <p>This edition is for people working with AISA students who do not have an AISA staff account, such as individual assistants employed by a family. You do not need to sign in. Nothing you type here is sent anywhere. When you finish, your facilitator prints or saves the completion record and logs it.</p>
+    <div class="chips">
+      <span class="chip">⏱ ~30 min</span>
+      <span class="chip">📚 11 sections</span>
+      <span class="chip">✓ 3 knowledge checks</span>
+      <span class="chip">🔴 Required annually</span>
+    </div>
+  </header>
+
+  <div class="progress no-print" role="status" aria-live="polite">
+    <b>Progress</b>
+    <div class="bar"><span id="progress-bar"></span></div>
+    <span id="progress-text">0 of 0 done</span>
+  </div>
+
+  <!-- About you -->
+  <section class="card" id="about" data-step="about" data-title="Your details">
+    <div class="card-head">
+      <div class="eyebrow">Before you start</div>
+      <h2>Your details</h2>
+      <p>These go on your completion record. Use the email address the school has for you.</p>
+    </div>
+    <div class="card-body">
+      <div class="fields">
+        <div>
+          <label class="field" for="f-name">Full name</label>
+          <input type="text" id="f-name" autocomplete="name" data-save>
+        </div>
+        <div>
+          <label class="field" for="f-email">Email address</label>
+          <input type="email" id="f-email" autocomplete="email" data-save>
+        </div>
+        <div>
+          <label class="field" for="f-role">Role</label>
+          <select id="f-role" data-save>
+            <option value="Individual assistant (family-employed)">Individual assistant (family-employed)</option>
+            <option value="Volunteer">Volunteer</option>
+            <option value="Contractor">Contractor</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="field" for="f-division">Division you will work in</label>
+          <select id="f-division" data-save>
+            <option value="">Choose…</option>
+            <option value="KG / Elementary">KG / Elementary</option>
+            <option value="Middle School">Middle School</option>
+            <option value="High School">High School</option>
+          </select>
+        </div>
+        <div>
+          <label class="field" for="f-facilitator">Facilitator (the AISA staff member with you)</label>
+          <input type="text" id="f-facilitator" placeholder="e.g. Head of Inclusion" data-save>
+        </div>
+        <div>
+          <label class="field" for="f-start">Expected start date <span class="opt">(optional)</span></label>
+          <input type="text" id="f-start" placeholder="e.g. Monday 5 October" data-save>
+        </div>
+      </div>
+      <p class="note">Please don't write the name of the student you will support anywhere in this form.</p>
+    </div>
+  </section>
+
+  <!-- 1 -->
+  <section class="card" data-step="s1" data-title="1 · Why Safeguarding Matters">
+    <div class="card-head"><div class="eyebrow">Section 1</div><h2>Why Safeguarding Matters</h2></div>
+    <div class="card-body">
+      <p>AISA is committed to a <strong>safe, inclusive and respectful</strong> environment for every student. Safeguarding is not a single role. It is a shared responsibility held by every member of staff.</p>
+      <div class="box violet">
+        <h3>⚖️ The guiding principle</h3>
+        <p>The <strong>welfare of the child is paramount</strong>. It is a principle of UAE law and child-protection procedure that the protection and welfare of students must always come first.</p>
+      </div>
+      <div>
+        <h3 style="font-size:1rem;margin-bottom:8px">📜 The frameworks we follow</h3>
+        <div class="grid2">
+          <div class="box slate"><strong>Wadeema's Law</strong>: UAE Federal Law No. 3 of 2016 (Child Rights)</div>
+          <div class="box slate"><strong>ADEK</strong> safeguarding regulations</div>
+          <div class="box slate"><strong>ITFCP</strong>: Inter-agency framework for child protection</div>
+          <div class="box slate">UK <strong>“Keeping Children Safe in Education”</strong> (KCSIE)</div>
+        </div>
+      </div>
+      <div>
+        <h3 style="font-size:1rem;margin-bottom:6px">🧭 Our guiding principles</h3>
+        <ul>
+          <li>Equal protection for <strong>all</strong> students.</li>
+          <li>Students should feel safe <strong>physically, emotionally and digitally</strong>.</li>
+          <li>All concerns are taken seriously, acted on promptly, and kept confidential.</li>
+          <li>We work in partnership with families, authorities and agencies.</li>
+        </ul>
+      </div>
+      <p class="note"><em>Safeguarding at AISA is reviewed annually by the Governing Board and the Safeguarding Committee.</em></p>
+    </div>
+  </section>
+
+  <!-- 2 · video -->
+  <section class="card" data-step="video" data-title="2 · The Safeguarding Briefing (video)" data-optional>
+    <div class="card-head"><div class="eyebrow">Section 2</div><h2>Watch: The Safeguarding Briefing</h2></div>
+    <div class="card-body">
+      <p>The school's safeguarding briefing video is stored in AISA's Google Drive, and only AISA staff accounts can open it. <strong>Watch it with your facilitator on their device.</strong></p>
+      <div class="box slate">
+        <p><strong>Facilitator:</strong> sign in with your AISA account and open<br>
+        <a href="https://drive.google.com/file/d/1K_5y0lCrTEn54j50MAzrNcsKejj3dbet/view" target="_blank" rel="noopener noreferrer">drive.google.com/file/d/1K_5y0lCrTEn54j50MAzrNcsKejj3dbet/view</a></p>
+      </div>
+      <div class="box violet"><strong>As you watch:</strong> notice <em>how</em> staff are expected to respond to a concern: calmly, without judgement, and by reporting to the DSL. The sections that follow give you the exact steps.</div>
+      <p class="note">If the video can't be shown today, leave this box unticked and carry on. Your record will show that the video is still to watch.</p>
+    </div>
+  </section>
+
+  <!-- 3 -->
+  <section class="card" data-step="s3" data-title="3 · Key Definitions">
+    <div class="card-head"><div class="eyebrow">Section 3</div><h2>Key Definitions</h2></div>
+    <div class="card-body">
+      <div class="grid2">
+        <div class="box violet"><h3>🛡️ Safeguarding</h3><p>The <strong>proactive</strong> steps we take to prevent harm before it happens.</p></div>
+        <div class="box violet"><h3>🚨 Child Protection</h3><p>The <strong>specific actions</strong> we take when harm is suspected or confirmed.</p></div>
+      </div>
+      <div class="box rose">
+        <h3>⚠️ The four types of abuse</h3>
+        <div class="grid4">
+          <span class="tag">Physical</span><span class="tag">Emotional</span><span class="tag">Sexual / Exploitation</span><span class="tag">Neglect</span>
+        </div>
+      </div>
+      <div class="box slate"><h3>🧩 ALN: Additional Learning Needs</h3><p>Support a student may need <strong>beyond typical classroom instruction</strong>. Safeguarding and inclusion work hand in hand.</p></div>
+    </div>
+  </section>
+
+  <!-- 4 -->
+  <section class="card" data-step="s4" data-title="4 · Roles &amp; Responsibilities">
+    <div class="card-head"><div class="eyebrow">Section 4</div><h2>Roles &amp; Responsibilities</h2></div>
+    <div class="card-body">
+      <div class="box violet"><h3>Designated Safeguarding Lead (DSL)</h3><p>Oversees safeguarding, trains staff, and maintains records. <strong>Every concern is reported to the DSL.</strong></p></div>
+      <div class="box violet"><h3>Safeguarding Committee</h3><p>Counsellor, Nurse, Head of Inclusion, Health &amp; Safety Officer, and Divisional Leaders.</p></div>
+      <div class="box green">
+        <h3>👥 All staff &amp; volunteers. That means you.</h3>
+        <ul>
+          <li>Complete annual safeguarding training.</li>
+          <li>Report concerns <strong>immediately</strong> to the DSL.</li>
+          <li>Follow the Code of Conduct and confidentiality at all times.</li>
+          <li>Avoid private one-to-one interactions with students behind closed doors.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- KC1 -->
+  <section class="card" data-step="q1" data-title="Knowledge Check 1" data-quiz>
+    <div class="card-head quiz"><div class="eyebrow">Knowledge Check 1</div><h2>Your Responsibility</h2></div>
+    <div class="card-body">
+      <p class="q">A student tells you something during a lesson that makes you worried about their safety at home. What is your responsibility?</p>
+      <div class="opts">
+        <button type="button" class="opt-btn" data-correct="false"><span class="l"></span><span>Investigate it yourself first, and only involve others if you find evidence.</span></button>
+        <button type="button" class="opt-btn" data-correct="true"><span class="l"></span><span>Report the concern to the DSL immediately. Safeguarding is everyone's responsibility, and the DSL decides what happens next.</span></button>
+        <button type="button" class="opt-btn" data-correct="false"><span class="l"></span><span>Wait to see if the student mentions it again before doing anything.</span></button>
+        <button type="button" class="opt-btn" data-correct="false"><span class="l"></span><span>Promise the student you'll keep it completely secret.</span></button>
+      </div>
+      <div class="feedback" hidden
+           data-ok="<strong>Correct.</strong> You are often the first responder. Your job is to receive the concern and report it to the DSL promptly, not to investigate it yourself."
+           data-no="<strong>Not quite. Try again.</strong> Staff don't investigate and shouldn't promise secrecy. Every concern goes to the DSL immediately. They decide the next steps."></div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section class="card" data-step="s5" data-title="5 · Reporting &amp; Whistleblowing">
+    <div class="card-head rose"><div class="eyebrow">Section 5 · Critical</div><h2>Reporting &amp; Whistleblowing</h2></div>
+    <div class="card-body">
+      <div class="box rose left-rule" style="color:var(--rose)"><h3>⏱️ The 24-hour rule</h3><p style="color:var(--ink)">Report suspected abuse <strong>within 24 hours</strong>. All reporting goes to the <strong>DSL / Principal</strong> for your division.</p></div>
+      <div class="grid2">
+        <div class="box slate"><h3>🛡️ You are protected</h3><ul><li>Whistleblowers are <strong>legally protected</strong> in the UAE.</li><li>To stay anonymous, a reporter must <strong>explicitly request</strong> it.</li></ul></div>
+        <div class="box amber"><h3>⚖️ It is a legal duty</h3><p>Under UAE law, a <strong>mandated reporter who fails to report</strong> is subject to fines and possible legal action. When in doubt, report.</p></div>
+      </div>
+      <div class="box solid-indigo contacts">
+        <h3>📞 External child-protection contacts</h3>
+        <div class="grid2">
+          <div class="box"><small>Emergency</small><b>999</b></div>
+          <div class="box"><small>MOI Child Protection Hotline</small><b>+971 2 333 3903</b></div>
+          <div class="box"><small>Online</small><b>www.moi-cpc.gov.ae</b></div>
+          <div class="box"><small>Email</small><b>childprotection@moi.cpc.gov.ae</b></div>
+        </div>
+      </div>
+      <div class="box slate"><h3>🔒 Strict confidentiality</h3><p>AISA employees are <strong>strictly prohibited</strong> from discussing active or closed cases with any third party, including other employees and the media.</p></div>
+    </div>
+  </section>
+
+  <!-- 6 -->
+  <section class="card" data-step="s6" data-title="6 · Responding: the 5 R's">
+    <div class="card-head"><div class="eyebrow">Section 6</div><h2>Responding to a Disclosure: the 5 R's</h2><p>If a student discloses something to you, follow these five steps.</p></div>
+    <div class="card-body">
+      <div class="grid2">
+        <div class="box violet step"><span class="step-n">1</span><div><h3>Receive</h3><p>Listen carefully, <strong>without judgment</strong>.</p></div></div>
+        <div class="box violet step"><span class="step-n">2</span><div><h3>Reassure</h3><p>Affirm that speaking up was right. <strong>Don't make promises</strong> you can't keep.</p></div></div>
+        <div class="box violet step"><span class="step-n">3</span><div><h3>React</h3><p>Don't investigate. Ask only <strong>open-ended</strong> questions if you need to.</p></div></div>
+        <div class="box violet step"><span class="step-n">4</span><div><h3>Record</h3><p>Write the child's <strong>exact words</strong>, date, time and location, straight afterwards and not in front of the child.</p></div></div>
+      </div>
+      <div class="box rose step"><span class="step-n" style="background:var(--rose)">5</span><div><h3>Report</h3><p>Notify the <strong>DSL</strong> and file the report internally with them.</p></div></div>
+      <div class="grid2">
+        <div class="box green"><h3>✅ Do</h3><ul><li>Listen empathetically and non-judgmentally.</li><li>Observe the student; let them know they are believed.</li><li>Let them know who they can trust.</li><li>Work closely with the counsellor / admin.</li></ul></div>
+        <div class="box rose"><h3>🚫 Don't</h3><ul><li>Ask probing or leading questions.</li><li>Try to counsel the student yourself.</li><li>Tell people who don't need to know.</li><li>Assume it isn't true and fail to report.</li></ul></div>
+      </div>
+      <div class="box amber left-rule" style="color:var(--amber)"><h3>🤐 On confidentiality with students</h3><p style="color:var(--ink)">Never guarantee absolute confidentiality. It's better to say you <em>might have to tell someone whose job is to keep them safe</em>. Don't keep anything illegal, damaging or threatening covered up. Don't engage students who come to complain about other staff; pass it to the DSL.</p></div>
+    </div>
+  </section>
+
+  <!-- KC2 -->
+  <section class="card" data-step="q2" data-title="Knowledge Check 2" data-quiz>
+    <div class="card-head quiz"><div class="eyebrow">Knowledge Check 2</div><h2>Receiving a Disclosure</h2></div>
+    <div class="card-body">
+      <p class="q">A student starts to disclose something serious and asks, "Promise you won't tell anyone?" Which response best follows the 5 R's?</p>
+      <div class="opts">
+        <button type="button" class="opt-btn" data-correct="true"><span class="l"></span><span>"I'm really glad you told me. I can't promise to keep it secret because I might need to tell someone whose job is to keep you safe, but I'll help you."</span></button>
+        <button type="button" class="opt-btn" data-correct="false"><span class="l"></span><span>"Yes, I promise this stays just between us."</span></button>
+        <button type="button" class="opt-btn" data-correct="false"><span class="l"></span><span>Ask lots of detailed questions to find out exactly what happened before deciding whether it's worth reporting.</span></button>
+        <button type="button" class="opt-btn" data-correct="false"><span class="l"></span><span>Tell them you're not the right person and they should speak to a friend instead.</span></button>
+      </div>
+      <div class="feedback" hidden
+           data-ok="<strong>Correct.</strong> Reassure without promising secrecy, don't investigate, then record and report to the DSL. Never guarantee absolute confidentiality."
+           data-no="<strong>Not quite. Try again.</strong> Don't promise secrecy and don't interrogate. Reassure the student, explain you may have to tell someone who keeps them safe, then record and report to the DSL."></div>
+    </div>
+  </section>
+
+  <!-- 7 -->
+  <section class="card" data-step="s7" data-title="7 · Types of Abuse &amp; Risk Factors">
+    <div class="card-head"><div class="eyebrow">Section 7</div><h2>Types of Abuse &amp; Risk Factors</h2></div>
+    <div class="card-body">
+      <div class="box violet"><p>It is everyone's responsibility to protect students' wellbeing, and at times <strong>you are the first responder</strong>. Harm can include threats from those responsible for a child's care: <strong>family members, guardians, or other adults</strong> in the student's life.</p></div>
+      <div class="grid4">
+        <span class="tag">✋ Physical</span><span class="tag">💔 Emotional</span><span class="tag">🚫 Sexual / Exploitation</span><span class="tag">🥪 Neglect</span>
+      </div>
+      <div class="box slate"><h3>📈 Risk factors to be alert to</h3><ul><li>Social isolation</li><li>Trauma: death/illness, divorce or forced separation, witnessing violence</li><li>Neglect</li><li>Loss of protective community mechanisms</li></ul></div>
+      <div class="box violet left-rule" style="color:var(--indigo)"><h3>🔎 Harm isn't always visible</h3><p style="color:var(--ink)">Adverse Childhood Experiences (ACE) research shows that children from <strong>affluent families</strong> can suffer hidden harm in less visible ways (Felitti et al., 1998). Stay alert across every community, and consider each situation through a thoughtful <strong>cultural lens</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- 8 -->
+  <section class="card" data-step="s8" data-title="8 · Self-Harm &amp; Suicide">
+    <div class="card-head pink"><div class="eyebrow">Section 8 · Handle with care</div><h2>Self-Harm &amp; Suicide</h2><p>It's okay to not be okay. Your calm, prompt response can save a life.</p></div>
+    <div class="card-body">
+      <p>Self-harm is when someone hurts themselves to cope with very difficult feelings, painful memories or overwhelming situations. It can be a way to make invisible pain visible, to feel in control, or to express suicidal feelings <em>without</em> acting on them. Approach it without judgement.</p>
+      <div class="grid2">
+        <div class="box rose"><h3>👀 Possible signs of self-harm</h3><ul><li>Heavy scratching in one area; unexplained cuts or bruising</li><li>Cuts/scratches to arms, thighs or torso (easily hidden)</li><li>Bruising to knuckles or forehead</li><li>Oddly placed or repeated burn marks</li><li>Multiple plasters/coverings over one area</li></ul></div>
+        <div class="box rose"><h3>⚠️ Suicide warning signs</h3><ul><li>Talking, writing, texting or drawing about wanting to die</li><li>Planning (notes, researching methods)</li><li>Harming self; expressing hopelessness</li><li>Severe emotional pain or distress</li><li>Marked behaviour changes: withdrawal, sleep changes, anger, agitation</li></ul></div>
+      </div>
+      <div class="grid2">
+        <div class="box violet"><h3>Responding to self-harm</h3><ol><li>Remain calm.</li><li>Listen with empathy. No judgement, and don't question their reasons.</li><li>Inform the assigned counsellor.</li></ol></div>
+        <div class="box solid-rose"><h3>🆘 If you believe a student may be suicidal</h3><ol><li>Maintain <strong>direct physical supervision</strong> of the student.</li><li>Immediately contact the Safeguarding Lead.</li></ol><p style="margin:10px 0 0;font-weight:800;font-size:.8rem;text-transform:uppercase;letter-spacing:.04em">Do NOT wait until class is over or the end of the day.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section class="card" data-step="s9" data-title="9 · Digital Safety, Records &amp; AI">
+    <div class="card-head"><div class="eyebrow">Section 9</div><h2>Digital Safety, Records &amp; AI</h2></div>
+    <div class="card-body">
+      <div class="grid2">
+        <div class="box slate"><h3>📹 Security &amp; digital safety</h3><ul><li>CCTV in all classrooms and main campus areas.</li><li>Visitor ID, sign-in and badge requirements.</li><li>No sharing of student data on personal devices or unapproved platforms.</li></ul></div>
+        <div class="box slate"><h3>🗄️ Confidentiality &amp; record keeping</h3><ul><li>Secure digital storage, separate from academic files.</li><li>Access only by the DSL and one identified additional safeguarding member.</li><li>Staff must <strong>not</strong> keep personal copies of reports.</li></ul></div>
+      </div>
+      <div class="box violet"><h3>🤖 Essential guidelines for AI usage</h3><ul><li>Never input student names, contact details or unique identifiers.</li><li>Use only school-approved, privacy-verified AI platforms.</li><li>Follow data-minimisation principles.</li><li>Use pseudonyms (e.g. "Student A") instead of real names.</li><li>Remove identifying details before inputting student work.</li><li>Never share grades, health data or behavioural information.</li></ul></div>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section class="card" data-step="s10" data-title="10 · Your Safeguarding Team &amp; Counsellors">
+    <div class="card-head"><div class="eyebrow">Section 10</div><h2>Your Safeguarding Team &amp; Counsellors</h2></div>
+    <div class="card-body">
+      <div class="grid2">
+        <div class="box violet"><h3>Elementary Safeguarding Team</h3><ul style="list-style:none;padding:0"><li><strong>Alia Nejdawi</strong>, Assistant Principal, <strong>Safeguarding Lead (DSL)</strong></li><li>Counsellors: Laylin Chong · Sara AlBeainy</li><li>Nurses: Dinesh Muragan · Kaviya Sasikumar</li><li><a href="mailto:anejdawi@aisa.sch.ae">anejdawi@aisa.sch.ae</a></li></ul></div>
+        <div class="box violet"><h3>Secondary Safeguarding Team</h3><ul style="list-style:none;padding:0"><li><strong>Savvas Largatzis</strong>, MS Assistant Principal, <strong>Safeguarding Lead (DSL)</strong></li><li>Counsellors: Naiema Zaki (HS) · Jenn Guss (HS) · Joel Hunter (MS)</li><li>Nurses: Jothi Vinod · Kaviya Sasikumar</li><li><a href="mailto:slargatzis@aisa.sch.ae">slargatzis@aisa.sch.ae</a></li></ul></div>
+      </div>
+      <div class="box slate"><h3>🧑‍🏫 When to refer a student to a counsellor</h3><ul><li>You're concerned about a student's mood, behaviour or emotional needs.</li><li>A student shares, or you suspect, thoughts of self-harm.</li><li>A parent shares a challenging home/family circumstance.</li><li>A student lacks friendships or has poor social skills.</li><li>Known or suspected medical / mental-health needs.</li><li>You'd like support addressing a topic with your class.</li></ul>
+        <p class="note" style="margin-top:8px"><em>Email the counsellor with your referral. Counsellors provide short-term support, crisis response and risk assessments. They do not counsel staff or issue consequences for students. Anything safeguarding-related still goes to the DSL.</em></p></div>
+      <div class="box amber"><p style="margin:0"><strong>Without an AISA email?</strong> Tell your facilitator or the student's class teacher in person, straight away, and they will make sure it reaches the DSL. If a child is in immediate danger, call <strong>999</strong>.</p></div>
+    </div>
+  </section>
+
+  <!-- KC3 -->
+  <section class="card" data-step="q3" data-title="Knowledge Check 3" data-quiz>
+    <div class="card-head quiz"><div class="eyebrow">Knowledge Check 3</div><h2>A Student in Crisis</h2></div>
+    <div class="card-body">
+      <p class="q">Mid-lesson, a student hands you a note suggesting they are thinking about ending their life. What do you do?</p>
+      <div class="opts">
+        <button type="button" class="opt-btn" data-correct="false"><span class="l"></span><span>Finish the lesson, then email the counsellor at the end of the day.</span></button>
+        <button type="button" class="opt-btn" data-correct="false"><span class="l"></span><span>Send the student to the counsellor's office on their own.</span></button>
+        <button type="button" class="opt-btn" data-correct="true"><span class="l"></span><span>Keep the student under direct physical supervision and immediately contact the Safeguarding Lead. Do not wait.</span></button>
+        <button type="button" class="opt-btn" data-correct="false"><span class="l"></span><span>Ask the student in front of the class whether they really mean it.</span></button>
+      </div>
+      <div class="feedback" hidden
+           data-ok="<strong>Correct.</strong> Never leave the student alone and never wait. Maintain direct supervision and contact the Safeguarding Lead immediately."
+           data-no="<strong>Not quite. Try again.</strong> A possible suicide risk is an emergency: keep the student under direct supervision (don't send them off alone) and contact the Safeguarding Lead immediately. Don't wait for the end of the day."></div>
+    </div>
+  </section>
+
+  <!-- 11 · declaration -->
+  <section class="card" id="declare" data-step="declare" data-title="11 · Acknowledgment">
+    <div class="card-head green"><div class="eyebrow">Section 11 · Mandatory</div><h2>Your Acknowledgment</h2></div>
+    <div class="card-body">
+      <div class="box violet left-rule" style="color:var(--violet)"><p style="margin:0;color:var(--ink);font-weight:600">Remember the essentials: safeguarding is everyone's responsibility · report to the DSL within 24 hours · never promise secrecy · the welfare of the child is paramount.</p></div>
+      <label class="check-line"><input type="checkbox" id="f-declare" data-save>
+        <span>I have read and understood this training. I understand that I must report any safeguarding concern to the DSL for my division <strong>within 24 hours</strong> (and immediately if a child may be at risk of suicide), that I must never promise a child secrecy, and that I must follow AISA's Code of Conduct and confidentiality rules.</span></label>
+      <div>
+        <label class="field" for="f-sign">Type your full name to sign</label>
+        <input type="text" id="f-sign" autocomplete="off" data-save>
+      </div>
+      <p class="note">The online version of this training ends with a Google Form. You don't need it: the record below, signed by you and your facilitator, is your acknowledgment.</p>
+    </div>
+  </section>
+
+  <!-- Finish -->
+  <div class="no-print" id="finish">
+    <div id="missing" class="missing" hidden></div>
+    <div class="btns" style="margin-top:12px">
+      <button type="button" class="btn" id="btn-finish">Finish and show my completion record</button>
+    </div>
+  </div>
+
+  <!-- Completion record -->
+  <div id="record-wrap" hidden style="margin-top:24px">
+    <div class="record" id="record">
+      <div class="record-head">
+        <img src="data:image/png;base64,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" alt="AISA">
+        <div>
+          <div class="eyebrow" style="color:var(--violet)">American International School in Abu Dhabi</div>
+          <h2>Safeguarding Training: Completion Record</h2>
+          <div class="note">Child Safeguarding &amp; Protection, Annual Staff Training (offline edition) · 2 PD hours</div>
+        </div>
+      </div>
+      <table id="record-table"></table>
+      <div class="sigs">
+        <div>Participant signature &amp; date</div>
+        <div>Facilitator signature &amp; date</div>
+      </div>
+    </div>
+
+    <div class="no-print" style="margin-top:16px">
+      <div class="btns">
+        <button type="button" class="btn" id="btn-print">Print / Save as PDF</button>
+        <button type="button" class="btn ghost" id="btn-edit">Go back and change something</button>
+      </div>
+    </div>
+
+    <div class="facil no-print" style="margin-top:20px">
+      <h3>For the facilitator: log it in the Hub spreadsheet</h3>
+      <p class="note">Open the Hub spreadsheet, go to the <strong>events</strong> tab, click the first cell (column A) of the first empty row, and paste. The row matches the tab's columns exactly:</p>
+      <div style="overflow-x:auto"><table>
+        <tr><th>timestamp_iso</th><th>email</th><th>name</th><th>module_id</th><th>event</th><th>progress_pct</th><th>version</th><th>user_agent</th></tr>
+        <tr id="row-cells"></tr>
+      </table></div>
+      <div class="btns" style="margin-top:12px;align-items:center">
+        <button type="button" class="btn" id="btn-copy">Copy row for the events tab</button>
+        <span id="copy-status" role="status"></span>
+      </div>
+      <p class="note" style="margin-top:10px">To keep them on the tracker, also add a row to the <strong>roster</strong> tab: their email, name, and the tag <code>individual-assistant</code>. Then press <strong>Refresh</strong> on the admin dashboard. Without Refresh it shows within the hour.</p>
+      <p class="note">This row is how the tracker counts the completion, so keep the email exactly as typed above. Use the same address if they ever get an AISA account, or the two won't match.</p>
+      <div class="btns" style="margin-top:12px">
+        <button type="button" class="btn ghost" id="btn-clear">Done: clear these answers from this device</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="no-print">
+    <p><strong>AISA, American International School in Abu Dhabi</strong> · Child Safeguarding &amp; Protection · Safeguarding Committee</p>
+    <p>If a child is in immediate danger, call 999. Report all safeguarding concerns to your DSL within 24 hours.</p>
+  </footer>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var STORE_KEY = 'aisa_safeguarding_offline_v1';
+  var MAX_AGE_MS = 3 * 24 * 60 * 60 * 1000;   // saved answers expire after 3 days
+  var MODULE_ID = 'safeguarding';             // must match the online module's moduleId
+
+  var steps = Array.prototype.slice.call(document.querySelectorAll('[data-step]'));
+  var state = { read: {}, quiz: {}, fields: {}, finishedAt: '' };
+  load();   // before anything below reads state
+
+  /* ---------- persistence (per device, best-effort) ---------- */
+  function load() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return;
+      var s = JSON.parse(raw);
+      if (!s || !s.savedAt || Date.now() - s.savedAt > MAX_AGE_MS) { localStorage.removeItem(STORE_KEY); return; }
+      state.read = s.read || {}; state.quiz = s.quiz || {}; state.fields = s.fields || {}; state.finishedAt = s.finishedAt || '';
+    } catch (e) { /* storage unavailable: work without it */ }
+  }
+  function save() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({
+        savedAt: Date.now(), read: state.read, quiz: state.quiz, fields: state.fields, finishedAt: state.finishedAt
+      }));
+    } catch (e) { /* ignore */ }
+  }
+
+  /* ---------- fields ---------- */
+  var fieldEls = Array.prototype.slice.call(document.querySelectorAll('[data-save]'));
+  function fieldVal(id) {
+    var el = document.getElementById(id);
+    if (!el) return '';
+    return el.type === 'checkbox' ? el.checked : String(el.value || '').trim();
+  }
+  fieldEls.forEach(function (el) {
+    if (Object.prototype.hasOwnProperty.call(state.fields, el.id)) {
+      if (el.type === 'checkbox') el.checked = !!state.fields[el.id]; else el.value = state.fields[el.id];
+    }
+    el.addEventListener(el.type === 'checkbox' || el.tagName === 'SELECT' ? 'change' : 'input', function () {
+      state.fields[el.id] = el.type === 'checkbox' ? el.checked : el.value;
+      invalidateRecord();
+      save(); refresh();
+    });
+  });
+
+  /* ---------- "I have read this" ticks on content sections ---------- */
+  steps.forEach(function (sec) {
+    var id = sec.getAttribute('data-step');
+    if (sec.hasAttribute('data-quiz') || id === 'about' || id === 'declare') return;
+    var label = document.createElement('label');
+    label.className = 'read-tick no-print';
+    var box = document.createElement('input');
+    box.type = 'checkbox';
+    box.checked = !!state.read[id];
+    var text = document.createElement('span');
+    text.textContent = id === 'video'
+      ? 'I have watched the briefing video with my facilitator'
+      : 'I have read and understood this section';
+    label.appendChild(box); label.appendChild(text);
+    sec.querySelector('.card-body').appendChild(label);
+    function paint() { label.classList.toggle('on', box.checked); sec.classList.toggle('done', box.checked); }
+    box.addEventListener('change', function () { state.read[id] = box.checked; paint(); invalidateRecord(); save(); refresh(); });
+    paint();
+  });
+
+  /* ---------- knowledge checks ---------- */
+  function shuffle(a) {
+    for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a[i]; a[i] = a[j]; a[j] = t; }
+    return a;
+  }
+  steps.filter(function (s) { return s.hasAttribute('data-quiz'); }).forEach(function (sec) {
+    var id = sec.getAttribute('data-step');
+    var wrap = sec.querySelector('.opts');
+    var fb = sec.querySelector('.feedback');
+    var opts = Array.prototype.slice.call(wrap.querySelectorAll('.opt-btn'));
+    // Shuffle so the right answer isn't always in the same slot (the online module does the same).
+    shuffle(opts).forEach(function (b, i) { b.querySelector('.l').textContent = 'ABCD'.charAt(i); wrap.appendChild(b); });
+    var q = state.quiz[id] || (state.quiz[id] = { tries: 0, correct: false });
+
+    function lock() {
+      opts.forEach(function (b) { b.disabled = true; if (b.getAttribute('data-correct') === 'true') b.classList.add('right'); });
+      fb.className = 'feedback ok'; fb.innerHTML = fb.getAttribute('data-ok'); fb.hidden = false;
+      sec.classList.add('done');
+    }
+    if (q.correct) lock();
+
+    opts.forEach(function (b) {
+      b.addEventListener('click', function () {
+        if (q.correct) return;
+        q.tries += 1;
+        opts.forEach(function (o) { o.classList.remove('wrong'); });
+        if (b.getAttribute('data-correct') === 'true') {
+          q.correct = true; lock();
+        } else {
+          b.classList.add('wrong');
+          fb.className = 'feedback no'; fb.innerHTML = fb.getAttribute('data-no'); fb.hidden = false;
+        }
+        invalidateRecord(); save(); refresh();
+      });
+    });
+  });
+
+  /* ---------- progress + what's missing ---------- */
+  function norm(v) { return String(v || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+  function signMatches() { return !!fieldVal('f-sign') && norm(fieldVal('f-sign')) === norm(fieldVal('f-name')); }
+  function isEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+  function stepDone(sec) {
+    var id = sec.getAttribute('data-step');
+    if (id === 'about') return !!fieldVal('f-name') && isEmail(fieldVal('f-email')) && !!fieldVal('f-division') && !!fieldVal('f-facilitator');
+    if (id === 'declare') return fieldVal('f-declare') === true && signMatches();
+    if (sec.hasAttribute('data-quiz')) return !!(state.quiz[id] && state.quiz[id].correct);
+    return !!state.read[id];
+  }
+  function required() { return steps.filter(function (s) { return !s.hasAttribute('data-optional'); }); }
+  function missingList() {
+    var out = [];
+    required().forEach(function (sec) {
+      if (stepDone(sec)) return;
+      var id = sec.getAttribute('data-step'), t = sec.getAttribute('data-title');
+      if (id === 'about') {
+        var bits = [];
+        if (!fieldVal('f-name')) bits.push('full name');
+        if (!isEmail(fieldVal('f-email'))) bits.push('a valid email address');
+        if (!fieldVal('f-division')) bits.push('division');
+        if (!fieldVal('f-facilitator')) bits.push('facilitator');
+        out.push({ sec: sec, text: 'Your details: ' + bits.join(', ') });
+      } else if (id === 'declare') {
+        out.push({ sec: sec, text: fieldVal('f-declare') === true && fieldVal('f-sign')
+          ? t + ': the signature must match the full name in Your details'
+          : t + ': tick the declaration and type your full name' });
+      } else if (sec.hasAttribute('data-quiz')) {
+        out.push({ sec: sec, text: t + ': choose the correct answer' });
+      } else {
+        out.push({ sec: sec, text: t + ': tick "I have read and understood this section"' });
+      }
+    });
+    return out;
+  }
+  function refresh() {
+    var req = required(), done = req.filter(stepDone).length;
+    document.getElementById('progress-bar').style.width = Math.round(done / req.length * 100) + '%';
+    document.getElementById('progress-text').textContent = done + ' of ' + req.length + ' done';
+    var m = document.getElementById('missing');
+    if (!m.hidden) showMissing();   // keep the list live once it's been shown
+  }
+  function showMissing() {
+    var list = missingList(), m = document.getElementById('missing');
+    if (!list.length) { m.hidden = true; return; }
+    m.innerHTML = '';
+    var p = document.createElement('strong'); p.textContent = 'Still to do before you can finish:';
+    var ul = document.createElement('ul');
+    list.forEach(function (item) {
+      var li = document.createElement('li'), a = document.createElement('a');
+      a.href = '#'; a.textContent = item.text;
+      a.addEventListener('click', function (e) { e.preventDefault(); item.sec.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+      li.appendChild(a); ul.appendChild(li);
+    });
+    m.appendChild(p); m.appendChild(ul); m.hidden = false;
+  }
+
+  /* ---------- completion record ---------- */
+  // Abu Dhabi local time with an explicit +04:00, the format nowIsoLocal() writes in apps-script.gs.
+  function abuDhabiIso(d) {
+    var t = new Date(d.getTime() + 4 * 3600 * 1000).toISOString().slice(0, 19);
+    return t + '+04:00';
+  }
+  function abuDhabiHuman(d) {
+    try {
+      return d.toLocaleString('en-GB', { timeZone: 'Asia/Dubai', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) + ' (Abu Dhabi)';
+    } catch (e) { return abuDhabiIso(d); }
+  }
+  function clean(v) { return String(v || '').replace(/[\t\r\n]+/g, ' ').trim(); }
+
+  function eventRow() {
+    var d = new Date(state.finishedAt);
+    var note = 'Offline edition · ' + clean(fieldVal('f-role')) + ' · ' + clean(fieldVal('f-division')) +
+               ' · facilitator: ' + clean(fieldVal('f-facilitator')) +
+               (state.read.video ? '' : ' · briefing video still to watch');
+    return [abuDhabiIso(d), clean(fieldVal('f-email')).toLowerCase(), clean(fieldVal('f-name')), MODULE_ID, 'completed', '100', 'offline-v1', note];
+  }
+
+  function renderRecord() {
+    var d = new Date(state.finishedAt);
+    var tries = ['q1', 'q2', 'q3'].map(function (k) {
+      var n = (state.quiz[k] && state.quiz[k].tries) || 1;
+      return n === 1 ? 'first try' : n + ' tries';
+    });
+    var written = steps.filter(function (s) {
+      var id = s.getAttribute('data-step');
+      return !s.hasAttribute('data-quiz') && !s.hasAttribute('data-optional') && id !== 'about' && id !== 'declare';
+    }).length;
+    var rows = [
+      ['Name', fieldVal('f-name')],
+      ['Email', fieldVal('f-email').toLowerCase()],
+      ['Role', fieldVal('f-role')],
+      ['Division', fieldVal('f-division')],
+      ['Expected start date', fieldVal('f-start') || '—'],
+      ['Facilitator', fieldVal('f-facilitator')],
+      ['Completed', abuDhabiHuman(d)],
+      ['Sections read', written + ' of ' + written + ' written sections'],
+      ['Briefing video', state.read.video ? 'Watched with facilitator' : 'Not yet watched: still to do'],
+      ['Knowledge checks', '3 of 3 correct (' + tries.join(', ') + ')'],
+      ['Declaration', 'Ticked and signed as “' + fieldVal('f-sign') + '”']
+    ];
+    var table = document.getElementById('record-table');
+    table.innerHTML = '';
+    rows.forEach(function (r) {
+      var tr = document.createElement('tr'), th = document.createElement('th'), td = document.createElement('td');
+      th.textContent = r[0]; td.textContent = r[1];
+      tr.appendChild(th); tr.appendChild(td); table.appendChild(tr);
+    });
+    var cells = document.getElementById('row-cells');
+    cells.innerHTML = '';
+    eventRow().forEach(function (v) { var td = document.createElement('td'); td.textContent = v; cells.appendChild(td); });
+    document.getElementById('copy-status').textContent = '';
+    document.getElementById('record-wrap').hidden = false;
+  }
+
+  // Any change after finishing hides the record so a stale one is never printed.
+  function invalidateRecord() {
+    if (!state.finishedAt) return;
+    state.finishedAt = '';
+    document.getElementById('record-wrap').hidden = true;
+  }
+
+  document.getElementById('btn-finish').addEventListener('click', function () {
+    if (missingList().length) { showMissing(); document.getElementById('missing').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+    document.getElementById('missing').hidden = true;
+    state.finishedAt = new Date().toISOString();
+    save(); renderRecord();
+    document.getElementById('record-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  document.getElementById('btn-print').addEventListener('click', function () { window.print(); });
+  document.getElementById('btn-edit').addEventListener('click', function () {
+    invalidateRecord(); save();
+    document.getElementById('about').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  document.getElementById('btn-copy').addEventListener('click', function () {
+    var tsv = eventRow().join('\t');
+    var status = document.getElementById('copy-status');
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.value = tsv; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      status.textContent = ok ? 'Copied. Paste it into column A of the events tab.' : 'Copy didn’t work here. Select the row above and copy it by hand.';
+    }
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(tsv).then(function () {
+        status.textContent = 'Copied. Paste it into column A of the events tab.';
+      }, fallback);
+    } else { fallback(); }
+  });
+
+  document.getElementById('btn-clear').addEventListener('click', function () {
+    if (!confirm('Clear every answer on this page from this device? Print or save the record first if you still need it.')) return;
+    try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+    location.reload();
+  });
+
+  refresh();
+  if (state.finishedAt && !missingList().length) renderRecord();
+})();
+</script>
+</body>
+</html>
