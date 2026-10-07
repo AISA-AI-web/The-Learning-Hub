@@ -67,84 +67,42 @@
         ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #15803d; }
 
-        /* --- Admin access gate (this module is not yet released to staff) --- */
-        #admin-gate {
-            position: fixed; inset: 0; z-index: 2147482000;
-            background: linear-gradient(135deg, #14532d 0%, #166534 55%, #4d7c0f 100%);
-            color: #fff; display: flex; align-items: center; justify-content: center;
-            padding: 1.5rem; font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        /* Mail-out bar (announcement email). Styled here rather than in
+           Tailwind because a control that reports failures has to stay
+           legible even if the CDN never answers. Same shape as the AI
+           Literacy Hub's. */
+        #nl-send {
+            position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+            background: #14532d; color: #ecfdf5; border-top: 1px solid #166534;
+            font-family: 'Inter', sans-serif;
         }
-        #admin-gate .ag-card {
-            max-width: 30rem; width: 100%; text-align: center;
-            background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.22);
-            border-radius: 1.5rem; padding: 2.5rem 2rem;
-            -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
-            box-shadow: 0 30px 60px -20px rgba(0,0,0,.5);
+        #nl-send[hidden] { display: none; }
+        #nl-send .nl-inner {
+            max-width: 72rem; margin: 0 auto; padding: .7rem 1rem;
+            display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
         }
-        #admin-gate h1 { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 1.6rem; margin: .5rem 0; }
-        #admin-gate p { color: rgba(255,255,255,.9); line-height: 1.6; font-size: .95rem; }
-        #admin-gate .ag-spinner {
-            width: 40px; height: 40px; margin: 0 auto 1rem;
-            border: 3px solid rgba(255,255,255,.25); border-top-color: #fff;
-            border-radius: 50%; animation: ag-spin .8s linear infinite;
+        #nl-send .nl-kicker {
+            font-size: .62rem; font-weight: 800; letter-spacing: .09em;
+            text-transform: uppercase; color: #bef264;
         }
-        @keyframes ag-spin { to { transform: rotate(360deg); } }
-        #admin-gate .ag-btn {
-            display: inline-flex; align-items: center; gap: .5rem; margin-top: 1.5rem;
-            background: #fff; color: #14532d; font-weight: 800; font-size: .9rem;
-            padding: .7rem 1.4rem; border-radius: 9999px; text-decoration: none;
-            box-shadow: 0 12px 24px -12px rgba(0,0,0,.6); transition: transform .15s ease;
+        #nl-send button {
+            font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer;
+            border-radius: .6rem; padding: .45rem .9rem; border: 1px solid #4d7c0f;
+            background: transparent; color: #ecfdf5;
         }
-        #admin-gate .ag-btn:hover { transform: translateY(-2px); }
-
-        /* --- Admin preview ribbon shown to admins once access is confirmed --- */
-        #admin-preview-banner {
-            border: 1px dashed #f59e0b; background: #fffbeb; color: #92400e;
-            border-radius: 1rem; padding: .85rem 1.1rem; margin-bottom: 1.5rem;
-            display: flex; align-items: flex-start; gap: .7rem; font-size: .86rem; line-height: 1.5;
-        }
-        #admin-preview-banner .apb-tag {
-            flex-shrink: 0; font-size: .62rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
-            background: #f59e0b; color: #fff; border-radius: 9999px; padding: .28rem .6rem; margin-top: .1rem;
-        }
+        #nl-send button.nl-go { background: #16a34a; border-color: #16a34a; color: #fff; }
+        #nl-send button:disabled { opacity: .5; cursor: default; }
+        #nl-send .nl-msg { flex-basis: 100%; margin: .2rem 0 0; font-size: .78rem; line-height: 1.4; }
     </style>
     <link rel="stylesheet" href="../auth/training.css?v=5">
     <link rel="stylesheet" href="onboarding.css?v=4">
-    <script src="../auth/gate.js?v=25"></script>
+    <script src="../auth/gate.js?v=26"></script>
     <script src="../auth/training.js?v=6"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen ob-scope">
 
-<!-- ============================================================= -->
-<!-- ADMIN ACCESS GATE                                              -->
-<!-- This module is in development and is restricted to admins      -->
-<!-- until it is approved for release. The overlay covers the page  -->
-<!-- until isAdmin() resolves: admins get the module (plus a        -->
-<!-- preview ribbon), everyone else gets a "coming soon" screen.    -->
-<!-- ============================================================= -->
-<div id="admin-gate" role="dialog" aria-modal="true" aria-label="Access check">
-    <div class="ag-card">
-        <div data-gate-checking>
-            <div class="ag-spinner" aria-hidden="true"></div>
-            <p>Checking access&hellip;</p>
-        </div>
-        <div data-gate-denied hidden>
-            <div style="font-size:3rem;line-height:1" aria-hidden="true">🌱</div>
-            <h1>Coming soon</h1>
-            <p>Our whole-school <strong>Sustainability</strong> course is still being developed and isn&rsquo;t available to staff yet. It will appear in your PD Modules once the Sustainability Team releases it.</p>
-            <a class="ag-btn" href="pd.html">← Back to PD Modules</a>
-        </div>
-    </div>
-</div>
-
 <!-- Main Content -->
     <div class="max-w-5xl mx-auto px-4 lg:px-6 pt-8 pb-20">
-
-        <!-- Admin preview ribbon (revealed only for admins) -->
-        <div id="admin-preview-banner" style="display:none" role="note">
-            <span class="apb-tag">Admin preview</span>
-            <span><strong>Not yet released to staff.</strong> You&rsquo;re viewing this course early for review. Content is a working draft built from the Sustainability Team&rsquo;s outline — final initiative details, dates and examples will be confirmed before release. It is hidden from everyone except admins.</span>
-        </div>
 
         <!-- Hero -->
         <header class="ob-hero">
@@ -164,7 +122,7 @@
                     <span class="ob-chip">📚 8 chapters</span>
                     <span class="ob-chip">✓ Knowledge checks</span>
                     <span class="ob-chip">📝 Staff acknowledgement</span>
-                    <span class="ob-chip">🌍 All staff</span>
+                    <span class="ob-chip">🌍 Required · all staff</span>
                 </div>
                 <div class="ob-actions">
                     <span class="ob-note">Sustainability should be part of everyday AISA culture — not a series of one-off events.</span>
@@ -228,6 +186,11 @@
                         <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
                             <h4 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><span class="text-lg">👥</span> Who leads it</h4>
                             <p class="text-sm text-gray-700 leading-relaxed">The <strong>AISA Sustainability Team</strong> sets the vision and coordinates initiatives across the school. Student <strong>Eco Committees</strong> in Primary and Secondary run campaigns, keep the momentum going, and help their peers take part. Your role is to support and reinforce their work in your everyday practice — you&rsquo;ll see exactly how in the chapters ahead.</p>
+                        </div>
+
+                        <div class="bg-lime-50 border border-lime-200 rounded-xl p-5">
+                            <h4 class="font-bold text-lime-900 mb-2 flex items-center gap-2"><span class="text-lg">💚</span> With thanks</h4>
+                            <p class="text-sm text-lime-900 leading-relaxed">This course exists because <strong>Ms Nastassia van Jaarsveldt</strong>, Chair of the Sustainability Committee, asked for it and supplied the resources and material it is built from. Thank you, Ms van Jaarsveldt.</p>
                         </div>
                     </div>
                 </div>
@@ -679,7 +642,7 @@
         <div class="container mx-auto px-6 text-center">
             <p class="font-bold text-white mb-1 font-heading">AISA — American International School in Abu Dhabi</p>
             <p class="text-sm text-green-300">Whole-School Sustainability Programme 2026–2027 · Small actions, collective impact</p>
-            <p class="text-xs text-green-400 mt-4">Developed with the AISA Sustainability Team &amp; student Eco Committees.</p>
+            <p class="text-xs text-green-400 mt-4">Requested and resourced by Ms Nastassia van Jaarsveldt, Chair of the Sustainability Committee. Developed with the AISA Sustainability Team &amp; student Eco Committees.</p>
         </div>
     </footer>
 
@@ -704,39 +667,6 @@
             }
         }
 
-        // --- Admin access gate ---------------------------------------------
-        // This module is not yet released to staff. The overlay stays up
-        // until we've confirmed the signed-in user is an admin; non-admins
-        // (and anyone we can't verify) get the "coming soon" message.
-        (function () {
-            function revealPreview() {
-                var gate = document.getElementById('admin-gate');
-                if (gate) gate.remove();
-                var banner = document.getElementById('admin-preview-banner');
-                if (banner) banner.style.removeProperty('display');
-            }
-            function showDenied() {
-                var gate = document.getElementById('admin-gate');
-                if (!gate) return;
-                var checking = gate.querySelector('[data-gate-checking]');
-                var denied = gate.querySelector('[data-gate-denied]');
-                if (checking) checking.hidden = true;
-                if (denied) denied.hidden = false;
-            }
-            if (window.aisaReady) {
-                window.aisaReady(function (auth) {
-                    // Without a configured backend we can't verify admin
-                    // status, so fail closed and keep the module hidden.
-                    if (!auth.isConfigured || !auth.isConfigured()) { showDenied(); return; }
-                    auth.isAdmin().then(function (yes) {
-                        yes ? revealPreview() : showDenied();
-                    }).catch(function () { showDenied(); });
-                });
-            } else {
-                showDenied();
-            }
-        })();
-
         // --- AISA backend: record completion + rehydrate on revisit ---
         if (window.aisaReady) {
             window.aisaReady(function (auth) {
@@ -755,5 +685,156 @@
             });
         }
     </script>
+
+<!-- Mail-out bar: the "this course is live" announcement. Rendered only for
+     the addresses the server's NEWSLETTER_SENDERS allowlist names. Hiding it
+     is a courtesy, not a control — send_newsletter re-checks the caller
+     server-side, because the sign-in gate is client-side and this repo is
+     public. -->
+<div id="nl-send" hidden>
+    <div class="nl-inner">
+        <span class="nl-kicker">Launch email</span>
+        <span id="nl-count" style="font-size:.82rem;"></span>
+        <span style="flex:1"></span>
+        <button type="button" id="nl-test">Send me a test</button>
+        <button type="button" class="nl-go" id="nl-go">Email all staff</button>
+        <p class="nl-msg" id="nl-msg"></p>
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    /* =================================================================
+     * THE LAUNCH EMAIL
+     *
+     * Sent once, to everyone on the roster, through send_newsletter.
+     * The copy lives here rather than being scraped from the module:
+     * the email is the nudge, the module is the detail.
+     *
+     * SENT_LOCK_AFTER stops a click months from now re-announcing a
+     * course that launched in October. To send a follow-up, rewrite
+     * COPY (a reminder is not a launch) and move the date.
+     * ================================================================= */
+    var SENT_LOCK_AFTER = '2026-10-31T23:59:00+04:00';
+
+    var COPY = {
+        subject:  'New required training: Sustainability at AISA is now live on the Learning Hub',
+        issue:    'PD \u00b7 Sustainability at AISA',
+        headline: 'Sustainability at AISA \u2014 our new whole-school staff course is live',
+        intro:    'A short, practical course (about 20\u201330 minutes) is now open on the Learning Hub, '
+                + 'and it is required for every member of staff, teaching and non-teaching. '
+                + 'A big thank you to Ms Nastassia van Jaarsveldt, Chair of the Sustainability '
+                + 'Committee, who asked for this training and provided the resources and material '
+                + 'it is built from.',
+        items: [
+            'Who: all AISA staff \u2014 teaching and non-teaching.',
+            'Time: about 20\u201330 minutes, with two short knowledge checks and a staff acknowledgement at the end.',
+            'What it covers: the 2026\u20132027 sustainability vision, the year\u2019s initiatives (clothing swaps, Junk Kouture, waste and plastic reduction, biodiversity, water and energy, Earth Day), and the small daily habits that add up.',
+            'First action: the Classroom Paper Recycling Initiative \u2014 how to introduce the paper box to your students.',
+            'You get a certificate on completion, and it counts towards your PD record on your Hub dashboard.',
+            'Thank you, Ms van Jaarsveldt, for making this happen.'
+        ],
+        linkLabel: 'Start the course'
+    };
+
+    var lockMs = Date.parse(SENT_LOCK_AFTER);
+
+    var bar  = document.getElementById('nl-send');
+    var msg  = document.getElementById('nl-msg');
+    var go   = document.getElementById('nl-go');
+    var test = document.getElementById('nl-test');
+    var cnt  = document.getElementById('nl-count');
+    if (!bar || !window.aisaReady) return;
+
+    function say(t, tone) {
+        msg.textContent = t || '';
+        msg.style.color = tone === 'bad' ? '#fecaca' : (tone === 'good' ? '#bbf7d0' : '#ecfdf5');
+    }
+    function busy(on) { go.disabled = on; test.disabled = on; }
+
+    /* Name the failure and the fix. The one that bites first is mail
+     * authorisation: a web app never shows an auth prompt to the person
+     * clicking the button, so the script owner grants it from the editor. */
+    function explain(r) {
+        var e = (r && r.error) || 'unknown error';
+        if (e === 'mail_not_authorized') {
+            return 'The Apps Script project has not been given permission to send email. Open the '
+                 + 'Apps Script editor and run authorizeMail() once, as the account that owns the '
+                 + 'script, then try again.';
+        }
+        if (e === 'unknown_action') {
+            return 'The Apps Script backend has not been redeployed yet \u2014 Deploy \u2192 Manage '
+                 + 'deployments \u2192 New version. Nothing was sent.';
+        }
+        if (e === 'not_newsletter_sender') return 'Your account is not on the sender list.';
+        if (e === 'no_recipients') {
+            return 'No recipients found \u2014 the roster and sessions tabs are both empty of '
+                 + '@aisa.sch.ae addresses.';
+        }
+        return 'Not sent: ' + e + (r && r.message ? ' (' + r.message + ')' : '');
+    }
+
+    /* The page's own address, so no production host is hardcoded. */
+    function moduleUrl() { return location.origin + location.pathname; }
+
+    function send(opts) {
+        busy(true);
+        say(opts.testOnly ? 'Sending you a test\u2026' : 'Sending\u2026');
+        window.aisaAuth.sendNewsletter({
+            url: moduleUrl(), subject: COPY.subject, issue: COPY.issue,
+            headline: COPY.headline, intro: COPY.intro, items: COPY.items,
+            linkLabel: COPY.linkLabel,
+            testOnly: !!opts.testOnly, confirm: !opts.testOnly
+        }).then(function (r) {
+            busy(false);
+            if (!r || r.ok === false || r.error) { say(explain(r), 'bad'); return; }
+            var bits = [r.sent + ' sent'];
+            if (r.failed)  bits.push(r.failed + ' failed');
+            if (r.skipped) bits.push(r.skipped + ' skipped'
+                + (r.reason === 'daily_quota_exhausted'
+                    ? ' \u2014 today\u2019s mail quota is used up, try again tomorrow'
+                    : ' \u2014 hit the 6-minute limit, click again to send the rest'));
+            say((r.test_only ? 'Test: ' : 'Done: ') + bits.join(', ') + '.',
+                (r.failed || r.skipped) ? 'bad' : 'good');
+        }).catch(function (e) { busy(false); say('Not sent: ' + e, 'bad'); });
+    }
+
+    test.addEventListener('click', function () { send({ testOnly: true }); });
+    go.addEventListener('click', function () {
+        if (Date.now() >= lockMs) {
+            say('The launch window has passed, so sending is locked. Rewrite COPY and move '
+                + 'SENT_LOCK_AFTER in this page before sending again.', 'bad');
+            return;
+        }
+        if (!window.confirm('Email the Sustainability launch announcement to all AISA staff?\n\n'
+            + 'It goes to everyone on the roster and thanks Ms van Jaarsveldt by name. '
+            + 'Send yourself a test first if you have not.')) return;
+        send({ testOnly: false });
+    });
+
+    window.aisaReady(function (auth) {
+        if (!auth || !auth.newsletterStatus) return;
+        auth.newsletterStatus().then(function (r) {
+            if (!r || !r.may_send) return;      // not a sender: the bar stays hidden
+            bar.hidden = false;
+            document.body.style.paddingBottom = '6rem';
+            cnt.textContent = (r.recipients || 0) + ' staff on the list';
+            if (Date.now() >= lockMs) {
+                say('The launch window has passed \u2014 sending is locked. Rewrite COPY and move '
+                    + 'SENT_LOCK_AFTER in this page first.', 'bad');
+                go.disabled = true;
+            } else if (r.mail_authorized === false) {
+                say('Email is not switched on yet: run authorizeMail() once from the Apps Script '
+                    + 'editor, as the account that owns the script. Nothing will send until you do.', 'bad');
+            } else if (r.quota_left != null && r.quota_left < (r.recipients || 0)) {
+                say('Heads up: ' + r.quota_left + ' emails left in today\u2019s quota, '
+                    + (r.recipients || 0) + ' recipients. Anything over reports as skipped.', 'bad');
+            }
+        }).catch(function () { /* no backend yet: leave the bar hidden */ });
+    });
+})();
+</script>
 </body>
 </html>
