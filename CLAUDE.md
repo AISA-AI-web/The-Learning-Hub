@@ -494,7 +494,8 @@ cached copy. That change took it to `?v=19`; the September 18
 newsletter took it to `?v=20`, the newsletter mail-out to `?v=21`, and
 the request-transport rework to `?v=22`, the fix for the outage it
 caused to `?v=23`, the AI Literacy Hub to `?v=24`, and the data-loading
-audit (23 September 2026) to `?v=25`.
+audit (23 September 2026) to `?v=25`, and the Sustainability release
+(7 October 2026) to `?v=26`.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
 their own pins — `certificate.js?v=7`, `search-index.js?v=10`,
@@ -580,11 +581,9 @@ the three things that cause a silent mismatch:
 
 A `module_id` in that list which the dashboard's `MODULES` array does
 not name is **invisible** on the tracker; anything `MODULES` names that
-is missing from the list reads 0% forever. `sustainability` is knowingly
-in the first category — the module records completions but is not
-released, so it is not on the tracker. Add it to `MODULES` in
-`admin-dashboard.html`, `admin-charts.html` and `dashboard.html` when it
-is released, or those completions stay uncounted.
+is missing from the list reads 0% forever. `sustainability` used to be
+knowingly in the first category; it was released on 7 October 2026 and
+is now in all three `MODULES` arrays.
 
 Remember that **adding a module to `MODULES` moves the headline
 numbers**: "fully complete" needs every listed module, "required done"
@@ -636,6 +635,34 @@ Nothing on the page does this today.
 The Survey Data tab carries an amber badge with the number of people
 who still owe a goal. The goals section fires an `aisa:goal-counts`
 CustomEvent on every render and the tab controller listens for it.
+
+## Sustainability at AISA — RELEASED to all staff, 7 October 2026
+
+`PD Modules/sustainability-module.html` is live and **required of every
+member of staff** (no `cohort`, so it applies to everybody). It was built
+on 3 September 2026 behind an admin-only gate from the Sustainability
+Team's outline; the gate, the "Admin preview" ribbon, the pd.html
+`data-admin-only` flag and the `adminOnly` search entry are all gone.
+
+It was **requested and resourced by Ms Nastassia van Jaarsveldt**, Chair
+of the Sustainability Committee, and the module credits her twice — a
+"With thanks" card in section 1 and the footer. Keep that credit.
+
+Making it required **moved the headline numbers** on release day: every
+member of staff dropped out of "required done" and "fully complete" until
+they finish it, and the PD-hours denominator rose by 0.5 (`hours: 0.5`,
+matching the certificate's `data-cert-hours`). That is expected, not a
+regression. It is in `MODULES` in `admin-dashboard.html`, `dashboard.html`
+and `admin-charts.html`, carries `data-required="true"` on pd.html, and
+is listed in `menu.js` and `search-index.js` (pins `?v=17` / `?v=11`).
+
+**The launch email** is a mail bar at the bottom of the module page,
+the same component as the AI Literacy Hub's: hidden for everyone but
+`NEWSLETTER_SENDERS`, rides `send_newsletter` (no backend change), links
+to the module's own URL, and thanks Ms van Jaarsveldt by name. The copy
+is `COPY` in the page's last script. It locks itself after
+`SENT_LOCK_AFTER` (31 October 2026) so a stray click later cannot
+re-announce a launch; to send a reminder, rewrite `COPY` first.
 
 ## AI Literacy Hub — added 20 September 2026
 
@@ -1318,7 +1345,7 @@ jump strip.
   subject pills because it is a status, not a subject.
 - **The required list must match `MODULES` in `admin-dashboard.html`** —
   currently `ai-curriculum-readiness`, `ai-ethics`, `return-to-school`,
-  `safeguarding`. Before this it did not: Safeguarding was tagged
+  `safeguarding`, `sustainability`. Before this it did not: Safeguarding was tagged
   `orientation` so it never appeared under Required, while Sustainability
   (unreleased, not in `MODULES` at all) did. Change one, change both.
 - The old topic name `orientation` is gone. It collided with the
