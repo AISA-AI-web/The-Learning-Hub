@@ -636,6 +636,96 @@ The Survey Data tab carries an amber badge with the number of people
 who still owe a goal. The goals section fires an `aisa:goal-counts`
 CustomEvent on every render and the tab controller listens for it.
 
+## Anti-Bullying Policy: Teacher Awareness — PREVIEW, built 7 October 2026
+
+`PD Modules/anti-bullying-module.html`, module id `anti-bullying`. Built
+from two documents **Joel Hunter** supplied: the AISA Anti-Bullying
+Policy (revised May 2026) and a one-page training outline. Joel asked for
+it, and the module thanks him in section 1, in the footer, and in the
+launch email. Keep those credits.
+
+**It is not released. Only three people can see it:** `bbaki@`,
+`jhunter@` and `aturabi@aisa.sch.ae`. That allowlist lives in **two
+places, and they must match**:
+
+- `PREVIEW_EMAILS` in the page's script. Anyone else gets a "Coming soon"
+  overlay, and the chapters are hidden too, not just covered: `dwell.js`
+  counts time on whichever chapter is visible, overlay or not.
+- `data-preview-for` on the card in `pd.html`. This is a new per-person
+  version of `data-admin-only`, handled in `runSync()`. The card stays
+  `display:none` and out of the pill counts for everyone else.
+
+Both checks run in the browser only, and the repo is public. They hide
+the module; they do not protect it.
+
+On purpose, it is **in no `MODULES` array, `menu.js` or
+`search-index.js`** yet. Adding it to `MODULES` now would show every
+member of staff as behind on required training they cannot open.
+Leaving it out of menu and search also means **no `?v=` cascade** for
+this commit.
+
+**Structure:** nine topic sections, one per outline row. Each has a
+scenario, the key points, a "📘 In the policy" line naming the policy
+heading, and a one-question quick check. Then a scored ten-question
+**Final check (8/10 to pass)**, then the "What I do next" job aid (it
+prints on its own) and the policy acknowledgement. Certificate: 1.25 h,
+the outline's 75 minutes.
+
+**The 80% pass mark is built in the page, not in `training.js`.** A
+`.aisa-quiz` accepts retries until you get it right, so it cannot carry a
+pass mark. The final check is ordinary radio buttons, scored by the page.
+On a pass, the page clicks a hidden one-option `.aisa-quiz`
+(`#quiz-final-gate`). That opens Next, and `training.js` saves the pass,
+so a reload does not demand a re-sit. In `QUESTIONS`, **option 0 is
+always the right answer**; the page shuffles them on screen.
+
+**The policy PDF is not in the repo, and must not be.** Every page of it
+is marked *Confidential*. The module paraphrases it. `POLICY_URL` at the
+top of the page script is empty. Set it to a Drive copy shared with
+`@aisa.sch.ae` only, with any `ouid=` stripped, and every "In the policy"
+line becomes a link.
+
+**Cross-file facts.** The cyberbullying section points to
+`safeguarding-module.html` rather than copying the Safeguarding Leads'
+names, so there is no third copy to drift. The 24-hour escalation
+(ADEK CPU + MoI-CPC, Wadeema's Law) is quoted from the policy.
+
+**The launch email** is the same mail bar as Sustainability's. It shows
+for `NEWSLETTER_SENDERS` only, so Joel and aturabi@ never see it. **"Email
+all staff" is locked while `PREVIEW_ONLY` is true**, because a launch
+email would send the whole school to "Coming soon". "Send me a test"
+works now. The copy is `COPY` in the page's last script.
+
+### Releasing it
+
+1. In the page, set `PREVIEW_ONLY = false`, and move `SENT_LOCK_AFTER`
+   to about three weeks after release. It is a placeholder,
+   30 November 2026.
+2. In `pd.html`, remove `data-preview-for` and `style="display:none;"`
+   from the card, and drop its amber *Preview* pill.
+3. Add it to `MODULES` in `admin-dashboard.html`, `dashboard.html` and
+   `admin-charts.html`: `required: true`, `hours: 1.25`. No `cohort`
+   means it applies to all staff. This **moves the headline numbers**,
+   as Sustainability did.
+4. Add it to `menu.js` and `search-index.js`. That bumps their pins in
+   `gate.js`, which means bumping `gate.js?v=N` on every page (the
+   cascade).
+5. Send yourself a test, then email all staff.
+
+### Open questions, not yet answered
+
+- **Audience.** The outline says *Teacher* Awareness, and the email
+  currently says "required for every member of staff". The Hub cannot
+  tell teachers from other staff without a cohort list. If it should be
+  teachers only, it needs one (see AI Literacy's `cohort`), and the email
+  copy must change too.
+- **Joel's job title.** The credits name him but give no role.
+- **The Anonymous Online Reporting Form** is named but not linked. No URL
+  was supplied.
+- **"Repeated annually."** A Hub completion is permanent. To re-run it
+  next year, the module needs a new id (e.g. `anti-bullying-2027`) and a
+  new `MODULES` entry. Otherwise last year's completion counts for ever.
+
 ## Sustainability at AISA — RELEASED to all staff, 7 October 2026
 
 `PD Modules/sustainability-module.html` is live and **required of every

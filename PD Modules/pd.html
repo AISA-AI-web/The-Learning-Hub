@@ -398,6 +398,37 @@
             <section class="mb-16">
                 <div id="pd-modules-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6 mb-12">
 
+                    <!-- Module: Anti-Bullying Policy: Teacher Awareness — PREVIEW, not released.
+                         Requested and resourced by Joel Hunter. data-preview-for hides the card
+                         from everyone except the listed addresses (see runSync below); it also
+                         keeps it out of the pill counts. Will be REQUIRED for all staff on release:
+                         drop data-preview-for and add it to MODULES then, not before. -->
+                    <a href="anti-bullying-module.html" data-module-id="anti-bullying" data-preview-for="bbaki@aisa.sch.ae,jhunter@aisa.sch.ae,aturabi@aisa.sch.ae" style="display:none;" class="pd-module group block bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-gray-100" data-category="safety" data-required="true" data-keywords="anti-bullying anti bullying bullying policy cyberbullying cyber report reporting behaviour behavior management committee counselor counsellor assistant principal wadeema adek child protection retaliation severity level inclusion sen additional learning needs prevention kindness required joel hunter preview">
+                        <div class="h-1.5 bg-gradient-to-r from-violet-600 to-pink-500"></div>
+                        <div class="p-5 flex flex-col h-full">
+                            <div class="flex items-start justify-between gap-3 mb-3">
+                                <div class="module-icon h-14 w-14 rounded-2xl bg-gradient-to-br from-violet-50 to-pink-100 border border-violet-200 flex items-center justify-center text-3xl shadow-sm">🤝</div>
+                                <div class="flex flex-col items-end gap-1.5">
+                                    <span class="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest bg-amber-50 text-amber-700 border border-amber-200 rounded-full px-2.5 py-1">Preview</span>
+                                    <span class="inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest bg-red-50 text-red-700 border border-red-200 rounded-full px-2.5 py-1">
+                                        <span class="required-dot" aria-hidden="true"></span>
+                                        Required
+                                    </span>
+                                </div>
+                            </div>
+                            <h4 class="text-lg font-extrabold text-gray-900 leading-tight mb-1.5">Anti-Bullying Policy: Teacher Awareness</h4>
+                            <p class="text-sm text-gray-600 leading-snug mb-3 flex-1">What bullying is, the three severity levels, and exactly what you do when someone tells you about it &mdash; reporting, cyberbullying escalation, support and prevention.</p>
+                            <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500 mb-3 pt-3 border-t border-gray-100">
+                                <span class="inline-flex items-center gap-1">⏱ ~75 min</span>
+                                <span class="inline-flex items-center gap-1">📚 9 topics</span>
+                                <span class="inline-flex items-center gap-1">✓ 80% final check</span>
+                            </div>
+                            <span class="block w-full text-center bg-violet-600 group-hover:bg-violet-700 text-white py-2.5 rounded-xl font-bold text-sm transition-colors">
+                                Start module →
+                            </span>
+                        </div>
+                    </a>
+
                     <!-- Module: Sustainability at AISA — REQUIRED for all staff. Released 7 October
                          2026; requested and resourced by Ms Nastassia van Jaarsveldt (Sustainability
                          Committee Chair). -->
@@ -944,6 +975,7 @@
                 // Admin-only previews stay hidden for everyone until
                 // isAdmin() resolves true. Guard here so no filter can
                 // un-hide them, and so they never reach the counts.
+                if (card.dataset.previewFor && card.dataset.previewRevealed !== 'true') return false;
                 return !(card.dataset.adminOnly === 'true' && !window.__pdAdminRevealed);
             }
 
@@ -1063,6 +1095,7 @@
                     // to this user — otherwise the pill totals would leak the
                     // existence of an unreleased module to non-admins.
                     if (card.dataset.adminOnly === 'true' && !window.__pdAdminRevealed) return;
+                    if (card.dataset.previewFor && card.dataset.previewRevealed !== 'true') return;
                     const cat = (card.getAttribute('data-category') || '').toLowerCase();
                     const isRequired = card.getAttribute('data-required') === 'true';
                     const isDone = card.dataset.completed === 'true';
@@ -1144,6 +1177,25 @@
 
             function runSync(auth) {
                 if (!auth.isConfigured()) return;
+
+                // Reveal per-person previews: a card carrying
+                // data-preview-for="a@aisa.sch.ae,b@aisa.sch.ae" shows only
+                // for those addresses. Cosmetic, like the admin flag below —
+                // the module page runs its own check, and the repo is public.
+                var me = (auth.getUser && auth.getUser() || {}).email;
+                me = String(me || '').trim().toLowerCase();
+                var revealedAny = false;
+                document.querySelectorAll('.pd-module[data-preview-for]').forEach(function (card) {
+                    var allowed = card.dataset.previewFor.toLowerCase().split(',').map(function (e) { return e.trim(); });
+                    if (!me || allowed.indexOf(me) < 0) return;
+                    card.dataset.previewRevealed = 'true';
+                    card.style.removeProperty('display');
+                    revealedAny = true;
+                });
+                if (revealedAny) {
+                    recomputeFilterCounts();
+                    if (typeof window.__pdReapplyFilter === 'function') window.__pdReapplyFilter();
+                }
 
                 // Reveal admin-only preview modules (e.g. unreleased courses)
                 // once we've confirmed this user is an admin. Non-admins never

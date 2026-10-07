@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Anti-Bullying Policy — Teacher Awareness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: { primary: '#6d28d9', secondary: '#7c3aed', accent: '#db2777' },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --ob-from: #5b21b6; --ob-via: #7c3aed; --ob-to: #db2777;
+            --ob-glow: rgba(124, 58, 237, .42);
+            --ob-ring: rgba(124, 58, 237, .12);
+            --ob-page: #faf5ff; --ob-dot: #e9d5ff;
+            --ob-orb1: rgba(236, 72, 153, .18); --ob-orb2: rgba(139, 92, 246, .15);
+            --ob-orb1b: rgba(251, 207, 232, .55); --ob-orb2b: rgba(167, 139, 250, .48);
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        [hidden] { display: none !important; }
+        .bg-dot-pattern {
+            background-color: #faf5ff;
+            background-image: radial-gradient(#e9d5ff 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .checkbox-custom:checked + div {
+            background-color: #7c3aed;
+            border-color: #7c3aed;
+            transform: scale(1.05);
+        }
+        .checkbox-custom:checked + div svg { display: block; }
+        .quiz-option { transition: all 0.2s ease; cursor: pointer; }
+        .quiz-option:hover { transform: scale(1.02); }
+        .fade-in { animation: fadeIn 0.5s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .timeline-container { position: relative; }
+        .timeline-container::before {
+            content: ''; position: absolute; top: 1rem; bottom: 2rem; left: 1.25rem;
+            width: 2px; background: #e9d5ff; z-index: 0;
+        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f3e8ff; }
+        ::-webkit-scrollbar-thumb { background: #7c3aed; border-radius: 4px; }
+
+        /* Section building blocks. Plain CSS rather than Tailwind so the
+           parts every section repeats read the same whatever the CDN does. */
+        .ab-head { background: linear-gradient(90deg, #5b21b6, #7c3aed); color: #fff; padding: 1.5rem; }
+        .ab-head.alt { background: linear-gradient(90deg, #7c3aed, #db2777); }
+        .ab-head .ab-kicker {
+            font-size: .72rem; font-weight: 800; letter-spacing: .12em;
+            text-transform: uppercase; color: #ede9fe;
+        }
+        .ab-scenario {
+            border: 1px solid #fbcfe8; background: #fdf2f8; border-radius: .9rem;
+            padding: 1rem 1.15rem; color: #831843; font-size: .92rem; line-height: 1.6;
+        }
+        .ab-scenario .ab-tag {
+            display: inline-block; font-size: .62rem; font-weight: 800; letter-spacing: .12em;
+            text-transform: uppercase; background: #db2777; color: #fff;
+            border-radius: 9999px; padding: .2rem .6rem; margin-bottom: .45rem;
+        }
+        .ab-points { list-style: none; margin: 0; padding: 0; }
+        .ab-points li {
+            position: relative; padding-left: 1.6rem; margin: .55rem 0;
+            font-size: .92rem; line-height: 1.6; color: #374151;
+        }
+        .ab-points li::before {
+            content: ''; position: absolute; left: .25rem; top: .55rem;
+            width: .55rem; height: .55rem; border-radius: 9999px; background: #8b5cf6;
+        }
+        .ab-policy {
+            display: flex; align-items: flex-start; gap: .5rem;
+            font-size: .8rem; line-height: 1.5; color: #5b21b6;
+            background: #f5f3ff; border: 1px dashed #c4b5fd; border-radius: .7rem;
+            padding: .6rem .8rem;
+        }
+        .ab-policy a { color: #5b21b6; font-weight: 700; text-decoration: underline; }
+        .ab-check {
+            background: #fff; border: 2px solid #ddd6fe; border-radius: 1rem; padding: 1.25rem 1.25rem 1rem;
+        }
+        .ab-check .ab-check-kicker {
+            font-size: .68rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+            color: #7c3aed; margin-bottom: .35rem;
+        }
+        .ab-letter {
+            width: 2rem; height: 2rem; border-radius: 9999px; background: #f3f4f6;
+            display: flex; align-items: center; justify-content: center;
+            font-size: .85rem; font-weight: 700; color: #6b7280; flex-shrink: 0;
+        }
+        .ab-level { border-radius: .9rem; padding: 1rem 1.1rem; border: 1px solid; }
+        .ab-level h4 { font-weight: 800; margin-bottom: .25rem; }
+        .ab-level p { font-size: .86rem; line-height: 1.55; }
+        .ab-level.l1 { background: #f0fdf4; border-color: #bbf7d0; color: #14532d; }
+        .ab-level.l2 { background: #fffbeb; border-color: #fde68a; color: #78350f; }
+        .ab-level.l3 { background: #fef2f2; border-color: #fecaca; color: #7f1d1d; }
+        .ab-step { display: flex; gap: .85rem; align-items: flex-start; }
+        .ab-step .n {
+            flex-shrink: 0; width: 1.9rem; height: 1.9rem; border-radius: 9999px;
+            background: #7c3aed; color: #fff; font-weight: 800; font-size: .85rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .ab-step p { font-size: .9rem; line-height: 1.55; color: #374151; }
+
+        /* Final check: scored, so it is not an .aisa-quiz (those accept
+           retries until right). The page scores it and, on 80%, clicks the
+           hidden one-option .aisa-quiz below it to open the gate. */
+        .fq { min-width: 0; border: 1px solid #e5e7eb; border-radius: 1rem; padding: 1rem 1.1rem; background: #fff; }
+        .fq + .fq { margin-top: 1rem; }
+        .fq-q { font-weight: 600; color: #1f2937; font-size: .93rem; line-height: 1.5; margin-bottom: .7rem; }
+        .fq-opt {
+            display: flex; gap: .6rem; align-items: flex-start; cursor: pointer;
+            border: 1px solid #e5e7eb; border-radius: .7rem; padding: .6rem .75rem; margin-top: .45rem;
+            font-size: .88rem; line-height: 1.45; color: #374151;
+        }
+        .fq-opt input { margin-top: .2rem; accent-color: #7c3aed; flex-shrink: 0; }
+        .fq-opt:hover { border-color: #c4b5fd; }
+        .fq.is-locked .fq-opt { cursor: default; }
+        .fq-opt.is-right { border-color: #22c55e; background: #f0fdf4; }
+        .fq-opt.is-wrong { border-color: #ef4444; background: #fef2f2; }
+        .fq-why { margin-top: .6rem; font-size: .82rem; line-height: 1.5; border-radius: .6rem; padding: .55rem .7rem; }
+        .fq-why.ok  { background: #f0fdf4; color: #14532d; }
+        .fq-why.bad { background: #fef2f2; color: #7f1d1d; }
+        #fq-result { border-radius: 1rem; padding: 1rem 1.15rem; font-size: .92rem; line-height: 1.55; }
+        #fq-result.pass { background: #f0fdf4; border: 1px solid #86efac; color: #14532d; }
+        #fq-result.fail { background: #fef2f2; border: 1px solid #fca5a5; color: #7f1d1d; }
+        .ab-btn {
+            font: inherit; font-weight: 700; font-size: .9rem; cursor: pointer;
+            border-radius: 9999px; padding: .65rem 1.4rem; border: 0;
+            background: #6d28d9; color: #fff;
+        }
+        .ab-btn:hover { background: #5b21b6; }
+        .ab-btn.ghost { background: #fff; color: #5b21b6; border: 1px solid #c4b5fd; }
+
+        /* --- Preview gate: this module is not released to staff yet --- */
+        #preview-gate {
+            position: fixed; inset: 0; z-index: 2147482000;
+            background: linear-gradient(135deg, #3b0764 0%, #5b21b6 55%, #9d174d 100%);
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            padding: 1.5rem; font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        }
+        #preview-gate .pg-card {
+            max-width: 30rem; width: 100%; text-align: center;
+            background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.22);
+            border-radius: 1.5rem; padding: 2.5rem 2rem;
+            box-shadow: 0 30px 60px -20px rgba(0,0,0,.5);
+        }
+        #preview-gate h1 { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 1.6rem; margin: .5rem 0; }
+        #preview-gate p { color: rgba(255,255,255,.9); line-height: 1.6; font-size: .95rem; }
+        #preview-gate .pg-spinner {
+            width: 40px; height: 40px; margin: 0 auto 1rem;
+            border: 3px solid rgba(255,255,255,.25); border-top-color: #fff;
+            border-radius: 50%; animation: pg-spin .8s linear infinite;
+        }
+        @keyframes pg-spin { to { transform: rotate(360deg); } }
+        #preview-gate .pg-btn {
+            display: inline-flex; align-items: center; gap: .5rem; margin-top: 1.5rem;
+            background: #fff; color: #5b21b6; font-weight: 800; font-size: .9rem;
+            padding: .7rem 1.4rem; border-radius: 9999px; text-decoration: none;
+        }
+        #preview-banner {
+            border: 1px dashed #f59e0b; background: #fffbeb; color: #92400e;
+            border-radius: 1rem; padding: .85rem 1.1rem; margin-bottom: 1.5rem;
+            display: flex; align-items: flex-start; gap: .7rem; font-size: .86rem; line-height: 1.5;
+        }
+        #preview-banner .pb-tag {
+            flex-shrink: 0; font-size: .62rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+            background: #f59e0b; color: #fff; border-radius: 9999px; padding: .28rem .6rem; margin-top: .1rem;
+        }
+
+        /* Mail-out bar (launch email). Same component as Sustainability's
+           and the AI Literacy Hub's. */
+        #nl-send {
+            position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+            background: #3b0764; color: #f5f3ff; border-top: 1px solid #5b21b6;
+            font-family: 'Inter', sans-serif;
+        }
+        #nl-send .nl-inner {
+            max-width: 72rem; margin: 0 auto; padding: .7rem 1rem;
+            display: flex; align-items: center; gap: .6rem; flex-wrap: wrap;
+        }
+        #nl-send .nl-kicker {
+            font-size: .62rem; font-weight: 800; letter-spacing: .09em;
+            text-transform: uppercase; color: #f9a8d4;
+        }
+        #nl-send button {
+            font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer;
+            border-radius: .6rem; padding: .45rem .9rem; border: 1px solid #7c3aed;
+            background: transparent; color: #f5f3ff;
+        }
+        #nl-send button.nl-go { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+        #nl-send button:disabled { opacity: .5; cursor: default; }
+        #nl-send .nl-msg { flex-basis: 100%; margin: .2rem 0 0; font-size: .78rem; line-height: 1.4; }
+    </style>
+    <link rel="stylesheet" href="../auth/training.css?v=5">
+    <link rel="stylesheet" href="onboarding.css?v=4">
+    <script src="../auth/gate.js?v=26"></script>
+    <script src="../auth/training.js?v=6"></script>
+</head>
+<body class="bg-dot-pattern text-gray-800 min-h-screen ob-scope">
+
+<!-- ============================================================= -->
+<!-- PREVIEW GATE                                                   -->
+<!-- Not released to staff. The overlay covers the page until the   -->
+<!-- signed-in address is checked against PREVIEW_EMAILS (bottom of -->
+<!-- this file). Everyone else gets "coming soon". Client-side only:-->
+<!-- the repo is public, so this hides the module, it does not      -->
+<!-- protect it.                                                    -->
+<!-- ============================================================= -->
+<div id="preview-gate" role="dialog" aria-modal="true" aria-label="Access check">
+    <div class="pg-card">
+        <div data-gate-checking>
+            <div class="pg-spinner" aria-hidden="true"></div>
+            <p>Checking access&hellip;</p>
+        </div>
+        <div data-gate-denied hidden>
+            <div style="font-size:3rem;line-height:1" aria-hidden="true">🤝</div>
+            <h1>Coming soon</h1>
+            <p>The <strong>Anti-Bullying Policy</strong> training is still being reviewed and isn&rsquo;t open to staff yet. It will appear in your PD Modules when it is released.</p>
+            <a class="pg-btn" href="pd.html">← Back to PD Modules</a>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+    <div id="ab-main" class="max-w-5xl mx-auto px-4 lg:px-6 pt-8 pb-20">
+
+        <div id="preview-banner" hidden role="note">
+            <span class="pb-tag">Preview</span>
+            <span><strong>Not yet released to staff.</strong> Only the three reviewers can open this page. Everyone else sees &ldquo;Coming soon&rdquo;, the card is hidden on PD Modules, and the &ldquo;Email all staff&rdquo; button stays locked until it is released.</span>
+        </div>
+
+        <!-- Hero -->
+        <header class="ob-hero">
+            <span class="ob-hero-orb a"></span>
+            <span class="ob-hero-orb b"></span>
+            <div class="ob-hero-inner">
+                <span class="ob-eyebrow"><span class="ob-pulse"></span>AISA · Safe, Respectful &amp; Inclusive</span>
+                <div class="ob-hero-row">
+                    <div class="ob-hero-icon">🤝</div>
+                    <div>
+                        <h1 class="ob-hero-title">Anti-Bullying Policy: Teacher Awareness</h1>
+                        <p class="ob-hero-sub">What bullying is, how to tell it apart from ordinary conflict, and exactly what you do when a student, parent or colleague tells you about it &mdash; based on the AISA Anti-Bullying Policy (revised May 2026).</p>
+                    </div>
+                </div>
+                <div class="ob-meta">
+                    <span class="ob-chip">⏱ ~75 min, at your own pace</span>
+                    <span class="ob-chip">📚 9 topics</span>
+                    <span class="ob-chip">✓ Final check · 80% to pass</span>
+                    <span class="ob-chip">📝 Policy acknowledgement</span>
+                    <span class="ob-chip">🔁 Repeated annually</span>
+                </div>
+                <div class="ob-actions">
+                    <span class="ob-note">Any member of staff can receive a report. What you do in the next hour matters most.</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="bg-white/85 backdrop-blur-xl border border-violet-200/80 rounded-2xl shadow-sm mb-10 p-4 flex items-center justify-between gap-4">
+            <span class="font-heading font-extrabold text-slate-900 text-base md:text-lg tracking-tight">Course Progress</span>
+            <div class="flex items-center space-x-4 bg-violet-50 border border-violet-200 px-4 py-2 rounded-xl">
+                <span id="progress-text" class="text-xs font-bold text-violet-700 uppercase tracking-widest">0% Done</span>
+                <div class="w-32 md:w-48 h-3 bg-violet-100 rounded-full overflow-hidden shadow-inner">
+                    <div id="progress-bar" class="h-full bg-gradient-to-r from-violet-600 via-purple-500 to-pink-500 w-0 transition-all duration-700 ease-out"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline-container">
+
+            <!-- ======================= 1. Commitment and scope ======================= -->
+            <div class="relative pl-12 mb-16" data-chapter="1" data-chapter-title="Our commitment and scope">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-violet-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="ab-head p-6 text-white">
+                        <span class="ab-kicker">Section 1</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Our commitment and who the policy covers</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="ab-scenario">
+                            <span class="ab-tag">Scenario</span>
+                            <p>On a Sunday evening a Grade 8 student posts an edited photo of a classmate in a group chat, from home, on a personal phone. By Monday morning half the grade has seen it and the classmate won&rsquo;t come out of the library at break. Is this the school&rsquo;s business?</p>
+                        </div>
+
+                        <p class="text-gray-700 leading-relaxed">Yes. AISA commits to a <strong>safe and healthy environment for all learners</strong>, recognising and accommodating the diverse needs of its students &mdash; including those with additional learning needs. Every student, whatever their learning profile, has the right to feel safe and comfortable in school. A culture of kindness, courtesy and cooperation among students <em>and staff</em> is how we get there.</p>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-violet-50 border border-violet-200 rounded-xl p-5">
+                                <h4 class="font-bold text-violet-900 mb-2">👥 Who it applies to</h4>
+                                <p class="text-sm text-violet-900 leading-relaxed">Everyone in the AISA community &mdash; students, faculty, administrative staff and other school personnel. It covers bullying <strong>student-to-student</strong>, <strong>student-to-staff</strong> and <strong>staff-to-student</strong>.</p>
+                            </div>
+                            <div class="bg-pink-50 border border-pink-200 rounded-xl p-5">
+                                <h4 class="font-bold text-pink-900 mb-2">📱 Where it applies</h4>
+                                <p class="text-sm text-pink-900 leading-relaxed">On campus, and on all <strong>AISA-provided networks, accounts and devices</strong> &mdash; plus <strong>off-campus digital behaviour that disrupts the school environment</strong>, in line with ADEK Safeguarding Policy 5.8. The Sunday-night group chat counts.</p>
+                            </div>
+                        </div>
+
+                        <ul class="ab-points">
+                            <li>Staff base interventions on <strong>current research and best practice</strong>, not instinct.</li>
+                            <li>Faculty are <strong>briefed on the policy every year</strong> &mdash; this course is that briefing, which is why it repeats annually.</li>
+                            <li>The policy is shared with the wider school community twice a year, so parents may well quote it back to you.</li>
+                        </ul>
+
+                        <div class="bg-fuchsia-50 border border-fuchsia-200 rounded-xl p-5">
+                            <h4 class="font-bold text-fuchsia-900 mb-2 flex items-center gap-2"><span class="text-lg">💜</span> With thanks</h4>
+                            <p class="text-sm text-fuchsia-900 leading-relaxed">This course exists because <strong>Joel Hunter</strong> asked for it and supplied the policy and the training outline it is built from. Thank you, Joel.</p>
+                        </div>
+
+                        <p class="ab-policy" data-policy="Our Commitment; Application of Policy"></p>
+
+                        <div class="ab-check aisa-quiz" id="quiz-1">
+                            <p class="ab-check-kicker">Quick check</p>
+                            <p class="font-semibold text-gray-800 mb-4">Back to the Sunday-night group chat. Which statement is accurate?</p>
+                            <div class="space-y-3">
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">A</span><span class="text-sm text-gray-700">It happened at home on a personal phone, so it is a matter for the families only.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true"><span class="ab-letter">B</span><span class="text-sm text-gray-700">The policy covers off-campus digital behaviour that disrupts the school environment, so it is in scope.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">C</span><span class="text-sm text-gray-700">It only counts if it was posted using an AISA account.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">D</span><span class="text-sm text-gray-700">The policy only applies between students during the school day.</span></div>
+                            </div>
+                            <div class="aisa-quiz-feedback mt-4"
+                                 data-correct-msg="<strong>Correct.</strong> Off-campus digital behaviour that disrupts school is covered &mdash; and a student hiding in the library on Monday is exactly that disruption."
+                                 data-wrong-msg="<strong>Not quite.</strong> Re-read &ldquo;Where it applies&rdquo;: the policy reaches off-campus digital behaviour that disrupts the school environment."></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= 2. What bullying is ======================= -->
+            <div class="relative pl-12 mb-16" data-chapter="2" data-chapter-title="What bullying is">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-violet-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="ab-head alt p-6 text-white">
+                        <span class="ab-kicker">Section 2</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">What bullying is &mdash; and what it isn&rsquo;t</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="ab-scenario">
+                            <span class="ab-tag">Scenario</span>
+                            <p>Two Grade 4 friends fall out over a football game and call each other names at lunch. The next morning they&rsquo;re playing together again. Meanwhile, a quieter student in the same class has had their pencil case emptied onto the floor by the same group of older students most days this month.</p>
+                        </div>
+
+                        <p class="text-gray-700 leading-relaxed">The policy defines bullying by <strong>three elements, all present together</strong>:</p>
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="bg-violet-50 border border-violet-200 rounded-xl p-5">
+                                <div class="text-2xl mb-1">⚖️</div>
+                                <h4 class="font-bold text-violet-900 mb-1">Imbalance of power</h4>
+                                <p class="text-sm text-violet-900">Perceived or real &mdash; age, size, popularity, numbers, status &mdash; between the aggressor and the target, an individual or a group.</p>
+                            </div>
+                            <div class="bg-purple-50 border border-purple-200 rounded-xl p-5">
+                                <div class="text-2xl mb-1">🎯</div>
+                                <h4 class="font-bold text-purple-900 mb-1">Intentional</h4>
+                                <p class="text-sm text-purple-900">Hurtful or aggressive behaviour aimed at a specific person or people.</p>
+                            </div>
+                            <div class="bg-pink-50 border border-pink-200 rounded-xl p-5">
+                                <div class="text-2xl mb-1">🔁</div>
+                                <h4 class="font-bold text-pink-900 mb-1">Repeated over time</h4>
+                                <p class="text-sm text-pink-900">The target is consistently having things said or done to them.</p>
+                            </div>
+                        </div>
+
+                        <h4 class="font-heading font-bold text-gray-900 text-lg">Five types</h4>
+                        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 text-sm">
+                            <div class="border border-gray-200 rounded-xl p-4"><strong>👊 Physical</strong> &mdash; hitting, punching, shoving, blocking someone&rsquo;s way, damaging property.</div>
+                            <div class="border border-gray-200 rounded-xl p-4"><strong>💬 Verbal</strong> &mdash; name-calling, teasing, threatening harm.</div>
+                            <div class="border border-gray-200 rounded-xl p-4"><strong>🚪 Social</strong> &mdash; spreading rumours, excluding people on purpose, breaking up friendships.</div>
+                            <div class="border border-gray-200 rounded-xl p-4"><strong>⚠️ Sexual</strong> &mdash; unwanted sexual advances, sexual jokes, comments on someone&rsquo;s body, sexual gestures.</div>
+                            <div class="border border-gray-200 rounded-xl p-4"><strong>📱 Cyber</strong> &mdash; using the internet, phones, social media or other technology to harm others, <strong>even if done at home</strong>.</div>
+                        </div>
+
+                        <div class="bg-slate-50 border-l-4 border-violet-500 rounded-r-xl p-5">
+                            <h4 class="font-bold text-slate-900 mb-1">Bullying or conflict?</h4>
+                            <p class="text-sm text-slate-700 leading-relaxed">Two friends falling out, on roughly equal terms, once, is <strong>conflict</strong>. It still needs handling, but it isn&rsquo;t bullying. The pencil case emptied by an older group most days is a power imbalance, intentional, and repeated: <strong>bullying</strong>. Being able to tell the two apart stops you over-reacting to the first and, more importantly, under-reacting to the second. If you&rsquo;re not sure, report it anyway and let the Committee decide.</p>
+                        </div>
+
+                        <p class="ab-policy" data-policy="Bullying Defined; Types of Bullying"></p>
+
+                        <div class="ab-check aisa-quiz" id="quiz-2">
+                            <p class="ab-check-kicker">Quick check</p>
+                            <p class="font-semibold text-gray-800 mb-4">Which of these has all three elements of bullying?</p>
+                            <div class="space-y-3">
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">A</span><span class="text-sm text-gray-700">Two classmates of the same age argue once over a group project and both say unkind things.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true"><span class="ab-letter">B</span><span class="text-sm text-gray-700">A group of older students has blocked a younger student from the same bench every break for three weeks and laughs when they walk away.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">C</span><span class="text-sm text-gray-700">A student is knocked over by accident in a crowded corridor.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">D</span><span class="text-sm text-gray-700">A student loses their temper once and shouts at a friend during a game.</span></div>
+                            </div>
+                            <div class="aisa-quiz-feedback mt-4"
+                                 data-correct-msg="<strong>Correct.</strong> Older and in a group (power), aimed at one student (intentional), every break for three weeks (repeated)."
+                                 data-wrong-msg="<strong>Not quite.</strong> Look for all three together: an imbalance of power, intent, and repetition over time."></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= 3. Severity levels ======================= -->
+            <div class="relative pl-12 mb-16" data-chapter="3" data-chapter-title="Severity levels">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-violet-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="ab-head p-6 text-white">
+                        <span class="ab-kicker">Section 3</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Severity levels</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="ab-scenario">
+                            <span class="ab-tag">Scenario</span>
+                            <p>A Grade 6 student has been called the same name several times a week for about a fortnight. Their parent mentions that they&rsquo;ve started asking to stay home on PE days. Nobody has been hurt.</p>
+                        </div>
+
+                        <p class="text-gray-700 leading-relaxed">The policy grades bullying by duration, frequency and impact. You don&rsquo;t decide the level &mdash; the Committee does &mdash; but knowing the scale helps you see why reporting early matters.</p>
+
+                        <div class="space-y-3">
+                            <div class="ab-level l1">
+                                <h4>Level 1 &middot; Low severity / early stage</h4>
+                                <p>Initial, relatively minor incidents: a single or a few instances, not yet a clear pattern. Mild, temporary upset without real disruption to wellbeing or school. <em>e.g. an isolated name-calling; being left out of a game once or twice.</em> <strong>Early intervention is crucial here.</strong></p>
+                            </div>
+                            <div class="ab-level l2">
+                                <h4>Level 2 &middot; Moderate / established pattern</h4>
+                                <p>Repeated harmful behaviour with clear intent over days or weeks, forming a pattern. Emotional distress, anxiety, <strong>reluctance to attend school or specific classes</strong>. <em>e.g. persistent teasing several times a week; consistent exclusion; regular negative messages.</em> Needs structured intervention, counselling and monitoring.</p>
+                            </div>
+                            <div class="ab-level l3">
+                                <h4>Level 3 &middot; High severity / severe or chronic</h4>
+                                <p>Weeks to months, or daily; severe psychological distress, physical injury, disruption to attendance or learning, or a serious threat to safety. <em>e.g. credible threats or hate speech; coordinated campaigns; repeated assaults or extortion; sexual bullying; sharing explicit or private content.</em> Demands immediate, multi-faceted intervention, possibly including discipline, external support or legal action.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-violet-50 border-l-4 border-violet-500 rounded-r-xl p-5">
+                            <p class="text-sm text-violet-900 leading-relaxed"><strong>Why this matters to you:</strong> most bullying starts at Level 1, and Level 1 is when it is easiest to stop. A Level 1 report is never a waste of anyone&rsquo;s time.</p>
+                        </div>
+
+                        <p class="ab-policy" data-policy="Classification of Bullying Severity"></p>
+
+                        <div class="ab-check aisa-quiz" id="quiz-3">
+                            <p class="ab-check-kicker">Quick check</p>
+                            <p class="font-semibold text-gray-800 mb-4">Which level best describes the Grade 6 scenario &mdash; the same name several times a week for a fortnight, now avoiding PE?</p>
+                            <div class="space-y-3">
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">A</span><span class="text-sm text-gray-700">Level 1 &mdash; nobody was hurt, so it is minor.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true"><span class="ab-letter">B</span><span class="text-sm text-gray-700">Level 2 &mdash; an established pattern over days or weeks, with reluctance to attend a class.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">C</span><span class="text-sm text-gray-700">Not bullying &mdash; it is only verbal.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">D</span><span class="text-sm text-gray-700">It can&rsquo;t be graded until there has been a physical incident.</span></div>
+                            </div>
+                            <div class="aisa-quiz-feedback mt-4"
+                                 data-correct-msg="<strong>Correct.</strong> Repeated, over a couple of weeks, and the student is avoiding a class: that is Level 2."
+                                 data-wrong-msg="<strong>Not quite.</strong> Verbal bullying counts, and impact is measured in wellbeing and attendance, not injuries. Check the Level 2 description."></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= 4. Reporting ======================= -->
+            <div class="relative pl-12 mb-16" data-chapter="4" data-chapter-title="Your role: reporting">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-violet-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="ab-head alt p-6 text-white">
+                        <span class="ab-kicker">Section 4</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Your role: receiving and passing on a report</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="ab-scenario">
+                            <span class="ab-tag">Scenario</span>
+                            <p>As the bell goes, a student hangs back and tells you that someone in another class has been taking their snack and pushing them in the line every day. &ldquo;Please don&rsquo;t tell anyone &mdash; it&rsquo;ll get worse.&rdquo;</p>
+                        </div>
+
+                        <p class="text-gray-700 leading-relaxed"><strong>Any member of staff can receive a report</strong> &mdash; in person, by email or by phone, from a student, a parent or anyone else. You don&rsquo;t have to be the right person. You do have to pass it to the right person.</p>
+
+                        <div class="space-y-3">
+                            <div class="ab-step"><span class="n">1</span><p><strong>Listen, and take it seriously.</strong> Thank them for telling you. Reassure them it will be handled with discretion &mdash; but don&rsquo;t promise to keep it secret, because you have to pass it on.</p></div>
+                            <div class="ab-step"><span class="n">2</span><p><strong>Pass it to a member of the Behaviour Management Committee</strong> &mdash; the <strong>school counselor</strong>, or the appropriate <strong>Assistant Principal</strong> or <strong>Principal</strong>.</p></div>
+                            <div class="ab-step"><span class="n">3</span><p><strong>Use email or Google Chat</strong> where you can. In person is allowed, but the policy prefers a written message <strong>so there is a record</strong> of what was reported and when.</p></div>
+                            <div class="ab-step"><span class="n">4</span><p><strong>Then step back.</strong> The Committee starts the investigation. Your part now is to watch, support and pass on anything new.</p></div>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-violet-50 border border-violet-200 rounded-xl p-5">
+                                <h4 class="font-bold text-violet-900 mb-2">🕶️ Anonymous reports</h4>
+                                <p class="text-sm text-violet-900 leading-relaxed">Students and families who don&rsquo;t feel comfortable reporting to a person can use the <strong>AISA Anonymous Online Reporting Form</strong>. Every anonymous report with enough information is fully investigated. Point students to it if they&rsquo;re frightened to be named.</p>
+                            </div>
+                            <div class="bg-pink-50 border border-pink-200 rounded-xl p-5">
+                                <h4 class="font-bold text-pink-900 mb-2">🧑‍💼 When a member of staff is involved</h4>
+                                <ul class="text-sm text-pink-900 leading-relaxed space-y-1">
+                                    <li><strong>Staff-to-student</strong> (reported by a student or parent) &rarr; the <strong>Principal</strong> or the <strong>Head of HR</strong>.</li>
+                                    <li><strong>Student-to-staff</strong> &rarr; your <strong>immediate supervisor</strong> or the <strong>Principal</strong>.</li>
+                                    <li><strong>Staff-to-staff</strong> &rarr; your <strong>immediate supervisor</strong> or the <strong>Head of HR</strong>.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-red-50 border border-red-200 rounded-xl p-5">
+                            <h4 class="font-bold text-red-900 mb-1">⛔ Important notice</h4>
+                            <p class="text-sm text-red-900 leading-relaxed"><strong>Retaliation</strong> against anyone for reporting bullying is strictly prohibited and leads to disciplinary action. <strong>Intentionally false reports</strong> also carry consequences under the Parent&ndash;Student Handbook.</p>
+                        </div>
+
+                        <p class="ab-policy" data-policy="Reporting Suspected Bullying; Reporting Bullying Involving Staff; AISA Reporting Procedures"></p>
+
+                        <div class="ab-check aisa-quiz" id="quiz-4">
+                            <p class="ab-check-kicker">Quick check</p>
+                            <p class="font-semibold text-gray-800 mb-4">The student asked you not to tell anyone. What do you do?</p>
+                            <div class="space-y-3">
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">A</span><span class="text-sm text-gray-700">Respect their wishes and keep an eye on things yourself.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">B</span><span class="text-sm text-gray-700">Go and find the other student and tell them to stop.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true"><span class="ab-letter">C</span><span class="text-sm text-gray-700">Reassure them it will be handled with discretion, then send it to the counselor or the right Assistant Principal by email or Google Chat.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">D</span><span class="text-sm text-gray-700">Tell them to use the anonymous form instead, and take no further action.</span></div>
+                            </div>
+                            <div class="aisa-quiz-feedback mt-4"
+                                 data-correct-msg="<strong>Correct.</strong> Discretion, yes; secrecy, no. A written message to a Committee member means there is a record and the right people act."
+                                 data-wrong-msg="<strong>Not quite.</strong> Once you&rsquo;ve been told, you pass it to a Behaviour Management Committee member &mdash; ideally in writing &mdash; and don&rsquo;t act on it alone."></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= 5. After a report ======================= -->
+            <div class="relative pl-12 mb-16" data-chapter="5" data-chapter-title="After a report">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-violet-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="ab-head p-6 text-white">
+                        <span class="ab-kicker">Section 5</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">What happens after a report</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="ab-scenario">
+                            <span class="ab-tag">Scenario</span>
+                            <p>You&rsquo;ve passed a report to the counselor. The next day, the accused student is in your lesson. You&rsquo;re tempted to keep them back at the end and get to the bottom of it yourself.</p>
+                        </div>
+
+                        <p class="text-gray-700 leading-relaxed">Don&rsquo;t. <strong>Teachers do not investigate on their own.</strong> The <strong>Assistant Principal or Principal</strong> leads every bullying investigation, with the Behaviour Management Committee&rsquo;s support. Here is what they do:</p>
+
+                        <div class="space-y-3">
+                            <div class="ab-step"><span class="n">1</span><p><strong>Initial report.</strong> The person reporting completes a <strong>Report of Bullying Form</strong>, with help if a student can&rsquo;t do it alone, and a Committee member reviews it with them. For an anonymous report, a printout of the online form stands in.</p></div>
+                            <div class="ab-step"><span class="n">2</span><p><strong>Statements.</strong> Statements are collected from <strong>everyone involved</strong> &mdash; the target, the accused and witnesses. <strong>Teachers may be asked for one.</strong> Camera footage, written notes and relevant emails and messages are gathered too.</p></div>
+                            <div class="ab-step"><span class="n">3</span><p><strong>Investigation form.</strong> The AP or Principal leading it completes a <strong>Bullying Investigation Form</strong>.</p></div>
+                            <div class="ab-step"><span class="n">4</span><p><strong>Committee review.</strong> The Committee meets formally to review everything collected.</p></div>
+                            <div class="ab-step"><span class="n">5</span><p><strong>Decision and action.</strong> If bullying is confirmed, the AP or Principal acts under the Student and Parent Handbook.</p></div>
+                            <div class="ab-step"><span class="n">6</span><p><strong>Records.</strong> The incident is logged in <strong>PowerSchool</strong> under the reporting student&rsquo;s profile. Originals go to the <strong>school counselor</strong>, who scans them into the grade-level Drive folder; the AP or Principal keeps copies for any discipline follow-up.</p></div>
+                        </div>
+
+                        <div class="bg-slate-50 border-l-4 border-violet-500 rounded-r-xl p-5">
+                            <p class="text-sm text-slate-700 leading-relaxed"><strong>Why you shouldn&rsquo;t investigate:</strong> a well-meant conversation can tip off the accused, put pressure on the target, contaminate witness accounts, and leave no record. If you have more information, give it to the person leading the investigation.</p>
+                        </div>
+
+                        <p class="text-sm text-gray-600 leading-relaxed">The Counseling Department also keeps an anonymised tracking matrix of frequency, severity and how incidents happen online, reviewed every year to target prevention.</p>
+
+                        <p class="ab-policy" data-policy="AISA Investigation Procedures; AISA Documentation and Record Keeping Procedures"></p>
+
+                        <div class="ab-check aisa-quiz" id="quiz-5">
+                            <p class="ab-check-kicker">Quick check</p>
+                            <p class="font-semibold text-gray-800 mb-4">Who leads a bullying investigation?</p>
+                            <div class="space-y-3">
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">A</span><span class="text-sm text-gray-700">The teacher who received the report.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true"><span class="ab-letter">B</span><span class="text-sm text-gray-700">The Assistant Principal or Principal, supported by the Behaviour Management Committee.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">C</span><span class="text-sm text-gray-700">The homeroom teacher of the accused student.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">D</span><span class="text-sm text-gray-700">The parents of the student who was targeted.</span></div>
+                            </div>
+                            <div class="aisa-quiz-feedback mt-4"
+                                 data-correct-msg="<strong>Correct.</strong> You may be asked for a statement, but the AP or Principal leads."
+                                 data-wrong-msg="<strong>Not quite.</strong> Investigations are led by the Assistant Principal or Principal &mdash; teachers don&rsquo;t investigate on their own."></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= 6. Cyberbullying ======================= -->
+            <div class="relative pl-12 mb-16" data-chapter="6" data-chapter-title="Cyberbullying">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-violet-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="ab-head alt p-6 text-white">
+                        <span class="ab-kicker">Section 6</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Cyberbullying and the 24-hour rule</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="ab-scenario">
+                            <span class="ab-tag">Scenario</span>
+                            <p>A parent emails you on Saturday with screenshots: messages sent to their child in a group chat, including one saying &ldquo;we know where you live, wait till Monday&rdquo;. The parent says they&rsquo;re going to ring the other family tonight.</p>
+                        </div>
+
+                        <p class="text-gray-700 leading-relaxed">Most cyberbullying is handled internally like any other report. But <strong>any cyberbullying that poses an imminent threat to a student&rsquo;s physical or emotional safety, or amounts to severe maltreatment, must be escalated</strong> outside the school.</p>
+
+                        <div class="bg-red-50 border-2 border-red-200 rounded-xl p-5">
+                            <h4 class="font-bold text-red-900 mb-2">🚨 Escalation &mdash; within 24 hours of suspicion</h4>
+                            <p class="text-sm text-red-900 leading-relaxed">The <strong>Child Protection Officer (CPO) or the Principal</strong> reports it to the <strong>ADEK Child Protection Unit (CPU)</strong> and the <strong>Ministry of Interior &ndash; Child Protection Center (MoI-CPC)</strong> through the digital safety concern portal, <strong>within 24 hours</strong>, as required by UAE Federal Law No. 3 of 2016 (<strong>Wadeema&rsquo;s Law</strong>).</p>
+                            <p class="text-sm text-red-900 leading-relaxed mt-2">You don&rsquo;t make that report yourself &mdash; but the clock starts when someone suspects. <strong>Pass it on immediately, not on Monday.</strong> If you believe a child is at risk of harm, follow the <a href="safeguarding-module.html" class="underline font-semibold">safeguarding procedure</a> and contact a Safeguarding Lead too.</p>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-violet-50 border border-violet-200 rounded-xl p-5">
+                                <h4 class="font-bold text-violet-900 mb-2">📸 Preserve the evidence</h4>
+                                <p class="text-sm text-violet-900 leading-relaxed">Screenshots, messages, usernames, dates. Forward what you&rsquo;ve been sent to the Committee member, and ask the family to keep the originals and not delete anything.</p>
+                            </div>
+                            <div class="bg-pink-50 border border-pink-200 rounded-xl p-5">
+                                <h4 class="font-bold text-pink-900 mb-2">👪 What parents are asked to do</h4>
+                                <p class="text-sm text-pink-900 leading-relaxed">Monitor their child&rsquo;s internet, social media and messages; report straight to a trusted adult at school; preserve evidence; and <strong>not confront the other student or their family</strong> &mdash; it escalates things and can interfere with AISA and ADEK investigations.</p>
+                            </div>
+                        </div>
+
+                        <p class="ab-policy" data-policy="AISA Investigation Procedures, step 6 (Cyberbullying Escalation); Role of Parents and Guardians"></p>
+
+                        <div class="ab-check aisa-quiz" id="quiz-6">
+                            <p class="ab-check-kicker">Quick check</p>
+                            <p class="font-semibold text-gray-800 mb-4">It&rsquo;s Saturday, and the screenshots include a threat. What&rsquo;s the right response?</p>
+                            <div class="space-y-3">
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">A</span><span class="text-sm text-gray-700">Reply that it happened outside school, so the family should handle it.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">B</span><span class="text-sm text-gray-700">Encourage the parent to call the other family and sort it out.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">C</span><span class="text-sm text-gray-700">Note it and raise it with the counselor on Monday morning.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true"><span class="ab-letter">D</span><span class="text-sm text-gray-700">Forward it now to the Principal or CPO (and a Committee member), and ask the parent to keep the evidence and not contact the other family.</span></div>
+                            </div>
+                            <div class="aisa-quiz-feedback mt-4"
+                                 data-correct-msg="<strong>Correct.</strong> A threat may meet the escalation threshold, and the 24 hours run from suspicion &mdash; weekends included."
+                                 data-wrong-msg="<strong>Not quite.</strong> A threat can trigger the 24-hour escalation to ADEK and MoI, and parents are asked not to confront the other family. Pass it on now."></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= 7. Consequences and support ======================= -->
+            <div class="relative pl-12 mb-16" data-chapter="7" data-chapter-title="Consequences and support">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-violet-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="ab-head p-6 text-white">
+                        <span class="ab-kicker">Section 7</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Consequences and support</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="ab-scenario">
+                            <span class="ab-tag">Scenario</span>
+                            <p>The Committee has confirmed a case involving two students in your class. You get an email asking teaching teams to be &ldquo;extra vigilant&rdquo;. What happens to each student now &mdash; and what does that ask of you?</p>
+                        </div>
+
+                        <div class="bg-white border-2 border-red-200 rounded-xl p-5">
+                            <h4 class="font-bold text-red-900 mb-2">Confirmed bullying is a Level 3 behavioural violation</h4>
+                            <ul class="ab-points">
+                                <li><strong>In-school suspension</strong>, served the following day.</li>
+                                <li>A <strong>written apology</strong> to the person harmed.</li>
+                                <li>A <strong>meeting with school administration</strong> about the behaviour and the findings; the parent signs a <strong>Parent&ndash;School Partnership Agreement</strong>.</li>
+                                <li><strong>Repeat incidents</strong> lead to out-of-school suspension and may end in <strong>expulsion</strong>.</li>
+                            </ul>
+                            <p class="text-xs text-gray-500 mt-2">This &ldquo;Level 3 violation&rdquo; is the Handbook&rsquo;s behaviour scale &mdash; separate from the policy&rsquo;s three severity levels in Section 3.</p>
+                        </div>
+
+                        <p class="text-gray-700 leading-relaxed"><strong>Parents of everyone involved are notified</strong> and counselled on supporting a change in behaviour. The Counseling Team follows up with all parties weekly for two to six weeks, and may refer outside depending on severity.</p>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-violet-50 border border-violet-200 rounded-xl p-5">
+                                <h4 class="font-bold text-violet-900 mb-2">🛡️ For the target</h4>
+                                <ul class="text-sm text-violet-900 leading-relaxed space-y-1">
+                                    <li>Weekly counselor check-ins for four to six weeks.</li>
+                                    <li>Possibly a <strong>VIP pass</strong> to see the counselor when needed, if the counselor judges it appropriate.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-pink-50 border border-pink-200 rounded-xl p-5">
+                                <h4 class="font-bold text-pink-900 mb-2">🔄 For the accused</h4>
+                                <ul class="text-sm text-pink-900 leading-relaxed space-y-1">
+                                    <li><strong>Two targeted lessons</strong> on bullying behaviour and empathy.</li>
+                                    <li>Two to four follow-up meetings on progress.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 border-l-4 border-violet-500 rounded-r-xl p-5">
+                            <h4 class="font-bold text-slate-900 mb-1">&ldquo;Extra vigilance&rdquo; means you</h4>
+                            <p class="text-sm text-slate-700 leading-relaxed">Teaching teams and outside duty staff are told so they can watch. Notice seating, group work, corridors and break; let a VIP-pass student go without fuss; and report anything new &mdash; including any sign of <strong>retaliation</strong> &mdash; the same way as the first report. Don&rsquo;t discuss the case with other students.</p>
+                        </div>
+
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-5">
+                            <h4 class="font-bold text-amber-900 mb-1">When the bullying involves staff</h4>
+                            <p class="text-sm text-amber-900 leading-relaxed">Staff alleged to have bullied are investigated promptly and impartially; confirmed cases lead to action matched to severity &mdash; professional development, formal warnings, suspension or, in severe or repeated cases, termination, under AISA&rsquo;s employment policies and local labour law. Staff who are targeted get support, including counselling referrals and measures for a safe workplace; students who bully staff face the Level 3 student consequences above.</p>
+                        </div>
+
+                        <p class="ab-policy" data-policy="Disciplinary Actions; Interventions; Interventions and Disciplinary Actions for Staff-Involved Bullying"></p>
+
+                        <div class="ab-check aisa-quiz" id="quiz-7">
+                            <p class="ab-check-kicker">Quick check</p>
+                            <p class="font-semibold text-gray-800 mb-4">Which support does the policy name for a student who has been bullied?</p>
+                            <div class="space-y-3">
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true"><span class="ab-letter">A</span><span class="text-sm text-gray-700">Weekly counselor check-ins for four to six weeks, and possibly a VIP pass to see the counselor.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">B</span><span class="text-sm text-gray-700">Moving the student to a different class straight away.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">C</span><span class="text-sm text-gray-700">Two lessons on empathy.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">D</span><span class="text-sm text-gray-700">Nothing further once the other student has apologised.</span></div>
+                            </div>
+                            <div class="aisa-quiz-feedback mt-4"
+                                 data-correct-msg="<strong>Correct.</strong> The empathy lessons are for the accused; the target gets check-ins and, where appropriate, a VIP pass."
+                                 data-wrong-msg="<strong>Not quite.</strong> Compare the &ldquo;For the target&rdquo; and &ldquo;For the accused&rdquo; boxes."></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= 8. Additional learning needs ======================= -->
+            <div class="relative pl-12 mb-16" data-chapter="8" data-chapter-title="Additional learning needs">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-violet-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="ab-head alt p-6 text-white">
+                        <span class="ab-kicker">Section 8</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Students with additional learning needs</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="ab-scenario">
+                            <span class="ab-tag">Scenario</span>
+                            <p>A student with a learning plan for social communication keeps grabbing a classmate&rsquo;s belongings and laughing when the classmate gets upset. Another student in the same grade, who also has a learning plan, is regularly mimicked by a group at lunch.</p>
+                        </div>
+
+                        <p class="text-gray-700 leading-relaxed">Whether a student with additional learning needs is the <strong>target</strong> or the one <strong>engaging in bullying behaviour</strong>, the <strong>SEN department and/or relevant support staff are consulted</strong>. Interventions and support plans are built with <strong>Student Services and the Head of Inclusion</strong>, so they fit the student&rsquo;s learning and communication needs.</p>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-violet-50 border border-violet-200 rounded-xl p-5">
+                                <h4 class="font-bold text-violet-900 mb-2">When they are the target</h4>
+                                <p class="text-sm text-violet-900 leading-relaxed">Particular attention to emotional wellbeing &mdash; specialised counselling or support to process what happened and build coping strategies.</p>
+                            </div>
+                            <div class="bg-pink-50 border border-pink-200 rounded-xl p-5">
+                                <h4 class="font-bold text-pink-900 mb-2">When they engage in bullying</h4>
+                                <p class="text-sm text-pink-900 leading-relaxed">Interventions look for underlying social, emotional or communication challenges, and use strategies from the student&rsquo;s <strong>learning plan</strong> where relevant.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-50 border-l-4 border-violet-500 rounded-r-xl p-5">
+                            <p class="text-sm text-slate-700 leading-relaxed"><strong>Your part:</strong> report it the same way. A learning need doesn&rsquo;t make it &ldquo;not bullying&rdquo;, and it doesn&rsquo;t mean you handle it differently on your own &mdash; it means the right specialists join the response. If you know the student&rsquo;s plan, mention it when you pass the report on.</p>
+                        </div>
+
+                        <p class="ab-policy" data-policy="Considerations for Students with Additional Learning Needs"></p>
+
+                        <div class="ab-check aisa-quiz" id="quiz-8">
+                            <p class="ab-check-kicker">Quick check</p>
+                            <p class="font-semibold text-gray-800 mb-4">A student with a learning plan is engaging in bullying behaviour. Which is right?</p>
+                            <div class="space-y-3">
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">A</span><span class="text-sm text-gray-700">It isn&rsquo;t treated as bullying because the student has a learning need.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">B</span><span class="text-sm text-gray-700">The class teacher manages it privately without involving anyone else.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true"><span class="ab-letter">C</span><span class="text-sm text-gray-700">It is reported as usual, and the SEN team and Head of Inclusion help shape an intervention that builds on the learning plan.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">D</span><span class="text-sm text-gray-700">SEN staff are only consulted when the student is the target.</span></div>
+                            </div>
+                            <div class="aisa-quiz-feedback mt-4"
+                                 data-correct-msg="<strong>Correct.</strong> Same reporting route; specialists help shape the response, either way round."
+                                 data-wrong-msg="<strong>Not quite.</strong> SEN staff are consulted whether the student is the target or engaging in bullying, and it is still reported."></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= 9. Prevention ======================= -->
+            <div class="relative pl-12 mb-16" data-chapter="9" data-chapter-title="Prevention">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-violet-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="ab-head p-6 text-white">
+                        <span class="ab-kicker">Section 9</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Prevention: the everyday part</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div class="ab-scenario">
+                            <span class="ab-tag">Scenario</span>
+                            <p>In a Grade 9 lesson a student makes a &ldquo;joke&rdquo; about a classmate&rsquo;s accent and a few others laugh. It isn&rsquo;t bullying yet. What you do in the next ten seconds tells the whole room what is acceptable here.</p>
+                        </div>
+
+                        <p class="text-gray-700 leading-relaxed">Reporting deals with bullying once it happens. Prevention is what makes it rarer, and most of it happens in ordinary lessons.</p>
+
+                        <div class="grid md:grid-cols-3 gap-4">
+                            <div class="bg-violet-50 border border-violet-200 rounded-xl p-5">
+                                <div class="text-2xl mb-1">🏫</div>
+                                <h4 class="font-bold text-violet-900 mb-1">School-wide programmes</h4>
+                                <p class="text-sm text-violet-900">Anti-bullying weeks, positive behaviour support, and character and moral education, embedded in curricula and extra-curricular activities &mdash; chosen because research shows they work.</p>
+                            </div>
+                            <div class="bg-purple-50 border border-purple-200 rounded-xl p-5">
+                                <div class="text-2xl mb-1">💻</div>
+                                <h4 class="font-bold text-purple-900 mb-1">Digital citizenship</h4>
+                                <p class="text-sm text-purple-900">Age-appropriate digital citizenship and student-protection resources, built into classroom teaching and counselling sessions, to get ahead of cyberbullying.</p>
+                            </div>
+                            <div class="bg-pink-50 border border-pink-200 rounded-xl p-5">
+                                <div class="text-2xl mb-1">🧑‍🏫</div>
+                                <h4 class="font-bold text-pink-900 mb-1">Everyday modelling</h4>
+                                <p class="text-sm text-pink-900">Kindness, courtesy and respect, shown by adults to students and to each other. Name unkind behaviour when you see it, calmly and every time.</p>
+                            </div>
+                        </div>
+
+                        <p class="ab-policy" data-policy="School-Wide and Preventative Measures; Our Commitment"></p>
+
+                        <div class="ab-check aisa-quiz" id="quiz-9">
+                            <p class="ab-check-kicker">Quick check</p>
+                            <p class="font-semibold text-gray-800 mb-4">Back to the Grade 9 &ldquo;joke&rdquo;. What&rsquo;s the best response?</p>
+                            <div class="space-y-3">
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">A</span><span class="text-sm text-gray-700">Ignore it &mdash; a one-off isn&rsquo;t bullying, so it isn&rsquo;t your concern.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true"><span class="ab-letter">B</span><span class="text-sm text-gray-700">Name it calmly in the moment as not OK here, and keep an eye out for a pattern.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">C</span><span class="text-sm text-gray-700">Laugh along so the class stays relaxed.</span></div>
+                                <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false"><span class="ab-letter">D</span><span class="text-sm text-gray-700">Send the student straight to the Principal for in-school suspension.</span></div>
+                            </div>
+                            <div class="aisa-quiz-feedback mt-4"
+                                 data-correct-msg="<strong>Correct.</strong> Modelling respect in the moment is prevention. If it becomes a pattern, it becomes a report."
+                                 data-wrong-msg="<strong>Not quite.</strong> A one-off isn&rsquo;t bullying, but it still needs a calm, clear response &mdash; that&rsquo;s everyday prevention."></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= 10. Final check (scored) ======================= -->
+            <div class="relative pl-12 mb-16" data-chapter="10" data-chapter-title="Final check">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-violet-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-violet-200 overflow-hidden">
+                    <div class="ab-head alt p-6 text-white">
+                        <span class="ab-kicker">Final check &middot; 80% to pass</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Ten scenarios</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Answer all ten, then check your answers. You need <strong>8 out of 10</strong> to continue. If you don&rsquo;t get there, you&rsquo;ll see which ones to revisit and can try again &mdash; the options are reshuffled each time.</p>
+                        <div id="fq-list"></div>
+                        <div id="fq-result" hidden></div>
+                        <div class="flex flex-wrap gap-3">
+                            <button type="button" class="ab-btn" id="fq-submit">Check my answers</button>
+                            <button type="button" class="ab-btn ghost" id="fq-retry" hidden>Try again</button>
+                        </div>
+                        <!-- The gate training.js sees. One option, so it is never
+                             shuffled; the page clicks it on a pass. Its passed
+                             state is saved, so a reload doesn't demand a re-sit. -->
+                        <div class="aisa-quiz" id="quiz-final-gate" hidden>
+                            <div class="aisa-quiz-option" data-correct="true" id="quiz-final-gate-opt"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ======================= 11. What I do next + acknowledgement ======================= -->
+            <div class="relative pl-12 mb-16" data-chapter="11" data-chapter-title="What I do next">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-violet-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border-2 border-violet-200 overflow-hidden">
+                    <div class="ab-head p-6 text-white">
+                        <span class="ab-kicker">Wrap-up &middot; Acknowledgement</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">What I do next</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <div id="job-aid" class="bg-violet-50 border border-violet-200 rounded-xl p-5">
+                            <h4 class="font-heading font-bold text-violet-900 text-lg mb-1">When someone tells me about bullying</h4>
+                            <p class="text-xs text-violet-700 mb-4">AISA Anti-Bullying Policy (revised May 2026) &middot; staff job aid</p>
+                            <ol class="space-y-3">
+                                <li class="ab-step"><span class="n">1</span><p><strong>Listen and thank them.</strong> Take it seriously. Promise discretion, not secrecy.</p></li>
+                                <li class="ab-step"><span class="n">2</span><p><strong>Pass it on the same day</strong> to the counselor, Assistant Principal or Principal &mdash; <strong>by email or Google Chat</strong>, so there is a record.</p></li>
+                                <li class="ab-step"><span class="n">3</span><p><strong>Staff involved?</strong> Staff-to-student &rarr; Principal or Head of HR. Student-to-staff &rarr; your supervisor or the Principal. Staff-to-staff &rarr; your supervisor or Head of HR.</p></li>
+                                <li class="ab-step"><span class="n">4</span><p><strong>Online, with a threat or severe harm?</strong> Tell the Principal or CPO <strong>immediately</strong> &mdash; ADEK and MoI must be told within 24 hours. Keep the screenshots. Risk of harm &rarr; safeguarding procedure too.</p></li>
+                                <li class="ab-step"><span class="n">5</span><p><strong>Don&rsquo;t investigate</strong> and don&rsquo;t confront the other student or family. Give a statement if asked.</p></li>
+                                <li class="ab-step"><span class="n">6</span><p><strong>Afterwards:</strong> stay vigilant in lessons and on duty, watch for retaliation, and report anything new the same way.</p></li>
+                            </ol>
+                            <p class="text-xs text-violet-700 mt-4">Students and families can also use the <strong>AISA Anonymous Online Reporting Form</strong>.</p>
+                        </div>
+                        <div>
+                            <button type="button" class="ab-btn ghost" id="print-job-aid">🖨️ Print or save this job aid</button>
+                        </div>
+
+                        <div class="bg-white rounded-2xl shadow-lg border-2 border-violet-200 overflow-hidden aisa-quiz" id="quiz-ack">
+                            <div class="ab-head alt p-5 text-white">
+                                <span class="ab-kicker">Policy acknowledgement</span>
+                                <h3 class="text-lg font-heading font-bold mt-1">Confirm to complete the course</h3>
+                            </div>
+                            <div class="p-6">
+                                <p class="font-semibold text-gray-800 mb-4">Please confirm your acknowledgement of the AISA Anti-Bullying Policy.</p>
+                                <div class="space-y-3">
+                                    <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="true">
+                                        <span class="ab-letter">A</span>
+                                        <span class="text-sm text-gray-700">I have completed this training on the AISA Anti-Bullying Policy, I understand my responsibilities under it, and I will pass on every report of bullying through the procedures it sets out.</span>
+                                    </div>
+                                    <div class="quiz-option aisa-quiz-option border border-gray-200 rounded-xl p-4 flex items-center gap-3" data-correct="false">
+                                        <span class="ab-letter">B</span>
+                                        <span class="text-sm text-gray-700">I&rsquo;d like to review the course again before acknowledging.</span>
+                                    </div>
+                                </div>
+                                <div class="aisa-quiz-feedback mt-4"
+                                     data-correct-msg="<strong>Thank you.</strong> Your acknowledgement is recorded. Press Finish training to get your certificate."
+                                     data-wrong-msg="<strong>No problem.</strong> Use the sidebar or the Previous button to look again, then confirm when you&rsquo;re ready."></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- end timeline -->
+
+        <!-- Completion Banner (must stay outside every [data-chapter]) -->
+        <div id="completion-banner" data-cert-title="Anti-Bullying Policy: Teacher Awareness" data-cert-hours="1.25" class="ob-complete hidden bg-gradient-to-r from-violet-700 via-purple-600 to-pink-600 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
+            <span class="text-5xl mb-4 block">🤝</span>
+            <h3 class="text-2xl font-heading font-black mb-2">Course Complete!</h3>
+            <p class="text-violet-100 max-w-lg mx-auto">Thank you. If a student tells you something tomorrow, you know what to do: listen, pass it on in writing the same day, and keep watching.</p>
+        </div>
+
+        <!-- Return Button -->
+        <div class="text-center pb-10">
+            <button onclick="window.location.href='pd.html'" class="ob-return bg-violet-700 text-white py-3 px-8 rounded-full hover:bg-violet-800 transition-colors shadow-lg font-semibold">
+                Return to Modules
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-violet-950 text-violet-200 py-10">
+        <div class="container mx-auto px-6 text-center">
+            <p class="font-bold text-white mb-1 font-heading">AISA — American International School in Abu Dhabi</p>
+            <p class="text-sm text-violet-300">Anti-Bullying Policy: Teacher Awareness · Promoting a safe, respectful and inclusive school community</p>
+            <p class="text-xs text-violet-400 mt-4">Requested and resourced by Joel Hunter. Based on the AISA Anti-Bullying Policy, revised May 2026.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Progress Tracking ---
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.module-checkbox');
+            const total = checkboxes.length;
+            const checked = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const pct = total === 0 ? 0 : Math.round((checked / total) * 100);
+
+            document.getElementById('progress-bar').style.width = pct + '%';
+            document.getElementById('progress-text').textContent = pct + '% Done';
+
+            if (pct === 100) {
+                document.getElementById('completion-banner').classList.remove('hidden');
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 150, spread: 80, origin: { y: 0.6 } });
+                }
+            } else {
+                document.getElementById('completion-banner').classList.add('hidden');
+            }
+        }
+
+        /* =================================================================
+         * RELEASE SWITCH
+         *
+         * PREVIEW_ONLY true: only PREVIEW_EMAILS can open the page, and the
+         * "Email all staff" button is locked (a launch email would send the
+         * whole school to a "Coming soon" screen). Releasing means setting
+         * it to false here AND the other steps in CLAUDE.md (pd.html card,
+         * MODULES, menu, search) — this switch alone is not a release.
+         *
+         * Client-side only. The repo is public, so this hides the module;
+         * it does not protect it.
+         * ================================================================= */
+        var PREVIEW_ONLY = true;
+        var PREVIEW_EMAILS = ['bbaki@aisa.sch.ae', 'jhunter@aisa.sch.ae', 'aturabi@aisa.sch.ae'];
+
+        /* Where the full policy lives. Empty: each section names the policy
+         * heading as plain text. Set it to a Drive copy shared with
+         * @aisa.sch.ae only — never commit the PDF itself to this public
+         * repo; every page of it is marked Confidential. Strip any `ouid=`
+         * from a share URL before pasting it here. */
+        var POLICY_URL = '';
+
+        (function () {
+            var gate = document.getElementById('preview-gate');
+            var settled = false;
+            function allow() {
+                if (settled) return; settled = true;
+                if (gate) gate.remove();
+                var b = document.getElementById('preview-banner');
+                if (b && PREVIEW_ONLY) b.hidden = false;
+            }
+            function deny() {
+                if (settled) return; settled = true;
+                /* Hide the chapters too, not just cover them: dwell.js counts
+                 * time on whichever chapter is "visible", overlay or not. */
+                var main = document.getElementById('ab-main');
+                if (main) main.hidden = true;
+                if (!gate) return;
+                gate.querySelector('[data-gate-checking]').hidden = true;
+                gate.querySelector('[data-gate-denied]').hidden = false;
+            }
+            if (!PREVIEW_ONLY) { allow(); return; }
+            if (!window.aisaReady) { deny(); return; }
+            window.aisaReady(function (auth) {
+                var u = auth && auth.getUser ? auth.getUser() : null;
+                var me = u && u.email ? String(u.email).trim().toLowerCase() : '';
+                PREVIEW_EMAILS.indexOf(me) >= 0 ? allow() : deny();
+            });
+            /* aisaReady gives up silently if no session ever appears; don't
+             * leave "Checking access…" on screen for ever. */
+            setTimeout(deny, 20000);
+        })();
+
+        // --- Policy references ---------------------------------------------
+        (function () {
+            document.querySelectorAll('.ab-policy[data-policy]').forEach(function (el) {
+                var sections = el.getAttribute('data-policy');
+                var label = document.createElement('span');
+                label.textContent = '📘';
+                label.setAttribute('aria-hidden', 'true');
+                var text = document.createElement('span');
+                if (POLICY_URL) {
+                    var a = document.createElement('a');
+                    a.href = POLICY_URL; a.target = '_blank'; a.rel = 'noopener';
+                    a.textContent = 'AISA Anti-Bullying Policy';
+                    text.appendChild(a);
+                    text.appendChild(document.createTextNode(' · read: ' + sections));
+                } else {
+                    text.textContent = 'In the AISA Anti-Bullying Policy (May 2026): ' + sections;
+                }
+                el.appendChild(label); el.appendChild(text);
+            });
+        })();
+
+        // --- Final check: ten scenarios, 80% to pass ------------------------
+        (function () {
+            var PASS = 8;
+            var QUESTIONS = [
+                { q: 'At break, a Grade 5 student tells you two classmates have taken their lunch every day for two weeks and laughed about it. What do you do first?',
+                  a: ['Listen, reassure them, and send it to the counselor or the right Assistant Principal by email or Google Chat the same day.',
+                      'Find the two classmates and question them to see whether it is true.',
+                      'Tell the student to keep away from them and see whether it continues.',
+                      'Email the parents of the two classmates to let them know.'],
+                  why: 'Any staff member can receive a report; you pass it to a Behaviour Management Committee member, in writing so there is a record.' },
+                { q: 'Which of these is the best example of a Level 1 (early stage) incident?',
+                  a: ['A single mean comment about a student’s drawing.',
+                      'Daily threats over several weeks.',
+                      'A coordinated online campaign against one student.',
+                      'Repeated exclusion that has led to a student missing classes.'],
+                  why: 'Level 1 is isolated or few instances with mild, temporary impact. The others describe a pattern or severe impact.' },
+                { q: 'A parent forwards you weekend screenshots of messages to their child that threaten physical harm. What happens next?',
+                  a: ['You pass it on immediately to the Principal or Child Protection Officer; if it meets the threshold they report to the ADEK CPU and MoI-CPC within 24 hours.',
+                      'Nothing — it happened off campus at the weekend.',
+                      'You advise the parent to contact the other family directly.',
+                      'You report it to ADEK yourself on Monday.'],
+                  why: 'Imminent threats or severe maltreatment online are escalated by the CPO or Principal within 24 hours of suspicion (Wadeema’s Law).' },
+                { q: 'Two friends of the same age have one argument at lunch and both say hurtful things. How does the policy see this?',
+                  a: ['Most likely conflict rather than bullying: there is no clear power imbalance and it isn’t repeated, though it still needs handling.',
+                      'Level 3 bullying, because hurtful things were said.',
+                      'Bullying, because any unkind words count.',
+                      'Not the school’s concern at all.'],
+                  why: 'Bullying needs all three elements: power imbalance, intent, and repetition over time.' },
+                { q: 'A student tells you a member of staff keeps humiliating them in front of the class. Where does the report go?',
+                  a: ['To the Principal or the Head of Human Resources.',
+                      'To the staff member concerned, so they can explain.',
+                      'To the student’s homeroom teacher.',
+                      'Nowhere until a second student says the same.'],
+                  why: 'Staff-to-student reports go to the Principal or the Head of HR, to keep the process impartial.' },
+                { q: 'Why does the policy prefer email or Google Chat when you pass a report on?',
+                  a: ['So there is a record of what was reported and when.',
+                      'Because reports made in person are not accepted.',
+                      'So the accused student can be copied in.',
+                      'Because it lets the teacher close the case.'],
+                  why: 'In person is allowed, but writing keeps a record of the event.' },
+                { q: 'After a report, the student who spoke up is being called a “snitch” by the accused’s friends. What is this?',
+                  a: ['Retaliation, which is strictly prohibited — report it the same way as the first incident.',
+                      'Normal friction that will settle down by itself.',
+                      'A reason to drop the original investigation.',
+                      'Only a concern if it becomes physical.'],
+                  why: 'Retaliation against anyone who reports bullying is strictly prohibited and leads to disciplinary action.' },
+                { q: 'A student with additional learning needs is engaging in bullying behaviour. Who should be involved in shaping the response?',
+                  a: ['The SEN department or relevant support staff, with Student Services and the Head of Inclusion.',
+                      'No one — students with learning needs are exempt from the policy.',
+                      'Only the class teacher.',
+                      'Only the parents of the targeted student.'],
+                  why: 'SEN staff are consulted whether the student is the target or engaging in bullying, and interventions build on the learning plan.' },
+                { q: 'Bullying has been confirmed. Which consequence does the policy set out for the student responsible?',
+                  a: ['In-school suspension the next day, a written apology, and an administration meeting where the parent signs a Parent–School Partnership Agreement.',
+                      'A verbal warning from the class teacher only.',
+                      'Immediate expulsion on the first incident.',
+                      'No consequence if the student apologises.'],
+                  why: 'Confirmed bullying is a Level 3 behavioural violation. Repeat incidents can lead to out-of-school suspension or expulsion.' },
+                { q: 'You’re asked, as part of an investigation, to give a statement about what you saw. What should you do?',
+                  a: ['Give an accurate statement to the person leading the investigation, and leave the investigating to them.',
+                      'Decline — teachers are not involved once a report is passed on.',
+                      'Interview the students yourself first so your statement is complete.',
+                      'Share the details with colleagues so everyone is informed.'],
+                  why: 'Statements are collected from everyone involved, including witnesses and teachers; the AP or Principal leads.' }
+            ];
+
+            var list   = document.getElementById('fq-list');
+            var submit = document.getElementById('fq-submit');
+            var retry  = document.getElementById('fq-retry');
+            var result = document.getElementById('fq-result');
+            if (!list) return;
+
+            function shuffled(n) {
+                var idx = []; for (var i = 0; i < n; i++) idx.push(i);
+                for (var j = n - 1; j > 0; j--) {
+                    var k = Math.floor(Math.random() * (j + 1));
+                    var t = idx[j]; idx[j] = idx[k]; idx[k] = t;
+                }
+                return idx;
+            }
+
+            function render() {
+                list.innerHTML = '';
+                QUESTIONS.forEach(function (item, qi) {
+                    var box = document.createElement('fieldset');
+                    box.className = 'fq';
+                    var legend = document.createElement('legend');
+                    legend.className = 'fq-q';
+                    legend.textContent = (qi + 1) + '. ' + item.q;
+                    box.appendChild(legend);
+                    shuffled(item.a.length).forEach(function (ai) {
+                        var lab = document.createElement('label');
+                        lab.className = 'fq-opt';
+                        var input = document.createElement('input');
+                        input.type = 'radio'; input.name = 'fq-' + qi; input.value = String(ai);
+                        var span = document.createElement('span');
+                        span.textContent = item.a[ai];
+                        lab.appendChild(input); lab.appendChild(span);
+                        box.appendChild(lab);
+                    });
+                    list.appendChild(box);
+                });
+                result.hidden = true;
+                submit.hidden = false;
+                retry.hidden = true;
+            }
+
+            function mark() {
+                var unanswered = [];
+                QUESTIONS.forEach(function (_, qi) {
+                    if (!list.querySelector('input[name="fq-' + qi + '"]:checked')) unanswered.push(qi + 1);
+                });
+                if (unanswered.length) {
+                    result.className = 'fail'; result.hidden = false;
+                    result.textContent = 'Please answer every question first. Still to answer: ' + unanswered.join(', ') + '.';
+                    return;
+                }
+                var score = 0;
+                list.querySelectorAll('fieldset.fq').forEach(function (box, qi) {
+                    var picked = box.querySelector('input:checked');
+                    var right = picked.value === '0';   // option 0 is the correct one in QUESTIONS
+                    if (right) score++;
+                    box.classList.add('is-locked');
+                    box.querySelectorAll('input').forEach(function (inp) {
+                        inp.disabled = true;
+                        if (inp === picked) inp.parentNode.classList.add(right ? 'is-right' : 'is-wrong');
+                    });
+                    var why = document.createElement('p');
+                    why.className = 'fq-why ' + (right ? 'ok' : 'bad');
+                    why.textContent = (right ? 'Correct. ' : 'Not quite. ') + QUESTIONS[qi].why;
+                    box.appendChild(why);
+                });
+                result.hidden = false;
+                submit.hidden = true;
+                if (score >= PASS) {
+                    result.className = 'pass';
+                    result.textContent = 'You scored ' + score + ' out of 10 — a pass. Press Next chapter to finish.';
+                    var gateOpt = document.getElementById('quiz-final-gate-opt');
+                    if (gateOpt) gateOpt.click();
+                } else {
+                    result.className = 'fail';
+                    result.textContent = 'You scored ' + score + ' out of 10. You need 8 to pass. Read the explanations above, then try again.';
+                    retry.hidden = false;
+                }
+            }
+
+            submit.addEventListener('click', mark);
+            retry.addEventListener('click', function () { render(); list.scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+            render();
+        })();
+
+        // --- Job aid: print just the card ----------------------------------
+        (function () {
+            var btn = document.getElementById('print-job-aid');
+            var aid = document.getElementById('job-aid');
+            if (!btn || !aid) return;
+            btn.addEventListener('click', function () {
+                var w = window.open('', '_blank');
+                if (!w) { window.print(); return; }
+                w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>Anti-Bullying — What I do next</title>'
+                    + '<style>body{font-family:Inter,Arial,sans-serif;color:#1f2937;max-width:44rem;margin:2rem auto;padding:0 1rem}'
+                    + 'h4{font-size:1.3rem;margin:0 0 .2rem;color:#4c1d95}ol{list-style:none;padding:0}'
+                    + 'li{display:flex;gap:.8rem;margin:.9rem 0}.n{flex-shrink:0;width:1.8rem;height:1.8rem;border-radius:50%;'
+                    + 'background:#6d28d9;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;'
+                    + '-webkit-print-color-adjust:exact;print-color-adjust:exact}p{margin:0;line-height:1.5}'
+                    + '.text-xs{font-size:.8rem;color:#6d28d9}</style></head><body>'
+                    + aid.innerHTML + '</body></html>');
+                w.document.close();
+                w.focus();
+                setTimeout(function () { w.print(); }, 300);
+            });
+        })();
+
+        // --- AISA backend: record completion + rehydrate on revisit ---
+        if (window.aisaReady) {
+            window.aisaReady(function (auth) {
+                auth.wireModule({
+                    moduleId: 'anti-bullying',
+                    checkboxSelector: '.module-checkbox',
+                    refreshUI: updateProgress
+                });
+            });
+        }
+
+        // --- Training framework: convert to chapter-by-chapter wizard ---
+        if (window.AisaTraining) {
+            document.addEventListener('DOMContentLoaded', function () {
+                window.AisaTraining.init({ moduleId: 'anti-bullying' });
+            });
+        }
+    </script>
+
+<!-- Mail-out bar: the launch announcement. Rendered only for the addresses
+     the server's NEWSLETTER_SENDERS allowlist names. Hiding it is a
+     courtesy, not a control — send_newsletter re-checks the caller
+     server-side, because the sign-in gate is client-side and this repo is
+     public. -->
+<div id="nl-send" hidden>
+    <div class="nl-inner">
+        <span class="nl-kicker">Launch email</span>
+        <span id="nl-count" style="font-size:.82rem;"></span>
+        <span style="flex:1"></span>
+        <button type="button" id="nl-test">Send me a test</button>
+        <button type="button" class="nl-go" id="nl-go">Email all staff</button>
+        <p class="nl-msg" id="nl-msg"></p>
+    </div>
+</div>
+
+<script>
+(function () {
+    'use strict';
+
+    /* =================================================================
+     * THE LAUNCH EMAIL
+     *
+     * Sent once, to everyone on the roster, through send_newsletter.
+     * The copy lives here rather than being scraped from the module:
+     * the email is the nudge, the module is the detail.
+     *
+     * Locked while PREVIEW_ONLY is true (see the release switch above).
+     * SENT_LOCK_AFTER then stops a click months later re-announcing the
+     * launch. The release date isn't set yet — move it to about three
+     * weeks after release when you flip PREVIEW_ONLY.
+     * ================================================================= */
+    var SENT_LOCK_AFTER = '2026-11-30T23:59:00+04:00';
+
+    var COPY = {
+        subject:  'New required training: Anti-Bullying Policy — Teacher Awareness is now live on the Learning Hub',
+        issue:    'PD · Anti-Bullying Policy',
+        headline: 'Anti-Bullying Policy: Teacher Awareness — new required training is live',
+        intro:    'A self-paced course on the AISA Anti-Bullying Policy (revised May 2026) is now open on the '
+                + 'Learning Hub, and it is required for every member of staff. A big thank you to Joel Hunter, '
+                + 'who asked for this training and provided the policy and the outline it is built from — '
+                + 'it turns a long document into the few things every one of us needs to do when a student, '
+                + 'parent or colleague tells us about bullying.',
+        items: [
+            'Who: all AISA staff. Any member of staff can receive a report, so everyone needs to know the route.',
+            'Time: about 75 minutes, at your own pace. Your place is saved, so you can do it in more than one sitting.',
+            'What it covers: what bullying is (and isn’t), the three severity levels, how to report, what happens after a report, cyberbullying and the 24-hour escalation rule, consequences and support, students with additional learning needs, and prevention.',
+            'How it ends: a ten-question scenario check (80% to pass), a one-page “what I do next” job aid you can print, and a policy acknowledgement.',
+            'The one thing to remember now: if someone tells you about bullying, pass it to a counselor, Assistant Principal or Principal by email or Google Chat the same day.',
+            'You get a certificate on completion, and it counts towards your PD record on your Hub dashboard.',
+            'Thank you, Joel, for making this happen.'
+        ],
+        linkLabel: 'Start the course'
+    };
+
+    var lockMs = Date.parse(SENT_LOCK_AFTER);
+
+    var bar  = document.getElementById('nl-send');
+    var msg  = document.getElementById('nl-msg');
+    var go   = document.getElementById('nl-go');
+    var test = document.getElementById('nl-test');
+    var cnt  = document.getElementById('nl-count');
+    if (!bar || !window.aisaReady) return;
+
+    function say(t, tone) {
+        msg.textContent = t || '';
+        msg.style.color = tone === 'bad' ? '#fecaca' : (tone === 'good' ? '#bbf7d0' : '#f5f3ff');
+    }
+    function busy(on) { go.disabled = on || PREVIEW_ONLY; test.disabled = on; }
+
+    function explain(r) {
+        var e = (r && r.error) || 'unknown error';
+        if (e === 'mail_not_authorized') {
+            return 'The Apps Script project has not been given permission to send email. Open the '
+                 + 'Apps Script editor and run authorizeMail() once, as the account that owns the '
+                 + 'script, then try again.';
+        }
+        if (e === 'unknown_action') {
+            return 'The Apps Script backend has not been redeployed yet — Deploy → Manage '
+                 + 'deployments → New version. Nothing was sent.';
+        }
+        if (e === 'not_newsletter_sender') return 'Your account is not on the sender list.';
+        if (e === 'no_recipients') {
+            return 'No recipients found — the roster and sessions tabs are both empty of '
+                 + '@aisa.sch.ae addresses.';
+        }
+        return 'Not sent: ' + e + (r && r.message ? ' (' + r.message + ')' : '');
+    }
+
+    /* The page's own address, so no production host is hardcoded. */
+    function moduleUrl() { return location.origin + location.pathname; }
+
+    function send(opts) {
+        busy(true);
+        say(opts.testOnly ? 'Sending you a test…' : 'Sending…');
+        window.aisaAuth.sendNewsletter({
+            url: moduleUrl(), subject: COPY.subject, issue: COPY.issue,
+            headline: COPY.headline, intro: COPY.intro, items: COPY.items,
+            linkLabel: COPY.linkLabel,
+            testOnly: !!opts.testOnly, confirm: !opts.testOnly
+        }).then(function (r) {
+            busy(false);
+            if (!r || r.ok === false || r.error) { say(explain(r), 'bad'); return; }
+            var bits = [r.sent + ' sent'];
+            if (r.failed)  bits.push(r.failed + ' failed');
+            if (r.skipped) bits.push(r.skipped + ' skipped'
+                + (r.reason === 'daily_quota_exhausted'
+                    ? ' — today’s mail quota is used up, try again tomorrow'
+                    : ' — hit the 6-minute limit, click again to send the rest'));
+            say((r.test_only ? 'Test: ' : 'Done: ') + bits.join(', ') + '.',
+                (r.failed || r.skipped) ? 'bad' : 'good');
+        }).catch(function (e) { busy(false); say('Not sent: ' + e, 'bad'); });
+    }
+
+    test.addEventListener('click', function () { send({ testOnly: true }); });
+    go.addEventListener('click', function () {
+        if (PREVIEW_ONLY) {
+            say('Still in preview: staff would land on “Coming soon”. Release the module first '
+                + '(see CLAUDE.md), then send.', 'bad');
+            return;
+        }
+        if (Date.now() >= lockMs) {
+            say('The launch window has passed, so sending is locked. Rewrite COPY and move '
+                + 'SENT_LOCK_AFTER in this page before sending again.', 'bad');
+            return;
+        }
+        if (!window.confirm('Email the Anti-Bullying training launch announcement to all AISA staff?\n\n'
+            + 'It goes to everyone on the roster and thanks Joel Hunter by name. '
+            + 'Send yourself a test first if you have not.')) return;
+        send({ testOnly: false });
+    });
+
+    window.aisaReady(function (auth) {
+        if (!auth || !auth.newsletterStatus) return;
+        auth.newsletterStatus().then(function (r) {
+            if (!r || !r.may_send) return;      // not a sender: the bar stays hidden
+            bar.hidden = false;
+            document.body.style.paddingBottom = '6rem';
+            cnt.textContent = (r.recipients || 0) + ' staff on the list';
+            if (PREVIEW_ONLY) {
+                go.disabled = true;
+                say('Preview: “Send me a test” works now. “Email all staff” unlocks once the '
+                    + 'module is released.', '');
+            } else if (Date.now() >= lockMs) {
+                say('The launch window has passed — sending is locked. Rewrite COPY and move '
+                    + 'SENT_LOCK_AFTER in this page first.', 'bad');
+                go.disabled = true;
+            } else if (r.mail_authorized === false) {
+                say('Email is not switched on yet: run authorizeMail() once from the Apps Script '
+                    + 'editor, as the account that owns the script. Nothing will send until you do.', 'bad');
+            } else if (r.quota_left != null && r.quota_left < (r.recipients || 0)) {
+                say('Heads up: ' + r.quota_left + ' emails left in today’s quota, '
+                    + (r.recipients || 0) + ' recipients. Anything over reports as skipped.', 'bad');
+            }
+        }).catch(function () { /* no backend yet: leave the bar hidden */ });
+    });
+})();
+</script>
+</body>
+</html>
