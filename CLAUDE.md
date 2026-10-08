@@ -746,12 +746,19 @@ regression. It is in `MODULES` in `admin-dashboard.html`, `dashboard.html`
 and `admin-charts.html`, carries `data-required="true"` on pd.html, and
 is listed in `menu.js` and `search-index.js` (pins `?v=17` / `?v=11`).
 
+**Due Friday 30 October 2026** (set 8 October). The date is static text
+in four places: the module's hero chip, the pd.html card (lede and meta
+row), and the email `COPY` (subject, intro, first item). It is **not**
+in `menu.js` or `search-index.js`, deliberately — putting it there would
+have cost another `?v=` cascade for a date that will be stale in a month.
+Move all four together if the deadline moves.
+
 **The launch email** is a mail bar at the bottom of the module page,
 the same component as the AI Literacy Hub's: hidden for everyone but
 `NEWSLETTER_SENDERS`, rides `send_newsletter` (no backend change), links
 to the module's own URL, and thanks Ms van Jaarsveldt by name. The copy
 is `COPY` in the page's last script. It locks itself after
-`SENT_LOCK_AFTER` (31 October 2026) so a stray click later cannot
+`SENT_LOCK_AFTER` (the due date, 30 October 2026) so a stray click later cannot
 re-announce a launch; to send a reminder, rewrite `COPY` first.
 
 ## AI Literacy Hub — added 20 September 2026
