@@ -2,8 +2,8 @@
  * Simulator for the Apps Script backend (auth/apps-script/) — run it with:
  *
  *     node tests/apps-script-sim.js
- *     node tests/apps-script-sim.js --baseline old-apps-script.gs
- *     node tests/apps-script-sim.js --baseline old-apps-script.gs --strict
+ *     node tests/apps-script-sim.js --baseline /tmp/old/auth/apps-script --strict
+ *     node tests/apps-script-sim.js --baseline /tmp/old-apps-script.gs
  *     node tests/apps-script-sim.js --backend some/other/backend
  *
  * No dependencies. Exits 0 on pass, 1 on failure.
@@ -49,8 +49,11 @@
  *     mkdir /tmp/old && git archive HEAD auth/apps-script | tar -x -C /tmp/old
  *     node tests/apps-script-sim.js --baseline /tmp/old/auth/apps-script --strict
  *
- *   (Before 13 October 2026 the backend was one file:
- *   git show <commit>:auth/apps-script.gs > /tmp/old.gs gives a baseline.)
+ *   Before 13 October 2026 the backend was one file, and a single file
+ *   works as a baseline too: git show 2419114:auth/apps-script.gs > /tmp/old.gs
+ *
+ * The planted bugs listed in CLAUDE.md (a missing _bump, an unchecked row
+ * hint) make the default run fail without any baseline.
  *
  * Every request runs in a FRESH copy of the script, as Apps Script does:
  * globals do not survive between requests there, and a test that let them

@@ -2,13 +2,78 @@
 
 Notes for future sessions on The Learning Hub.
 
+## Apps Script backend — fifteen files since 13 October 2026
+
+`auth/apps-script.gs`, one 3,339-line file, is now **`auth/apps-script/`**:
+fifteen `.gs` files grouped by job, and a `README.md` that is the deploy
+guide and the map of what is where. Apps Script loads every file of a
+project into one shared scope, so nothing calls anything differently.
+Done at Brandon's request: "it shouldn't just be one page".
+
+**The first deploy after the split is a one-time switch**, written out step
+by step in that README: replace `Code.gs` in the editor with
+`00_settings.gs`, add the other fourteen, Run → `checkHubInstall`, then a
+new version of the existing deployment. Until Brandon does it, the live
+backend is whatever was last deployed from the old single file. That is
+fine: the fifteen files behave exactly as that file's final version did,
+bar the dwell-migration fix below. Point Brandon at the README rather than
+re-explaining it, and never suggest "New deployment".
+
+**Behaviour did not change, and that was proved, not assumed.** The code
+moved verbatim: a script cut the old file into its 189 declarations and
+placed each exactly once. The tidy-up after it (`_sheet()`, `_rowFrom()`,
+the `ACTIONS` table, a shared mail loop) was checked with the simulator's
+`--strict` comparison against the old file: every response byte for byte,
+every cell, every email, the cache contents, and every sheet read and
+write, across all scenarios. Tab names, column lists and cache keys are
+untouched, so the new code reads and writes exactly the cells the old one
+did, and even the live cache stays valid across the switch.
+
+The one deliberate behaviour change is a bug fix: `migrateDwellToPerModule()`
+compared timestamps as text and could write `"Sun Sep 20 2026 …"` into the
+dwell tab. It now goes through `_tsMs`/`_isoOut` like every other reader.
+
+**Rules for the files** (`node tests/apps-script-sim.js` fails on each):
+
+- **No top-level code reads a name from another file.** The editor decides
+  the load order, and a person pasting by hand decides the editor's order.
+  Top level is literal constants and function declarations; `ACTIONS` in
+  `02_router.gs` is allowed because its handlers only run on a request.
+  The simulator loads each file alone, then all of them reversed and
+  shuffled, and demands identical results.
+- **No name declared twice across files.** Apps Script then refuses to load
+  the project. This is also why the old `Code.gs` must be replaced, not
+  kept beside the new files: the simulator checks that combination fails
+  to load at all, rather than running half-old, half-new.
+- **Every file ends with `function endOf_<file>_() {}`** (trailing
+  underscore keeps it out of the Run menu) and has a line in `_hubFiles()`
+  in `02_router.gs`. `checkHubInstall()` and `doGet()` use them to name a
+  file that is missing or was cut short while pasting; opening the `/exec`
+  URL shows `"files":"all 15 present"`. A new file needs both, plus a line
+  in the tables in the README and at the top of `00_settings.gs`.
+- **Rows by column name.** Write with `_rowFrom(HEADERS, {...})`, which
+  throws on a misspelt column rather than writing a blank cell. Read with
+  `_dataRows()` and `_colIndex()`. Never `row[5]`.
+- **Who may call what is the `ACTIONS` table** in `02_router.gs`: `admin`,
+  `newsletter` and `fresh` flags per action. A new endpoint is one line
+  there; the simulator's permissions section checks a teacher is refused
+  every admin-only action, so add new ones to `ADMIN_ONLY` in the test.
+- **Editor-run functions all live in `90_editor_tools.gs`** —
+  `checkHubInstall`, `authorizeMail`, `auditHubData`, `flushHubCache`,
+  `warmHubCache`, `migrateDwellToPerModule` — so opening that one file
+  gives a clean Run menu.
+
+`auth/gate.js` still says `auth/apps-script.gs` in two comments. Left
+alone on purpose: any edit to `gate.js` means the `?v=N` cascade across
+every page. Fix them the next time `gate.js` changes anyway.
+
 ## Apps Script — pending redeploy
 
-`auth/apps-script.gs` has uncommitted-on-Google changes from recent
-commits that need to be pasted into the Apps Script project and
-redeployed (Deploy → Manage deployments → New version). The URL in
-`gate.js` stays the same. Until the redeploy happens, the new endpoints
-fail silently and the dependent UIs stay empty:
+The backend in `auth/apps-script/` (see above) has uncommitted-on-Google
+changes from recent commits that need to be pasted into the Apps Script
+project and redeployed (Deploy → Manage deployments → New version). The
+URL in `gate.js` stays the same. Until the redeploy happens, the new
+endpoints fail silently and the dependent UIs stay empty:
 
 - **Abu Dhabi timezone:** `nowIsoLocal()` writes `+04:00` instead of
   UTC `Z` for all new rows. Existing rows untouched.
@@ -73,7 +138,7 @@ fail silently and the dependent UIs stay empty:
   `authorizeMail()` instead. It returns `not_callable_from_editor`
   rather than throwing, to say so.
 
-  **Who can send is `NEWSLETTER_SENDERS` at the top of `apps-script.gs`**
+  **Who can send is `NEWSLETTER_SENDERS` in `auth/apps-script/00_settings.gs`**
   — currently `bbaki@` and `hodai@`. Deliberately **not** the `admins`
   tab: every SLT admin can post a bell notification, but mailing the
   whole school is a bigger button. Edit that array to change it. The
@@ -140,7 +205,7 @@ fail silently and the dependent UIs stay empty:
   banner instead of rendering empty.
 
   **Required entries are enforced twice** — in the page, and again in
-  `SURVEY_SPECS` in `apps-script.gs`. That double check is the entire
+  `SURVEY_SPECS` in `auth/apps-script/41_surveys.gs`. That double check is the entire
   reason this stopped being a Google Form, so if you add a question that
   must be answered, add its key to `required` there too. Otherwise it is
   only a suggestion. The ten focus-area names are pinned in
@@ -149,7 +214,7 @@ fail silently and the dependent UIs stay empty:
   submissions start bouncing with `missing_required`.
 
   **Two pieces of optional setup**, both safe to skip:
-  1. `SURVEYS_SPREADSHEET_ID` at the top of `apps-script.gs` is empty,
+  1. `SURVEYS_SPREADSHEET_ID` in `auth/apps-script/00_settings.gs` is empty,
      so survey rows land in the spreadsheet the script is bound to.
      Paste a spreadsheet ID there to move **only** the survey data into
      its own workbook — worth doing if secondary SLT should see the goal
@@ -359,7 +424,7 @@ loads extremely slowly or not at all". The Apps Script was up to date.
 
 ### The backend: a read cache that only ever holds copies
 
-`apps-script.gs` has a *Read cache* section. `CacheService.getScriptCache()`
+`auth/apps-script/04_cache.gs` is the read cache. `CacheService.getScriptCache()`
 is shared by every execution and answers in milliseconds. The rules, which
 `tests/apps-script-sim.js` enforces:
 
@@ -448,19 +513,29 @@ the sign-in screen. Both declarations now sit with the transport state.
 ### Tests
 
 ```
-node tests/apps-script-sim.js                         # after touching apps-script.gs
-node tests/apps-script-sim.js --baseline <old.gs>     # to compare with an older backend
-node tests/gate-smoke.js                              # after touching gate.js
+node tests/apps-script-sim.js                                # after touching auth/apps-script/
+node tests/apps-script-sim.js --baseline <old> --strict      # a change meant to alter nothing
+node tests/apps-script-sim.js --baseline <old>               # lenient: a backend from before the cache
+node tests/gate-smoke.js                                     # after touching gate.js
 ```
 
-The simulator runs the real `apps-script.gs` against a fake spreadsheet and
-cache, each request in a fresh copy of the script (Apps Script keeps no
-globals between requests; a test that did would hide the bugs worth
-finding). It runs one long scenario with the cache working and with the
-cache throwing on every call, and demands identical responses and an
-identical final spreadsheet. `git show <commit>:auth/apps-script.gs >
-old.gs` gives a baseline. Both files break loudly when a planted bug — a
-missing `_bump`, an unchecked row hint — is put in.
+The simulator runs the real backend files against a fake spreadsheet,
+cache and MailApp, each request in a fresh copy of the script (Apps Script
+keeps no globals between requests; a test that did would hide the bugs
+worth finding). Four scenarios — main, edge cases (every validation error,
+every refusal, every way mail fails), an empty spreadsheet, and the editor
+tools — run with the cache working and with it throwing on every call, and
+must give identical responses and an identical final spreadsheet. It also
+checks the file rules above, the permissions, and the dwell migration.
+
+`<old>` is a file or a folder. For the folder at the last commit:
+`mkdir /tmp/old && git archive HEAD auth/apps-script | tar -x -C /tmp/old`,
+then `--baseline /tmp/old/auth/apps-script`. For the backend before the
+split, `git show 2419114:auth/apps-script.gs > /tmp/old.gs`. `--strict`
+forgives nothing (responses byte for byte, cells, emails, cache contents,
+sheet reads and writes); it caught each of four planted one-character
+changes. Without a baseline, both test files still break loudly when a
+planted bug — a missing `_bump`, an unchecked row hint — is put in.
 
 ## First-login popups — removed 17 September 2026
 
@@ -550,7 +625,9 @@ make raw cells untrustworthy:
 This bit `getCompletionsFor()` and `adminOverview()` (both the
 "latest completion per person x module" pick and `last_seen`), so the
 tracker could show a stale completion date and a wrong last-seen. Fixed
-16 Sept 2026. `_isDate()` uses `Object.prototype.toString`, not
+16 Sept 2026. `migrateDwellToPerModule()` had the same bug and kept it
+until 13 Oct 2026; the simulator now feeds it a `Z` row, a `+04:00` row
+and a date-typed cell. `_isDate()` uses `Object.prototype.toString`, not
 `instanceof` — `instanceof Date` is false for a Date from another realm.
 
 The same class of bug hits the client: sort by `Date.parse(...)`, never
@@ -563,11 +640,11 @@ lowercase now.
 
 ## Diagnosing "the dashboard doesn't match the spreadsheet"
 
-Run **`auditHubData()`** from the Apps Script editor (Run →
-auditHubData). Reads only, changes nothing, prints a report. It covers
-the three things that cause a silent mismatch:
+Run **`auditHubData()`** from the Apps Script editor (open
+`90_editor_tools`, then Run → auditHubData). Reads only, changes nothing,
+prints a report. It covers the three things that cause a silent mismatch:
 
-1. **Header drift.** Every reader in `apps-script.gs` addresses columns
+1. **Header drift.** Every reader in the backend addresses columns
    **by position**, using the `*_HEADERS` constants as the map. Insert,
    delete or reorder a column by hand in the spreadsheet and every read
    after it silently returns the wrong field — no error, just wrong

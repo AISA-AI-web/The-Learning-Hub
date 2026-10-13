@@ -24,7 +24,7 @@
  * their copy.
  *
  * Required means required: the same rules are enforced again on the
- * server (SURVEY_SPECS in auth/apps-script.gs). If you add a question
+ * server (SURVEY_SPECS in auth/apps-script/41_surveys.gs). If you add a question
  * here that must be answered, add its key there too — otherwise it is
  * only a suggestion.
  */
@@ -44,7 +44,7 @@
      *
      * `name` is the stored value AND the value the server validates
      * against, so changing one means changing SURVEY_SPECS.choices
-     * .focus_area in auth/apps-script.gs to match, or submissions start
+     * .focus_area in auth/apps-script/41_surveys.gs to match, or submissions start
      * bouncing.
      * ------------------------------------------------------------------ */
     var FOCUS_AREAS = [
@@ -148,7 +148,7 @@
      * ------------------------------------------------------------------ */
 
     /* Every answer lives here. Keys match SURVEY_SPECS.fields in
-     * auth/apps-script.gs — the server drops anything it doesn't know. */
+     * auth/apps-script/41_surveys.gs — the server drops anything it doesn't know. */
     var answers = {
         name: '', email: '', department: '', at_aisa_last_year: '',
         focus_area: '', goal: '', if_then: '',
