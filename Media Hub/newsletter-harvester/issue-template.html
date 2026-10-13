@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<!--
+    DIGITAL LION ISSUE TEMPLATE
+    Built from Media Hub/sep18.html (Issue No. 5), so a new issue looks
+    exactly like the current series: Poppins/Inter/Cairo, navy #0b2545,
+    cyan, amber. This is deliberately not the AISA purple-and-gold brand.
+
+    How to use it:
+    - Save a copy as Media Hub/<mon><day>.html (for example oct19.html),
+      then fill it in.
+    - Replace every {{…}} placeholder. {{EN: …}} is English and {{AR: …}}
+      is its Arabic. Every lang-en span needs a lang-ar sibling straight
+      after it, or the sentence vanishes for Arabic readers.
+    - Below <main> is a menu of COMPONENTS. Copy each one as many times as
+      the issue needs, in the order the issue needs, and delete the ones
+      you don't use, including the KEY DATES block if there is only one
+      date.
+    - Mark anything Brandon must verify with an HTML comment beside it
+      that starts "CHECK:". check-issue.py lists every one, and they come
+      out before publishing.
+    - Run:  python3 "Media Hub/newsletter-harvester/check-issue.py" <file>
+      and fix everything it reports.
+    - Delete this comment block from the finished issue.
+
+    Arabic conventions, copied from Issue No. 5:
+    - Address readers in the formal plural (أنتم، لكم، افتحوا).
+    - Use Eastern Arabic digits for dates and numbers inside lang-ar
+      spans (١٨ سبتمبر، ٣:١٠).
+    - Wrap Latin runs that must keep their direction (email addresses,
+      URLs, PASS) in <span class="ltr">.
+    - Write issue numbers as ordinal words: السادس (6), السابع (7),
+      الثامن (8), التاسع (9), العاشر (10).
+-->
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Digital Lion Newsletter — {{EN: Month Day, e.g. October 19}}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: { primary: '#0b2545', secondary: '#0891b2', accent: '#f59e0b' },
+                        animation: { 'blob': 'blob 7s infinite' },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(8, 47, 73, 0.25); }
+        .hero-gradient { background: linear-gradient(135deg, #0a1929 0%, #0b3559 35%, #0e6e91 75%, #0891b2 100%); }
+        .hero-overlay {
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(34, 211, 238, 0.18) 0, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(251, 191, 36, 0.15) 0, transparent 45%);
+        }
+
+        /* --- Headline CTA: pulsing amber glow on the lead item's button --- */
+        .hub-cta { animation: hubPulse 2.4s ease-in-out infinite; }
+        @keyframes hubPulse {
+            0%, 100% { box-shadow: 0 6px 18px 0 rgba(245, 158, 11, 0.55), 0 0 0 0 rgba(245, 158, 11, 0.5); }
+            50%      { box-shadow: 0 12px 30px 0 rgba(245, 158, 11, 0.65), 0 0 0 14px rgba(245, 158, 11, 0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hub-cta { animation: none; }
+        }
+
+        /* --- Bilingual toggle: show only the active language --- */
+        html[lang="en"] .lang-ar { display: none !important; }
+        html[lang="ar"] .lang-en { display: none !important; }
+
+        /* Arabic typography */
+        html[lang="ar"] body,
+        html[lang="ar"] .font-heading { font-family: 'Cairo', 'Inter', sans-serif; }
+        html[lang="ar"] .uppercase { text-transform: none; letter-spacing: normal; }
+        html[lang="ar"] .tracking-widest,
+        html[lang="ar"] .tracking-wider { letter-spacing: normal; }
+
+        /* RTL flow: flip directional margins and arrow icons */
+        html[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+        html[dir="rtl"] .mr-1\.5 { margin-right: 0; margin-left: 0.375rem; }
+        html[dir="rtl"] .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+        html[dir="rtl"] .mr-3 { margin-right: 0; margin-left: 0.75rem; }
+        html[dir="rtl"] .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+        html[dir="rtl"] .text-left { text-align: right; }
+
+        /* Latin runs inside Arabic sentences keep their own direction */
+        .ltr { direction: ltr; unicode-bidi: isolate; }
+
+        /* Newsletter mail-out bar. Deliberately off-palette (AISA purple,
+           not the Digital Lion navy) so it never reads as content. */
+        #nl-send { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+                   background: #21076C; color: #fff; padding: .85rem 1rem;
+                   box-shadow: 0 -8px 24px -12px rgba(0,0,0,.6); }
+        #nl-send .nl-inner { max-width: 56rem; margin: 0 auto; display: flex;
+                             flex-wrap: wrap; align-items: center; gap: .6rem .9rem; }
+        #nl-send .nl-kicker { font-size: .62rem; font-weight: 800; letter-spacing: .09em;
+                              text-transform: uppercase; color: #D8B664; }
+        #nl-send button { font: inherit; font-weight: 700; font-size: .8rem; cursor: pointer;
+                          border-radius: 999px; padding: .5rem 1.1rem; border: 2px solid #D8B664; }
+        #nl-send .nl-go   { background: #D8B664; color: #21076C; }
+        #nl-send .nl-test { background: transparent; color: #D8B664; }
+        #nl-send button[disabled] { opacity: .55; cursor: not-allowed; }
+        #nl-send .nl-msg { font-size: .78rem; color: #E9E4F7; flex-basis: 100%; margin: 0; }
+
+        /* Key-dates table */
+        .dates-table th, .dates-table td { padding: 0.7rem 0.9rem; vertical-align: top; }
+        .dates-table tbody tr + tr { border-top: 1px solid rgba(207, 250, 254, 0.16); }
+    </style>
+    <!-- Use the same gate.js ?v= pin as every other page; check-issue.py checks it. -->
+    <script src="../auth/gate.js?v=26"></script>
+</head>
+<body class="bg-slate-50 text-gray-800 min-h-screen flex flex-col">
+
+<!-- Hero -->
+    <section class="hero-gradient text-white relative overflow-hidden">
+        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
+        <div class="absolute -top-20 -left-20 w-72 h-72 bg-cyan-400/25 rounded-full blur-3xl animate-blob"></div>
+        <div class="absolute -bottom-24 -right-16 w-80 h-80 bg-amber-300/25 rounded-full blur-3xl animate-blob" style="animation-delay: 2s;"></div>
+        <div class="container mx-auto px-6 py-12 md:py-16 relative z-10 max-w-4xl">
+
+            <figure class="mb-8 flex justify-center">
+                <img src="the_digital_lion_logo.png" alt="Digital Lion — AISA's Teaching &amp; Learning newsletter" class="w-full max-w-2xl rounded-2xl shadow-2xl border border-white/20">
+            </figure>
+            <p class="text-xs font-bold uppercase tracking-widest text-amber-300 text-center mb-4">
+                <span class="lang-en">Issue No. {{EN: 6}} &middot; {{EN: October 19}}</span>
+                <span class="lang-ar">العدد {{AR: السادس}} · {{AR: ١٩ أكتوبر}}</span>
+            </p>
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-5 drop-shadow-lg text-center">
+                <span class="lang-en">{{EN: Headline — what this issue is about}}</span>
+                <span class="lang-ar">{{AR: Headline}}</span>
+            </h2>
+            <p class="text-lg md:text-xl max-w-3xl mx-auto text-cyan-50 drop-shadow text-center">
+                <span class="lang-en">{{EN: Two or three sentences: what's happening, what's coming, and what — if anything — staff need to do.}}</span>
+                <span class="lang-ar">{{AR: Standfirst}}</span>
+            </p>
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm">
+                <span class="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3 py-1 font-semibold">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span class="lang-en">{{EN: October 19}}</span>
+                    <span class="lang-ar">{{AR: ١٩ أكتوبر}}</span>
+                </span>
+                <span class="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3 py-1 font-semibold">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-5.13a4 4 0 11-8 0 4 4 0 018 0zm6 3a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span class="lang-en">{{EN: For All Staff | For All Teaching Staff}}</span>
+                    <span class="lang-ar">{{AR: لجميع الموظفين | لجميع الطاقم التدريسي}}</span>
+                </span>
+            </div>
+            <p class="mt-5 text-center text-sm text-cyan-100/90">
+                <span class="lang-en">Every item below says who it's for. Skip anything that isn't yours.</span>
+                <span class="lang-ar">يوضّح كل بند أدناه الفئة المعنيّة به. تجاوزوا ما لا يخصّكم.</span>
+            </p>
+        </div>
+    </section>
+
+    <!-- Main -->
+    <main class="flex-grow">
+        <div class="container mx-auto px-6 py-14 max-w-4xl">
+
+            <!-- ============================================================
+                 COMPONENTS: copy, fill, reorder and delete as needed.
+                 The usual order: key dates, then the lead item, then the
+                 other items by tier, then smaller upgrades, then worth
+                 knowing, then coming soon, then the sign-off.
+                 ============================================================ -->
+
+            <!-- ===================== COMPONENT: KEY DATES =====================
+                 Use it when the issue carries two or more dates staff must act
+                 on. One <tr> per date, soonest first. -->
+            <section class="bg-blue-950 text-cyan-50 rounded-2xl shadow-lg border-t-8 border-amber-400 p-6 md:p-8 mb-10">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-amber-300 mb-1">
+                    <span class="lang-en">Read this bit if you read nothing else</span>
+                    <span class="lang-ar">إن لم تقرأوا شيئًا سوى هذا</span>
+                </p>
+                <h3 class="text-2xl md:text-3xl font-heading font-extrabold mb-5">
+                    <span class="lang-en">Key dates</span>
+                    <span class="lang-ar">المواعيد المهمّة</span>
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="dates-table w-full text-sm text-left">
+                        <thead>
+                            <tr class="text-[11px] uppercase tracking-widest text-amber-300 border-b border-cyan-200/20">
+                                <th scope="col"><span class="lang-en">Date</span><span class="lang-ar">التاريخ</span></th>
+                                <th scope="col"><span class="lang-en">What</span><span class="lang-ar">الحدث</span></th>
+                                <th scope="col"><span class="lang-en">Who it's for</span><span class="lang-ar">الفئة المعنيّة</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-bold text-amber-200 whitespace-nowrap"><span class="lang-en">{{EN: Wed, Oct 21}}</span><span class="lang-ar">{{AR: الأربعاء ٢١ أكتوبر}}</span></td>
+                                <td><span class="lang-en">{{EN: What happens}}</span><span class="lang-ar">{{AR: What happens}}</span></td>
+                                <td class="text-cyan-100/85"><span class="lang-en">{{EN: Who it's for}}</span><span class="lang-ar">{{AR: Who it's for}}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ===================== COMPONENT: LEAD ITEM =====================
+                 Exactly one per issue: the strongest Tier 1 item. It has the
+                 amber gradient and the pulsing button. If staff must act on
+                 it before anything else, end the For: line with
+                 " · Do this first" / " · ابدأوا بهذا". -->
+            <section class="bg-gradient-to-br from-amber-50 via-white to-cyan-50 rounded-2xl shadow-lg border-t-8 border-amber-500 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-200 via-amber-100 to-cyan-100 flex items-center justify-center">
+                            <span class="text-3xl">{{EMOJI}}</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-700 mb-1">
+                            <span class="lang-en">For: {{EN: audience}}</span>
+                            <span class="lang-ar">لِمَن: {{AR: audience}}</span>
+                        </p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-3">
+                            <span class="lang-en">{{EN: Item headline, with the date if there is one}}</span>
+                            <span class="lang-ar">{{AR: Item headline}}</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            <span class="lang-en">{{EN: What it is, why it matters, what to do and by when. Bold the date and the action.}}</span>
+                            <span class="lang-ar">{{AR: Body}}</span>
+                        </p>
+                        <a href="{{RELATIVE LINK, e.g. ../PD%20Modules/sustainability-module.html}}" class="hub-cta inline-flex items-center justify-center bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3 rounded-full font-bold hover:from-amber-600 hover:to-orange-600 transition-transform hover:scale-105 mb-6">
+                            <span class="mr-2">{{EMOJI}}</span>
+                            <span class="lang-en">{{EN: Open the module}}</span>
+                            <span class="lang-ar">{{AR: افتحوا الوحدة}}</span>
+                        </a>
+                        <!-- Optional: a "What's in it" list -->
+                        <h4 class="font-heading font-bold text-blue-950 mb-2">
+                            <span class="lang-en">{{EN: What's in it}}</span>
+                            <span class="lang-ar">{{AR: ماذا تتضمّن}}</span>
+                        </h4>
+                        <ul class="space-y-2 text-gray-700 leading-relaxed mb-2 list-disc ps-5 marker:text-amber-600">
+                            <li>
+                                <span class="lang-en">{{EN: Point}}</span>
+                                <span class="lang-ar">{{AR: Point}}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== COMPONENT: ITEM =====================
+                 The standard card, one per item. Pick a colour set and keep
+                 its three parts together, rotating colours down the page as
+                 Issue No. 5 does:
+                   cyan  → border-cyan-600  · eyebrow text-cyan-700  · tile from-cyan-100 to-blue-100
+                   amber → border-amber-500 · eyebrow text-amber-700 · tile from-amber-100 to-cyan-100
+                   navy  → border-blue-900  · eyebrow text-blue-800  · tile from-blue-100 to-cyan-100
+                 Inside the card, use whichever of these you need, in any order:
+                 paragraph, cyan note, amber note, navy button, text link. -->
+            <section class="bg-white rounded-2xl shadow-lg border-t-8 border-cyan-600 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-cyan-100 to-blue-100 flex items-center justify-center">
+                            <span class="text-3xl">{{EMOJI}}</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-700 mb-1">
+                            <span class="lang-en">For: {{EN: audience}}</span>
+                            <span class="lang-ar">لِمَن: {{AR: audience}}</span>
+                        </p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-3">
+                            <span class="lang-en">{{EN: Item headline}}</span>
+                            <span class="lang-ar">{{AR: Item headline}}</span>
+                        </h3>
+                        <!-- paragraph -->
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            <span class="lang-en">{{EN: Body}}</span>
+                            <span class="lang-ar">{{AR: Body}}</span>
+                        </p>
+                        <!-- cyan note: context, a how-to, or "who runs it" -->
+                        <div class="bg-cyan-50 border-s-4 border-cyan-500 rounded-xl p-5 mb-4">
+                            <h4 class="font-heading font-bold text-blue-950 mb-2">
+                                <span class="lang-en">{{EN: Note heading}}</span>
+                                <span class="lang-ar">{{AR: Note heading}}</span>
+                            </h4>
+                            <p class="text-sm text-gray-700 leading-relaxed">
+                                <span class="lang-en">{{EN: Note body}}</span>
+                                <span class="lang-ar">{{AR: Note body}}</span>
+                            </p>
+                        </div>
+                        <!-- amber note: a caveat, or "not enrolled yet? email me" -->
+                        <div class="bg-amber-50 border-s-4 border-amber-500 rounded-xl p-4 mb-4">
+                            <p class="text-sm text-gray-800 leading-relaxed">
+                                <span class="lang-en"><strong>{{EN: Lead-in.}}</strong> {{EN: Caveat}}</span>
+                                <span class="lang-ar"><strong>{{AR: Lead-in.}}</strong> {{AR: Caveat}}</span>
+                            </p>
+                        </div>
+                        <!-- navy button: the item's main link -->
+                        <a href="{{LINK}}" class="inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-cyan-700 text-white px-6 py-2.5 rounded-full font-bold hover:from-blue-950 hover:to-cyan-800 transition-transform hover:scale-105">
+                            <span class="mr-2">{{EMOJI}}</span>
+                            <span class="lang-en">{{EN: Button label}}</span>
+                            <span class="lang-ar">{{AR: Button label}}</span>
+                        </a>
+                        <!-- text link: a secondary link -->
+                        <a href="{{LINK}}" class="inline-flex items-center text-sm font-bold text-cyan-800 hover:text-cyan-900">
+                            <span class="mr-2">{{EMOJI}}</span>
+                            <span class="lang-en">{{EN: Link label}}</span>
+                            <span class="lang-ar">{{AR: Link label}}</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== COMPONENT: SMALLER UPGRADES =====================
+                 Tier 3: one-liners, two to six of them. Each gets a mini
+                 heading and one or two sentences. -->
+            <section class="bg-white rounded-2xl shadow-lg border-t-8 border-blue-900 card-hover p-7 md:p-9 mb-8">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-blue-800 mb-1">
+                    <span class="lang-en">For: {{EN: everyone}}</span>
+                    <span class="lang-ar">لِمَن: {{AR: الجميع}}</span>
+                </p>
+                <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-5">
+                    <span class="lang-en">Smaller upgrades worth a mention</span>
+                    <span class="lang-ar">تحديثات أصغر تستحق الذكر</span>
+                </h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                        <h4 class="font-heading font-bold text-blue-950 mb-1">
+                            <span class="mr-1.5">{{EMOJI}}</span>
+                            <span class="lang-en">{{EN: Upgrade}}</span>
+                            <span class="lang-ar">{{AR: Upgrade}}</span>
+                        </h4>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            <span class="lang-en">{{EN: One or two sentences.}}</span>
+                            <span class="lang-ar">{{AR: One or two sentences.}}</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== COMPONENT: WORTH KNOWING =====================
+                 Tier 4, at the end: advanced tools, or a competitor feature
+                 with an honest opinion. Say plainly if a tool is not on the
+                 Approved Tools Register. -->
+            <section class="bg-gradient-to-br from-blue-50 via-white to-cyan-50 rounded-2xl shadow-lg border-t-8 border-blue-900 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center">
+                            <span class="text-3xl">{{EMOJI}}</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-blue-800 mb-1">
+                            <span class="lang-en">Worth knowing &middot; For: {{EN: audience, e.g. tinkerers}}</span>
+                            <span class="lang-ar">للاطّلاع · لِمَن: {{AR: audience}}</span>
+                        </p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-3">
+                            <span class="lang-en">{{EN: Headline}}</span>
+                            <span class="lang-ar">{{AR: Headline}}</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed">
+                            <span class="lang-en">{{EN: Body, with an honest opinion if there is one}}</span>
+                            <span class="lang-ar">{{AR: Body}}</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== COMPONENT: COMING SOON =====================
+                 Only for work genuinely in progress. Never for AISA dates
+                 that haven't been announced. -->
+            <section class="bg-white rounded-2xl shadow-lg border-t-8 border-amber-500 card-hover p-7 md:p-9 mb-8">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-amber-700 mb-1">
+                    <span class="lang-en">On the roadmap</span>
+                    <span class="lang-ar">على خارطة الطريق</span>
+                </p>
+                <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-5">
+                    <span class="lang-en">Coming soon</span>
+                    <span class="lang-ar">قريبًا</span>
+                </h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-amber-50/60 border border-amber-200 rounded-xl p-5">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-700 mb-1">
+                            <span class="lang-en">{{EN: In progress | Planned}}</span>
+                            <span class="lang-ar">{{AR: قيد التنفيذ | مخطَّط له}}</span>
+                        </p>
+                        <h4 class="font-heading font-bold text-blue-950 mb-1">
+                            <span class="lang-en">{{EN: What}}</span>
+                            <span class="lang-ar">{{AR: What}}</span>
+                        </h4>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            <span class="lang-en">{{EN: One or two sentences.}}</span>
+                            <span class="lang-ar">{{AR: One or two sentences.}}</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================== SIGN-OFF (keep) ===================== -->
+            <section class="bg-blue-950 text-cyan-50 rounded-2xl shadow-lg p-7 md:p-9 text-center">
+                <h3 class="text-2xl font-heading font-bold mb-3">
+                    <span class="lang-en">Questions?</span>
+                    <span class="lang-ar">أسئلة؟</span>
+                </h3>
+                <p class="text-cyan-100/90 mb-5">
+                    <span class="lang-en">Email me any time — especially if something above doesn't match what you're seeing.</span>
+                    <span class="lang-ar">راسلوني في أي وقت — خصوصًا إن كان شيء مما سبق لا يطابق ما ترونه.</span>
+                </p>
+                <a href="mailto:bbaki@aisa.sch.ae" class="inline-flex items-center justify-center bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3 rounded-full font-bold hover:from-amber-600 hover:to-orange-600 transition-transform hover:scale-105 ltr">
+                    <span class="mr-2">✉️</span> bbaki@aisa.sch.ae
+                </a>
+                <p class="mt-6 text-sm font-semibold text-amber-300">
+                    <span class="lang-en">Brandon Baki &middot; Head of AI and Innovation</span>
+                    <span class="lang-ar">براندون باكي · رئيس قسم الذكاء الاصطناعي والابتكار</span>
+                </p>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="bg-blue-950 text-cyan-100 mt-auto">
+        <div class="h-1 bg-gradient-to-r from-blue-950 via-cyan-500 to-amber-400 w-full"></div>
+        <div class="container mx-auto px-6 py-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <img src="../assets/brand/aisa-seal-white.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
+                <span class="font-heading font-bold text-lg tracking-wide">
+                    <span class="lang-en">AISA Media Hub</span>
+                    <span class="lang-ar">مركز الإعلام في AISA</span>
+                </span>
+            </div>
+            <p class="text-xs text-cyan-200/80">
+                <span class="lang-en">American International School in Abu Dhabi &middot; Teaching &amp; Learning Department</span>
+                <span class="lang-ar">المدرسة الأمريكية الدولية في أبوظبي · قسم التعليم والتعلم</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Mail-out bar. Rendered only for the addresses the server's
+         NEWSLETTER_SENDERS allowlist names. Hiding it is a courtesy, not a
+         control: send_newsletter re-checks the caller server-side, because
+         the Hub's sign-in gate is client-side and this repo is public. -->
+    <div id="nl-send" hidden>
+        <div class="nl-inner">
+            <span class="nl-kicker">Newsletter tools</span>
+            <span id="nl-count" style="font-size:.82rem;"></span>
+            <span style="flex:1"></span>
+            <button type="button" class="nl-test" id="nl-test">Send me a test</button>
+            <button type="button" class="nl-go" id="nl-go">Email all staff</button>
+            <p class="nl-msg" id="nl-msg"></p>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        /* What the email says. Kept here rather than scraped from the page
+           so the trailer can be shorter and blunter than the issue itself.
+           Rewrite all four for every issue, or it mails the last one's summary. */
+        var ISSUE    = 'Issue No. {{6}} · {{October 19}}';
+        var HEADLINE = "{{Headline, same as the hero}}";
+        var INTRO    = '{{One or two plain sentences.}}';
+        var ITEMS    = [
+            '{{One trailer line per item: blunt, action + date, 30 words or fewer. Three to six lines.}}'
+        ];
+
+        var bar = document.getElementById('nl-send');
+        var msg = document.getElementById('nl-msg');
+        var go  = document.getElementById('nl-go');
+        var test= document.getElementById('nl-test');
+        var cnt = document.getElementById('nl-count');
+        if (!bar || !window.aisaReady) return;
+
+        function say(t, tone) {
+            msg.textContent = t || '';
+            msg.style.color = tone === 'bad' ? '#FFB4B4' : (tone === 'good' ? '#BDF5C8' : '#E9E4F7');
+        }
+        function busy(on) { go.disabled = on; test.disabled = on; }
+
+        /* Say what actually went wrong and what to do about it. The one that
+           bites first is mail authorisation: a web app never shows the
+           person clicking the button an auth prompt, so the script owner has
+           to grant it once from the editor. */
+        function explain(r) {
+            var e = (r && r.error) || 'unknown error';
+            if (e === 'mail_not_authorized') {
+                return 'The Apps Script project has not been given permission to send email. '
+                     + 'Open the Apps Script editor and run authorizeMail() once, as the account '
+                     + 'that owns the script, then try again.';
+            }
+            if (e === 'unknown_action') {
+                return 'The Apps Script backend has not been redeployed yet — '
+                     + 'Deploy → Manage deployments → New version.';
+            }
+            if (e === 'not_newsletter_sender') {
+                return 'Your account is not on the newsletter sender list.';
+            }
+            if (e === 'no_recipients') {
+                return 'No recipients found — the roster and sessions tabs are both empty of '
+                     + '@aisa.sch.ae addresses.';
+            }
+            return 'Not sent: ' + e + (r && r.message ? ' (' + r.message + ')' : '');
+        }
+
+        // The issue's own address, so the email never needs a hardcoded host.
+        function issueUrl() { return location.origin + location.pathname; }
+
+        function send(opts) {
+            busy(true);
+            say(opts.testOnly ? 'Sending you a test…' : 'Sending…');
+            window.aisaAuth.sendNewsletter({
+                url: issueUrl(), subject: 'The Digital Lion — ' + HEADLINE,
+                issue: ISSUE, headline: HEADLINE, intro: INTRO, items: ITEMS,
+                linkLabel: 'Read the newsletter',
+                testOnly: !!opts.testOnly, confirm: !opts.testOnly
+            }).then(function (r) {
+                busy(false);
+                if (!r || r.ok === false || r.error) {
+                    say(explain(r), 'bad');
+                    return;
+                }
+                var bits = [r.sent + ' sent'];
+                if (r.failed)  bits.push(r.failed + ' failed');
+                if (r.skipped) bits.push(r.skipped + ' skipped'
+                    + (r.reason === 'daily_quota_exhausted'
+                        ? ' — today’s Gmail quota is used up, try again tomorrow'
+                        : ' — hit the 6-minute limit, click again to send the rest'));
+                say((r.test_only ? 'Test: ' : 'Done: ') + bits.join(', ') + '.',
+                    (r.failed || r.skipped) ? 'bad' : 'good');
+            }).catch(function (e) { busy(false); say('Not sent: ' + e, 'bad'); });
+        }
+
+        test.addEventListener('click', function () { send({ testOnly: true }); });
+        go.addEventListener('click', function () {
+            if (!window.confirm('Email this issue to all AISA staff?\n\nThis sends a real email to '
+                + 'everyone on the roster. Send yourself a test first if you have not.')) return;
+            send({ testOnly: false });
+        });
+
+        window.aisaReady(function (auth) {
+            if (!auth || !auth.newsletterStatus) return;
+            auth.newsletterStatus().then(function (r) {
+                if (!r || !r.may_send) return;       // not a sender: bar stays hidden
+                bar.hidden = false;
+                document.body.style.paddingBottom = '5.5rem';
+                cnt.textContent = (r.recipients || 0) + ' staff on the list';
+                if (r.mail_authorized === false) {
+                    say('Email is not switched on yet: run authorizeMail() once from the Apps '
+                        + 'Script editor, as the account that owns the script. Nothing will send '
+                        + 'until you do.', 'bad');
+                } else if (r.quota_left != null && r.quota_left < (r.recipients || 0)) {
+                    say('Heads up: ' + r.quota_left + ' emails left in today’s quota, '
+                        + (r.recipients || 0) + ' recipients. Anything over will report as skipped.', 'bad');
+                }
+            }).catch(function () { /* no backend yet: leave the bar hidden */ });
+        });
+    })();
+    </script>
+
+    <script>
+        (function () {
+            const STORAGE_KEY = 'aisa-newsletter-lang';
+            const html = document.documentElement;
+            // The toggle itself lives in the Hub topbar (menu.js); this just
+            // applies the saved choice immediately, before menu.js arrives.
+
+            function applyLang(lang) {
+                const next = lang === 'ar' ? 'ar' : 'en';
+                html.setAttribute('lang', next);
+                html.setAttribute('dir', next === 'ar' ? 'rtl' : 'ltr');
+                try { localStorage.setItem(STORAGE_KEY, next); } catch (e) { /* ignore */ }
+            }
+
+            let saved = 'en';
+            try { saved = localStorage.getItem(STORAGE_KEY) || 'en'; } catch (e) { /* ignore */ }
+            applyLang(saved);
+
+        })();
+    </script>
+
+</body>
+</html>
