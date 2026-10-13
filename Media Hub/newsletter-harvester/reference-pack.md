@@ -168,7 +168,7 @@ These are clearly labelled and go at the end:
 
 ---
 
-## 4. House style for candidates
+## 4. House style
 
 - **Say who it's for first.** Use `For: …` and be precise, for example
   "teachers of Grades 4–12", "secondary teaching staff" or "teachers new
@@ -186,16 +186,17 @@ These are clearly labelled and go at the end:
 - **Name the role when the item is about a post** ("the AI Lead"). Two
   exceptions: Safeguarding Leads stay named, because you report a concern
   to a person, and credits always name people.
-- Brandon writes his notes in the first person. Candidates don't need to
-  imitate that voice. They need to get the facts right.
+- **Write in Brandon's voice.** Issues speak in his first person ("email
+  me", "I'll confirm"), as Issue 5 does. Getting the facts right still
+  comes before sounding like him.
 
 ---
 
 ## 5. Where past items came from, and what each source tends to yield
 
-Every Google source below means **`bbaki@aisa.sch.ae`, read in the
-browser**. Never use Brandon's personal account, and never use a
-connector.
+Every Google source below means the **`bbaki@aisa.sch.ae`** account,
+through the Gmail, Calendar and Drive connectors. Never use Brandon's
+personal account.
 
 | Source | Yields | Past examples |
 |---|---|---|
@@ -207,7 +208,6 @@ connector.
 | Vendors of tools AISA uses (section 6) | Feature changes and trials | MagicSchool podcast, Chalkie trial |
 | Calendar | Sessions and deadlines | Face-to-face training, Wired Wednesdays |
 | Colleagues' email | Requests, shout-outs, things they built | IB Exam Generator (Will Lester), MAP guide (Price & Brown) |
-| Google Chat (spaces and DMs) | Announcements, requests, what colleagues built or shared. **Facts only, never quotes** | — (new source) |
 | Drive: *Shared with me* | ADEK documents and guidance, colleagues' initiative documents. **Nothing marked Confidential** | — (new source) |
 
 **Two rules for Workspace features.** First, check who actually has the

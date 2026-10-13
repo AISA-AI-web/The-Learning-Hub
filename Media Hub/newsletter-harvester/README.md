@@ -1,78 +1,73 @@
 # Newsletter harvester
 
-This is a scheduled **Claude in Chrome** task. Once a week it collects
-everything that might belong in the next *Digital Lion* and leaves Brandon
-a ranked digest as a draft in his AISA Gmail. It never sends, posts or
-changes anything else.
+This is a weekly scheduled Claude task that **writes the next *Digital
+Lion*** for Brandon to review. It gathers everything since the last issue
+from the Hub's commits, Gmail, Calendar, Drive and the web. It picks what
+belongs, the way past issues have, and writes the issue as a finished HTML
+page in the current house style.
 
-It reads Gmail, Chat, Calendar and Drive **through the browser, as
-`bbaki@aisa.sch.ae`**, and never through connectors. The Google
-connectors on Brandon's Claude account belong to his personal Gmail,
-which this task must never read. The prompt forbids them by name and
-makes the harvester confirm the signed-in account on every Google page
-before it reads anything.
+The page arrives as an **attachment on a Gmail draft** to
+`bbaki@aisa.sch.ae`, with editor's notes in the body: what's in it and
+why, what to verify, and what was held back. The task never sends,
+publishes or commits anything.
 
 | File | What it is |
 |---|---|
 | `system-prompt.md` | The task's prompt. Paste everything below its line into the scheduled task |
 | `reference-pack.md` | What matters. The issue ledger, the tiers, what to leave out, house style, the tools AISA uses, open threads, and what has shipped since the last issue |
 | `past-issues/*.md` | The English text of every published issue, generated from the pages |
+| `issue-template.html` | The page the harvester fills in. Built from Issue No. 5 (`sep18.html`), so a new issue looks the same |
+| `check-issue.py` | Run on a draft before delivery. Fails on missing Arabic, leftover placeholders, dead links, links to unreleased modules, a stale `gate.js` pin, or a mail-out block that doesn't match the page |
 | `build-past-issues.py` | Regenerates `past-issues/` from `Media Hub/*.html` |
 
 ## Setting it up
 
-1. **Install Claude in Chrome in the AISA Chrome profile.** Chrome
-   extensions are installed per profile, so use the profile signed in as
-   `bbaki@aisa.sch.ae`, not the personal one. If both Google accounts are
-   signed in to the same profile, the harvester picks the school one with
-   `?authuser=` and checks it on every page. Separate profiles are still
-   the safer setup.
-2. **Create a shortcut from the prompt and schedule it.**
-   - Make a shortcut whose prompt is the body of `system-prompt.md`.
-   - Schedule it with the clock icon at the top right of the extension
-     panel.
-   - Run it weekly. Thursday afternoon, Abu Dhabi time, leaves Friday to
-     write an issue for Monday.
-3. **Keep Chrome open at that time.** Scheduled browser tasks run only
-   while Chrome is open and the computer is awake, which is another reason
-   to choose a school-day afternoon.
-4. **Merge this folder to `main`.** The harvester reads the reference
-   pack, the past issues and the commit log from the public GitHub repo,
-   so it needs no clone and no repo access. That only works once the pack
-   is on `main`.
-5. **Do one supervised run first.** Watch it the first time to check
-   three things:
-   - it confirms `bbaki@aisa.sch.ae` on each Google page
-   - it puts opened emails back to unread
-   - the draft lands in Drafts unsent.
+Use **a Claude Code routine at claude.ai/code** with these settings:
 
-**About connectors.** The Chrome side panel can run as a Cowork session,
-where your Claude account's connectors may also be available. That is
-why the prompt names them and rules them out. If you can switch the
-Google connectors off for this task, do that as well; the prompt is the
-backstop, not the only guard.
+- **Prompt:** the body of `system-prompt.md`.
+- **Repository:** `AISA-AI-web/The-Learning-Hub`, read access only. The
+  routine needs the checkout for the template, the checker and the commit
+  log, and it needs a shell to run the checker and base64-encode the
+  attachment.
+- **Connectors:** Gmail, Google Calendar and Google Drive, all signed in
+  as `bbaki@aisa.sch.ae`. The prompt checks each one's account before
+  using it and skips any that isn't the school account.
+- **Schedule:** weekly. Thursday afternoon, Abu Dhabi time, leaves Friday
+  to review and publish on Monday, which is the issue date the harvester
+  uses by default. Start a fresh session on each run.
+- **Network:** web access for the Workspace Updates blog, Gemini release
+  notes and ADEK. Without it the run still works, and the notes report
+  *Web ✗*.
 
-## What it reads, and what it doesn't
+**This folder must be on `main`,** because that is the branch the routine
+checks out.
 
-**It reads** the GitHub repo (public), Gmail, Chat, Calendar and Drive as
-`bbaki@aisa.sch.ae`, and the web: Workspace Updates, Gemini release
-notes, NotebookLM, ADEK, and the vendors of tools on the Hub.
+## Reviewing and publishing a draft
 
-**It never opens** the Hub's admin dashboard, the admin charts, the
-spreadsheet behind the Hub, or appraisal and HR documents. It never
-quotes Chat or email.
+**To preview it,** download the attachment and open it in a browser. The
+styling loads from the web. The logo and footer seal are relative paths,
+so they only appear once the file is in `Media Hub/`. The language toggle
+lives in the Hub's menu, so to see the Arabic, open the page from the Hub.
 
-It leaves your accounts as it found them: emails and Chat conversations
-it opens are marked unread again, and nothing is starred, archived,
-moved or answered.
+**To publish it,** follow the *To publish* line in the draft's notes:
+
+1. Save the file as `Media Hub/<mon><day>.html`.
+2. Remove the `CHECK` comments.
+3. Update `media.html`, `index.html`, `menu.js` and `search-index.js`.
+   The last two trigger the `?v=` cascade described in `CLAUDE.md`.
+4. Send it with the page's own mail bar.
+
+Handing the attachment to a Claude Code session with "publish this
+issue" covers steps 1–3.
+
+**Have the Arabic checked** before it goes out. It is the harvester's
+draft, and ADEK's framework terms in Arabic are not official.
 
 ## Keeping it current
 
 **When an issue goes out:**
 
 1. Run `python3 "Media Hub/newsletter-harvester/build-past-issues.py"`.
-   The harvester finds the new file by listing the folder on GitHub, so
-   the prompt doesn't change.
 2. In `reference-pack.md`:
    - Add the issue to the ledger (§2).
    - Clear *Shipped since* (§8).
@@ -80,7 +75,11 @@ moved or answered.
      anything it promised ("dates to follow", "I'll confirm…").
 3. Move anything the issue used out of *Next Digital Lion Newsletter —
    items to include* in `CLAUDE.md`.
-4. Push to `main`. The harvester reads `main`, not your local copy.
+4. Push to `main`.
+
+If a later issue changes the house style, rebuild `issue-template.html`
+from it the same way: copy its `<head>`, hero, cards, sign-off, footer and
+scripts, then replace the content with placeholders.
 
 **Between issues:** if something has to go in the next issue, put it under
 *Next Digital Lion Newsletter — items to include* in `CLAUDE.md`. The
@@ -88,7 +87,7 @@ harvester ranks that list above everything it finds itself.
 
 ## Privacy
 
-The digest summarises internal email, Chat and ADEK correspondence, so it
-lives in the AISA Gmail and **never in this repo, which is public**.
-Nothing in this folder is private either: the past issues are already
-published, and the pack is written from them and from the repo.
+The notes summarise internal and ADEK email, so they live in Gmail and
+**never in this repo, which is public**. The draft page also stays out of
+the repo until Brandon publishes it, because an unreviewed page would be
+world-readable on GitHub the moment it was pushed.
