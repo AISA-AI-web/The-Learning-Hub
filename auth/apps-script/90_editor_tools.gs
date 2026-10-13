@@ -344,8 +344,8 @@ function migrateDwellToPerModule() {
       const key = emailLower + '|' + moduleId;
       if (!groups[key]) {
         groups[key] = {
-          updated:  String(r[old.updated] || ''),
-          first:    String(r[old.first] || ''),
+          updated:  _isoOut(r[old.updated]),
+          first:    _isoOut(r[old.first]),
           email:    emailLower,
           name:     String(r[old.name] || ''),
           module:   moduleId,
@@ -355,11 +355,14 @@ function migrateDwellToPerModule() {
       }
       const g = groups[key];
       if (seconds > 0) { g.seconds += seconds; g.chapters++; }
-      /* Earliest first_seen, latest updated_at. */
-      const u = String(r[old.updated] || '');
-      const f = String(r[old.first] || '');
-      if (u && (!g.updated || u > g.updated)) g.updated = u;
-      if (f && (!g.first || f < g.first))     g.first   = f;
+      /* Earliest first_seen, latest updated_at — by instant, never as text:
+       * a date-typed cell as text starts with its weekday name, and a "Z"
+       * row does not sort against a "+04:00" one. _isoOut, so a date cell
+       * is written back as ISO rather than as "Sun Sep 20 2026 …". */
+      const u = _isoOut(r[old.updated]);
+      const f = _isoOut(r[old.first]);
+      if (u && (!g.updated || _tsMs(u) > _tsMs(g.updated))) g.updated = u;
+      if (f && (!g.first || _tsMs(f) < _tsMs(g.first)))     g.first   = f;
       if (!g.name && r[old.name]) g.name = String(r[old.name] || '');
     }
   }

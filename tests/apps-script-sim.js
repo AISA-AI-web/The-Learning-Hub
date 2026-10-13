@@ -1316,6 +1316,35 @@ function helperChecks(files) {
           JSON.stringify(row) === '[1,"",3]', JSON.stringify(row));
 }
 
+/* migrateDwellToPerModule() rewrites the whole dwell tab, so it has to pick
+ * "earliest first seen" and "latest update" by instant. These rows are the
+ * shapes that sort wrongly as text: a "Z" row against a "+04:00" one, and
+ * a date-typed cell (which as text starts with its weekday name). */
+function migrationChecks(files) {
+    const D = (s) => new Date(s);
+    const legacy = [
+        ['updated_at_iso', 'first_seen_iso', 'email', 'name', 'module_id', 'chapter', 'chapter_title', 'total_seconds', 'user_agent'],
+        [D('2026-09-20T10:00:00Z'), D('2026-09-17T21:00:00Z'), 'n.two@aisa.sch.ae', 'Nia Two', 'safeguarding', '1', 'Intro', 60, 'ua'],
+        ['2026-09-21T23:00:00Z', '2026-09-18T02:00:00+04:00', 'n.two@aisa.sch.ae', 'Nia Two', 'safeguarding', '2', 'Signs', 30, 'ua'],
+        ['2026-09-22T02:00:00+04:00', '2026-09-19T08:00:00Z', 'n.two@aisa.sch.ae', 'Nia Two', 'safeguarding', '3', 'Report', 10, 'ua']
+    ];
+    const world = makeWorld({ dwell: legacy });
+    const asText = (rows) => JSON.stringify(rows.map((r) => r.map(String)));
+    const before = asText(world.ss._sheets.dwell._sh.rows);
+    const res = execute(files, world, 'migrateDwellToPerModule', []);
+    const rows = world.ss._sheets.dwell._sh.rows;
+    check('dwell migration: one row per person and module, seconds summed',
+          rows.length === 2 && rows[1][2] === 'n.two@aisa.sch.ae' && rows[1][5] === 100 && rows[1][6] === 3,
+          JSON.stringify(rows));
+    check('dwell migration: latest update chosen by instant, not as text',
+          rows[1][0] === '2026-09-21T23:00:00Z', String(rows[1][0]));
+    check('dwell migration: earliest first-seen chosen by instant, and a date cell written as ISO',
+          rows[1][1] === '2026-09-18T01:00:00+04:00', String(rows[1][1]));
+    const backup = res && world.ss._sheets[res.backup_sheet];
+    check('dwell migration: every old row kept, cell for cell, in a backup tab',
+          !!backup && asText(backup._sh.rows) === before, res && res.backup_sheet);
+}
+
 /* Who may do what. Checked directly rather than only through the
  * scenario comparisons, because a backend that refused nobody would still
  * agree with itself with the cache on and off. */
@@ -1397,6 +1426,9 @@ function main() {
 
     console.log('\nPermissions:');
     permissions(files);
+
+    console.log('\nData migration:');
+    migrationChecks(files);
 
     console.log('\n' + (failures ? failures + ' failure(s)' : 'all checks passed'));
     process.exit(failures ? 1 : 0);
