@@ -19,3 +19,7 @@ package-lock.json
 # --png layout proofs. The PDFs themselves ARE committed; these are not.
 AI Literacy Hub/.fontcache/
 AI Literacy Hub/*.png
+
+# The Apps Script project ID that auth/apps-script/deploy.mjs remembers on
+# each computer. Not a secret, but there is no reason to publish it.
+auth/apps-script/.deploy.json
