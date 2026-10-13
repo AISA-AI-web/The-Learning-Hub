@@ -193,16 +193,22 @@ These are clearly labelled and go at the end:
 
 ## 5. Where past items came from, and what each source tends to yield
 
+Every Google source below means **`bbaki@aisa.sch.ae`, read in the
+browser**. Never use Brandon's personal account, and never use a
+connector.
+
 | Source | Yields | Past examples |
 |---|---|---|
-| Learning Hub repo, commits on `main` | New on the Hub: modules, Gems, tools, forms, Hub upgrades | Search bar, sign-in, Workspace Studio module, goal form, Sustainability |
+| Learning Hub repo, commits on `main` (public on GitHub) | New on the Hub: modules, Gems, tools, forms, Hub upgrades | Search bar, sign-in, Workspace Studio module, goal form, Sustainability |
 | `CLAUDE.md` → *Next Digital Lion Newsletter — items to include* | **Brandon's own backlog. Ranks highest:** he has already decided these matter | NotebookLM ⇄ Drive auto-sync |
-| Google Workspace Updates blog | Gemini, Drive, Calendar, Classroom and Meet features | Gemini in Calendar, Drive scanner, Classroom outcomes |
+| Google Workspace Updates blog | Gemini, Drive, Calendar, Classroom, Meet and Chat features | Gemini in Calendar, Drive scanner, Classroom outcomes |
 | Gemini release notes · NotebookLM updates | Gemini app and NotebookLM features | NotebookLM in Gems, Gemini in Gmail & Drive |
 | ADEK (email from `adek.gov.ae`, ADEK site, InstrucTwin, PASS) | Mandates, deadlines, training, testing windows | AI literacy curriculum, Level 1, AI Growth Test, readiness self-assessment |
 | Vendors of tools AISA uses (section 6) | Feature changes and trials | MagicSchool podcast, Chalkie trial |
 | Calendar | Sessions and deadlines | Face-to-face training, Wired Wednesdays |
 | Colleagues' email | Requests, shout-outs, things they built | IB Exam Generator (Will Lester), MAP guide (Price & Brown) |
+| Google Chat (spaces and DMs) | Announcements, requests, what colleagues built or shared. **Facts only, never quotes** | — (new source) |
+| Drive: *Shared with me* | ADEK documents and guidance, colleagues' initiative documents. **Nothing marked Confidential** | — (new source) |
 
 **Two rules for Workspace features.** First, check who actually has the
 feature. A feature only counts if it is live for AISA's **Workspace for

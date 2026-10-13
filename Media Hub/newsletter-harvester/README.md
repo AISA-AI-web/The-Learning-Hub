@@ -1,8 +1,16 @@
 # Newsletter harvester
 
-This is a scheduled Claude task. Once a week it collects everything that
-might belong in the next *Digital Lion* and leaves Brandon a ranked digest
-as a Gmail draft. It never sends, posts or commits anything.
+This is a scheduled **Claude in Chrome** task. Once a week it collects
+everything that might belong in the next *Digital Lion* and leaves Brandon
+a ranked digest as a draft in his AISA Gmail. It never sends, posts or
+changes anything else.
+
+It reads Gmail, Chat, Calendar and Drive **through the browser, as
+`bbaki@aisa.sch.ae`**, and never through connectors. The Google
+connectors on Brandon's Claude account belong to his personal Gmail,
+which this task must never read. The prompt forbids them by name and
+makes the harvester confirm the signed-in account on every Google page
+before it reads anything.
 
 | File | What it is |
 |---|---|
@@ -13,37 +21,58 @@ as a Gmail draft. It never sends, posts or commits anything.
 
 ## Setting it up
 
-**Recommended: a Claude Code routine with this repository attached.** With
-the repo attached, the harvester reads the pack directly and reads the
-commit log, which is where most *New on the Hub* items come from.
+1. **Install Claude in Chrome in the AISA Chrome profile.** Chrome
+   extensions are installed per profile, so use the profile signed in as
+   `bbaki@aisa.sch.ae`, not the personal one. If both Google accounts are
+   signed in to the same profile, the harvester picks the school one with
+   `?authuser=` and checks it on every page. Separate profiles are still
+   the safer setup.
+2. **Create a shortcut from the prompt and schedule it.**
+   - Make a shortcut whose prompt is the body of `system-prompt.md`.
+   - Schedule it with the clock icon at the top right of the extension
+     panel.
+   - Run it weekly. Thursday afternoon, Abu Dhabi time, leaves Friday to
+     write an issue for Monday.
+3. **Keep Chrome open at that time.** Scheduled browser tasks run only
+   while Chrome is open and the computer is awake, which is another reason
+   to choose a school-day afternoon.
+4. **Merge this folder to `main`.** The harvester reads the reference
+   pack, the past issues and the commit log from the public GitHub repo,
+   so it needs no clone and no repo access. That only works once the pack
+   is on `main`.
+5. **Do one supervised run first.** Watch it the first time to check
+   three things:
+   - it confirms `bbaki@aisa.sch.ae` on each Google page
+   - it puts opened emails back to unread
+   - the draft lands in Drafts unsent.
 
-- **Prompt:** the body of `system-prompt.md`.
-- **Repository:** `AISA-AI-web/The-Learning-Hub`. It needs read access
-  only.
-- **Connectors:** Gmail and Google Calendar. Add Google Drive only if you
-  switch `OUTPUT` to `google_doc`.
-  **Connect the AISA Google account (`bbaki@aisa.sch.ae`), not a personal
-  one.** ADEK's mail and the domain's Workspace notices go to the school
-  account. With a personal account connected, the harvester will run
-  without errors and find almost nothing.
-- **Schedule:** weekly. Thursday afternoon, Abu Dhabi time, leaves Friday
-  to write an issue for Monday. Start a fresh session on each run; the
-  prompt is self-contained.
-- **Network:** the environment needs web access for the Workspace Updates
-  blog, Gemini release notes and ADEK. Without it the run still works, and
-  the digest reports *Web ✗* under Sources.
+**About connectors.** The Chrome side panel can run as a Cowork session,
+where your Claude account's connectors may also be available. That is
+why the prompt names them and rules them out. If you can switch the
+Google connectors off for this task, do that as well; the prompt is the
+backstop, not the only guard.
 
-**Without the repo** (for example a scheduled task in the Claude app):
-attach `reference-pack.md` and the five `past-issues/*.md` files to the
-task. The harvester then has no commit log. It depends on Gmail, Calendar
-and the web, plus whatever you have put in the pack's *Shipped since*
-table.
+## What it reads, and what it doesn't
+
+**It reads** the GitHub repo (public), Gmail, Chat, Calendar and Drive as
+`bbaki@aisa.sch.ae`, and the web: Workspace Updates, Gemini release
+notes, NotebookLM, ADEK, and the vendors of tools on the Hub.
+
+**It never opens** the Hub's admin dashboard, the admin charts, the
+spreadsheet behind the Hub, or appraisal and HR documents. It never
+quotes Chat or email.
+
+It leaves your accounts as it found them: emails and Chat conversations
+it opens are marked unread again, and nothing is starred, archived,
+moved or answered.
 
 ## Keeping it current
 
 **When an issue goes out:**
 
 1. Run `python3 "Media Hub/newsletter-harvester/build-past-issues.py"`.
+   The harvester finds the new file by listing the folder on GitHub, so
+   the prompt doesn't change.
 2. In `reference-pack.md`:
    - Add the issue to the ledger (§2).
    - Clear *Shipped since* (§8).
@@ -51,6 +80,7 @@ table.
      anything it promised ("dates to follow", "I'll confirm…").
 3. Move anything the issue used out of *Next Digital Lion Newsletter —
    items to include* in `CLAUDE.md`.
+4. Push to `main`. The harvester reads `main`, not your local copy.
 
 **Between issues:** if something has to go in the next issue, put it under
 *Next Digital Lion Newsletter — items to include* in `CLAUDE.md`. The
@@ -58,7 +88,7 @@ harvester ranks that list above everything it finds itself.
 
 ## Privacy
 
-The digest contains summaries of internal and ADEK email, so it lives in
-Gmail and **never in this repo, which is public**. Nothing in this folder
-is private either: the past issues are already published, and the pack is
-written from them and from the repo.
+The digest summarises internal email, Chat and ADEK correspondence, so it
+lives in the AISA Gmail and **never in this repo, which is public**.
+Nothing in this folder is private either: the past issues are already
+published, and the pack is written from them and from the repo.

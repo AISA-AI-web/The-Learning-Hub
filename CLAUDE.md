@@ -1360,6 +1360,17 @@ collects candidates for the next issue each week and leaves Brandon a
 ranked digest as a **Gmail draft**. It never sends, posts or commits. The
 folder's README covers setup.
 
+**It runs in Claude in Chrome, in the `bbaki@aisa.sch.ae` Chrome
+profile, and reads Gmail, Chat, Calendar and Drive through the browser
+only.** It never uses the Google connectors, because they are on
+Brandon's personal `brandon.abaki@gmail.com`. That was his explicit
+instruction, and the prompt names those connectors and forbids them. It
+also makes the harvester confirm the signed-in address on every Google
+page before reading. Don't "simplify" it back to connectors.
+
+It reads the pack and the commit log from the public GitHub repo on
+`main`, so pack edits only reach it once they are pushed to `main`.
+
 - `system-prompt.md` is the task's prompt.
 - `reference-pack.md` is its sense of what matters: tiers, what to leave
   out, open threads, and what has shipped since the last issue.
