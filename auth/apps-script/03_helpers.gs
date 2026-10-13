@@ -68,6 +68,6 @@ function _parseList(v) {
     .filter(function (s) { return !!s; });
 }
 
-// End of 03_helpers.gs. checkHubInstall() looks for the function below to
-// confirm this whole file was pasted in: keep it the last thing here.
+// The end. checkHubInstall() looks for this marker to confirm the whole
+// file was pasted in, so keep it the last thing here.
 function endOf_03_helpers_() {}

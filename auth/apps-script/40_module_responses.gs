@@ -10,12 +10,6 @@
  * See the note on the `module_responses` tab in 01_sheets.gs.
  */
 
-/* Find the row index (1-based, including the header row) for this
- * person's row in this module, or 0 if they have never saved. */
-function _findModuleResponseRow(sheet, email, moduleId) {
-  return _findRowByPair(sheet, MODULE_RESPONSE_HEADERS, 'email', 'module_id', email, moduleId);
-}
-
 function _moduleRowHintKey(email, moduleId) {
   return CACHE_NS + ':mrrow:' + email + '|' + moduleId;
 }
@@ -49,16 +43,17 @@ function saveModuleResponse(claims, body) {
     const found  = _findOwnRow(sheet, MODULE_RESPONSE_HEADERS, 'email', 'module_id',
                                email, moduleId, hintKey);
     const rowIdx = found.row;
+    const col    = _colIndex(MODULE_RESPONSE_HEADERS);
     let blob = {};
     let firstSaved = now;
     let completedAt = '';
 
     if (rowIdx) {
       const existing = found.values;
-      const rawJson  = String(existing[MODULE_RESPONSE_HEADERS.indexOf('data_json')] || '');
+      const rawJson  = String(existing[col.data_json] || '');
       try { blob = rawJson ? JSON.parse(rawJson) : {}; } catch (e) { blob = {}; }
-      firstSaved  = existing[MODULE_RESPONSE_HEADERS.indexOf('first_saved_iso')] || now;
-      completedAt = existing[MODULE_RESPONSE_HEADERS.indexOf('completed_at_iso')] || '';
+      firstSaved  = existing[col.first_saved_iso] || now;
+      completedAt = existing[col.completed_at_iso] || '';
     }
 
     data._saved_at = now;
@@ -70,18 +65,18 @@ function saveModuleResponse(claims, body) {
     const dataJson = JSON.stringify(blob).slice(0, 90000);
     const flagged = _moduleResponseIsFlagged(blob);
 
-    const row = new Array(MODULE_RESPONSE_HEADERS.length).fill('');
-    function set(h, v) { row[MODULE_RESPONSE_HEADERS.indexOf(h)] = v; }
-    set('first_saved_iso',  firstSaved);
-    set('updated_at_iso',   now);
-    set('email',            email);
-    set('name',             claims.name || '');
-    set('module_id',        moduleId);
-    set('segments_done',    segmentsDone);
-    set('data_json',        dataJson);
-    set('flagged',          flagged);
-    set('completed_at_iso', completedAt);
-    set('user_agent',       String(body.user_agent || '').slice(0, 300));
+    const row = _rowFrom(MODULE_RESPONSE_HEADERS, {
+      first_saved_iso:  firstSaved,
+      updated_at_iso:   now,
+      email:            email,
+      name:             claims.name || '',
+      module_id:        moduleId,
+      segments_done:    segmentsDone,
+      data_json:        dataJson,
+      flagged:          flagged,
+      completed_at_iso: completedAt,
+      user_agent:       String(body.user_agent || '').slice(0, 300)
+    });
 
     if (rowIdx) {
       sheet.getRange(rowIdx, 1, 1, MODULE_RESPONSE_HEADERS.length).setValues([row]);
@@ -142,16 +137,17 @@ function getModuleResponse(claims, body) {
   if (!found.row) return { ok: true, found: false, data: {} };
 
   const r = found.values;
+  const col = _colIndex(MODULE_RESPONSE_HEADERS);
   let blob = {};
-  try { blob = JSON.parse(String(r[MODULE_RESPONSE_HEADERS.indexOf('data_json')] || '') || '{}'); }
+  try { blob = JSON.parse(String(r[col.data_json] || '') || '{}'); }
   catch (e) { blob = {}; }
 
   return {
     ok: true,
     found: true,
     data: blob,
-    updated_at:   _isoOut(r[MODULE_RESPONSE_HEADERS.indexOf('updated_at_iso')]),
-    completed_at: _isoOut(r[MODULE_RESPONSE_HEADERS.indexOf('completed_at_iso')])
+    updated_at:   _isoOut(r[col.updated_at_iso]),
+    completed_at: _isoOut(r[col.completed_at_iso])
   };
 }
 
@@ -178,27 +174,22 @@ function _moduleResponsesPart(force) {
 }
 
 function _readModuleResponseRows() {
-  const sheet = getModuleResponsesSheet();
-  const last  = sheet.getLastRow();
-  if (last < 2) return { at: nowIsoLocal(), rows: [] };
-
-  const rows = sheet.getRange(2, 1, last - 1, MODULE_RESPONSE_HEADERS.length).getValues();
-  const idx = {};
-  MODULE_RESPONSE_HEADERS.forEach(function (h, i) { idx[h] = i; });
+  const rows = _dataRows(getModuleResponsesSheet(), MODULE_RESPONSE_HEADERS.length);
+  const col = _colIndex(MODULE_RESPONSE_HEADERS);
 
   const out = [];
   rows.forEach(function (r) {
     let blob = {};
-    try { blob = JSON.parse(String(r[idx.data_json] || '') || '{}'); } catch (e) { blob = {}; }
+    try { blob = JSON.parse(String(r[col.data_json] || '') || '{}'); } catch (e) { blob = {}; }
     out.push({
-      email:        String(r[idx.email] || ''),
-      name:         String(r[idx.name]  || ''),
-      module_id:    String(r[idx.module_id] || ''),
-      first_saved:  _isoOut(r[idx.first_saved_iso]),
-      updated_at:   _isoOut(r[idx.updated_at_iso]),
-      completed_at: _isoOut(r[idx.completed_at_iso]),
-      segments_done: String(r[idx.segments_done] || '').split(',').filter(Boolean),
-      flagged:      r[idx.flagged] === true || String(r[idx.flagged]).toUpperCase() === 'TRUE',
+      email:        String(r[col.email] || ''),
+      name:         String(r[col.name]  || ''),
+      module_id:    String(r[col.module_id] || ''),
+      first_saved:  _isoOut(r[col.first_saved_iso]),
+      updated_at:   _isoOut(r[col.updated_at_iso]),
+      completed_at: _isoOut(r[col.completed_at_iso]),
+      segments_done: String(r[col.segments_done] || '').split(',').filter(Boolean),
+      flagged:      r[col.flagged] === true || String(r[col.flagged]).toUpperCase() === 'TRUE',
       data:         blob
     });
   });
@@ -206,6 +197,6 @@ function _readModuleResponseRows() {
   return { at: nowIsoLocal(), rows: out };
 }
 
-// End of 40_module_responses.gs. checkHubInstall() looks for the function below to
-// confirm this whole file was pasted in: keep it the last thing here.
+// The end. checkHubInstall() looks for this marker to confirm the whole
+// file was pasted in, so keep it the last thing here.
 function endOf_40_module_responses_() {}

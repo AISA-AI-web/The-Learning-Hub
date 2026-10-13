@@ -24,9 +24,17 @@ function _mailQuota() {
   }
 }
 
+// ---------- Building an email ----------
+
 function _firstName(name) {
   const n = String(name || '').trim();
   return n ? n.split(/\s+/)[0] : '';
+}
+
+/* "Hi Sara," — or "Hi," when there is no name to go on. */
+function _greeting(name) {
+  const first = _firstName(name);
+  return first ? ('Hi ' + first + ',') : 'Hi,';
 }
 
 function _escHtml(s) {
@@ -38,7 +46,8 @@ function _escHtml(s) {
 /* The AISA-branded email frame every Hub email sits in: deep royal
  * purple header, mustard-gold kicker, white body, grey footnote.
  * Table-based and inline-styled because that is what mail clients
- * reliably render. `inner` and `footer` are already-escaped HTML. */
+ * reliably render. `inner` is HTML; `kicker` and `footer` are plain text,
+ * escaped here. */
 function _aisaEmailShell(kicker, inner, footer) {
   return '<!DOCTYPE html><html><body style="margin:0;padding:0;background:#f8fafc;">' +
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" ' +
@@ -61,6 +70,63 @@ function _aisaEmailShell(kicker, inner, footer) {
     '</td></tr></table></body></html>';
 }
 
+/* The pieces that go inside the frame. Plain text in, HTML out. */
+function _emailGreetingHtml(greeting) {
+  return '<p style="margin:0 0 16px;font-size:16px;font-weight:700;color:#21076C;">' +
+    _escHtml(greeting) + '</p>';
+}
+
+function _emailParagraphHtml(text) {
+  return '<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#334155;">' +
+    _escHtml(text).replace(/\n/g, '<br>') + '</p>';
+}
+
+/* The mustard-gold call-to-action button. */
+function _emailButtonHtml(url, label) {
+  return '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 0;">' +
+      '<tr><td style="background:#D8B664;border-radius:8px;">' +
+        '<a href="' + _escHtml(url) + '" ' +
+           'style="display:inline-block;padding:13px 26px;font-size:15px;font-weight:700;' +
+           'color:#21076C;text-decoration:none;">' + _escHtml(label) + '</a>' +
+      '</td></tr></table>';
+}
+
+// ---------- Sending to a list ----------
+
+/* A web app is stopped after six minutes. Both mailers stop sending after
+ * four and report whatever is left as skipped, rather than being cut off
+ * mid-list with nothing reported at all. */
+const MAIL_TIME_BUDGET_MS = 240000;
+
+/* One personalised email per address: compose(to, greeting) builds it.
+ * Counts what happened into `out` (sent / failed / skipped / errors) and
+ * never throws, so the caller can tell whoever pressed the button exactly
+ * what went out. Stops short of the time budget and of the day's quota;
+ * the rest is reported as skipped — not lost — so they know to run it
+ * again rather than assuming everyone got it. */
+function _sendEach(emails, quota, out, replyTo, compose) {
+  const names   = _namesForEmails(emails);
+  const started = Date.now();
+  for (let i = 0; i < emails.length; i++) {
+    if (Date.now() - started > MAIL_TIME_BUDGET_MS || out.sent >= quota) {
+      out.skipped += emails.length - i;
+      break;
+    }
+    const to   = emails[i];
+    const opts = compose(to, _greeting(names[to]));
+    if (replyTo) opts.replyTo = replyTo;
+
+    try {
+      MailApp.sendEmail(opts);
+      out.sent++;
+    } catch (err) {
+      out.failed++;
+      if (out.errors.length < 5) out.errors.push(String(err));
+    }
+  }
+  return out;
+}
+
 // ---------- Reminder emails ----------
 //
 // Reminders post to the in-app bell first (that write always happens);
@@ -81,26 +147,13 @@ function _reminderHtml(greeting, bodyText, linkUrl, linkLabel) {
   }
 
   const paras = text.split(/\n{2,}/).filter(function (p) { return p.trim(); })
-    .map(function (p) {
-      return '<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#334155;">' +
-        _escHtml(p).replace(/\n/g, '<br>') + '</p>';
-    }).join('');
+    .map(_emailParagraphHtml).join('');
 
-  const button = linkUrl
-    ? '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 0;">' +
-        '<tr><td style="background:#D8B664;border-radius:8px;">' +
-          '<a href="' + _escHtml(linkUrl) + '" ' +
-             'style="display:inline-block;padding:13px 26px;font-size:15px;font-weight:700;' +
-             'color:#21076C;text-decoration:none;">' +
-            _escHtml(linkLabel || 'Open the training') +
-          '</a>' +
-        '</td></tr></table>'
-    : '';
+  const button = linkUrl ? _emailButtonHtml(linkUrl, linkLabel || 'Open the training') : '';
 
   return _aisaEmailShell(
     'Professional Development',
-    (greeting ? '<p style="margin:0 0 16px;font-size:16px;font-weight:700;color:#21076C;">' +
-       _escHtml(greeting) + '</p>' : '') + paras + button,
+    (greeting ? _emailGreetingHtml(greeting) : '') + paras + button,
     'Sent from the AISA Learning Hub. This reminder is also waiting ' +
     'in your notifications the next time you sign in.'
   );
@@ -126,39 +179,17 @@ function _sendReminderEmails(claims, emails, title, bodyText, linkUrl, linkLabel
   }
   if (quota <= 0) { out.skipped = emails.length; out.reason = 'daily_quota_exhausted'; return out; }
 
-  const names   = _namesForEmails(emails);
   const subject = title || 'A reminder from the AISA Learning Hub';
   const replyTo = String(claims && claims.email || '').trim();
-  const started = Date.now();
-
-  for (let i = 0; i < emails.length; i++) {
-    // Stop short of the web app's 6-minute execution cap and of the daily
-    // mail quota; whatever is left is reported as skipped, not lost.
-    if (Date.now() - started > 240000 || out.sent >= quota) {
-      out.skipped += emails.length - i;
-      break;
-    }
-    const to    = emails[i];
-    const first = _firstName(names[to]);
-    const greet = first ? ('Hi ' + first + ',') : 'Hi,';
-    const opts  = {
+  return _sendEach(emails, quota, out, replyTo, function (to, greet) {
+    return {
       to:       to,
       subject:  subject,
       body:     greet + '\n\n' + bodyText + (linkUrl ? '\n\n' + linkUrl : ''),
       htmlBody: _reminderHtml(greet, bodyText, linkUrl, linkLabel),
       name:     'AISA Learning Hub'
     };
-    if (replyTo) opts.replyTo = replyTo;
-
-    try {
-      MailApp.sendEmail(opts);
-      out.sent++;
-    } catch (err) {
-      out.failed++;
-      if (out.errors.length < 5) out.errors.push(String(err));
-    }
-  }
-  return out;
+  });
 }
 
 // ---------- Newsletter mail-out ----------
@@ -237,23 +268,9 @@ function sendNewsletter(claims, body) {
   }
   if (quota <= 0) { out.skipped = emails.length; out.reason = 'daily_quota_exhausted'; return out; }
 
-  const names   = _namesForEmails(emails);
   const replyTo = String(claims && claims.email || '').trim();
-  const started = Date.now();
-
-  for (let i = 0; i < emails.length; i++) {
-    // Same caps as the reminder mailer: stop short of the 6-minute
-    // execution limit and the daily quota, and report the rest as
-    // skipped so the sender knows to run it again rather than assuming
-    // everyone got it.
-    if (Date.now() - started > 240000 || out.sent >= quota) {
-      out.skipped += emails.length - i;
-      break;
-    }
-    const to    = emails[i];
-    const first = _firstName(names[to]);
-    const greet = first ? ('Hi ' + first + ',') : 'Hi,';
-    const opts  = {
+  return _sendEach(emails, quota, out, replyTo, function (to, greet) {
+    return {
       to:       to,
       subject:  subject,
       body:     greet + '\n\n' + (headline ? headline + '\n\n' : '') +
@@ -263,17 +280,7 @@ function sendNewsletter(claims, body) {
       htmlBody: _newsletterHtml(greet, issue, headline, intro, items, url, label),
       name:     'AISA Learning Hub'
     };
-    if (replyTo) opts.replyTo = replyTo;
-
-    try {
-      MailApp.sendEmail(opts);
-      out.sent++;
-    } catch (err) {
-      out.failed++;
-      if (out.errors.length < 5) out.errors.push(String(err));
-    }
-  }
-  return out;
+  });
 }
 
 /* The newsletter email: the same AISA frame as the PD reminders, with a
@@ -282,11 +289,6 @@ function sendNewsletter(claims, body) {
  * The body stays short on purpose — the email is the trailer, the Hub
  * page is the newsletter. */
 function _newsletterHtml(greeting, issue, headline, intro, items, url, linkLabel) {
-  const para = function (t) {
-    return '<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#334155;">' +
-      _escHtml(t).replace(/\n/g, '<br>') + '</p>';
-  };
-
   const list = items && items.length
     ? '<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" ' +
              'style="margin:0 0 20px;background:#F2EFFA;border-radius:10px;">' +
@@ -299,26 +301,17 @@ function _newsletterHtml(greeting, issue, headline, intro, items, url, linkLabel
         '</td></tr></table>'
     : '';
 
-  const button =
-    '<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 0;">' +
-      '<tr><td style="background:#D8B664;border-radius:8px;">' +
-        '<a href="' + _escHtml(url) + '" ' +
-           'style="display:inline-block;padding:13px 26px;font-size:15px;font-weight:700;' +
-           'color:#21076C;text-decoration:none;">' + _escHtml(linkLabel) + '</a>' +
-      '</td></tr></table>';
-
   return _aisaEmailShell(
     issue || 'The Digital Lion',
-    (greeting ? '<p style="margin:0 0 16px;font-size:16px;font-weight:700;color:#21076C;">' +
-       _escHtml(greeting) + '</p>' : '') +
+    (greeting ? _emailGreetingHtml(greeting) : '') +
     (headline ? '<p style="margin:0 0 14px;font-size:20px;line-height:1.3;font-weight:700;' +
        'color:#21076C;">' + _escHtml(headline) + '</p>' : '') +
-    (intro ? para(intro) : '') + list + button,
+    (intro ? _emailParagraphHtml(intro) : '') + list + _emailButtonHtml(url, linkLabel),
     'Sent from the AISA Learning Hub. You can read this and every past ' +
     'issue any time from the Media Hub.'
   );
 }
 
-// End of 31_email.gs. checkHubInstall() looks for the function below to
-// confirm this whole file was pasted in: keep it the last thing here.
+// The end. checkHubInstall() looks for this marker to confirm the whole
+// file was pasted in, so keep it the last thing here.
 function endOf_31_email_() {}

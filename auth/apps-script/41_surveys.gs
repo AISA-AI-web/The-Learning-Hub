@@ -61,12 +61,6 @@ const SURVEY_SPECS = {
   }
 };
 
-/* Row index (1-based, header included) for this person's response to
- * this survey, or 0 if they have never saved one. */
-function _findSurveyRow(sheet, email, surveyId) {
-  return _findRowByPair(sheet, SURVEY_HEADERS, 'email', 'survey_id', email, surveyId);
-}
-
 /* The surveys sheet can live in its own spreadsheet, so the hint key says
  * which one — a row number from one workbook is meaningless in another. */
 function _surveyRowHintKey(email, surveyId) {
@@ -96,8 +90,8 @@ function _surveyIsEmpty(v) {
 }
 
 /* Which required fields are missing, and which pinned fields hold a
- * value that isn't on their list. Returns [] when the response is
- * complete and internally consistent. */
+ * value that isn't on their list. Both lists are empty when the response
+ * is complete and internally consistent. */
 function _validateSurvey(spec, data) {
   const missing = [];
   (spec.required || []).forEach(function (key) {
@@ -113,6 +107,17 @@ function _validateSurvey(spec, data) {
   });
 
   return { missing: missing, invalid: invalid };
+}
+
+/* The answer to send back when `data` cannot be submitted as it stands,
+ * naming the fields so the page can point at them; null when it can. */
+function _surveyRefusal(spec, data) {
+  const bad = _validateSurvey(spec, data);
+  if (!bad.missing.length && !bad.invalid.length) return null;
+  return {
+    ok: false, error: 'missing_required',
+    missing: bad.missing, invalid: bad.invalid
+  };
 }
 
 /**
@@ -149,16 +154,11 @@ function saveSurveyResponse(claims, body) {
   });
 
   if (submit) {
-    const bad = _validateSurvey(spec, data);
-    if (bad.missing.length || bad.invalid.length) {
-      /* The client checks the same rules first, so landing here means a
-       * stale tab or a hand-made request — say which fields, so the page
-       * can point at them rather than showing a shrug. */
-      return {
-        ok: false, error: 'missing_required',
-        missing: bad.missing, invalid: bad.invalid
-      };
-    }
+    /* The client checks the same rules first, so landing here means a
+     * stale tab or a hand-made request — say which fields, so the page
+     * can point at them rather than showing a shrug. */
+    const refusal = _surveyRefusal(spec, data);
+    if (refusal) return refusal;
   }
 
   const now   = nowIsoLocal();
@@ -173,6 +173,7 @@ function saveSurveyResponse(claims, body) {
     const found   = _findOwnRow(sheet, SURVEY_HEADERS, 'email', 'survey_id',
                                 email, surveyId, hintKey);
     const rowIdx  = found.row;
+    const col     = _colIndex(SURVEY_HEADERS);
     let firstSaved  = now;
     let submittedAt = '';
     let revision    = 0;
@@ -180,11 +181,11 @@ function saveSurveyResponse(claims, body) {
 
     if (rowIdx) {
       const existing = found.values;
-      firstSaved  = existing[SURVEY_HEADERS.indexOf('first_saved_iso')] || now;
-      submittedAt = existing[SURVEY_HEADERS.indexOf('submitted_at_iso')] || '';
-      revision    = Number(existing[SURVEY_HEADERS.indexOf('revision')] || 0) || 0;
+      firstSaved  = existing[col.first_saved_iso] || now;
+      submittedAt = existing[col.submitted_at_iso] || '';
+      revision    = Number(existing[col.revision] || 0) || 0;
       try {
-        existingData = JSON.parse(String(existing[SURVEY_HEADERS.indexOf('data_json')] || '') || '{}');
+        existingData = JSON.parse(String(existing[col.data_json] || '') || '{}');
       } catch (e) { existingData = {}; }
     }
 
@@ -197,31 +198,26 @@ function saveSurveyResponse(claims, body) {
     if (submit) {
       /* Validate the merged result too: a client that posts only the
        * last step must not be able to submit past an empty step one. */
-      const bad = _validateSurvey(spec, merged);
-      if (bad.missing.length || bad.invalid.length) {
-        return {
-          ok: false, error: 'missing_required',
-          missing: bad.missing, invalid: bad.invalid
-        };
-      }
+      const refusal = _surveyRefusal(spec, merged);
+      if (refusal) return refusal;
       submittedAt = submittedAt || now;
       revision   += 1;
     }
 
     const status = submit ? 'submitted' : (submittedAt ? 'submitted' : 'draft');
 
-    const row = new Array(SURVEY_HEADERS.length).fill('');
-    function set(h, v) { row[SURVEY_HEADERS.indexOf(h)] = v; }
-    set('first_saved_iso',  firstSaved);
-    set('updated_at_iso',   now);
-    set('submitted_at_iso', submittedAt);
-    set('email',            email);
-    set('name',             claims.name || '');
-    set('survey_id',        surveyId);
-    set('status',           status);
-    set('revision',         revision);
-    set('data_json',        JSON.stringify(merged).slice(0, 45000));
-    set('user_agent',       String(body.user_agent || '').slice(0, 300));
+    const row = _rowFrom(SURVEY_HEADERS, {
+      first_saved_iso:  firstSaved,
+      updated_at_iso:   now,
+      submitted_at_iso: submittedAt,
+      email:            email,
+      name:             claims.name || '',
+      survey_id:        surveyId,
+      status:           status,
+      revision:         revision,
+      data_json:        JSON.stringify(merged).slice(0, 45000),
+      user_agent:       String(body.user_agent || '').slice(0, 300)
+    });
 
     if (rowIdx) {
       sheet.getRange(rowIdx, 1, 1, SURVEY_HEADERS.length).setValues([row]);
@@ -263,18 +259,19 @@ function getSurveyResponse(claims, body) {
   if (!found.row) return { ok: true, found: false, data: {}, status: 'none' };
 
   const r = found.values;
+  const col = _colIndex(SURVEY_HEADERS);
   let blob = {};
-  try { blob = JSON.parse(String(r[SURVEY_HEADERS.indexOf('data_json')] || '') || '{}'); }
+  try { blob = JSON.parse(String(r[col.data_json] || '') || '{}'); }
   catch (e) { blob = {}; }
 
   return {
     ok: true,
     found: true,
     data:         blob,
-    status:       String(r[SURVEY_HEADERS.indexOf('status')] || 'draft'),
-    revision:     Number(r[SURVEY_HEADERS.indexOf('revision')] || 0) || 0,
-    updated_at:   _isoOut(r[SURVEY_HEADERS.indexOf('updated_at_iso')]),
-    submitted_at: _isoOut(r[SURVEY_HEADERS.indexOf('submitted_at_iso')])
+    status:       String(r[col.status] || 'draft'),
+    revision:     Number(r[col.revision] || 0) || 0,
+    updated_at:   _isoOut(r[col.updated_at_iso]),
+    submitted_at: _isoOut(r[col.submitted_at_iso])
   };
 }
 
@@ -346,28 +343,23 @@ function _surveysPart(force) {
 }
 
 function _readSurveyRows() {
-  const sheet = getSurveysSheet();
-  const last  = sheet.getLastRow();
-  const idx = {};
-  SURVEY_HEADERS.forEach(function (h, i) { idx[h] = i; });
+  const col = _colIndex(SURVEY_HEADERS);
   const rows = [];
-  if (last >= 2) {
-    sheet.getRange(2, 1, last - 1, SURVEY_HEADERS.length).getValues().forEach(function (r) {
-      let blob = {};
-      try { blob = JSON.parse(String(r[idx.data_json] || '') || '{}'); } catch (e) { blob = {}; }
-      rows.push({
-        sid:          String(r[idx.survey_id]).trim(),
-        email:        String(r[idx.email] || ''),
-        name:         String(r[idx.name] || ''),
-        status:       String(r[idx.status] || 'draft'),
-        revision:     Number(r[idx.revision] || 0) || 0,
-        first_saved:  _isoOut(r[idx.first_saved_iso]),
-        updated_at:   _isoOut(r[idx.updated_at_iso]),
-        submitted_at: _isoOut(r[idx.submitted_at_iso]),
-        data:         blob
-      });
+  _dataRows(getSurveysSheet(), SURVEY_HEADERS.length).forEach(function (r) {
+    let blob = {};
+    try { blob = JSON.parse(String(r[col.data_json] || '') || '{}'); } catch (e) { blob = {}; }
+    rows.push({
+      sid:          String(r[col.survey_id]).trim(),
+      email:        String(r[col.email] || ''),
+      name:         String(r[col.name] || ''),
+      status:       String(r[col.status] || 'draft'),
+      revision:     Number(r[col.revision] || 0) || 0,
+      first_saved:  _isoOut(r[col.first_saved_iso]),
+      updated_at:   _isoOut(r[col.updated_at_iso]),
+      submitted_at: _isoOut(r[col.submitted_at_iso]),
+      data:         blob
     });
-  }
+  });
   return { at: nowIsoLocal(), rows: rows };
 }
 
@@ -383,8 +375,7 @@ function _sendSurveyCopy(claims, spec, data, revision) {
     }
   } catch (e) { /* fall through and let sendEmail report the real problem */ }
 
-  const first  = _firstName(claims.name || data.name || '');
-  const greet  = first ? ('Hi ' + first + ',') : 'Hi,';
+  const greet  = _greeting(claims.name || data.name || '');
   const intro  = (revision > 1)
     ? 'You’ve updated your personal goal for 2026-27. Here it is as it now stands.'
     : 'Here’s the personal goal you just set for 2026-27. Keep this — it’s what we’ll come back to at your mid-year and end-of-year check-ins, and in your appraisal conversation.';
@@ -409,7 +400,7 @@ function _sendSurveyCopy(claims, spec, data, revision) {
 
   const html = _aisaEmailShell(
     'Your 2026-27 Personal Goal',
-    '<p style="margin:0 0 16px;font-size:16px;font-weight:700;color:#21076C;">' + _escHtml(greet) + '</p>' +
+    _emailGreetingHtml(greet) +
     '<p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#334155;">' + _escHtml(intro) + '</p>' +
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">' +
       htmlRows.join('') +
@@ -432,6 +423,6 @@ function _sendSurveyCopy(claims, spec, data, revision) {
   }
 }
 
-// End of 41_surveys.gs. checkHubInstall() looks for the function below to
-// confirm this whole file was pasted in: keep it the last thing here.
+// The end. checkHubInstall() looks for this marker to confirm the whole
+// file was pasted in, so keep it the last thing here.
 function endOf_41_surveys_() {}

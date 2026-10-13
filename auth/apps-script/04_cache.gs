@@ -212,6 +212,6 @@ function _setRowHint(key, row) {
   if (row >= 2) _cachePut(key, row, CACHE_TTL.rowhint);
 }
 
-// End of 04_cache.gs. checkHubInstall() looks for the function below to
-// confirm this whole file was pasted in: keep it the last thing here.
+// The end. checkHubInstall() looks for this marker to confirm the whole
+// file was pasted in, so keep it the last thing here.
 function endOf_04_cache_() {}

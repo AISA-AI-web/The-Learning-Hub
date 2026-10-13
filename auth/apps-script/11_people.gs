@@ -21,11 +21,8 @@ function _adminSetPart(force) {
 }
 
 function _readAdminEmailSet() {
-  const sheet = getAdminsSheet();
-  const last = sheet.getLastRow();
+  const emails = _dataRows(getAdminsSheet(), 1);   // the email column only
   const set = {};
-  if (last < 2) return set;
-  const emails = sheet.getRange(2, 1, last - 1, 1).getValues();
   for (let i = 0; i < emails.length; i++) {
     const e = String(emails[i][0] || '').trim().toLowerCase();
     if (e) set[e] = true;
@@ -57,7 +54,6 @@ function canSendNewsletter(email) {
  * staff who haven't signed in yet. Both readers must tolerate the tab
  * being absent.
  */
-
 function getRosterIndex() {
   // Returns { byEmail: { emailLower: { email, name, tags:[...] } }, allTags: [sorted unique], at }
   const part = _rosterPart(false);
@@ -82,12 +78,10 @@ function _rosterPart(force) {
     const out = { at: nowIsoLocal(), rows: [] };
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(ROSTER_SHEET);
     if (!sheet) return out;
-    const last = sheet.getLastRow();
-    if (last < 2) return out;
     // Read at most ROSTER_HEADERS.length columns; tolerate older sheets
     // with only [email, name].
     const width = Math.min(sheet.getLastColumn(), ROSTER_HEADERS.length);
-    const rows = sheet.getRange(2, 1, last - 1, width).getValues();
+    const rows = _dataRows(sheet, width);
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       const email = String(row[0] || '').trim().toLowerCase();
@@ -113,23 +107,19 @@ function getTagsForEmail(email) {
  * so the TTL is what keeps it honest. */
 function _sessionPeople(force) {
   return _cachedRead(_dataKey('people', ['sessions']), CACHE_TTL.people, function () {
-    const sess = getSessionsSheet();
-    const sLast = sess.getLastRow();
     const byEmail = {}, order = [];
-    if (sLast >= 2) {
-      // Columns 2-6: email, name, created, expires, last_used. Not the token,
-      // not user_agent.
-      const rows = sess.getRange(2, 2, sLast - 1, 5).getValues();
-      for (let i = 0; i < rows.length; i++) {
-        const key = String(rows[i][0] || '').trim().toLowerCase();
-        if (!key) continue;
-        const name = rows[i][1] ? String(rows[i][1]) : '';
-        const ts = _isoOut(rows[i][4] || rows[i][2] || '');
-        const p = byEmail[key];
-        if (!p) { byEmail[key] = { name: name, ts: ts }; order.push(key); continue; }
-        if (name && !p.name) p.name = name;
-        if (ts && _tsMs(ts) > _tsMs(p.ts)) p.ts = ts;
-      }
+    // Columns 2-6: email, name, created, expires, last_used. Not the token,
+    // not user_agent.
+    const rows = _dataRows(getSessionsSheet(), 5, 2);
+    for (let i = 0; i < rows.length; i++) {
+      const key = String(rows[i][0] || '').trim().toLowerCase();
+      if (!key) continue;
+      const name = rows[i][1] ? String(rows[i][1]) : '';
+      const ts = _isoOut(rows[i][4] || rows[i][2] || '');
+      const p = byEmail[key];
+      if (!p) { byEmail[key] = { name: name, ts: ts }; order.push(key); continue; }
+      if (name && !p.name) p.name = name;
+      if (ts && _tsMs(ts) > _tsMs(p.ts)) p.ts = ts;
     }
     return {
       at: nowIsoLocal(),
@@ -173,6 +163,6 @@ function _allStaffEmails() {
   return Object.keys(seen).sort();
 }
 
-// End of 11_people.gs. checkHubInstall() looks for the function below to
-// confirm this whole file was pasted in: keep it the last thing here.
+// The end. checkHubInstall() looks for this marker to confirm the whole
+// file was pasted in, so keep it the last thing here.
 function endOf_11_people_() {}

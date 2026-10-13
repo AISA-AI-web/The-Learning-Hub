@@ -25,35 +25,26 @@ function readActiveNotifications() {
 
 function _readActiveNotificationsFromSheet() {
   const sheet = getNotifsSheet();
-  const last = sheet.getLastRow();
-  if (last < 2) return [];
   // Read whatever the sheet has — never wider than NOTIF_HEADERS, but it
   // may be narrower if the sheet predates the targeting columns.
   const width = Math.min(sheet.getLastColumn(), NOTIF_HEADERS.length);
-  const rows = sheet.getRange(2, 1, last - 1, width).getValues();
-  const i_id    = NOTIF_HEADERS.indexOf('id');
-  const i_ts    = NOTIF_HEADERS.indexOf('created_at_iso');
-  const i_name  = NOTIF_HEADERS.indexOf('author_name');
-  const i_title = NOTIF_HEADERS.indexOf('title');
-  const i_body  = NOTIF_HEADERS.indexOf('body');
-  const i_tags  = NOTIF_HEADERS.indexOf('target_tags');
-  const i_em    = NOTIF_HEADERS.indexOf('target_emails');
-  const i_act   = NOTIF_HEADERS.indexOf('active');
+  const rows = _dataRows(sheet, width);
+  const col = _colIndex(NOTIF_HEADERS);
   const out = [];
   for (let i = 0; i < rows.length; i++) {
     const r = rows[i];
     // Active flag lives at the rightmost present column on legacy rows;
     // fall back to it if we read fewer columns than NOTIF_HEADERS.
-    const activeVal = (i_act < width) ? r[i_act] : r[r.length - 1];
+    const activeVal = (col.active < width) ? r[col.active] : r[r.length - 1];
     if (!isActiveFlag(activeVal)) continue;
     out.push({
-      id:            String(r[i_id]),
-      created_at:    _isoOut(r[i_ts]),
-      author_name:   String(r[i_name] || ''),
-      title:         String(r[i_title] || ''),
-      body:          String(r[i_body] || ''),
-      target_tags:   _parseList(i_tags < width ? r[i_tags] : ''),
-      target_emails: _parseList(i_em   < width ? r[i_em]   : '')
+      id:            String(r[col.id]),
+      created_at:    _isoOut(r[col.created_at_iso]),
+      author_name:   String(r[col.author_name] || ''),
+      title:         String(r[col.title] || ''),
+      body:          String(r[col.body] || ''),
+      target_tags:   _parseList(col.target_tags   < width ? r[col.target_tags]   : ''),
+      target_emails: _parseList(col.target_emails < width ? r[col.target_emails] : '')
     });
   }
   /* Newest first by instant. A string compare put "Z" rows and "+04:00"
@@ -87,11 +78,8 @@ function readIdsFor(email) {
 }
 
 function _readIdsFromSheet(target) {
-  const sheet = getNotifReadsSheet();
-  const last = sheet.getLastRow();
+  const rows = _dataRows(getNotifReadsSheet(), 2);   // notification_id, email
   const set = {};
-  if (last < 2) return set;
-  const rows = sheet.getRange(2, 1, last - 1, 2).getValues();   // id, email
   for (let i = 0; i < rows.length; i++) {
     if (String(rows[i][1] || '').trim().toLowerCase() === target) {
       set[String(rows[i][0])] = true;
@@ -126,19 +114,14 @@ function postNotification(claims, body) {
   const target_emails = _parseList(body.target_emails).slice(0, 200);
   if (!title && !text) return { ok: false, error: 'empty_notification' };
 
-  const id = 'n_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
-  const row = new Array(NOTIF_HEADERS.length).fill('');
-  row[NOTIF_HEADERS.indexOf('id')]             = id;
-  row[NOTIF_HEADERS.indexOf('created_at_iso')] = nowIsoLocal();
-  row[NOTIF_HEADERS.indexOf('author_email')]   = claims.email;
-  row[NOTIF_HEADERS.indexOf('author_name')]    = claims.name || '';
-  row[NOTIF_HEADERS.indexOf('title')]          = title;
-  row[NOTIF_HEADERS.indexOf('body')]           = text;
-  row[NOTIF_HEADERS.indexOf('target_tags')]    = target_tags.join(',');
-  row[NOTIF_HEADERS.indexOf('target_emails')]  = target_emails.join(',');
-  row[NOTIF_HEADERS.indexOf('active')]         = true;
-  getNotifsSheet().appendRow(row);
-  _bump('notifs');
+  const id = _appendNotification({
+    author_email:  claims.email,
+    author_name:   claims.name || '',
+    title:         title,
+    body:          text,
+    target_tags:   target_tags.join(','),
+    target_emails: target_emails.join(',')
+  });
 
   const out = {
     ok: true, id: id,
@@ -168,17 +151,31 @@ function postNotification(claims, body) {
  * controlled code paths (submitForm / completeForm). */
 function _fireSystemNotification(authorEmail, authorName, title, body, targetEmails) {
   if (!title && !body) return null;
+  return _appendNotification({
+    author_email:  authorEmail || '',
+    author_name:   authorName || '',
+    title:         String(title || '').slice(0, 200),
+    body:          String(body  || '').slice(0, 4000),
+    target_tags:   '',
+    target_emails: (targetEmails || []).join(',')
+  });
+}
+
+/* Add one active notification and return its new id. Every notification,
+ * an admin's or the Hub's own, is written here. */
+function _appendNotification(fields) {
   const id = 'n_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
-  const row = new Array(NOTIF_HEADERS.length).fill('');
-  row[NOTIF_HEADERS.indexOf('id')]             = id;
-  row[NOTIF_HEADERS.indexOf('created_at_iso')] = nowIsoLocal();
-  row[NOTIF_HEADERS.indexOf('author_email')]   = authorEmail || '';
-  row[NOTIF_HEADERS.indexOf('author_name')]    = authorName || '';
-  row[NOTIF_HEADERS.indexOf('title')]          = String(title || '').slice(0, 200);
-  row[NOTIF_HEADERS.indexOf('body')]           = String(body  || '').slice(0, 4000);
-  row[NOTIF_HEADERS.indexOf('target_tags')]    = '';
-  row[NOTIF_HEADERS.indexOf('target_emails')]  = (targetEmails || []).join(',');
-  row[NOTIF_HEADERS.indexOf('active')]         = true;
+  const row = _rowFrom(NOTIF_HEADERS, {
+    id:             id,
+    created_at_iso: nowIsoLocal(),
+    author_email:   fields.author_email,
+    author_name:    fields.author_name,
+    title:          fields.title,
+    body:           fields.body,
+    target_tags:    fields.target_tags,
+    target_emails:  fields.target_emails,
+    active:         true
+  });
   getNotifsSheet().appendRow(row);
   _bump('notifs');
   return id;
@@ -189,7 +186,9 @@ function markNotificationRead(claims, body) {
   if (!id) return { ok: false, error: 'missing_notification_id' };
   // Avoid duplicate read rows for the same person + notification.
   if (readIdsFor(claims.email)[id]) return { ok: true, already: true };
-  getNotifReadsSheet().appendRow([id, claims.email, nowIsoLocal()]);
+  getNotifReadsSheet().appendRow(_rowFrom(NOTIF_READ_HEADERS, {
+    notification_id: id, email: claims.email, read_at_iso: nowIsoLocal()
+  }));
   _bump('reads:' + String(claims.email || '').trim().toLowerCase());
   return { ok: true };
 }
@@ -207,7 +206,9 @@ function markAllNotificationsRead(claims) {
   for (let i = 0; i < notifs.length; i++) {
     const n = notifs[i];
     if (!userReceivesNotification(claims.email, n, userTags)) continue;
-    if (!readSet[n.id]) toAdd.push([n.id, claims.email, now]);
+    if (!readSet[n.id]) {
+      toAdd.push(_rowFrom(NOTIF_READ_HEADERS, { notification_id: n.id, email: claims.email, read_at_iso: now }));
+    }
   }
   if (toAdd.length) {
     sheet.getRange(sheet.getLastRow() + 1, 1, toAdd.length, NOTIF_READ_HEADERS.length).setValues(toAdd);
@@ -220,9 +221,7 @@ function deleteNotification(body) {
   const id = String(body.notification_id || '').trim();
   if (!id) return { ok: false, error: 'missing_notification_id' };
   const sheet = getNotifsSheet();
-  const last = sheet.getLastRow();
-  if (last < 2) return { ok: true };
-  const ids = sheet.getRange(2, 1, last - 1, 1).getValues();
+  const ids = _dataRows(sheet, 1);   // the id column only
   for (let i = 0; i < ids.length; i++) {
     if (String(ids[i][0]) === id) {
       // Soft delete: flip the active column to FALSE.
@@ -241,15 +240,11 @@ function adminNotificationStats() {
   const roster = getRosterIndex();
 
   // Count reads per notification id in one pass.
-  const reads = getNotifReadsSheet();
-  const last = reads.getLastRow();
+  const rows = _dataRows(getNotifReadsSheet(), 1);   // notification_id only
   const counts = {};
-  if (last >= 2) {
-    const rows = reads.getRange(2, 1, last - 1, 1).getValues();
-    for (let i = 0; i < rows.length; i++) {
-      const id = String(rows[i][0]);
-      counts[id] = (counts[id] || 0) + 1;
-    }
+  for (let i = 0; i < rows.length; i++) {
+    const id = String(rows[i][0]);
+    counts[id] = (counts[id] || 0) + 1;
   }
 
   // Total "audience" for a broadcast (no targeting). We use the
@@ -302,6 +297,6 @@ function adminListTags() {
   return { ok: true, tags: roster.allTags };
 }
 
-// End of 30_notifications.gs. checkHubInstall() looks for the function below to
-// confirm this whole file was pasted in: keep it the last thing here.
+// The end. checkHubInstall() looks for this marker to confirm the whole
+// file was pasted in, so keep it the last thing here.
 function endOf_30_notifications_() {}

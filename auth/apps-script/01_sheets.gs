@@ -3,8 +3,8 @@
  *
  * For each tab: its name, its columns in order, and the function that
  * opens it (creating it, with a bold frozen header row, the first time
- * anything asks for it). At the end, two helpers for finding one person's
- * row.
+ * anything asks for it). At the end, the helpers every other file uses to
+ * read rows, write rows and find one person's row.
  *
  * The *_HEADERS lists are the map every reader and writer uses: columns are
  * addressed BY POSITION. Insert, delete or reorder a column by hand in the
@@ -18,50 +18,46 @@
  * rows. Rename both, or neither.
  */
 
+/* Open a tab in the bound spreadsheet (or in `ss`), creating it with a
+ * bold, frozen header row the first time anything asks for it. Only ever
+ * creates; never clears, renames or reorders anything already there. */
+function _sheet(name, headers, ss) {
+  ss = ss || SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(name);
+  if (!sheet) {
+    sheet = ss.insertSheet(name);
+    sheet.appendRow(headers);
+    sheet.setFrozenRows(1);
+    sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+  }
+  return sheet;
+}
+
 // ---------- sessions ----------
 
-const SESSIONS_SHEET         = 'sessions';
+const SESSIONS_SHEET = 'sessions';
 
 const SESSION_HEADERS = [
   'session_token', 'email', 'name', 'created_at_iso',
   'expires_at_iso', 'last_used_iso', 'user_agent'
 ];
 
-function getSessionsSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(SESSIONS_SHEET);
-  if (!sheet) {
-    sheet = ss.insertSheet(SESSIONS_SHEET);
-    sheet.appendRow(SESSION_HEADERS);
-    sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, SESSION_HEADERS.length).setFontWeight('bold');
-  }
-  return sheet;
-}
+function getSessionsSheet() { return _sheet(SESSIONS_SHEET, SESSION_HEADERS); }
 
 // ---------- admins ----------
-
-const ADMINS_SHEET           = 'admins';   // who can see the admin dashboard
 
 /**
  * The `admins` tab lists who may view the admin dashboard. Column A is
  * the email; add/remove rows to manage access without touching code.
  */
-function getAdminsSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(ADMINS_SHEET);
-  if (!sheet) {
-    sheet = ss.insertSheet(ADMINS_SHEET);
-    sheet.appendRow(['email', 'name', 'role']);
-    sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, 3).setFontWeight('bold');
-  }
-  return sheet;
-}
+const ADMINS_SHEET = 'admins';
+const ADMIN_HEADERS = ['email', 'name', 'role'];
+
+function getAdminsSheet() { return _sheet(ADMINS_SHEET, ADMIN_HEADERS); }
 
 // ---------- roster ----------
 
-const ROSTER_SHEET           = 'roster';   // optional: full expected staff list
+const ROSTER_SHEET = 'roster';   // optional: full expected staff list
 
 const ROSTER_HEADERS = ['email', 'name', 'tags'];  // tags = comma-separated
 
@@ -70,68 +66,38 @@ const ROSTER_HEADERS = ['email', 'name', 'tags'];  // tags = comma-separated
 
 // ---------- events ----------
 
-const EVENTS_SHEET           = 'events';
+const EVENTS_SHEET = 'events';
 
 const EVENT_HEADERS = [
   'timestamp_iso', 'email', 'name', 'module_id', 'event',
   'progress_pct', 'version', 'user_agent'
 ];
 
-function getEventsSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(EVENTS_SHEET);
-  if (!sheet) {
-    sheet = ss.insertSheet(EVENTS_SHEET);
-    sheet.appendRow(EVENT_HEADERS);
-    sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, EVENT_HEADERS.length).setFontWeight('bold');
-  }
-  return sheet;
-}
+function getEventsSheet() { return _sheet(EVENTS_SHEET, EVENT_HEADERS); }
 
 // ---------- pageviews and clicks ----------
 
-const PAGEVIEWS_SHEET        = 'pageviews';
+const PAGEVIEWS_SHEET = 'pageviews';
 
 const PAGEVIEW_HEADERS = [
   'timestamp_iso', 'email', 'name', 'page_path',
   'page_title', 'referrer', 'user_agent'
 ];
 
-function getPageviewsSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(PAGEVIEWS_SHEET);
-  if (!sheet) {
-    sheet = ss.insertSheet(PAGEVIEWS_SHEET);
-    sheet.appendRow(PAGEVIEW_HEADERS);
-    sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, PAGEVIEW_HEADERS.length).setFontWeight('bold');
-  }
-  return sheet;
-}
+function getPageviewsSheet() { return _sheet(PAGEVIEWS_SHEET, PAGEVIEW_HEADERS); }
 
-const CLICKS_SHEET           = 'clicks';
+const CLICKS_SHEET = 'clicks';
 
 const CLICK_HEADERS = [
   'timestamp_iso', 'email', 'name', 'label',
   'page_path', 'user_agent'
 ];
 
-function getClicksSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(CLICKS_SHEET);
-  if (!sheet) {
-    sheet = ss.insertSheet(CLICKS_SHEET);
-    sheet.appendRow(CLICK_HEADERS);
-    sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, CLICK_HEADERS.length).setFontWeight('bold');
-  }
-  return sheet;
-}
+function getClicksSheet() { return _sheet(CLICKS_SHEET, CLICK_HEADERS); }
 
 // ---------- dwell ----------
 
-const DWELL_SHEET            = 'dwell';   // per-person × module × chapter dwell totals
+const DWELL_SHEET = 'dwell';   // time on task: one row per person × module
 
 /* Dwell rows hold per-module engagement summaries — one row per person
  * per module — rather than one row per chapter. The client sends the
@@ -148,21 +114,11 @@ const DWELL_HEADERS = [
  * un-migrated sheet so we can refuse writes/reads with a clear hint. */
 const DWELL_LEGACY_MARKER = 'chapter_title';
 
-function getDwellSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(DWELL_SHEET);
-  if (!sheet) {
-    sheet = ss.insertSheet(DWELL_SHEET);
-    sheet.appendRow(DWELL_HEADERS);
-    sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, DWELL_HEADERS.length).setFontWeight('bold');
-  }
-  return sheet;
-}
+function getDwellSheet() { return _sheet(DWELL_SHEET, DWELL_HEADERS); }
 
 // ---------- notifications and notification_reads ----------
 
-const NOTIFS_SHEET           = 'notifications';
+const NOTIFS_SHEET = 'notifications';
 
 const NOTIF_HEADERS = [
   'id', 'created_at_iso', 'author_email', 'author_name',
@@ -172,35 +128,15 @@ const NOTIF_HEADERS = [
   'active'          // false to soft-delete
 ];
 
-function getNotifsSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(NOTIFS_SHEET);
-  if (!sheet) {
-    sheet = ss.insertSheet(NOTIFS_SHEET);
-    sheet.appendRow(NOTIF_HEADERS);
-    sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, NOTIF_HEADERS.length).setFontWeight('bold');
-  }
-  return sheet;
-}
+function getNotifsSheet() { return _sheet(NOTIFS_SHEET, NOTIF_HEADERS); }
 
-const NOTIF_READS_SHEET      = 'notification_reads';
+const NOTIF_READS_SHEET = 'notification_reads';
 
 const NOTIF_READ_HEADERS = [
   'notification_id', 'email', 'read_at_iso'
 ];
 
-function getNotifReadsSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(NOTIF_READS_SHEET);
-  if (!sheet) {
-    sheet = ss.insertSheet(NOTIF_READS_SHEET);
-    sheet.appendRow(NOTIF_READ_HEADERS);
-    sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, NOTIF_READ_HEADERS.length).setFontWeight('bold');
-  }
-  return sheet;
-}
+function getNotifReadsSheet() { return _sheet(NOTIF_READS_SHEET, NOTIF_READ_HEADERS); }
 
 // ---------- module_responses ----------
 
@@ -228,17 +164,7 @@ const MODULE_RESPONSE_HEADERS = [
   'segments_done', 'data_json', 'flagged', 'completed_at_iso', 'user_agent'
 ];
 
-function getModuleResponsesSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(MODULE_RESPONSES_SHEET);
-  if (!sheet) {
-    sheet = ss.insertSheet(MODULE_RESPONSES_SHEET);
-    sheet.appendRow(MODULE_RESPONSE_HEADERS);
-    sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, MODULE_RESPONSE_HEADERS.length).setFontWeight('bold');
-  }
-  return sheet;
-}
+function getModuleResponsesSheet() { return _sheet(MODULE_RESPONSES_SHEET, MODULE_RESPONSE_HEADERS); }
 
 // ---------- survey_responses ----------
 
@@ -292,21 +218,11 @@ function _surveysSpreadsheet() {
   }
 }
 
-function getSurveysSheet() {
-  const ss = _surveysSpreadsheet();
-  let sheet = ss.getSheetByName(SURVEYS_SHEET);
-  if (!sheet) {
-    sheet = ss.insertSheet(SURVEYS_SHEET);
-    sheet.appendRow(SURVEY_HEADERS);
-    sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, SURVEY_HEADERS.length).setFontWeight('bold');
-  }
-  return sheet;
-}
+function getSurveysSheet() { return _sheet(SURVEYS_SHEET, SURVEY_HEADERS, _surveysSpreadsheet()); }
 
 // ---------- line_managers ----------
 
-const LINE_MANAGERS_SHEET    = 'line_managers';   // dropdown for "send to" on eval forms
+const LINE_MANAGERS_SHEET = 'line_managers';   // dropdown for "send to" on eval forms
 
 /* Line managers — the "send to" dropdown on performance-review forms.
  * Managed manually by admins in the spreadsheet. Intentionally separate
@@ -314,17 +230,7 @@ const LINE_MANAGERS_SHEET    = 'line_managers';   // dropdown for "send to" on e
  * classroom teacher, not Hub SLT. */
 const LINE_MANAGER_HEADERS = ['email', 'name', 'division'];
 
-function getLineManagersSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(LINE_MANAGERS_SHEET);
-  if (!sheet) {
-    sheet = ss.insertSheet(LINE_MANAGERS_SHEET);
-    sheet.appendRow(LINE_MANAGER_HEADERS);
-    sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, LINE_MANAGER_HEADERS.length).setFontWeight('bold');
-  }
-  return sheet;
-}
+function getLineManagersSheet() { return _sheet(LINE_MANAGERS_SHEET, LINE_MANAGER_HEADERS); }
 
 // ---------- form_submissions ----------
 
@@ -355,30 +261,52 @@ const FORM_SUBMISSION_HEADERS = [
   'completed_at_iso'
 ];
 
-function getFormSubmissionsSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(FORM_SUBMISSIONS_SHEET);
-  if (!sheet) {
-    sheet = ss.insertSheet(FORM_SUBMISSIONS_SHEET);
-    sheet.appendRow(FORM_SUBMISSION_HEADERS);
-    sheet.setFrozenRows(1);
-    sheet.getRange(1, 1, 1, FORM_SUBMISSION_HEADERS.length).setFontWeight('bold');
-  }
-  return sheet;
+function getFormSubmissionsSheet() { return _sheet(FORM_SUBMISSIONS_SHEET, FORM_SUBMISSION_HEADERS); }
+
+// ---------- Reading and writing rows ----------
+
+/* Every row under the header row: `width` columns starting at column
+ * `fromCol` (1 when not given), or [] when the tab has no rows yet. Where a
+ * caller reads fewer columns than the tab has, that is on purpose: the
+ * widest ones (user_agent, data_json) are left behind when nothing needs
+ * them. */
+function _dataRows(sheet, width, fromCol) {
+  const last = sheet.getLastRow();
+  if (last < 2) return [];
+  return sheet.getRange(2, fromCol || 1, last - 1, width).getValues();
 }
 
-// ---------- Finding one person's row ----------
+/* { column_name: index } for a header list, so code reads row[col.email]
+ * rather than row[1]. */
+function _colIndex(headers) {
+  const col = {};
+  headers.forEach(function (h, i) { col[h] = i; });
+  return col;
+}
+
+/* A row for `headers`, from an object keyed by column name; columns it
+ * leaves out are blank. A key that names no column throws rather than
+ * vanishing: a misspelt column name would otherwise write a blank cell and
+ * lose that value without a sound. */
+function _rowFrom(headers, values) {
+  Object.keys(values).forEach(function (k) {
+    if (headers.indexOf(k) === -1) {
+      throw new Error('No column "' + k + '" in [' + headers.join(', ') + ']');
+    }
+  });
+  return headers.map(function (h) {
+    return Object.prototype.hasOwnProperty.call(values, h) ? values[h] : '';
+  });
+}
 
 /* Row (1-based, header included) whose `keyA` column is `a` (compared
  * trimmed and lower-cased — it is an email) and whose `keyB` column is `b`
  * (trimmed), or 0. One read across both columns rather than one each. */
 function _findRowByPair(sheet, headers, keyA, keyB, a, b) {
-  const last = sheet.getLastRow();
-  if (last < 2) return 0;
   const colA = headers.indexOf(keyA), colB = headers.indexOf(keyB);
   const from = Math.min(colA, colB);
   const width = Math.abs(colA - colB) + 1;
-  const vals = sheet.getRange(2, from + 1, last - 1, width).getValues();
+  const vals = _dataRows(sheet, width, from + 1);
   for (let i = 0; i < vals.length; i++) {
     if (String(vals[i][colA - from]).trim().toLowerCase() === a &&
         String(vals[i][colB - from]).trim() === b) {
@@ -407,6 +335,6 @@ function _findOwnRow(sheet, headers, keyA, keyB, a, b, hintKey) {
   return { row: row, values: sheet.getRange(row, 1, 1, headers.length).getValues()[0] };
 }
 
-// End of 01_sheets.gs. checkHubInstall() looks for the function below to
-// confirm this whole file was pasted in: keep it the last thing here.
+// The end. checkHubInstall() looks for this marker to confirm the whole
+// file was pasted in, so keep it the last thing here.
 function endOf_01_sheets_() {}

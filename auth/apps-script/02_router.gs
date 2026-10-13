@@ -24,6 +24,79 @@ function doGet(e) {
   });
 }
 
+/* Every action the Hub can ask for: who may ask, and what does the work.
+ * A session token is checked before any of these runs.
+ *
+ *   admin       only people on the `admins` tab; anyone else gets not_admin
+ *   newsletter  only NEWSLETTER_SENDERS (00_settings.gs); anyone else gets
+ *               not_newsletter_sender
+ *   fresh       honours the dashboard's Refresh button (`fresh: '1'`): read
+ *               the sheets, not the cache. Admin reads only, and only after
+ *               the admin check, so nobody else can make the backend skip
+ *               its cache.
+ *
+ * The handlers name functions that live in other files. That is safe at
+ * the top level because nothing here runs until a request arrives, by
+ * which time Apps Script has loaded every file.
+ *
+ * create_session is not in the table: it is the one action that takes a
+ * Google ID token rather than a session, and doPost handles it first. */
+const ACTIONS = {
+  // ----- Who am I (10_sessions.gs, 11_people.gs) -----
+  whoami: { run: (claims) => ({
+    ok: true,
+    email:    claims.email,
+    name:     claims.name || '',
+    hd:       ALLOWED_DOMAIN,
+    is_admin: isAdmin(claims.email)
+  }) },
+  sign_out: { run: (claims, body) => { revokeSession(body.session_token); return { ok: true }; } },
+
+  // ----- What staff do (20_tracking.gs) -----
+  record_event:    { run: (claims, body) => recordEvent(claims, body) },
+  get_completions: { run: (claims) => ({ ok: true, completions: getCompletionsFor(claims.email) }) },
+  record_pageview: { run: (claims, body) => recordPageview(claims, body) },
+  record_click:    { run: (claims, body) => recordClick(claims, body) },
+  record_dwell:    { run: (claims, body) => recordDwell(claims, body) },
+  admin_dwell:     { admin: true, fresh: true, run: () => adminDwell() },
+
+  // ----- The admin dashboard (21_admin_dashboard.gs) -----
+  admin_overview:  { admin: true, fresh: true, run: () => adminOverview() },
+  // Everything the admin dashboard shows, in one execution: one session
+  // check, one admin check, one cold start, instead of six of each.
+  admin_dashboard: { admin: true, fresh: true, run: (claims, body) => adminDashboard(body) },
+
+  // ----- The notification bell (30_notifications.gs) -----
+  get_notifications:           { run: (claims) => listNotifications(claims.email) },
+  mark_notification_read:      { run: (claims, body) => markNotificationRead(claims, body) },
+  mark_all_notifications_read: { run: (claims) => markAllNotificationsRead(claims) },
+  post_notification:           { admin: true, run: (claims, body) => postNotification(claims, body) },
+  delete_notification:         { admin: true, run: (claims, body) => deleteNotification(body) },
+  admin_notification_stats:    { admin: true, run: () => adminNotificationStats() },
+  admin_list_tags:             { admin: true, run: () => adminListTags() },
+
+  // ----- Newsletter mail-out (31_email.gs) -----
+  newsletter_status: { run: (claims) => newsletterStatus(claims) },
+  send_newsletter:   { newsletter: true, run: (claims, body) => sendNewsletter(claims, body) },
+
+  // ----- Free-text capture inside training modules (40_module_responses.gs) -----
+  save_module_response:   { run: (claims, body) => saveModuleResponse(claims, body) },
+  get_module_response:    { run: (claims, body) => getModuleResponse(claims, body) },
+  admin_module_responses: { admin: true, fresh: true, run: (claims, body) => adminModuleResponses(body) },
+
+  // ----- Surveys: required-entry forms filled in on the Hub (41_surveys.gs) -----
+  save_survey_response:   { run: (claims, body) => saveSurveyResponse(claims, body) },
+  get_survey_response:    { run: (claims, body) => getSurveyResponse(claims, body) },
+  admin_survey_responses: { admin: true, fresh: true, run: (claims, body) => adminSurveyResponses(body) },
+
+  // ----- Performance-review round trip (42_performance_reviews.gs) -----
+  get_line_managers:   { run: () => getLineManagers() },
+  submit_form:         { run: (claims, body) => submitForm(claims, body) },
+  get_form_submission: { run: (claims, body) => getFormSubmission(claims, body) },
+  complete_form:       { run: (claims, body) => completeForm(claims, body) },
+  list_my_submissions: { run: (claims) => listMySubmissions(claims) }
+};
+
 function doPost(e) {
   try {
     const body = JSON.parse((e && e.postData && e.postData.contents) || '{}');
@@ -48,108 +121,20 @@ function doPost(e) {
     const claims = verifySessionToken(body.session_token);
     if (!claims) return jsonOut({ ok: false, error: 'invalid_session' });
 
-    switch (action) {
-      case 'record_event':
-        return jsonOut(recordEvent(claims, body));
-      case 'get_completions':
-        return jsonOut({ ok: true, completions: getCompletionsFor(claims.email) });
-      case 'record_pageview':
-        return jsonOut(recordPageview(claims, body));
-      case 'record_click':
-        return jsonOut(recordClick(claims, body));
-      case 'record_dwell':
-        return jsonOut(recordDwell(claims, body));
-      case 'admin_dwell':
-        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
-        _REQ_FRESH = _wantsFresh(body);
-        return jsonOut(adminDwell());
-
-      // Everything the admin dashboard shows, in one execution: one session
-      // check, one admin check, one cold start, instead of six of each.
-      case 'admin_dashboard':
-        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
-        _REQ_FRESH = _wantsFresh(body);
-        return jsonOut(adminDashboard(body));
-
-      // ----- Performance-review form workflow -----
-      case 'get_line_managers':
-        return jsonOut(getLineManagers());
-      case 'submit_form':
-        return jsonOut(submitForm(claims, body));
-      case 'get_form_submission':
-        return jsonOut(getFormSubmission(claims, body));
-      case 'complete_form':
-        return jsonOut(completeForm(claims, body));
-      case 'list_my_submissions':
-        return jsonOut(listMySubmissions(claims));
-
-      // ----- Free-text capture inside training modules -----
-      case 'save_module_response':
-        return jsonOut(saveModuleResponse(claims, body));
-      case 'get_module_response':
-        return jsonOut(getModuleResponse(claims, body));
-      case 'admin_module_responses':
-        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
-        _REQ_FRESH = _wantsFresh(body);
-        return jsonOut(adminModuleResponses(body));
-
-      // ----- Surveys (required-entry forms filled in on the Hub) -----
-      case 'save_survey_response':
-        return jsonOut(saveSurveyResponse(claims, body));
-      case 'get_survey_response':
-        return jsonOut(getSurveyResponse(claims, body));
-      case 'admin_survey_responses':
-        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
-        _REQ_FRESH = _wantsFresh(body);
-        return jsonOut(adminSurveyResponses(body));
-      case 'whoami':
-        return jsonOut({
-          ok: true,
-          email:    claims.email,
-          name:     claims.name || '',
-          hd:       ALLOWED_DOMAIN,
-          is_admin: isAdmin(claims.email)
-        });
-      case 'admin_overview':
-        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
-        _REQ_FRESH = _wantsFresh(body);
-        return jsonOut(adminOverview());
-
-      // ----- Notifications -----
-      case 'get_notifications':
-        return jsonOut(listNotifications(claims.email));
-      case 'mark_notification_read':
-        return jsonOut(markNotificationRead(claims, body));
-      case 'mark_all_notifications_read':
-        return jsonOut(markAllNotificationsRead(claims));
-      case 'post_notification':
-        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
-        return jsonOut(postNotification(claims, body));
-      case 'delete_notification':
-        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
-        return jsonOut(deleteNotification(body));
-      case 'admin_notification_stats':
-        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
-        return jsonOut(adminNotificationStats());
-
-      // ----- Newsletter mail-out -----
-      case 'newsletter_status':
-        return jsonOut(newsletterStatus(claims));
-      case 'send_newsletter':
-        if (!canSendNewsletter(claims.email)) {
-          return jsonOut({ ok: false, error: 'not_newsletter_sender' });
-        }
-        return jsonOut(sendNewsletter(claims, body));
-      case 'admin_list_tags':
-        if (!isAdmin(claims.email)) return jsonOut({ ok: false, error: 'not_admin' });
-        return jsonOut(adminListTags());
-
-      case 'sign_out':
-        revokeSession(body.session_token);
-        return jsonOut({ ok: true });
-      default:
-        return jsonOut({ ok: false, error: 'unknown_action' });
+    /* Own properties only: "toString" or "__proto__" sent as an action must
+     * be unknown, not something inherited from Object. */
+    if (typeof action !== 'string' || !Object.prototype.hasOwnProperty.call(ACTIONS, action)) {
+      return jsonOut({ ok: false, error: 'unknown_action' });
     }
+    const route = ACTIONS[action];
+    if (route.admin && !isAdmin(claims.email)) {
+      return jsonOut({ ok: false, error: 'not_admin' });
+    }
+    if (route.newsletter && !canSendNewsletter(claims.email)) {
+      return jsonOut({ ok: false, error: 'not_newsletter_sender' });
+    }
+    if (route.fresh) _REQ_FRESH = _wantsFresh(body);
+    return jsonOut(route.run(claims, body));
   } catch (err) {
     /* A code the pages can switch on, with the exception alongside. The
      * raw exception text used to be the code, and the admin dashboard —
@@ -208,6 +193,6 @@ function _missingHubFiles() {
     .map(function (f) { return f[0] + '.gs'; });
 }
 
-// End of 02_router.gs. checkHubInstall() looks for the function below to
-// confirm this whole file was pasted in: keep it the last thing here.
+// The end. checkHubInstall() looks for this marker to confirm the whole
+// file was pasted in, so keep it the last thing here.
 function endOf_02_router_() {}

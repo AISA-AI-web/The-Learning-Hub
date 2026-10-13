@@ -32,11 +32,16 @@
  * Never "New deployment": that mints a new URL and takes the Hub offline.
  */
 
+/* Signing in. OAUTH_CLIENT_ID is the Hub's Google sign-in client (the same
+ * id is in auth/gate.js); only verified Google accounts on ALLOWED_DOMAIN
+ * get in, and a session then lasts SESSION_DURATION_DAYS. */
 const OAUTH_CLIENT_ID        = '719019551782-h9pdg57s6oq4jpo884a53o0d1pgel1u6.apps.googleusercontent.com';
 const ALLOWED_DOMAIN         = 'aisa.sch.ae';
-const TIMEZONE               = 'Asia/Dubai';  // Abu Dhabi (GST, UTC+04:00, no DST)
-
 const SESSION_DURATION_DAYS  = 365;
+
+/* Every timestamp the Hub writes is Abu Dhabi time, "+04:00" — see
+ * isoLocal() in 03_helpers.gs. */
+const TIMEZONE               = 'Asia/Dubai';  // Abu Dhabi (GST, UTC+04:00, no DST)
 
 /* Who may send a newsletter to the whole school. Deliberately NOT the
  * `admins` tab: every SLT admin can post notifications and read the
@@ -57,6 +62,6 @@ const NEWSLETTER_SENDERS = ['bbaki@aisa.sch.ae', 'hodai@aisa.sch.ae'];
  * secondary SLT without handing over the whole analytics workbook. */
 const SURVEYS_SPREADSHEET_ID = '';
 
-// End of 00_settings.gs. checkHubInstall() looks for the function below to
-// confirm this whole file was pasted in: keep it the last thing here.
+// The end. checkHubInstall() looks for this marker to confirm the whole
+// file was pasted in, so keep it the last thing here.
 function endOf_00_settings_() {}

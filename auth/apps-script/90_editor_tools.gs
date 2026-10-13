@@ -88,7 +88,7 @@ function authorizeMail() {
  *
  * It checks the three things that actually cause a silent mismatch:
  *
- *  1. HEADER DRIFT. Every reader in this file addresses columns BY
+ *  1. HEADER DRIFT. Every reader in this backend addresses columns BY
  *     POSITION, using the *_HEADERS constants as the map. Insert, delete
  *     or reorder a column by hand in the spreadsheet and every read after
  *     it silently returns the wrong field — no error, just wrong numbers.
@@ -375,13 +375,17 @@ function migrateDwellToPerModule() {
     const g = groups[k];
     if (g.chapters === 0) return;
     const avg = Math.round((g.seconds / g.chapters) * 10) / 10;
-    sheet.appendRow([
-      g.updated || nowIsoLocal(),
-      g.first   || g.updated || nowIsoLocal(),
-      g.email, g.name, g.module,
-      g.seconds, g.chapters, avg,
-      ''   /* user_agent not carried forward — only the latest write knows it */
-    ]);
+    sheet.appendRow(_rowFrom(DWELL_HEADERS, {
+      updated_at_iso:       g.updated || nowIsoLocal(),
+      first_seen_iso:       g.first   || g.updated || nowIsoLocal(),
+      email:                g.email,
+      name:                 g.name,
+      module_id:            g.module,
+      total_seconds:        g.seconds,
+      chapters_seen:        g.chapters,
+      avg_secs_per_chapter: avg,
+      user_agent:           ''   /* not carried forward — only the latest write knows it */
+    }));
     written++;
   });
 
@@ -390,6 +394,6 @@ function migrateDwellToPerModule() {
   return { ok: true, migrated: written, backup_sheet: backupName };
 }
 
-// End of 90_editor_tools.gs. checkHubInstall() looks for the function below to
-// confirm this whole file was pasted in: keep it the last thing here.
+// The end. checkHubInstall() looks for this marker to confirm the whole
+// file was pasted in, so keep it the last thing here.
 function endOf_90_editor_tools_() {}

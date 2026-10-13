@@ -1302,6 +1302,20 @@ function installChecks(files) {
           /SyntaxError: Identifier 'OAUTH_CLIENT_ID' has already been declared/.test(clash), clash || 'it loaded');
 }
 
+/* The guard rails in the shared helpers. No scenario trips them, because
+ * no scenario has a bug in it. */
+function helperChecks(files) {
+    const world = makeWorld({});
+    let threw = '';
+    try { execute(files, world, '_rowFrom', [['email', 'name'], { emial: 'x@aisa.sch.ae' }]); }
+    catch (e) { threw = e.message; }
+    check('_rowFrom refuses a misspelt column instead of writing a blank cell',
+          /No column "emial"/.test(threw), threw || 'it built the row');
+    const row = execute(files, world, '_rowFrom', [['a', 'b', 'c'], { c: 3, a: 1 }]);
+    check('_rowFrom puts values in column order and leaves the rest blank',
+          JSON.stringify(row) === '[1,"",3]', JSON.stringify(row));
+}
+
 /* Who may do what. Checked directly rather than only through the
  * scenario comparisons, because a backend that refused nobody would still
  * agree with itself with the cache on and off. */
@@ -1374,6 +1388,8 @@ function main() {
     if (files.length > 1) {
         console.log('\nSeveral files, one scope:');
         installChecks(files);
+        console.log('\nShared helpers:');
+        helperChecks(files);
     }
 
     console.log('\nCache-specific behaviour:');

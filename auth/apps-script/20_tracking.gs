@@ -21,16 +21,16 @@ function recordEvent(claims, body) {
   if (!moduleId) return { ok: false, error: 'missing_module_id' };
   if (!event)    return { ok: false, error: 'missing_event' };
 
-  getEventsSheet().appendRow([
-    nowIsoLocal(),
-    claims.email,
-    claims.name || '',
-    moduleId,
-    event,
-    progressPct,
-    version,
-    userAgent
-  ]);
+  getEventsSheet().appendRow(_rowFrom(EVENT_HEADERS, {
+    timestamp_iso: nowIsoLocal(),
+    email:         claims.email,
+    name:          claims.name || '',
+    module_id:     moduleId,
+    event:         event,
+    progress_pct:  progressPct,
+    version:       version,
+    user_agent:    userAgent
+  }));
   _bump('events');   // the teacher's own dashboard and the tracker see it on the next read
   return { ok: true };
 }
@@ -67,39 +67,27 @@ function _completionsIndex(force) {
 }
 
 function _readCompletionsIndex() {
-  const sheet = getEventsSheet();
-  const last = sheet.getLastRow();
+  const col = _colIndex(EVENT_HEADERS);
+  /* Up to `version` (column 7). user_agent is the widest column and
+   * nothing here reads it. */
+  const values = _dataRows(getEventsSheet(), col.version + 1);
   const list = [], pos = {}, names = {};
-  if (last >= 2) {
-    /* Up to `version` (column 7). user_agent is the widest column and
-     * nothing here reads it. */
-    const width = EVENT_HEADERS.indexOf('version') + 1;
-    const values = sheet.getRange(2, 1, last - 1, width).getValues();
-    const idx = {
-      ts:      EVENT_HEADERS.indexOf('timestamp_iso'),
-      email:   EVENT_HEADERS.indexOf('email'),
-      name:    EVENT_HEADERS.indexOf('name'),
-      module:  EVENT_HEADERS.indexOf('module_id'),
-      event:   EVENT_HEADERS.indexOf('event'),
-      version: EVENT_HEADERS.indexOf('version')
-    };
-    for (let i = 0; i < values.length; i++) {
-      const row = values[i];
-      if (row[idx.event] !== 'completed') continue;
-      const email    = String(row[idx.email] || '').trim().toLowerCase();
-      const moduleId = String(row[idx.module] || '');
-      const ts       = _isoOut(row[idx.ts] || '');
-      const version  = String(row[idx.version] || '');
-      if (email && row[idx.name] && !names[email]) names[email] = String(row[idx.name]);
-      const key = email + '|' + moduleId;
-      const at = pos[key];
-      if (at === undefined) {
-        pos[key] = list.length;
-        list.push([email, moduleId, ts, version]);
-      } else if (_tsMs(ts) > _tsMs(list[at][2])) {
-        list[at][2] = ts;
-        list[at][3] = version;
-      }
+  for (let i = 0; i < values.length; i++) {
+    const row = values[i];
+    if (row[col.event] !== 'completed') continue;
+    const email    = String(row[col.email] || '').trim().toLowerCase();
+    const moduleId = String(row[col.module_id] || '');
+    const ts       = _isoOut(row[col.timestamp_iso] || '');
+    const version  = String(row[col.version] || '');
+    if (email && row[col.name] && !names[email]) names[email] = String(row[col.name]);
+    const key = email + '|' + moduleId;
+    const at = pos[key];
+    if (at === undefined) {
+      pos[key] = list.length;
+      list.push([email, moduleId, ts, version]);
+    } else if (_tsMs(ts) > _tsMs(list[at][2])) {
+      list[at][2] = ts;
+      list[at][3] = version;
     }
   }
   return { at: nowIsoLocal(), list: list, names: names };
@@ -115,15 +103,15 @@ function recordPageview(claims, body) {
 
   if (!pagePath) return { ok: false, error: 'missing_page_path' };
 
-  getPageviewsSheet().appendRow([
-    nowIsoLocal(),
-    claims.email,
-    claims.name || '',
-    pagePath,
-    pageTitle,
-    referrer,
-    userAgent
-  ]);
+  getPageviewsSheet().appendRow(_rowFrom(PAGEVIEW_HEADERS, {
+    timestamp_iso: nowIsoLocal(),
+    email:         claims.email,
+    name:          claims.name || '',
+    page_path:     pagePath,
+    page_title:    pageTitle,
+    referrer:      referrer,
+    user_agent:    userAgent
+  }));
   return { ok: true };
 }
 
@@ -134,18 +122,28 @@ function recordClick(claims, body) {
 
   if (!label) return { ok: false, error: 'missing_label' };
 
-  getClicksSheet().appendRow([
-    nowIsoLocal(),
-    claims.email,
-    claims.name || '',
-    label,
-    pagePath,
-    userAgent
-  ]);
+  getClicksSheet().appendRow(_rowFrom(CLICK_HEADERS, {
+    timestamp_iso: nowIsoLocal(),
+    email:         claims.email,
+    name:          claims.name || '',
+    label:         label,
+    page_path:     pagePath,
+    user_agent:    userAgent
+  }));
   return { ok: true };
 }
 
-// ---------- Dwell (per-chapter time on task) ----------
+// ---------- Dwell (time spent in each module) ----------
+
+/* What record_dwell and admin_dwell answer while the `dwell` tab is still
+ * on its old one-row-per-chapter layout. */
+function _dwellNeedsMigration() {
+  return {
+    ok: false,
+    error: 'dwell_sheet_needs_migration',
+    hint: 'Run migrateDwellToPerModule() once from the Apps Script editor.'
+  };
+}
 
 /* True if the existing sheet still has the old per-chapter headers; we
  * refuse to read/write until migrateDwellToPerModule() runs once. */
@@ -188,26 +186,10 @@ function recordDwell(claims, body) {
    * Only the "already migrated" answer is remembered, never the other. */
   const layoutKey = CACHE_NS + ':dwell_layout_ok';
   if (_cacheGet(layoutKey) !== 1) {
-    if (dwellSheetIsLegacy(sheet)) {
-      return {
-        ok: false,
-        error: 'dwell_sheet_needs_migration',
-        hint: 'Run migrateDwellToPerModule() once from the Apps Script editor.'
-      };
-    }
+    if (dwellSheetIsLegacy(sheet)) return _dwellNeedsMigration();
     _cachePut(layoutKey, 1, 3600);
   }
-  const idx = {
-    updated:    DWELL_HEADERS.indexOf('updated_at_iso'),
-    first:      DWELL_HEADERS.indexOf('first_seen_iso'),
-    email:      DWELL_HEADERS.indexOf('email'),
-    name:       DWELL_HEADERS.indexOf('name'),
-    module:     DWELL_HEADERS.indexOf('module_id'),
-    seconds:    DWELL_HEADERS.indexOf('total_seconds'),
-    seen:       DWELL_HEADERS.indexOf('chapters_seen'),
-    avg:        DWELL_HEADERS.indexOf('avg_secs_per_chapter'),
-    ua:         DWELL_HEADERS.indexOf('user_agent')
-  };
+  const col        = _colIndex(DWELL_HEADERS);
   const emailLower = String(claims.email || '').toLowerCase();
   const name       = claims.name || '';
   const now        = nowIsoLocal();
@@ -223,34 +205,38 @@ function recordDwell(claims, body) {
   if (hinted) {
     try {
       const r = sheet.getRange(hinted, 1, 1, DWELL_HEADERS.length).getValues()[0];
-      if (String(r[idx.email] || '').toLowerCase() === emailLower &&
-          String(r[idx.module] || '') === moduleId) {
+      if (String(r[col.email] || '').toLowerCase() === emailLower &&
+          String(r[col.module_id] || '') === moduleId) {
         foundRow = hinted;
         /* _isoOut, not String(): a date-typed cell used to come back as
          * "Mon Mar 02 2026 …" and be written back into the sheet so. */
-        firstSeen = _isoOut(r[idx.first]) || now;
+        firstSeen = _isoOut(r[col.first_seen_iso]) || now;
       }
     } catch (e) { /* past the end of the sheet — fall through to the scan */ }
   }
   if (!foundRow) {
-    const lastRow = sheet.getLastRow();
-    if (lastRow >= 2) {
-      const existing = sheet.getRange(2, 1, lastRow - 1, DWELL_HEADERS.length).getValues();
-      for (let i = 0; i < existing.length; i++) {
-        const r = existing[i];
-        if (String(r[idx.email] || '').toLowerCase() !== emailLower) continue;
-        if (String(r[idx.module] || '') !== moduleId) continue;
-        foundRow = i + 2;
-        firstSeen = _isoOut(r[idx.first]) || now;
-        break;
-      }
+    const existing = _dataRows(sheet, DWELL_HEADERS.length);
+    for (let i = 0; i < existing.length; i++) {
+      const r = existing[i];
+      if (String(r[col.email] || '').toLowerCase() !== emailLower) continue;
+      if (String(r[col.module_id] || '') !== moduleId) continue;
+      foundRow = i + 2;
+      firstSeen = _isoOut(r[col.first_seen_iso]) || now;
+      break;
     }
   }
 
-  const rowValues = [
-    now, firstSeen, emailLower, name, moduleId,
-    totalSeconds, chaptersSeen, avg, userAgent
-  ];
+  const rowValues = _rowFrom(DWELL_HEADERS, {
+    updated_at_iso:       now,
+    first_seen_iso:       firstSeen,
+    email:                emailLower,
+    name:                 name,
+    module_id:            moduleId,
+    total_seconds:        totalSeconds,
+    chapters_seen:        chaptersSeen,
+    avg_secs_per_chapter: avg,
+    user_agent:           userAgent
+  });
   if (foundRow) {
     sheet.getRange(foundRow, 1, 1, DWELL_HEADERS.length).setValues([rowValues]);
   } else {
@@ -267,13 +253,7 @@ function recordDwell(claims, body) {
  * a sortable table directly from this — no client-side pivot needed. */
 function adminDwell() {
   const part = _dwellPart(false);
-  if (part.legacy) {
-    return {
-      ok: false,
-      error: 'dwell_sheet_needs_migration',
-      hint: 'Run migrateDwellToPerModule() once from the Apps Script editor.'
-    };
-  }
+  if (part.legacy) return _dwellNeedsMigration();
   return { ok: true, generated_at: part.at, rows: part.rows };
 }
 
@@ -288,36 +268,22 @@ function _dwellPart(force) {
 function _readDwellRows() {
   const sheet = getDwellSheet();
   if (dwellSheetIsLegacy(sheet)) return { at: nowIsoLocal(), legacy: true, rows: [] };
-  const lastRow = sheet.getLastRow();
-  if (lastRow < 2) {
-    return { at: nowIsoLocal(), rows: [] };
-  }
-  const values = sheet.getRange(2, 1, lastRow - 1, DWELL_HEADERS.length).getValues();
-  const idx = {
-    updated:    DWELL_HEADERS.indexOf('updated_at_iso'),
-    first:      DWELL_HEADERS.indexOf('first_seen_iso'),
-    email:      DWELL_HEADERS.indexOf('email'),
-    name:       DWELL_HEADERS.indexOf('name'),
-    module:     DWELL_HEADERS.indexOf('module_id'),
-    seconds:    DWELL_HEADERS.indexOf('total_seconds'),
-    seen:       DWELL_HEADERS.indexOf('chapters_seen'),
-    avg:        DWELL_HEADERS.indexOf('avg_secs_per_chapter')
-  };
-  const rows = values.map(function (r) {
+  const col = _colIndex(DWELL_HEADERS);
+  const rows = _dataRows(sheet, DWELL_HEADERS.length).map(function (r) {
     return {
-      email:                 String(r[idx.email] || '').toLowerCase(),
-      name:                  String(r[idx.name] || ''),
-      module_id:             String(r[idx.module] || ''),
-      total_seconds:         Number(r[idx.seconds] || 0) | 0,
-      chapters_seen:         Number(r[idx.seen] || 0) | 0,
-      avg_secs_per_chapter:  Number(r[idx.avg] || 0),
-      first_seen:            _isoOut(r[idx.first]),
-      last_seen:             _isoOut(r[idx.updated])
+      email:                 String(r[col.email] || '').toLowerCase(),
+      name:                  String(r[col.name] || ''),
+      module_id:             String(r[col.module_id] || ''),
+      total_seconds:         Number(r[col.total_seconds] || 0) | 0,
+      chapters_seen:         Number(r[col.chapters_seen] || 0) | 0,
+      avg_secs_per_chapter:  Number(r[col.avg_secs_per_chapter] || 0),
+      first_seen:            _isoOut(r[col.first_seen_iso]),
+      last_seen:             _isoOut(r[col.updated_at_iso])
     };
   });
   return { at: nowIsoLocal(), rows: rows };
 }
 
-// End of 20_tracking.gs. checkHubInstall() looks for the function below to
-// confirm this whole file was pasted in: keep it the last thing here.
+// The end. checkHubInstall() looks for this marker to confirm the whole
+// file was pasted in, so keep it the last thing here.
 function endOf_20_tracking_() {}

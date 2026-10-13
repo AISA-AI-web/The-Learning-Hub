@@ -64,15 +64,15 @@ function createSession(claims, userAgent) {
   const expIso = isoLocal(expiresAt);
 
   const sheet = getSessionsSheet();
-  sheet.appendRow([
-    token,
-    claims.email,
-    claims.name || '',
-    nowIso,
-    expIso,
-    nowIso,
-    String(userAgent || '').slice(0, 300)
-  ]);
+  sheet.appendRow(_rowFrom(SESSION_HEADERS, {
+    session_token:  token,
+    email:          claims.email,
+    name:           claims.name || '',
+    created_at_iso: nowIso,
+    expires_at_iso: expIso,
+    last_used_iso:  nowIso,
+    user_agent:     String(userAgent || '').slice(0, 300)
+  }));
   _bump('sessions');   // a new person may have just appeared on the tracker
 
   /* Prime the session cache so the first request after sign-in doesn't
@@ -147,24 +147,22 @@ function verifySessionToken(token) {
  * here needs it. */
 function _verifySessionFromSheet(token) {
   const sheet = getSessionsSheet();
-  const last = sheet.getLastRow();
-  if (last < 2) return null;
-
-  const values = sheet.getRange(2, 1, last - 1, 6).getValues();
+  const col = _colIndex(SESSION_HEADERS);
+  const values = _dataRows(sheet, col.user_agent);   // every column before user_agent
   for (let i = 0; i < values.length; i++) {
     const row = values[i];
-    if (row[0] !== token) continue;
+    if (row[col.session_token] !== token) continue;
 
-    const expiresAtMs = new Date(row[4]).getTime();   // unchanged from before the cache
+    const expiresAtMs = new Date(row[col.expires_at_iso]).getTime();   // unchanged from before the cache
     if (!expiresAtMs || Date.now() > expiresAtMs) return null;
 
-    let wroteMs = _tsMs(row[5]);
+    let wroteMs = _tsMs(row[col.last_used_iso]);
     if (!wroteMs || (Date.now() - wroteMs) > LAST_USED_WRITE_INTERVAL_MS) {
-      try { sheet.getRange(i + 2, 6).setValue(nowIsoLocal()); wroteMs = Date.now(); } catch (_) {}
+      try { sheet.getRange(i + 2, col.last_used_iso + 1).setValue(nowIsoLocal()); wroteMs = Date.now(); } catch (_) {}
     }
 
-    _cacheSession(token, { e: row[1], n: row[2], x: expiresAtMs, r: i + 2, w: wroteMs });
-    return { email: row[1], name: row[2] };
+    _cacheSession(token, { e: row[col.email], n: row[col.name], x: expiresAtMs, r: i + 2, w: wroteMs });
+    return { email: row[col.email], name: row[col.name] };
   }
   return null;
 }
@@ -173,14 +171,15 @@ function _verifySessionFromSheet(token) {
  * this token. False means "don't trust the hint, go and look". */
 function _touchSessionRow(row, token) {
   if (!row || row < 2) return false;
+  const col = _colIndex(SESSION_HEADERS);
   let sheet;
   try {
     sheet = getSessionsSheet();
-    if (sheet.getRange(row, 1).getValue() !== token) return false;
+    if (sheet.getRange(row, col.session_token + 1).getValue() !== token) return false;
   } catch (e) {
     return false;
   }
-  try { sheet.getRange(row, 6).setValue(nowIsoLocal()); } catch (_) {}
+  try { sheet.getRange(row, col.last_used_iso + 1).setValue(nowIsoLocal()); } catch (_) {}
   return true;
 }
 
@@ -188,9 +187,7 @@ function revokeSession(token) {
   if (!token) return;
   _cacheDel(_sessionKey(token));   // first, so it stops working even if the sheet write fails
   const sheet = getSessionsSheet();
-  const last = sheet.getLastRow();
-  if (last < 2) return;
-  const tokens = sheet.getRange(2, 1, last - 1, 1).getValues();
+  const tokens = _dataRows(sheet, 1);   // session_token is column A
   for (let i = 0; i < tokens.length; i++) {
     if (tokens[i][0] === token) {
       sheet.deleteRow(i + 2);
@@ -200,6 +197,6 @@ function revokeSession(token) {
   }
 }
 
-// End of 10_sessions.gs. checkHubInstall() looks for the function below to
-// confirm this whole file was pasted in: keep it the last thing here.
+// The end. checkHubInstall() looks for this marker to confirm the whole
+// file was pasted in, so keep it the last thing here.
 function endOf_10_sessions_() {}
