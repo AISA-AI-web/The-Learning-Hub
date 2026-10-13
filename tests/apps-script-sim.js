@@ -1,5 +1,5 @@
 /*
- * Simulator for the Apps Script backend (auth/apps-script.gs) — run it with:
+ * Simulator for the Apps Script backend (auth/apps-script/) — run it with:
  *
  *     node tests/apps-script-sim.js
  *     node tests/apps-script-sim.js --baseline old-apps-script.gs
@@ -32,6 +32,11 @@
  * the right row after rows move, a big payload survives chunking, a hand
  * edit shows up after Refresh.
  *
+ * Because the backend is several files that Apps Script loads into one
+ * scope, it also checks that the files do not depend on the order they
+ * load in, that each one ends with the marker checkHubInstall() looks for,
+ * and that a missing file is reported by name rather than half-working.
+ *
  * --baseline <file or folder> compares this backend with an older one.
  *   Without --strict it is lenient about the differences the read cache
  *   introduced on purpose (see normalise() below), which is what comparing
@@ -41,8 +46,11 @@
  *   writes, across every scenario. That is the check for a change that is
  *   meant to alter nothing — a reorganisation, a rename, a tidy-up:
  *
- *     git show HEAD:auth/apps-script.gs > /tmp/old.gs
- *     node tests/apps-script-sim.js --baseline /tmp/old.gs --strict
+ *     mkdir /tmp/old && git archive HEAD auth/apps-script | tar -x -C /tmp/old
+ *     node tests/apps-script-sim.js --baseline /tmp/old/auth/apps-script --strict
+ *
+ *   (Before 13 October 2026 the backend was one file:
+ *   git show <commit>:auth/apps-script.gs > /tmp/old.gs gives a baseline.)
  *
  * Every request runs in a FRESH copy of the script, as Apps Script does:
  * globals do not survive between requests there, and a test that let them
@@ -58,7 +66,7 @@ const fs = require('fs');
 const vm = require('vm');
 const path = require('path');
 
-const BACKEND = path.join(__dirname, '..', 'auth', 'apps-script.gs');
+const BACKEND = path.join(__dirname, '..', 'auth', 'apps-script');
 
 let failures = 0;
 function check(name, ok, detail) {
@@ -219,17 +227,20 @@ function makeWorld(seed, opts) {
     opts = opts || {};
     const clock = { t: Date.parse('2026-09-23T05:00:00Z') };
     const cacheMode = { broken: !!opts.cacheBroken };
-    return {
+    const stream = makeRandom(12345);
+    const world = {
         clock: clock,
         ss: makeSpreadsheet(seed),
         cache: makeCache(clock, cacheMode),
         cacheMode: cacheMode,
-        random: makeRandom(12345),
+        random: function () { world.draws++; return stream(); },
+        draws: 0,
         uuid: 0,
         mail: [],
         logs: [],
         mailCfg: { quota: 100, unauthorized: false, failFor: {}, msPerSend: 0 }
     };
+    return world;
 }
 
 function formatDubai(date, fmt) {
@@ -981,7 +992,7 @@ function strictDump(r) {
             return [n, 'reads ' + st.reads, 'cells read ' + st.cellsRead, 'writes ' + st.writes];
         }),
         clock: w.clock.t,
-        random: [w.random(), w.uuid]
+        random: ['Math.random draws ' + w.draws, 'Utilities.getUuid calls ' + w.uuid]
     };
 }
 
@@ -1206,6 +1217,91 @@ function targeted(src) {
     })();
 }
 
+/* The backend is several files sharing one scope, pasted into the editor
+ * by hand. These are the ways that goes wrong. */
+function installChecks(files) {
+    const names = files.map((f) => f.name.replace(/\.gs$/, ''));
+
+    /* A file whose top-level code reads a name from another file only works
+     * if that file happens to load first, and Apps Script loads them in
+     * whatever order they sit in the editor. Loaded alone, such a file
+     * throws. Only literal constants and function declarations belong at
+     * the top level. */
+    const alone = [];
+    files.forEach((f) => {
+        const sandbox = makeSandbox(makeWorld({}));
+        vm.createContext(sandbox);
+        try { vm.runInContext(f.src, sandbox, { filename: f.name }); }
+        catch (e) { alone.push(f.name + ': ' + e.message); }
+    });
+    check('each of the ' + files.length + ' files loads on its own', !alone.length, alone.join('; '));
+
+    const reversed = files.slice().reverse();
+    const rnd = makeRandom(2026);
+    const shuffled = files.slice();
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(rnd() * (i + 1));
+        const t = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = t;
+    }
+    SUITES.forEach((s) => {
+        const canonical = runSuite(files, s, {});
+        compareStrict(s.name + ', files loaded in reverse', canonical, runSuite(reversed, s, {}));
+        compareStrict(s.name + ', files loaded shuffled', canonical, runSuite(shuffled, s, {}));
+    });
+
+    const world = makeWorld(seed());
+    const listed = execute(files, world, '_hubFiles', []).map((f) => f[0]);
+    check('_hubFiles() lists exactly the files in the folder, in order',
+          JSON.stringify(listed) === JSON.stringify(names), listed.join(', ') + '  vs  ' + names.join(', '));
+    const unmarked = files.filter((f) => {
+        const lines = f.src.replace(/\s+$/, '').split('\n');
+        return lines[lines.length - 1] !== 'function endOf_' + f.name.replace(/\.gs$/, '') + '_() {}';
+    }).map((f) => f.name);
+    check('every file ends with its endOf_…_() marker', !unmarked.length, unmarked.join(', '));
+
+    const doGet = (fs) => JSON.parse(execute(fs, world, 'doGet', [{}]).content);
+    const complete = doGet(files);
+    check('doGet: all ' + files.length + ' files present',
+          complete.ok === true && complete.files === 'all ' + files.length + ' present', JSON.stringify(complete));
+    const report = execute(files, world, 'checkHubInstall', []);
+    check('checkHubInstall: says all files are here, and names the spreadsheet',
+          /All \d+ files are here/.test(report) && !/MISSING/.test(report) && /Hub analytics \(sim\)/.test(report), report);
+
+    const misses = [];
+    files.forEach((f, i) => {
+        const rest = files.slice(0, i).concat(files.slice(i + 1));
+        if (f.name === '02_router.gs') {
+            const r = execute(rest, world, 'checkHubInstall', []);
+            if (!/MISSING {2}02_router\.gs/.test(r)) misses.push(f.name + ': checkHubInstall said ' + r.split('\n')[2]);
+            return;
+        }
+        const g = doGet(rest).files;
+        if (g !== 'MISSING: ' + f.name) misses.push(f.name + ': doGet said ' + g);
+        if (f.name !== '90_editor_tools.gs') {
+            const r = execute(rest, world, 'checkHubInstall', []);
+            if (r.indexOf('MISSING  ' + f.name) === -1 || !/Do not deploy yet/.test(r)) misses.push(f.name + ': checkHubInstall missed it');
+        }
+    });
+    check('leave out any one file and it is reported by name', !misses.length, misses.join('; '));
+
+    /* A file cut short while pasting usually fails to parse at all; one cut
+     * exactly at a function boundary parses, and loses only the marker. */
+    const cut = files.map((f) => f.name === '41_surveys.gs'
+        ? { name: f.name, src: f.src.slice(0, f.src.indexOf('function _sendSurveyCopy')) } : f);
+    check('a file cut short at a function boundary is reported', doGet(cut).files === 'MISSING: 41_surveys.gs', doGet(cut).files);
+
+    /* The README says the old single Code.gs must not be left in beside the
+     * new files, because Apps Script then refuses to load the project at
+     * all. That is how V8 treats two scripts declaring one const; check the
+     * simulator agrees, so the advice stays true. */
+    let clash = '';
+    try {
+        execute([{ name: 'Code.gs', src: "const OAUTH_CLIENT_ID = 'old';\nfunction doPost() {}" }].concat(files), world, 'doGet', [{}]);
+    } catch (e) { clash = e.name + ': ' + e.message; }
+    check('the old Code.gs left beside the new files stops everything loading (no half-old, half-new backend)',
+          /SyntaxError: Identifier 'OAUTH_CLIENT_ID' has already been declared/.test(clash), clash || 'it loaded');
+}
+
 /* Who may do what. Checked directly rather than only through the
  * scenario comparisons, because a backend that refused nobody would still
  * agree with itself with the cache on and off. */
@@ -1273,6 +1369,11 @@ function main() {
             compareRuns('baseline', before, 'this version', now, { baseline: true });
             console.log('  sheet range reads for the whole scenario: baseline ' + before.reads + ', this version ' + now.reads);
         }
+    }
+
+    if (files.length > 1) {
+        console.log('\nSeveral files, one scope:');
+        installChecks(files);
     }
 
     console.log('\nCache-specific behaviour:');
