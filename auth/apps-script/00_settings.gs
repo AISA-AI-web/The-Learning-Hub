@@ -26,7 +26,8 @@
  *   42_performance_reviews.gs   line managers and the review round trip
  *   90_editor_tools.gs          things you run by hand from the editor
  *
- * How to deploy is in auth/apps-script/README.md in the repo. In short:
+ * How to deploy is in auth/apps-script/README.md in the repo. From a
+ * terminal, in the repo: node auth/apps-script/deploy.mjs. In the editor:
  * paste the files that changed, Run → checkHubInstall (90_editor_tools.gs),
  * then Deploy → Manage deployments → ✏️ → Version: New version → Deploy.
  * Never "New deployment": that mints a new URL and takes the Hub offline.

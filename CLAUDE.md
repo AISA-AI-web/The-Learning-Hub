@@ -10,10 +10,11 @@ guide and the map of what is where. Apps Script loads every file of a
 project into one shared scope, so nothing calls anything differently.
 Done at Brandon's request: "it shouldn't just be one page".
 
-**The first deploy after the split is a one-time switch**, written out step
-by step in that README: replace `Code.gs` in the editor with
-`00_settings.gs`, add the other fourteen, Run → `checkHubInstall`, then a
-new version of the existing deployment. Until Brandon does it, the live
+**The first deploy after the split is a one-time switch.** From a terminal it
+is one command, `node auth/apps-script/deploy.mjs` (see below). By hand it
+is written out step by step in that README: replace `Code.gs` in the editor
+with `00_settings.gs`, add the other fourteen, Run → `checkHubInstall`, then
+a new version of the existing deployment. Until Brandon does it, the live
 backend is whatever was last deployed from the old single file. That is
 fine: the fifteen files behave exactly as that file's final version did,
 bar the dwell-migration fix below. Point Brandon at the README rather than
@@ -66,6 +67,44 @@ dwell tab. It now goes through `_tsMs`/`_isoOut` like every other reader.
 `auth/gate.js` still says `auth/apps-script.gs` in two comments. Left
 alone on purpose: any edit to `gate.js` means the `?v=N` cascade across
 every page. Fix them the next time `gate.js` changes anyway.
+
+### Deploying from a terminal: `node auth/apps-script/deploy.mjs`
+
+Added the same day, when Brandon asked for a terminal command instead of
+pasting fifteen files. It drives clasp (Google's Apps Script CLI) at a
+pinned version through npx, so nothing is installed globally. It is the
+recommended route in the README, with the editor route kept as the fallback,
+for example if the school's Workspace admin ever blocks clasp's sign-in.
+What it must never stop doing, all held by `node tests/deploy-sim.js`:
+
+- **Never create a deployment.** It runs `update-deployment` on the ID taken
+  from `API_URL` in `auth/gate.js`, which makes a new version and keeps the
+  URL. `create-deployment`/`deploy` would mint a new URL: the `http_404`
+  whole-Hub outage described below.
+- **Refuse a project that does not own that deployment.** That is how a
+  wrong Script ID is caught before anything is uploaded.
+- **Upload the live project's own `appsscript.json`, unchanged.** It holds
+  the web app's `executeAs`/`access`. A guessed manifest could quietly turn
+  "Anyone" into something the Hub cannot call.
+- **Run `tests/apps-script-sim.js` first; back up first; verify after.** The
+  backup in `~/aisa-hub-backend-backups/` is a complete clasp project that
+  can be pushed back. After the push it downloads the project again and
+  compares it file by file before deploying anything.
+- **`--rollback N`** points the deployment back at version N. HEAD (what the
+  editor shows) keeps the new files, and the next deploy moves forward again.
+
+clasp's `push` uploads every file in one `projects.updateContent` call,
+which replaces the project. So the old `Code.gs` vanishes in the same
+instant the new files land, which is why there is no half-pasted state on
+this route. One quirk: it only uploads when some local file is new or
+changed, so it cannot remove a stray file on its own; the script says so
+and stops.
+
+The Script ID is remembered per computer in `auth/apps-script/.deploy.json`
+(gitignored). Bumping `CLASP_VERSION` means re-reading the new clasp's
+`--help`: version 3 renamed half its commands. `tests/fake-clasp.js` imitates
+3.4.1 and will not notice a rename. Each command form was checked against
+the real 3.4.1 binary, signed out, to make sure it parses.
 
 ## Apps Script — pending redeploy
 
@@ -517,6 +556,7 @@ node tests/apps-script-sim.js                                # after touching au
 node tests/apps-script-sim.js --baseline <old> --strict      # a change meant to alter nothing
 node tests/apps-script-sim.js --baseline <old>               # lenient: a backend from before the cache
 node tests/gate-smoke.js                                     # after touching gate.js
+node tests/deploy-sim.js                                     # after touching auth/apps-script/deploy.mjs
 ```
 
 The simulator runs the real backend files against a fake spreadsheet,

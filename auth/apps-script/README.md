@@ -32,10 +32,61 @@ The numbers only keep the files in a sensible order. Apps Script loads every
 file into one shared space, so the order they sit in the editor makes no
 difference to how they run.
 
-## Switching from one file to fifteen (once)
+`deploy.mjs` in this folder is not part of the backend and is never
+uploaded: it is the command that deploys it.
 
-Until you deploy, the Hub keeps running the old code, so nobody notices you
-doing this. Allow about fifteen minutes.
+## Deploying from a terminal (the quick way)
+
+**Once, on your computer:**
+
+1. Install Node.js 18 or later, the LTS version from https://nodejs.org.
+2. Turn on the Apps Script API for your Google account: open
+   https://script.google.com/home/usersettings and switch
+   *Google Apps Script API* to On.
+3. Get the repo: `git clone https://github.com/AISA-AI-web/The-Learning-Hub.git`
+   (or on GitHub, Code → Download ZIP, and unzip it).
+
+**Then, every time, from the repo's folder:**
+
+```
+node auth/apps-script/deploy.mjs
+```
+
+The first time, a browser opens: sign in with the Google account that owns
+the Hub spreadsheet. Then it asks which Apps Script project is the Hub's:
+open the spreadsheet, Extensions → Apps Script, and paste the address of
+that tab. It remembers both.
+
+It works through these steps, and stops at the first that is not right:
+
+1. Runs the backend's tests.
+2. Downloads the project as it is now into a backup folder,
+   `aisa-hub-backend-backups` in your home folder.
+3. Checks that this project owns the deployment `auth/gate.js` uses.
+4. Shows what will change, and asks.
+5. Uploads every file at once. The old `Code.gs` goes in the same instant
+   the new files arrive, and the project's manifest (which holds the web
+   app's access settings) goes back exactly as it was.
+6. Downloads the project again to check the upload arrived intact.
+7. Makes a new version of the existing deployment. The URL does not change,
+   and it never creates a new deployment.
+8. Opens the web app and checks it says `all 15 present`.
+
+It ends by printing the command that undoes it, for example
+`node auth/apps-script/deploy.mjs --rollback 31`. That puts the live Hub
+back on the version it was running, within a minute. Add `--dry-run` to see
+everything up to step 4 without changing anything.
+
+If signing in fails with *access blocked* or *admin policy*, the school's
+Google Workspace does not allow clasp, Google's command-line tool for Apps
+Script that this uses. Use the editor route below instead; it does the same
+thing by hand.
+
+## Switching from one file to fifteen in the editor (by hand)
+
+Only needed if the terminal route above is not an option. Until you deploy,
+the Hub keeps running the old code, so nobody notices you doing this. Allow
+about fifteen minutes.
 
 **Before you start.** These three steps make everything after them undoable.
 
@@ -95,7 +146,11 @@ while you are partway through pasting. That is harmless; it only reads.
 
 ## Updating it after that
 
-A change to the backend now touches one or two files, not one huge one.
+From a terminal: get the latest code (`git pull`, or a fresh download), then
+`node auth/apps-script/deploy.mjs`. It works out what changed by itself.
+
+By hand, in the editor. A change to the backend now touches one or two files,
+not one huge one.
 
 1. Look at which files in `auth/apps-script/` the change touched (on GitHub,
    the commit's list of files). For each one, open it in the editor, select
@@ -156,3 +211,7 @@ functions in the menu beside **Run**.
 
   That compares every response byte for byte, every cell, every email, the
   cache contents, and every sheet read and write.
+- **After touching `deploy.mjs`,** run `node tests/deploy-sim.js`. It runs
+  the deploy end to end against a fake clasp and a fake web app, and fails
+  if the script could ever create a deployment, deploy into the wrong
+  project, change the manifest, or deploy an upload it has not verified.
