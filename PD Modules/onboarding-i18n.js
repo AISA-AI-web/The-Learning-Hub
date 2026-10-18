@@ -70,6 +70,9 @@
         if ((m = /^Chapter (\d+)$/.exec(t)))          return 'الفصل ' + m[1];
         if ((m = /^(\d+) answers still to fill in$/.exec(t))) return 'ما زالت ' + m[1] + ' إجابات بحاجة إلى تعبئة';
         if ((m = /^Section (\d+)$/.exec(t)))          return 'القسم ' + m[1];
+        // Pages with their own module stepper (ai-and-assessment.html)
+        if ((m = /^Module (\d+) of (\d+)$/.exec(t)))  return 'الوحدة ' + m[1] + ' من ' + m[2];
+        if ((m = /^(\d+)% Done$/.exec(t)))            return m[1] + '% مكتمل';
         return null;
     }
 

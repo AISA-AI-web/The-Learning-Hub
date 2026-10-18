@@ -871,6 +871,49 @@ is `COPY` in the page's last script. It locks itself after
 `SENT_LOCK_AFTER` (31 October 2026) so a stray click later cannot
 re-announce a launch; to send a reminder, rewrite `COPY` first.
 
+## AI & Assessment Design — Arabic added 18 October 2026
+
+`PD Modules/ai-and-assessment.html` is now fully bilingual, done at
+Brandon's request. It uses the same engine as the other Arabic modules
+(`onboarding-i18n.js`), with every string in
+**`ai-and-assessment-ar.js`**, which is the only file to edit for
+wording. Like the readiness module's dictionary, it has two halves:
+`AR_DICT` for whole text nodes, and `AR_BLOCKS` for sentences broken up
+by `<strong>`/`<em>`/`<a>`. **Edit an English string and its key must
+change too**, or that string silently stays English in Arabic (block
+misses warn in the console by name). Bump `ai-and-assessment-ar.js?v=N`
+in the page after any edit.
+
+Toggle: a pill in the hero, plus the global menu-bar one. Both stay in
+sync through the shared `aisa-newsletter-lang` key.
+
+Things that are deliberate:
+
+- **The APA and MLA example citations stay English** (`data-no-translate`).
+  A translated citation would no longer be a correct APA or MLA
+  reference. Product and researcher names stay in Latin script.
+- **The page's own script still writes English** (quiz feedback, planner
+  status, Next/Finish, the progress and module counters). The engine's
+  observer translates it as it lands, so those strings are keys in
+  `AR_DICT`. `Module n of m` and `n% Done` are patterns added to
+  `onboarding-i18n.js`. They are inert on pages without that text, which
+  is why only this page's engine pin moved, to `?v=4`.
+- **Textarea placeholders and the tab title are swapped by the page**,
+  not the engine. The engine skips everything on a `<textarea>` and only
+  walks `<body>`.
+- **Planner `<option value>`s stay English**, so a draft saved in one
+  language reloads in the other.
+- Answer badges read أ/ب/ج. The shuffle finds them by `.quiz-letter`,
+  not by their text.
+
+The same commit fixed a phone-width bug that predated the Arabic: the
+mobile grid was `1fr`, so the nowrap module-tab row made every module
+about 1,080px wide and cut off its text. It is `minmax(0, 1fr)` now,
+the same trap as the AI Growth Test guide's jump strip.
+
+No change to `gate.js`, `menu.js` or `search-index.js`, so **no `?v=`
+cascade**.
+
 ## AI Literacy Hub — added 20 September 2026
 
 `AI Literacy Hub/ai-literacy-hub.html` is the front door for everything
