@@ -884,8 +884,13 @@ change too**, or that string silently stays English in Arabic (block
 misses warn in the console by name). Bump `ai-and-assessment-ar.js?v=N`
 in the page after any edit.
 
-Toggle: a pill in the hero, plus the global menu-bar one. Both stay in
-sync through the shared `aisa-newsletter-lang` key.
+**The only language switch is the Hub menu bar's**, at Brandon's request
+(18 October 2026): there is no button on the page itself. The engine
+normally adds a floating one to any page without its own, so the page's
+`<body>` carries `data-lang-toggle="menu"`, an opt-out added to
+`onboarding-i18n.js` for this. The engine still follows the menu bar's
+`aisa:lang-change` event and the shared `aisa-newsletter-lang` key, so
+the menu button translates the page and a saved choice applies on load.
 
 Things that are deliberate:
 
@@ -897,7 +902,8 @@ Things that are deliberate:
   observer translates it as it lands, so those strings are keys in
   `AR_DICT`. `Module n of m` and `n% Done` are patterns added to
   `onboarding-i18n.js`. They are inert on pages without that text, which
-  is why only this page's engine pin moved, to `?v=4`.
+  is why only this page's engine pin moved (now `?v=5`, with the
+  toggle opt-out above).
 - **Textarea placeholders and the tab title are swapped by the page**,
   not the engine. The engine skips everything on a `<textarea>` and only
   walks `<body>`.

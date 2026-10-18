@@ -236,7 +236,9 @@
     </style>
     <script src="../auth/gate.js?v=26"></script>
 </head>
-<body class="bg-dot-pattern text-slate-800 antialiased selection:bg-assess selection:text-white pb-20 overflow-x-hidden">
+<!-- data-lang-toggle="menu": the language is switched only from the Hub
+     menu bar, so onboarding-i18n.js must not add a button of its own. -->
+<body class="bg-dot-pattern text-slate-800 antialiased selection:bg-assess selection:text-white pb-20 overflow-x-hidden" data-lang-toggle="menu">
 
     <!-- Sticky Navigation & Progress Bar -->
     <nav class="fixed top-0 w-full bg-white/85 backdrop-blur-xl border-b border-slate-200/80 z-50 transition-all duration-300 shadow-sm">
@@ -275,18 +277,9 @@
         </div>
 
         <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
-            <div class="flex flex-wrap justify-center items-center gap-3 mb-8">
-                <div class="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-full px-5 py-2 shadow-sm hover:shadow-md transition-shadow">
-                    <span class="flex h-2.5 w-2.5 rounded-full bg-fuchsia-600 shadow-[0_0_8px_rgba(192,38,211,0.8)] animate-pulse"></span>
-                    <span class="text-sm font-semibold text-slate-700 tracking-wide uppercase">Required PD · Assessment &amp; Academic Integrity</span>
-                </div>
-                <!-- Language toggle. onboarding-i18n.js keeps its label and
-                     the menu bar's toggle in step; its .ob-lang class also
-                     stops the engine injecting a floating button. -->
-                <button type="button" class="ob-lang inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-fuchsia-200 hover:border-fuchsia-400 text-fuchsia-700 rounded-full px-5 py-2 text-sm font-bold shadow-sm hover:shadow-md transition-all no-print" onclick="window.AISA_toggleLang &amp;&amp; AISA_toggleLang()">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                    <span class="ob-lang-text">العربية</span>
-                </button>
+            <div class="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-full px-5 py-2 mb-8 shadow-sm hover:shadow-md transition-shadow">
+                <span class="flex h-2.5 w-2.5 rounded-full bg-fuchsia-600 shadow-[0_0_8px_rgba(192,38,211,0.8)] animate-pulse"></span>
+                <span class="text-sm font-semibold text-slate-700 tracking-wide uppercase">Required PD · Assessment &amp; Academic Integrity</span>
             </div>
             <h1 class="font-heading text-5xl lg:text-[4.5rem] font-black text-slate-900 tracking-normal leading-[1.05] mb-8 drop-shadow-sm">
                 Assessment Design <br class="hidden lg:block"/>
@@ -1570,6 +1563,6 @@
          before the engine first applies a saved language. Edit wording in
          ai-and-assessment-ar.js only, and bump its ?v= when you do. -->
     <script src="ai-and-assessment-ar.js?v=1"></script>
-    <script src="onboarding-i18n.js?v=4"></script>
+    <script src="onboarding-i18n.js?v=5"></script>
 </body>
 </html>

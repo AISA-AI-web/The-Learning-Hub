@@ -253,6 +253,10 @@
 
     function injectButton() {
         if (document.querySelector('.ob-lang')) return;
+        /* Opt-out for pages that rely on the menu bar's toggle alone
+           (ai-and-assessment.html). The aisa:lang-change listener below
+           still translates the page when that toggle is used. */
+        if (document.body.getAttribute('data-lang-toggle') === 'menu') return;
         var btn = document.createElement('button');
         btn.type = 'button';
         btn.className = 'ob-lang';
