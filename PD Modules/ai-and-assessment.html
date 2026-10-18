@@ -8,7 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         if (window.tailwind) {
@@ -135,7 +135,7 @@
         /* Green check pinned to the right edge once a module is complete. */
         .module-tab.is-complete::after {
             content: '';
-            margin-left: auto;
+            margin-inline-start: auto;
             width: 1.15rem;
             height: 1.15rem;
             border-radius: 9999px;
@@ -151,7 +151,10 @@
             background: #f0fdf4;
         }
         @media (max-width: 900px) {
-            .aia-course-grid { grid-template-columns: 1fr; }
+            /* minmax(0, …), not 1fr: a 1fr track floors at its content's
+             * min-content width, and the nowrap tab row below makes that
+             * the whole row, so every module laid out ~1,080px wide. */
+            .aia-course-grid { grid-template-columns: minmax(0, 1fr); }
             .module-tabs-bar { position: static; }
             .module-tabs-bar [role="tablist"] { flex-direction: row; overflow-x: auto; }
             .module-tab { width: auto; }
@@ -201,6 +204,31 @@
         /* Planner */
         .planner-input:focus { outline: none; box-shadow: 0 0 0 3px rgba(192,38,211,0.25); border-color: #c026d3; }
 
+        /* ---- Arabic / RTL ----
+         * onboarding-i18n.js sets html[dir="rtl"] and body.lang-ar
+         * together. Everything below only applies in Arabic, so the
+         * English rendering is untouched. */
+        body.lang-ar,
+        body.lang-ar .font-heading { font-family: 'Tajawal', 'Inter', sans-serif; }
+        /* Letter-spacing pulls Arabic letters apart and breaks the joins. */
+        body.lang-ar [class*="tracking-"],
+        body.lang-ar .aia-sidebar-heading { letter-spacing: 0; }
+        /* Arabic needs more line height than the Latin display headings. */
+        body.lang-ar h1, body.lang-ar h2 { line-height: 1.35; }
+        /* Mirror the few directional utilities this page uses. */
+        body.lang-ar .border-l-4 { border-left-width: 0; border-right-width: 4px; }
+        body.lang-ar .pl-6 { padding-left: 0; padding-right: 1.5rem; }
+        body.lang-ar .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+        body.lang-ar .ml-3 { margin-left: 0; margin-right: 0.75rem; }
+        body.lang-ar .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+        body.lang-ar .left-0 { left: auto; right: 0; }
+        body.lang-ar .text-left { text-align: right; }
+        body.lang-ar .rtl-flip { transform: scaleX(-1); }
+        /* Latin names inside Arabic sentences, and the example citations,
+         * stay left-to-right or their punctuation jumps ends. */
+        body.lang-ar .ltr { direction: ltr; unicode-bidi: isolate; }
+        body.lang-ar .cite-block { direction: ltr; text-align: left; }
+
         @media print {
             nav, .module-tabs-bar, .no-print { display: none !important; }
             .module-panel { display: block !important; page-break-before: always; }
@@ -223,10 +251,10 @@
             </a>
             <div class="flex items-center gap-3">
                 <a href="pd.html" class="hidden md:inline-flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-fuchsia-700 bg-white border border-slate-200 hover:border-fuchsia-300 px-4 py-2.5 rounded-2xl shadow-sm hover:shadow transition-all" title="Back to PD Modules">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                     Back to PD
                 </a>
-                <div class="flex items-center space-x-5 bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-2xl shadow-inner">
+                <div class="flex items-center gap-5 bg-slate-50 border border-slate-200 px-4 py-2.5 rounded-2xl shadow-inner">
                     <span id="progress-text" class="text-sm font-bold text-slate-500 transition-colors duration-300 uppercase tracking-widest">0% Done</span>
                     <div class="w-28 md:w-44 h-3 bg-slate-200 rounded-full overflow-hidden shadow-inner relative">
                         <div id="progress-bar" class="h-full bg-gradient-to-r from-fuchsia-600 via-rose-500 to-amber-500 w-0 transition-all duration-700 ease-out relative">
@@ -247,9 +275,18 @@
         </div>
 
         <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
-            <div class="inline-flex items-center space-x-2 bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-full px-5 py-2 mb-8 shadow-sm hover:shadow-md transition-shadow">
-                <span class="flex h-2.5 w-2.5 rounded-full bg-fuchsia-600 shadow-[0_0_8px_rgba(192,38,211,0.8)] animate-pulse"></span>
-                <span class="text-sm font-semibold text-slate-700 tracking-wide uppercase">Required PD · Assessment &amp; Academic Integrity</span>
+            <div class="flex flex-wrap justify-center items-center gap-3 mb-8">
+                <div class="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-slate-200/50 rounded-full px-5 py-2 shadow-sm hover:shadow-md transition-shadow">
+                    <span class="flex h-2.5 w-2.5 rounded-full bg-fuchsia-600 shadow-[0_0_8px_rgba(192,38,211,0.8)] animate-pulse"></span>
+                    <span class="text-sm font-semibold text-slate-700 tracking-wide uppercase">Required PD · Assessment &amp; Academic Integrity</span>
+                </div>
+                <!-- Language toggle. onboarding-i18n.js keeps its label and
+                     the menu bar's toggle in step; its .ob-lang class also
+                     stops the engine injecting a floating button. -->
+                <button type="button" class="ob-lang inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm border border-fuchsia-200 hover:border-fuchsia-400 text-fuchsia-700 rounded-full px-5 py-2 text-sm font-bold shadow-sm hover:shadow-md transition-all no-print" onclick="window.AISA_toggleLang &amp;&amp; AISA_toggleLang()">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <span class="ob-lang-text">العربية</span>
+                </button>
             </div>
             <h1 class="font-heading text-5xl lg:text-[4.5rem] font-black text-slate-900 tracking-normal leading-[1.05] mb-8 drop-shadow-sm">
                 Assessment Design <br class="hidden lg:block"/>
@@ -945,7 +982,7 @@
                         <span class="text-xs font-black uppercase tracking-widest text-cyan-600">APA 7th Edition</span>
                         <span class="bg-cyan-50 text-cyan-700 text-xs font-bold px-2 py-1 rounded border border-cyan-200">Updated guidance</span>
                     </div>
-                    <div class="cite-block">
+                    <div class="cite-block" data-no-translate>
                         <span class="text-cyan-400">OpenAI.</span> (2026). <span class="text-emerald-400">ChatGPT</span> (April 2026 version) <span class="text-amber-400">[Large language model]</span>. https://chat.openai.com
                     </div>
                     <p class="text-xs text-slate-500 mt-2 font-medium italic">In-text: (OpenAI, 2026). Include the prompt in an appendix.</p>
@@ -954,7 +991,7 @@
                     <div class="flex items-center gap-2 mb-3">
                         <span class="text-xs font-black uppercase tracking-widest text-cyan-600">MLA 9th Edition</span>
                     </div>
-                    <div class="cite-block">
+                    <div class="cite-block" data-no-translate>
                         "<span class="text-amber-400">Describe the symbolism of the green light</span>" prompt. <span class="text-emerald-400">ChatGPT</span>, April 2026 version, <span class="text-cyan-400">OpenAI</span>, 12 Apr. 2026, chat.openai.com.
                     </div>
                     <p class="text-xs text-slate-500 mt-2 font-medium italic">Quote the prompt, name the tool version, date it, link it.</p>
@@ -1063,15 +1100,15 @@
             <p class="text-slate-700 font-medium mb-4">A Grade 11 teacher assigns a 1,000-word essay on <em>The Great Gatsby</em> due in one week. They want students to use AI for brainstorming only. Which move most directly protects the integrity of the final grade?</p>
             <div id="quiz-1-options" class="space-y-3 mb-2">
                 <div class="quiz-option bg-white border-2 border-slate-200 rounded-xl p-4 flex items-start gap-3" onclick="checkAnswer(1, this, false)">
-                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">A</span>
+                    <span class="quiz-letter w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">A</span>
                     <span class="font-medium text-slate-700 text-sm">Run the submissions through Turnitin's AI detector and flag any result above 20%.</span>
                 </div>
                 <div class="quiz-option bg-white border-2 border-slate-200 rounded-xl p-4 flex items-start gap-3" onclick="checkAnswer(1, this, true)">
-                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">B</span>
+                    <span class="quiz-letter w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">B</span>
                     <span class="font-medium text-slate-700 text-sm">Mark the task as AIAS Level 2 / Amber, require a handwritten reflection in class, and viva 1-in-3 students on their submission.</span>
                 </div>
                 <div class="quiz-option bg-white border-2 border-slate-200 rounded-xl p-4 flex items-start gap-3" onclick="checkAnswer(1, this, false)">
-                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">C</span>
+                    <span class="quiz-letter w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">C</span>
                     <span class="font-medium text-slate-700 text-sm">Ban AI entirely and trust students' integrity pledges.</span>
                 </div>
             </div>
@@ -1081,15 +1118,15 @@
             <p class="text-slate-700 font-medium mb-4">A Grade 9 science class is writing a lab report on a local water-quality experiment they ran yesterday. They may use AI to tidy grammar and suggest sentence structure, but all analysis, data, and conclusions must be theirs. Which AIAS level fits?</p>
             <div id="quiz-2-options" class="space-y-3 mb-2">
                 <div class="quiz-option bg-white border-2 border-slate-200 rounded-xl p-4 flex items-start gap-3" onclick="checkAnswer(2, this, false)">
-                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">A</span>
+                    <span class="quiz-letter w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">A</span>
                     <span class="font-medium text-slate-700 text-sm">Level 1 &mdash; No AI.</span>
                 </div>
                 <div class="quiz-option bg-white border-2 border-slate-200 rounded-xl p-4 flex items-start gap-3" onclick="checkAnswer(2, this, true)">
-                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">B</span>
+                    <span class="quiz-letter w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">B</span>
                     <span class="font-medium text-slate-700 text-sm">Level 2 &mdash; AI Planning.</span>
                 </div>
                 <div class="quiz-option bg-white border-2 border-slate-200 rounded-xl p-4 flex items-start gap-3" onclick="checkAnswer(2, this, false)">
-                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">C</span>
+                    <span class="quiz-letter w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">C</span>
                     <span class="font-medium text-slate-700 text-sm">Level 4 &mdash; Full AI.</span>
                 </div>
             </div>
@@ -1099,15 +1136,15 @@
             <p class="text-slate-700 font-medium mb-4">A student's essay sounds suspiciously polished. GPTZero reports "98% likely AI". What is the <em>best</em> next step?</p>
             <div id="quiz-3-options" class="space-y-3 mb-2">
                 <div class="quiz-option bg-white border-2 border-slate-200 rounded-xl p-4 flex items-start gap-3" onclick="checkAnswer(3, this, false)">
-                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">A</span>
+                    <span class="quiz-letter w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">A</span>
                     <span class="font-medium text-slate-700 text-sm">Fail the student &mdash; the detector confidence is too high to be wrong.</span>
                 </div>
                 <div class="quiz-option bg-white border-2 border-slate-200 rounded-xl p-4 flex items-start gap-3" onclick="checkAnswer(3, this, true)">
-                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">B</span>
+                    <span class="quiz-letter w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">B</span>
                     <span class="font-medium text-slate-700 text-sm">Invite the student to a short viva voce using the Module 4 question bank; grade on their ability to defend the work.</span>
                 </div>
                 <div class="quiz-option bg-white border-2 border-slate-200 rounded-xl p-4 flex items-start gap-3" onclick="checkAnswer(3, this, false)">
-                    <span class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">C</span>
+                    <span class="quiz-letter w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center font-black text-sm flex-shrink-0">C</span>
                     <span class="font-medium text-slate-700 text-sm">Ignore the flag &mdash; you have no other evidence.</span>
                 </div>
             </div>
@@ -1208,7 +1245,7 @@
                     </button>
                     <a href="pd.html" class="inline-flex items-center justify-center px-8 py-4 text-sm font-bold text-white bg-white/10 backdrop-blur border border-white/20 rounded-full hover:bg-white/20 transition-all">
                         Explore more PD
-                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        <svg class="w-5 h-5 ml-2 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </a>
                 </div>
             </div>
@@ -1223,13 +1260,13 @@
         <!-- Prev / Next module navigation (floating sticky bar) -->
         <div class="aia-nav-bar mt-10 flex justify-between items-center gap-4 no-print">
             <button id="prev-module" onclick="prevModule()" class="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-slate-700 bg-white border border-slate-200 rounded-2xl hover:border-fuchsia-300 hover:text-fuchsia-700 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Previous
             </button>
             <span id="module-indicator" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Module 1 of 7</span>
             <button id="next-module" onclick="nextModule()" class="inline-flex items-center gap-2 px-6 py-3 text-sm font-bold text-white bg-gradient-to-r from-fuchsia-600 to-rose-500 rounded-2xl hover:shadow-lg hover:shadow-fuchsia-600/30 transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none">
                 <span class="next-label">Next</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
             </button>
         </div>
         <p id="module-gate-hint" class="hidden mt-4 text-center text-sm font-semibold text-rose-600 no-print">Answer the knowledge checks correctly to complete this module and continue.</p>
@@ -1375,9 +1412,27 @@
 
         document.addEventListener('keydown', (e) => {
             if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
-            if (e.key === 'ArrowRight') nextModule();
-            if (e.key === 'ArrowLeft')  prevModule();
+            /* In Arabic the page reads right to left, so "forward" is ←. */
+            const rtl = document.documentElement.getAttribute('dir') === 'rtl';
+            if (e.key === (rtl ? 'ArrowLeft' : 'ArrowRight')) nextModule();
+            if (e.key === (rtl ? 'ArrowRight' : 'ArrowLeft'))  prevModule();
         });
+
+        /* onboarding-i18n.js leaves two things alone: the tab title (it
+         * only walks <body>) and anything on a <textarea>, placeholders
+         * included. Both follow html[lang] from here instead. */
+        (function () {
+            const EN_TITLE = document.title;
+            const areas = Array.from(document.querySelectorAll('textarea[placeholder]'))
+                .map(el => [el, el.getAttribute('placeholder')]);
+            function syncLang() {
+                const ar = document.documentElement.getAttribute('lang') === 'ar';
+                const t = en => (ar && window.AR_DICT && window.AR_DICT[en]) || en;
+                document.title = t(EN_TITLE);
+                areas.forEach(([el, en]) => el.setAttribute('placeholder', t(en)));
+            }
+            new MutationObserver(syncLang).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
+        })();
 
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('prev-module').disabled = true;
@@ -1484,7 +1539,9 @@
 
     <!-- Randomise quiz answer order so the correct option isn't always 'B'.
          Correctness travels in each option's onclick(...) argument, so
-         reordering the DOM is safe; the A/B/C badge is relabelled to match. -->
+         reordering the DOM is safe; the A/B/C badge is relabelled to match.
+         The badge is found by class, not by its text, because in Arabic
+         it reads أ/ب/ج. -->
     <script>
         (function () {
             function shuffle(container) {
@@ -1497,13 +1554,8 @@
                 var letters = 'ABCDEFGH';
                 opts.forEach(function (opt, idx) {
                     container.appendChild(opt);
-                    var spans = opt.querySelectorAll('span');
-                    for (var k = 0; k < spans.length; k++) {
-                        if (/^[A-H]$/.test((spans[k].textContent || '').trim())) {
-                            spans[k].textContent = letters[idx];
-                            break;
-                        }
-                    }
+                    var badge = opt.querySelector('.quiz-letter');
+                    if (badge) badge.textContent = letters[idx];
                 });
             }
             function run() {
@@ -1513,5 +1565,11 @@
             else run();
         })();
     </script>
+
+    <!-- Arabic. The dictionary goes first so its AR_BLOCKS are stamped
+         before the engine first applies a saved language. Edit wording in
+         ai-and-assessment-ar.js only, and bump its ?v= when you do. -->
+    <script src="ai-and-assessment-ar.js?v=1"></script>
+    <script src="onboarding-i18n.js?v=4"></script>
 </body>
 </html>
