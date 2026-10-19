@@ -610,12 +610,12 @@ newsletter took it to `?v=20`, the newsletter mail-out to `?v=21`, and
 the request-transport rework to `?v=22`, the fix for the outage it
 caused to `?v=23`, the AI Literacy Hub to `?v=24`, and the data-loading
 audit (23 September 2026) to `?v=25`, and the Sustainability release
-(7 October 2026) to `?v=26`, and the PD Day page (19 October 2026) to
-`?v=27`.
+(7 October 2026) to `?v=26`, the PD Day page (19 October 2026) to
+`?v=27`, and its per-session search entries (the same day) to `?v=28`.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
-their own pins — `certificate.js?v=7`, `search-index.js?v=12`,
-`menu.js?v=18`, `dwell.js?v=2` — so **editing one of those helpers
+their own pins — `certificate.js?v=7`, `search-index.js?v=13`,
+`menu.js?v=19`, `dwell.js?v=2` — so **editing one of those helpers
 means bumping its pin inside `gate.js`, which is itself a change to
 `gate.js`, which means bumping `?v=N` on all 49 pages again.** Adding a
 page to the menu or the search index is enough to trigger the whole
@@ -847,9 +847,14 @@ works now. The copy is `COPY` in the page's last script.
 ## PD Day material — October 2026, added 19 October 2026
 
 `PD Day/october-2026.html` holds the material from the PD days of 19–20
-October 2026. Brandon asked for "a section of the hub" for it, starting
-with one session, **Choose your own AI adventure**: his slides and the
-PD Arcade game.
+October 2026. Brandon asked for "a section of the hub" for it. Three
+sessions so far, in page order:
+
+| id | session | presenter | material |
+|---|---|---|---|
+| `ai-adventure` | Choose your own AI adventure | Brandon Baki | slides (.pptx + PDF), the PD Arcade, 7 station guides |
+| `oracy` | Getting the Room to Think (Aloud!) | Amira El Turabi | slides (PDF only), Mon 19 Oct |
+| `differentiation` | Small Changes, Big Reach: Proactive Differentiation | Amira El Turabi | slides (PDF only), Mon 19 + Tue 20 Oct |
 
 **More sessions are coming.** Brandon said on 19 October 2026 that
 several PDs will be placed here, so the page is built for many sessions:
@@ -879,14 +884,13 @@ sessions*. A grey rule separates consecutive sessions.
 4. **A card** in `#sessions`, in the same order, with `href="#<id>"`.
 5. **Analytics:** name every `data-track` in the section
    `pd-day:<id>:<thing>`, and the card `pd-day:index:<id>`.
-6. **Search, optionally:** a `search-index.js` entry per session
-   (`url: "PD%20Day/october-2026.html#<id>"`) makes it findable by
-   title. That is a change to `search-index.js`, so it means the full
-   `?v=` cascade. Add several sessions' entries at once rather than one
-   cascade each. The same cascade is the time to make the page's own
-   search entry and the `menu.js` palette line generic. Both still
-   describe only *Choose your own AI adventure*. The home banner already
-   reads "session slides, games & links".
+6. **Search:** every session has a `search-index.js` entry, type
+   `"PD Session"`, `url: "PD%20Day/october-2026.html#<id>"`, so staff
+   can search "oracy" and land on it. A new one is a change to
+   `search-index.js`, so it means the full `?v=` cascade; batch
+   several sessions into one cascade when you can. The page's own
+   entry and the `menu.js` palette line are generic now, so they only
+   need the new title added to the page entry's description.
 
 The page's tests are not in the repo (they need Chromium and a local
 Tailwind build). What they checked is worth repeating after a change:
@@ -903,9 +907,11 @@ the Arabic view shows no English spans.
   the survey banner needs nothing back: the row's `sm:mr-20` is what
   reserves Leo's corner now.
 - `menu.js`: the drawer (*PD Day · Oct 2026*) and the fallback palette.
-- `search-index.js`: the page, and the arcade itself as an external entry.
+- `search-index.js`: the page, one entry per session, and the arcade
+  itself as an external entry.
 
-Those last two are what set off the cascade to `gate.js?v=27`.
+Those last two set off the cascade to `gate.js?v=27`, and Amira's
+sessions (with the per-session search entries) took it to `?v=28`.
 
 **The slides** are a viewer on the page (arrows, arrow keys, swipe,
 thumbnails, *Present* for full screen), plus the original `.pptx` and a
@@ -917,10 +923,29 @@ so a shorter deck leaves none behind) and update that deck's entry in
 `DECKS`. Two renders of the same deck differ by a pixel here and there,
 so don't re-render just to "refresh".
 
-**Install DM Sans first** (static Regular, Bold and Italic from Google
-Fonts; the variable font only gave LibreOffice the regular weight). It is
-the deck's font. Without it LibreOffice substitutes a wider one, and slide
-3's title runs into its paragraph.
+**Install the decks' fonts first.** `render-deck.py` stops on a
+missing one. So far:
+
+- **DM Sans** (Brandon's deck): static Regular, Bold and Italic from
+  Google Fonts. The variable font only gave LibreOffice the regular
+  weight. Without it LibreOffice substitutes a wider font, and slide 3's
+  title runs into its paragraph.
+- **Material Icons** (Amira's decks): `font/MaterialIcons-Regular.ttf`
+  from the `google/material-design-icons` repo. It is an icon font
+  driven by ligatures, so without it every icon renders as its name:
+  "psychology", "record_voice_over". Those names also leak into the
+  script's draft alt text, so take them out by hand.
+
+A 16:9 deck gets `is-169` on its viewer and fills the frame with
+`object-fit: cover`; with `contain`, a white slide showed a sub-pixel
+seam of the dark frame along its edge. Other shapes keep `contain` and
+letterbox.
+
+**Hidden slides are left out**, as LibreOffice does by default, which
+matches what was presented. `render-deck.py` names them. Amira hid one
+in each deck: oracy's "What does good oracy sound/look like?" (deck
+slide 5) and differentiation's "Plan something you will actually teach"
+(deck slide 10).
 
 Two things in the deck are as Brandon supplied it and were left alone:
 slide 5 is titled *Six stations* but lists seven, and the seventh card
@@ -951,9 +976,36 @@ this repo: the survey figures, the MagicSchool decision, Brandon's
 address. None of it is personal data. Check that again before putting any
 later session's deck here.
 
+**Amira El Turabi's two workshops, added 19 October 2026.** Credited
+on the cards and in each section as *Amira El Turabi · Curriculum,
+Teaching & Learning*. The department comes from her decks' footer; no job
+title was given. Things that are deliberate:
+
+- **PDF only, no .pptx** (`render-deck.py --no-pptx`). The originals are
+  12 MB and 20 MB, almost all animated GIFs. The oracy deck's speaker
+  notes are facilitator notes, and the first one cites an inspection
+  finding about oracy, which should not be published from a public repo.
+  If an editable copy is wanted, link a Drive copy shared with
+  `@aisa.sch.ae` only, as `POLICY_URL` does for anti-bullying.
+- **The "Take it to your planning" boxes quote her slides word for
+  word**: oracy's five questions, and differentiation's four prompts plus
+  the line from its six-habits slide. If she revises a deck, re-check
+  them.
+- **Both use the same Professional Meeting Log form** as Brandon's
+  session (her QR codes open `tinyurl.com/ycycht85`, which leads to the
+  same form). The meeting names carry the day, so the card prints them
+  exactly as on her slides. Differentiation ran on both days, so it
+  lists two names.
+- **Ahmed, Zayed and Sultan** on differentiation slide 7 are cartoon
+  personas, not pupils. The classroom pictures on oracy slide 6 are
+  illustrations. Both were checked before committing.
+- **Differentiation's exit ticket** was a FlexiQuiz live quiz that only
+  worked during the session, so the page doesn't link it.
+
 **Arabic.** The station names and descriptions are the arcade's own
 Arabic. The rest of the page's Arabic was written fresh for it and has
-not been checked by an Arabic speaker yet.
+not been checked by an Arabic speaker yet. That includes Amira's name
+(أميرة الترابي) and the Arabic titles of her two sessions.
 
 ## Sustainability at AISA — RELEASED to all staff, 7 October 2026
 

@@ -94,6 +94,10 @@
             scroll-snap-align: start; opacity: .7; transition: opacity .2s ease, border-color .2s ease;
         }
         .sv-thumb img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #120542; }
+        /* A 16:9 deck fills its frame exactly; "contain" would leave a
+           sub-pixel seam of the dark frame along a white slide's edge.
+           Other shapes (4:3) keep "contain" and letterbox. */
+        .sv-wrap.is-169 .sv-stage img, .sv-wrap.is-169 .sv-thumb img { object-fit: cover; }
         .sv-thumb:hover { opacity: 1; }
         .sv-thumb.is-current { border-color: #D8B664; opacity: 1; }
         .sv-nav svg { width: 1.25rem; height: 1.25rem; }
@@ -112,7 +116,7 @@
             outline: 3px solid #D8B664; outline-offset: 2px;
         }
     </style>
-    <script src="../auth/gate.js?v=27"></script>
+    <script src="../auth/gate.js?v=28"></script>
 </head>
 <body class="bg-slate-50 text-slate-900">
 
@@ -176,6 +180,50 @@
                         <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Slides</span><span class="lang-ar">الشرائح</span></span>
                         <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Game</span><span class="lang-ar">لعبة</span></span>
                         <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">7 station guides</span><span class="lang-ar">أدلّة المحطات السبع</span></span>
+                    </span>
+                </span>
+            </a>
+            <a href="#oracy" data-track="pd-day:index:oracy"
+               class="hub-card group rounded-2xl bg-white border border-slate-200 hover:border-[#21076C]/40 p-5 flex gap-4">
+                <span class="h-12 w-12 rounded-xl bg-teal-700 text-2xl flex items-center justify-center shrink-0" aria-hidden="true">🗣️</span>
+                <span class="min-w-0 flex-1">
+                    <span class="block text-[10px] font-bold uppercase tracking-widest text-[#7a5a00]">
+                        <span class="lang-en">Workshop &middot; Mon 19 Oct</span><span class="lang-ar">ورشة عمل · الاثنين ١٩ أكتوبر</span>
+                    </span>
+                    <span class="block font-heading font-bold text-lg text-slate-900 leading-snug mt-0.5">
+                        <span class="lang-en">Getting the Room to Think (Aloud!)</span>
+                        <span class="lang-ar">اجعلوا الصفّ كلّه يفكّر (بصوتٍ عالٍ!)</span>
+                    </span>
+                    <span class="block text-sm text-slate-500 mt-0.5">
+                        <span class="lang-en">Amira El Turabi &middot; Curriculum, Teaching &amp; Learning</span>
+                        <span class="lang-ar">أميرة الترابي · المناهج والتعليم والتعلّم</span>
+                    </span>
+                    <span class="mt-3 flex flex-wrap gap-1.5">
+                        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Slides</span><span class="lang-ar">الشرائح</span></span>
+                        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Planning questions</span><span class="lang-ar">أسئلة للتخطيط</span></span>
+                        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Meeting log</span><span class="lang-ar">سجلّ الاجتماعات</span></span>
+                    </span>
+                </span>
+            </a>
+            <a href="#differentiation" data-track="pd-day:index:differentiation"
+               class="hub-card group rounded-2xl bg-white border border-slate-200 hover:border-[#21076C]/40 p-5 flex gap-4">
+                <span class="h-12 w-12 rounded-xl bg-teal-700 text-2xl flex items-center justify-center shrink-0" aria-hidden="true">🧩</span>
+                <span class="min-w-0 flex-1">
+                    <span class="block text-[10px] font-bold uppercase tracking-widest text-[#7a5a00]">
+                        <span class="lang-en">Workshop &middot; Mon 19 &amp; Tue 20 Oct</span><span class="lang-ar">ورشة عمل · الاثنين ١٩ والثلاثاء ٢٠ أكتوبر</span>
+                    </span>
+                    <span class="block font-heading font-bold text-lg text-slate-900 leading-snug mt-0.5">
+                        <span class="lang-en">Small Changes, Big Reach: Proactive Differentiation</span>
+                        <span class="lang-ar">تغييرات صغيرة، أثر واسع: التمايز الاستباقي</span>
+                    </span>
+                    <span class="block text-sm text-slate-500 mt-0.5">
+                        <span class="lang-en">Amira El Turabi &middot; Curriculum, Teaching &amp; Learning</span>
+                        <span class="lang-ar">أميرة الترابي · المناهج والتعليم والتعلّم</span>
+                    </span>
+                    <span class="mt-3 flex flex-wrap gap-1.5">
+                        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Slides</span><span class="lang-ar">الشرائح</span></span>
+                        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Planning prompts</span><span class="lang-ar">أسئلة للتخطيط</span></span>
+                        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Meeting log</span><span class="lang-ar">سجلّ الاجتماعات</span></span>
                     </span>
                 </span>
             </a>
@@ -458,6 +506,214 @@
         </p>
     </section>
 
+    <!-- ===================== SESSION: GETTING THE ROOM TO THINK (ALOUD!) =====================
+         Amira El Turabi’s oracy workshop. The slides are offered as a PDF
+         only: the original .pptx is 12 MB, mostly animated GIFs, and its
+         speaker notes are facilitator notes not written for publishing. Deck
+         slide 5 is hidden and left out, as it was in the session. -->
+    <section id="oracy" class="session">
+        <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-white bg-[#21076C] rounded-full px-2.5 py-1">
+                <span class="lang-en">Session</span><span class="lang-ar">جلسة</span>
+            </span>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-teal-900 bg-teal-50 border border-teal-200 rounded-full px-2.5 py-1">
+                <span class="lang-en">Workshop &middot; Mon 19 Oct</span><span class="lang-ar">ورشة عمل · الاثنين ١٩ أكتوبر</span>
+            </span>
+        </div>
+        <h2 class="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-[#21076C] mt-3 leading-tight">
+            <span class="lang-en">Getting the Room to Think (Aloud!)</span>
+            <span class="lang-ar">اجعلوا الصفّ كلّه يفكّر (بصوتٍ عالٍ!)</span>
+        </h2>
+        <p class="lang-ar text-sm text-slate-500 mt-1"><span dir="ltr">Getting the Room to Think (Aloud!)</span></p>
+        <p class="font-heading font-semibold text-slate-700 mt-1.5">
+            <span class="lang-en">Questioning is the catalyst. Oracy is the goal.</span>
+            <span class="lang-ar">الأسئلة هي المحفّز، والتواصل الشفهي (Oracy) هو الهدف.</span>
+        </p>
+        <p class="text-slate-700 mt-3 max-w-3xl leading-relaxed">
+            <span class="lang-en">Do students use talk to think, listen, develop ideas and learn? The same kind of question, asked two ways, shows that more voices is not better oracy: better connections between ideas is. Then the routines that open the door to talk, the dialogue skills students have to be taught, what observers look for, and a redesign of a real lesson.</span>
+            <span class="lang-ar">هل يستخدم الطلاب الحديث ليفكّروا ويُصغوا ويطوّروا أفكارهم ويتعلّموا؟ سؤالان من النوع نفسه، يُطرح كلٌّ منهما بطريقة مختلفة، يبيّنان أنّ كثرة الأصوات لا تعني تواصلاً شفهياً أفضل، وإنّما الروابط الأقوى بين الأفكار. ثم الروتينات التي تفتح الباب للحديث، ومهارات الحوار التي يجب تعليمها للطلاب، وما يبحث عنه المراقبون، وإعادة تصميم درس حقيقي.</span>
+        </p>
+        <p class="text-sm text-slate-500 mt-2">
+            <span class="lang-en">Amira El Turabi &middot; Curriculum, Teaching &amp; Learning</span>
+            <span class="lang-ar">أميرة الترابي · المناهج والتعليم والتعلّم</span>
+        </p>
+
+        <!-- Quoted from the deck, so it stays the presenter's words. -->
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mt-6">
+            <div class="lg:col-span-3 rounded-2xl bg-teal-50 border border-teal-200 p-5 sm:p-6">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-teal-800">
+                    <span class="lang-en">Take it to your planning</span>
+                    <span class="lang-ar">خذوها إلى تخطيطكم</span>
+                </p>
+                <h3 class="font-heading font-bold text-lg sm:text-xl text-teal-950 mt-1">
+                    <span class="lang-en">The five questions before any talk task</span>
+                    <span class="lang-ar">الأسئلة الخمسة قبل أي مهمة حوارية</span>
+                </h3>
+                <ol class="mt-3 space-y-2 text-sm sm:text-base text-slate-800">
+                    <li class="flex gap-3"><span class="h-6 w-6 rounded-full bg-teal-700 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span><span class="min-w-0"><span class="lang-en"><strong class="text-teal-900">Why?</strong> What learning will talking advance?</span><span class="lang-ar"><strong class="text-teal-900">لماذا؟</strong> أيّ تعلّم سيدفعه الحديث إلى الأمام؟</span></span></li>
+                    <li class="flex gap-3"><span class="h-6 w-6 rounded-full bg-teal-700 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span><span class="min-w-0"><span class="lang-en"><strong class="text-teal-900">About what?</strong> Which problem requires reasoning?</span><span class="lang-ar"><strong class="text-teal-900">عن ماذا؟</strong> أيّ مشكلة تتطلّب استدلالاً؟</span></span></li>
+                    <li class="flex gap-3"><span class="h-6 w-6 rounded-full bg-teal-700 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span><span class="min-w-0"><span class="lang-en"><strong class="text-teal-900">How?</strong> What must pupils do with others’ ideas?</span><span class="lang-ar"><strong class="text-teal-900">كيف؟</strong> ماذا يجب أن يفعل الطلاب بأفكار الآخرين؟</span></span></li>
+                    <li class="flex gap-3"><span class="h-6 w-6 rounded-full bg-teal-700 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">4</span><span class="min-w-0"><span class="lang-en"><strong class="text-teal-900">Who?</strong> How will participation be distributed?</span><span class="lang-ar"><strong class="text-teal-900">مَن؟</strong> كيف ستتوزّع المشاركة؟</span></span></li>
+                    <li class="flex gap-3"><span class="h-6 w-6 rounded-full bg-teal-700 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">5</span><span class="min-w-0"><span class="lang-en"><strong class="text-teal-900">Evidence?</strong> What will I listen for afterwards?</span><span class="lang-ar"><strong class="text-teal-900">الدليل؟</strong> إلامَ سأُصغي بعد ذلك؟</span></span></li>
+                </ol>
+                <p class="mt-4 text-sm font-semibold text-teal-900">
+                    <span class="lang-en">More voices ≠ better oracy. Better connections between ideas = greater potential for learning.</span>
+                    <span class="lang-ar">كثرة الأصوات ≠ تواصلاً شفهياً أفضل. روابط أفضل بين الأفكار = فرصة أكبر للتعلّم.</span>
+                </p>
+            </div>
+
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSe_Lf4xbgeZUcwqfVFqdaDfRz-a2yY9gT046EpmZVJ5DHO9Fw/viewform" target="_blank" rel="noopener noreferrer" data-track="pd-day:oracy:meeting-log"
+               class="lg:col-span-2 hub-card group rounded-2xl bg-white border border-slate-200 hover:border-[#21076C]/40 p-5 flex flex-col">
+                <span class="h-11 w-11 rounded-xl bg-[#21076C]/10 flex items-center justify-center text-2xl" aria-hidden="true">📝</span>
+                <p class="font-heading font-bold text-slate-900 mt-3">
+                    <span class="lang-en">Professional Meeting Log</span><span class="lang-ar">سجلّ الاجتماعات المهنية</span>
+                </p>
+                <p class="text-sm text-slate-600 mt-1 flex-1">
+                    <span class="lang-en">Log that you attended. The meeting name is:</span>
+                    <span class="lang-ar">سجّلوا حضوركم. اسم الاجتماع:</span>
+                        <span class="block font-semibold text-slate-900 mt-1"><span dir="ltr">Getting the Room to Think (Aloud!) (Mon 19 Oct)</span></span>
+                </p>
+                <span class="mt-3 text-sm font-semibold text-indigo-700 group-hover:text-indigo-900">
+                    <span class="lang-en">Open the meeting log ↗</span><span class="lang-ar">افتحوا سجلّ الاجتماعات ↗</span>
+                </span>
+            </a>
+        </div>
+
+        <!-- ---- The slides ---- built from DECKS['oracy']. -->
+        <div id="oracy-slides" class="mt-10">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+                <div>
+                    <h3 class="font-heading font-bold text-xl sm:text-2xl text-[#21076C]">
+                        <span class="lang-en">The slides</span>
+                        <span class="lang-ar">الشرائح</span>
+                    </h3>
+                    <p class="text-sm text-slate-500 mt-0.5">
+                        <span class="lang-en">14 slides, in English.</span>
+                        <span class="lang-ar">١٤ شريحة باللغة الإنجليزية.</span>
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2 shrink-0">
+                    <a href="assets/october-2026/oracy/getting-the-room-to-think-aloud-slides.pdf" target="_blank" rel="noopener noreferrer" data-track="pd-day:oracy:slides-pdf"
+                       class="inline-flex items-center gap-2 rounded-xl bg-[#21076C] hover:bg-[#2f0f99] text-white text-sm font-semibold px-4 py-2.5 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 3h7l5 5v13H7zM14 3v5h5"></path></svg>
+                        <span class="lang-en">PDF</span><span class="lang-ar">PDF</span>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-4" data-sv="oracy"></div>
+        </div>
+
+        <p class="mt-8">
+            <a href="#sessions" class="text-sm font-semibold text-indigo-700 hover:text-indigo-900">
+                <span class="lang-en">↑ All sessions</span><span class="lang-ar">↑ كل الجلسات</span>
+            </a>
+        </p>
+    </section>
+
+    <!-- ===================== SESSION: SMALL CHANGES, BIG REACH: PROACTIVE DIFFERENTIATION =====================
+         Amira El Turabi’s differentiation workshop, run on both days. PDF
+         only, as for the oracy session: the .pptx is 20 MB, mostly GIFs.
+         Deck slide 10 is hidden and left out, as it was in the session.
+         Ahmed, Zayed and Sultan on slide 7 are cartoon personas, not pupils. -->
+    <section id="differentiation" class="session">
+        <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-white bg-[#21076C] rounded-full px-2.5 py-1">
+                <span class="lang-en">Session</span><span class="lang-ar">جلسة</span>
+            </span>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-teal-900 bg-teal-50 border border-teal-200 rounded-full px-2.5 py-1">
+                <span class="lang-en">Workshop &middot; Mon 19 &amp; Tue 20 Oct</span><span class="lang-ar">ورشة عمل · الاثنين ١٩ والثلاثاء ٢٠ أكتوبر</span>
+            </span>
+        </div>
+        <h2 class="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-[#21076C] mt-3 leading-tight">
+            <span class="lang-en">Small Changes, Big Reach: Proactive Differentiation</span>
+            <span class="lang-ar">تغييرات صغيرة، أثر واسع: التمايز الاستباقي</span>
+        </h2>
+        <p class="lang-ar text-sm text-slate-500 mt-1"><span dir="ltr">Small Changes, Big Reach: Proactive Differentiation</span></p>
+        <p class="font-heading font-semibold text-slate-700 mt-1.5">
+            <span class="lang-en">Plan for the barriers you can already predict.</span>
+            <span class="lang-ar">خطّطوا للعوائق التي يمكنكم توقّعها مسبقاً.</span>
+        </p>
+        <p class="text-slate-700 mt-3 max-w-3xl leading-relaxed">
+            <span class="lang-en">You already know about differentiation. This session is about planning it before students hit a barrier you could have predicted: a passage in Arabic that only part of the room can read, a Grade 7 maths class with three different barriers, a reactive-or-proactive card sort, and four prompts that turn a prediction into a plan.</span>
+            <span class="lang-ar">أنتم تعرفون التمايز مسبقاً. تدور هذه الجلسة حول التخطيط له قبل أن يصطدم الطلاب بعائق كان يمكن توقّعه: نصّ بالعربية لا يقرؤه إلا بعض الحاضرين، وصفّ رياضيات في الصف السابع فيه ثلاثة عوائق مختلفة، وتصنيف بطاقات بين التمايز التفاعلي والاستباقي، وأربعة أسئلة تحوّل التوقّع إلى خطة.</span>
+        </p>
+        <p class="text-sm text-slate-500 mt-2">
+            <span class="lang-en">Amira El Turabi &middot; Curriculum, Teaching &amp; Learning</span>
+            <span class="lang-ar">أميرة الترابي · المناهج والتعليم والتعلّم</span>
+        </p>
+
+        <!-- Quoted from the deck, so it stays the presenter's words. -->
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mt-6">
+            <div class="lg:col-span-3 rounded-2xl bg-teal-50 border border-teal-200 p-5 sm:p-6">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-teal-800">
+                    <span class="lang-en">Take it to your planning</span>
+                    <span class="lang-ar">خذوها إلى تخطيطكم</span>
+                </p>
+                <h3 class="font-heading font-bold text-lg sm:text-xl text-teal-950 mt-1">
+                    <span class="lang-en">Turn prediction into action</span>
+                    <span class="lang-ar">حوّلوا التوقّع إلى فعل</span>
+                </h3>
+                <ol class="mt-3 space-y-2 text-sm sm:text-base text-slate-800">
+                    <li class="flex gap-3"><span class="h-6 w-6 rounded-full bg-teal-700 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span><span class="min-w-0"><span class="lang-en">Students are likely to struggle with…</span><span class="lang-ar">من المرجّح أن يواجه الطلاب صعوبة في…</span></span></li>
+                    <li class="flex gap-3"><span class="h-6 w-6 rounded-full bg-teal-700 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span><span class="min-w-0"><span class="lang-en">I will know they are struggling when…</span><span class="lang-ar">سأعرف أنهم يواجهون صعوبة عندما…</span></span></li>
+                    <li class="flex gap-3"><span class="h-6 w-6 rounded-full bg-teal-700 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span><span class="min-w-0"><span class="lang-en">Before the lesson, I would prepare…</span><span class="lang-ar">قبل الدرس، سأُعدّ…</span></span></li>
+                    <li class="flex gap-3"><span class="h-6 w-6 rounded-full bg-teal-700 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">4</span><span class="min-w-0"><span class="lang-en">If I see that difficulty, I will…</span><span class="lang-ar">إذا لاحظت تلك الصعوبة، فسوف…</span></span></li>
+                </ol>
+                <p class="mt-4 text-sm font-semibold text-teal-900">
+                    <span class="lang-en">Don’t plan three different lessons. Plan one ambitious lesson with thoughtful routes to success.</span>
+                    <span class="lang-ar">لا تخطّطوا لثلاثة دروس مختلفة. خطّطوا لدرس واحد طموح بمسارات مدروسة نحو النجاح.</span>
+                </p>
+            </div>
+
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSe_Lf4xbgeZUcwqfVFqdaDfRz-a2yY9gT046EpmZVJ5DHO9Fw/viewform" target="_blank" rel="noopener noreferrer" data-track="pd-day:differentiation:meeting-log"
+               class="lg:col-span-2 hub-card group rounded-2xl bg-white border border-slate-200 hover:border-[#21076C]/40 p-5 flex flex-col">
+                <span class="h-11 w-11 rounded-xl bg-[#21076C]/10 flex items-center justify-center text-2xl" aria-hidden="true">📝</span>
+                <p class="font-heading font-bold text-slate-900 mt-3">
+                    <span class="lang-en">Professional Meeting Log</span><span class="lang-ar">سجلّ الاجتماعات المهنية</span>
+                </p>
+                <p class="text-sm text-slate-600 mt-1 flex-1">
+                    <span class="lang-en">Log that you attended. Use the meeting name for the day you came:</span>
+                    <span class="lang-ar">سجّلوا حضوركم. استخدموا اسم الاجتماع الخاص باليوم الذي حضرتم فيه:</span>
+                        <span class="block font-semibold text-slate-900 mt-1"><span dir="ltr">Small Changes - Big Reach: Proactive Differentiation (Mon 19 Oct)</span></span>
+                        <span class="block font-semibold text-slate-900 mt-1"><span dir="ltr">Small Changes - Big Reach: Proactive Differentiation (Tue 20 Oct)</span></span>
+                </p>
+                <span class="mt-3 text-sm font-semibold text-indigo-700 group-hover:text-indigo-900">
+                    <span class="lang-en">Open the meeting log ↗</span><span class="lang-ar">افتحوا سجلّ الاجتماعات ↗</span>
+                </span>
+            </a>
+        </div>
+
+        <!-- ---- The slides ---- built from DECKS['differentiation']. -->
+        <div id="differentiation-slides" class="mt-10">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+                <div>
+                    <h3 class="font-heading font-bold text-xl sm:text-2xl text-[#21076C]">
+                        <span class="lang-en">The slides</span>
+                        <span class="lang-ar">الشرائح</span>
+                    </h3>
+                    <p class="text-sm text-slate-500 mt-0.5">
+                        <span class="lang-en">13 slides, in English.</span>
+                        <span class="lang-ar">١٣ شريحة باللغة الإنجليزية.</span>
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2 shrink-0">
+                    <a href="assets/october-2026/differentiation/small-changes-big-reach-slides.pdf" target="_blank" rel="noopener noreferrer" data-track="pd-day:differentiation:slides-pdf"
+                       class="inline-flex items-center gap-2 rounded-xl bg-[#21076C] hover:bg-[#2f0f99] text-white text-sm font-semibold px-4 py-2.5 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 3h7l5 5v13H7zM14 3v5h5"></path></svg>
+                        <span class="lang-en">PDF</span><span class="lang-ar">PDF</span>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-4" data-sv="differentiation"></div>
+        </div>
+
+        <p class="mt-8">
+            <a href="#sessions" class="text-sm font-semibold text-indigo-700 hover:text-indigo-900">
+                <span class="lang-en">↑ All sessions</span><span class="lang-ar">↑ كل الجلسات</span>
+            </a>
+        </p>
+    </section>
+
     <footer class="mt-12 border-t border-slate-200 pt-5 pb-8 text-xs text-slate-500 flex flex-col sm:flex-row gap-1 sm:items-center sm:justify-between">
         <p>
             <span class="lang-en">&copy; 2026 American International School in Abu Dhabi &middot; AI &amp; Innovation</span>
@@ -516,6 +772,45 @@
                     { t: 'Exit ticket', alt: 'Exit ticket, 5 minutes: help shape the next AI PD. Your answers decide which tools we support, what we train next, and whether anything is still missing. A QR code opens the exit ticket form.' },
                     { t: 'Professional Meeting Log', alt: 'Professional Meeting Log 2026–2027. Meeting name: Choose your own AI adventure. A QR code and the link tinyurl.com/ycycht85 open the log.' },
                     { t: 'Thank you', alt: 'Thank you for giving these tools a real try. Go use what you made this week. Questions or ideas? bbaki@aisa.sch.ae' }
+                ]
+            },
+            'oracy': {
+                base: 'assets/october-2026/oracy/',
+                name: { en: 'Getting the Room to Think (Aloud!)', ar: 'اجعلوا الصفّ كلّه يفكّر (بصوتٍ عالٍ!)' },
+                slides: [
+                    { t: 'Getting the Room to Think (Aloud!)', alt: 'Title slide. AISA Teaching and Learning: Getting the Room to Think (Aloud!). The catalyst: questioning, driving deeper cognitive engagement. The goal: oracy, empowering structured classroom talk.' },
+                    { t: 'My question for you today', alt: 'My question for you today: Should students be allowed to use AI to complete their homework?' },
+                    { t: 'New question, different rules', alt: 'New question, different rules: Should schools remove homework completely? Speaker 1: make a claim and give a reason. Speakers 2 to 6: build on, challenge or question an earlier idea. One table: name one agreement and one unresolved disagreement. No isolated answers: the next contribution must connect to the last. A 20-second timer.' },
+                    { t: 'What changed in the learning?', alt: 'What changed in the learning? Listening: in which version did you actually have to listen to each other? Thinking: in which version did your thinking change or become more sophisticated? Teacher move: what was the teacher doing differently to make this happen? More voices does not equal better oracy. Better connections between ideas equal greater potential for learning.' },
+                    { t: 'What does good oracy actually look like?', alt: 'What does good oracy actually look like? Cognitive, thinking through talk: explaining reasoning, evaluating evidence, making connections, challenging assumptions and revising ideas. Linguistic, expressing ideas clearly: using subject-specific vocabulary, complete explanations, appropriate sentence structures and precise language. Social and communicative, engaging with others: listening actively, taking turns, inviting contributions, disagreeing respectfully and building on what others say.' },
+                    { t: 'Oracy in Practice: Analyzing Scenarios', alt: 'Oracy in practice, analysing scenarios, with a 2-minute timer. Three illustrated classrooms. A student gives an accurate, articulate explanation, but nobody else contributes. Students enthusiastically exchange opinions but don’t justify them or respond to each other’s ideas. Students listen carefully and take turns, but struggle to express their reasoning using the language of the subject. For each scenario: which element of oracy is strongest, and what is missing?' },
+                    { t: 'Let the talk develop the thinking', alt: 'Activity, let the talk develop the thinking: Is it more important to teach students what to think or how to think? 1, think: note your initial position. 2, claim: state your view and justify it. 3, paraphrase: restate your partner’s argument before responding. 4, build or challenge: extend or respectfully question an existing idea. 5, reflect: explain how your thinking developed. Debrief: what made this talk productive?' },
+                    { t: 'Four routines that open the door to oracy', alt: 'Four routines that open the door to oracy. Everybody Writes, think first: every student formulates an idea before speaking. Turn and Talk, rehearse and respond: students explain and engage with a partner’s thinking. Wait Time, give thinking space: students have time to process and compose reasoning. Cold Call, widen accountability: sample thinking beyond volunteers and build a supportive climate.' },
+                    { t: 'Opportunity to speak ≠ quality of dialogue', alt: 'Opportunity to speak does not equal quality of dialogue. Foundation: routines create the opportunity, giving consistent structure, safety and time for students to talk. Mastery: explicit teaching develops the skill, raising discourse quality and cognitive rigour. Students need to be taught what good dialogue sounds like. Listen: accurately paraphrase a peer before adding your own contribution. Reason: explain with evidence. Respond: build on, question or respectfully challenge ideas.' },
+                    { t: 'What are observers looking for?', alt: 'What are observers (yes, including inspectors) looking for? 1, purposeful talk: the discussion is tied to a specific learning goal. 2, explicit expectations: students know what productive listening, reasoning and responding look like. 3, student-to-student dialogue: students refer to, question, extend or challenge peers’ ideas. 4, broad participation: talk is not dominated by the same confident students. 5, cognitive depth: students explain, justify, compare, evaluate or revise their thinking. 6, teacher use of dialogue: the teacher listens to student talk and uses what they hear to guide next steps.' },
+                    { t: 'Where could we get the room thinking aloud?', alt: 'Where could we get the room thinking aloud? In groups, redesign the A3 lesson using the annotation spaces, with a 12-minute timer. 1, read the lesson: identify where student talk could genuinely deepen understanding. 2, design the talk: add purposeful questions, talk moves and suitable TLAC routines. 3, make learning visible: decide what you will listen for and how it will change your next move. 4, critique: share your strongest change and receive one improvement suggestion.' },
+                    { t: 'The five questions before any talk task', alt: 'The five questions before any talk task. Why: what learning will talking advance? About what: which problem requires reasoning? How: what must pupils do with others’ ideas? Who: how will participation be distributed? Evidence: what will I listen for afterwards?' },
+                    { t: 'Exit Ticket: Sort it out', alt: 'Exit ticket, sort it out: look at the cards and decide which questions are quick check and which ones lead to purposeful talk. Quick check: assesses immediate recall or surface comprehension, requires brief, factual or closed responses, and verifies individual understanding quickly. Purposeful talk: provokes reasoning, evaluation and deeper dialogue, encourages peer-to-peer discussion and debate, and promotes building, challenging or extending ideas.' },
+                    { t: 'Professional Meeting Log', alt: 'Professional Meeting Log 2026–2027. Meeting name: Getting the Room to Think (Aloud!) (Mon 19 Oct). A QR code and the link tinyurl.com/ycycht85 open the log.' }
+                ]
+            },
+            'differentiation': {
+                base: 'assets/october-2026/differentiation/',
+                name: { en: 'Small Changes, Big Reach: Proactive Differentiation', ar: 'تغييرات صغيرة، أثر واسع: التمايز الاستباقي' },
+                slides: [
+                    { t: 'Small Changes, Big Reach', alt: 'Title slide. AISA Teaching and Learning: Small Changes, Big Reach. Proactive differentiation. Small adjustments: targeted preparation before instruction. Maximum impact: unlocks access for all learners. Inclusive access: removes predictable barriers.' },
+                    { t: 'Differentiation again????', alt: 'Differentiation again???? A meme of a man crying.' },
+                    { t: 'You already know about differentiation', alt: 'You already know about differentiation. In your tables, use scrap paper to write continuously for 1 minute: everything we know about differentiation. A 1-minute timer and a cartoon of a child scribbling furiously.' },
+                    { t: 'Reactive, proactive, effective', alt: 'Differentiation: reactive, proactive, effective. Reactive differentiation: I noticed a learning need, so I decided how to respond. Proactive differentiation: I anticipated a learning need, so I planned how to identify it and respond. Effective differentiation: I anticipated what I reasonably could, checked what students actually needed, and adapted my teaching accordingly.' },
+                    { t: 'One task. Not everyone has equal access.', alt: 'One task. Not everyone has equal access. Read the passage and, in 90 seconds: identify the writer’s main idea, find two details that support it, and make one inference from the passage. Work individually, no help yet. The passage is in Arabic: students notice the school garden gets hotter at noon and plant trees around the yard; months later it is shadier and more students spend break there, but they realise the trees need water and constant effort.' },
+                    { t: 'What could I have prepared in advance?', alt: 'What could I have prepared in advance? What was difficult? How did the task feel when access was limited? What could I, as the teacher, have prepared without removing the challenge? Three reaction memes labelled A, B and C.' },
+                    { t: 'One class. Three predictable barriers.', alt: 'One class, three predictable barriers: Grade 7 maths, multi-step word problems, with a 1-minute timer. Three cartoon students. Student A, Ahmed: can calculate accurately, but gets overwhelmed by difficult vocabulary, reads the problem slowly and misses key information. Student B, Zayed: understands concepts, but loses focus during extended teacher explanation and distracts his classmates. Student C, Sultan: often solves routine problems quickly and shouts “I’m done.” Turn and talk: what would you plan before teaching? What would you avoid assuming?' },
+                    { t: 'Reactive or proactive?', alt: 'Reactive or proactive? With a 3-minute timer. 1, work together: at your table, read each statement. 2, sort the cards: decide, reactive or proactive? 3, justify your choices: be ready to explain your thinking.' },
+                    { t: 'Your turn: turn prediction into action', alt: 'Your turn, turn prediction into action, with a 15-minute timer. At your tables, read the lesson plan scenario and answer: 1, students are likely to struggle with… (think about different learners). 2, I will know they are struggling when… 3, before the lesson, I would prepare… 4, if I see that difficulty, I will…' },
+                    { t: 'The 6 Habits of Proactive Differentiation', alt: 'The 6 habits of proactive differentiation: practical planning habits that help teachers anticipate need before the lesson begins. Anticipate, check, respond. 1, walk through the lesson in their shoes: mentally rehearse the lesson from the perspective of different learners. Ask: where would this student get stuck, disengage, misunderstand, or need more challenge? 2, identify the barriers, not just the students: pinpoint exactly what students are likely to struggle with and why. Ask: what might prevent access or mastery? 3, spot the struggle early: plan checks for understanding before students spend too long getting it wrong. Ask: what will I see or hear? 4, prepare the response before it’s needed: decide in advance what support will actually look like. Ask: what will I do differently? 5, plan for depth, not just difficulty: prepare deeper thinking for students who grasp the learning quickly. Ask: how will I deepen thinking? 6, plan the “if… then…” decisions: anticipate likely outcomes and decide how you will respond. Ask: what will I change based on the evidence? Don’t plan three different lessons. Plan one ambitious lesson with thoughtful routes to success. You don’t need to predict every difficulty, just the ones you already know are likely.' },
+                    { t: 'Exit Ticket', alt: 'Exit ticket: let’s see which table got it! Scan the QR code, join the quiz, and let’s finish strong. Ready? Phones out. Game on. The QR code opened a live quiz during the session.' },
+                    { t: 'Professional Meeting Log, Mon 19 Oct', alt: 'Professional Meeting Log 2026–2027. Meeting name: Small Changes - Big Reach: Proactive Differentiation (Mon 19 Oct). A QR code and the link tinyurl.com/ycycht85 open the log.' },
+                    { t: 'Professional Meeting Log, Tue 20 Oct', alt: 'Professional Meeting Log 2026–2027. Meeting name: Small Changes - Big Reach: Proactive Differentiation (Tue 20 Oct). A QR code and the link tinyurl.com/ycycht85 open the log.' }
                 ]
             }
         };
@@ -635,6 +930,10 @@
                 stage.requestFullscreen().then(function () { stage.focus(); }).catch(function () {});
             });
 
+            img.addEventListener('load', function once() {
+                img.removeEventListener('load', once);
+                if (Math.abs(img.naturalWidth / img.naturalHeight - 16 / 9) < 0.02) root.classList.add('is-169');
+            });
             show(0, true);
         }
 

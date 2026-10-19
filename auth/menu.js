@@ -72,7 +72,7 @@
 
         /* PD modules */
         { title: 'PD Modules',                         desc: 'All professional development modules',                          href: 'PD%20Modules/pd.html',                                                             icon: '\u{1F393}', tag: 'Hub' },
-        { title: 'PD Day \u2014 October 2026',          desc: 'Choose your own AI adventure: the slides and the PD Arcade',   href: 'PD%20Day/october-2026.html',                                                       icon: '\u{1F4C5}', tag: 'Hub' },
+        { title: 'PD Day \u2014 October 2026',          desc: 'Session slides, games and links from the October PD days',    href: 'PD%20Day/october-2026.html',                                                       icon: '\u{1F4C5}', tag: 'Hub' },
         { title: 'AI Literacy: Teacher Readiness',      desc: 'Required by 20 Sept: teach your first ADEK AI lesson',        href: 'PD%20Modules/ai-curriculum-readiness-module.html',                                 icon: '\u{1F393}', tag: 'Module' },
         { title: 'AI Literacy Hub',                     desc: 'Training, Scope & Sequence, InstrucTwin, assessment \u2014 all in one place', href: 'AI%20Literacy%20Hub/ai-literacy-hub.html',                     icon: '\u{1F9E0}', tag: 'Hub' },
         { title: 'AI Literacy: Scope & Sequence',       desc: 'The KG\u2013Grade 12 curriculum map \u2014 progression and end-of-phase expectations', href: 'PD%20Modules/ai-literacy-scope-and-sequence.html',       icon: '\u{1F5FA}', tag: 'Reference' },

@@ -7,12 +7,16 @@
 Writes, into the session's assets folder:
     slides/slide-01.webp …   1600 px wide, for the viewer
     thumbs/slide-01.webp …   400 px wide, for the thumbnail strip
-    <file-stem>.pdf          the download (and <file-stem>.pptx, given a .pptx)
+    <file-stem>.pdf          the download (and <file-stem>.pptx, given a .pptx,
+                             unless --no-pptx)
 
 then prints a DECKS entry for the page script, with each slide's caption
 and alt text filled from the slide's own words. Read those before you
 commit: they are a starting point, and slide text comes out of a PDF in
 whatever order the PDF holds it.
+
+Hidden slides are left out, as they were when the deck was presented;
+the script names them so you can check that is what the presenter meant.
 
 A .pptx is converted with LibreOffice, so the deck's fonts must be
 installed or LibreOffice substitutes wider ones and titles run into the
@@ -62,6 +66,25 @@ def deck_fonts(pptx):
     return sorted(f for f in names if f and not f.startswith('+'))
 
 
+def hidden_slides(pptx):
+    """1-based positions and titles of slides marked hidden, in deck order."""
+    with zipfile.ZipFile(pptx) as z:
+        pres = z.read('ppt/presentation.xml').decode('utf8', 'replace')
+        rels = z.read('ppt/_rels/presentation.xml.rels').decode('utf8', 'replace')
+        target = {}
+        for rel in re.findall(r'<Relationship [^>]*>', rels):
+            rid, tgt = re.search(r'Id="([^"]+)"', rel), re.search(r'Target="([^"]+)"', rel)
+            if rid and tgt:
+                target[rid.group(1)] = tgt.group(1).lstrip('/').replace('ppt/', '', 1)
+        out = []
+        for n, rid in enumerate(re.findall(r'<p:sldId [^>]*r:id="([^"]+)"', pres), 1):
+            xml = z.read('ppt/' + target[rid]).decode('utf8', 'replace')
+            if re.search(r'<p:sld\b[^>]*\bshow="0"', xml):
+                words = [w.strip() for w in re.findall(r'<a:t>([^<]*)</a:t>', xml) if w.strip()]
+                out.append('%d (%s)' % (n, words[0] if words else 'no text'))
+        return out
+
+
 def missing_fonts(fonts):
     out = []
     for f in fonts:
@@ -95,6 +118,8 @@ def main():
     ap.add_argument('out', help='the session assets folder, e.g. "PD Day/assets/october-2026/<id>"')
     ap.add_argument('--name', required=True, help='file stem for the downloads, e.g. my-session-slides')
     ap.add_argument('--ignore-fonts', action='store_true', help='render even if a deck font is missing')
+    ap.add_argument('--no-pptx', action='store_true',
+                    help='offer the PDF only: for decks too big for the repo, or with speaker notes not to publish')
     a = ap.parse_args()
 
     ext = os.path.splitext(a.deck)[1].lower()
@@ -109,6 +134,9 @@ def main():
             print('Deck fonts: ' + (', '.join(fonts) or 'none named'))
             if gone and not a.ignore_fonts:
                 sys.exit('Install these first, or pass --ignore-fonts:\n  ' + '\n  '.join(gone))
+            hidden = hidden_slides(a.deck)
+            if hidden:
+                print('Hidden, so left out: slide ' + ', '.join(hidden))
             pdf = to_pdf(os.path.abspath(a.deck), tmp)
         else:
             pdf = a.deck
@@ -134,7 +162,7 @@ def main():
             entries.append({'t': lines[0] if lines else 'Slide %d' % i,
                             'alt': ' '.join(lines) or 'Slide %d (no text).' % i})
 
-        for src, dst in ((pdf, a.name + '.pdf'), (a.deck if ext == '.pptx' else None, a.name + '.pptx')):
+        for src, dst in ((pdf, a.name + '.pdf'), (a.deck if ext == '.pptx' and not a.no_pptx else None, a.name + '.pptx')):
             dst = os.path.join(a.out, dst)
             if src and not (os.path.exists(dst) and os.path.samefile(src, dst)):
                 shutil.copyfile(src, dst)
