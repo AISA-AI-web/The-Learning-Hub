@@ -849,13 +849,50 @@ works now. The copy is `COPY` in the page's last script.
 `PD Day/october-2026.html` holds the material from the PD days of 19–20
 October 2026. Brandon asked for "a section of the hub" for it, starting
 with one session, **Choose your own AI adventure**: his slides and the
-PD Arcade game. More sessions are expected, so the page is built to take
-them.
+PD Arcade game.
 
-**One page per PD day, one `<section class="session">` per session.** A
-new session is a chip in the hero's *Sessions on this page*, a section
-below, and its own folder under `PD Day/assets/october-2026/`. A new PD
-day is a new page in `PD Day/`, plus repointing the three links below.
+**More sessions are coming.** Brandon said on 19 October 2026 that
+several PDs will be placed here, so the page is built for many sessions:
+one page per PD day, a **Sessions** index of cards under the hero, then
+one `<section class="session">` per session, each ending with *↑ All
+sessions*. A grey rule separates consecutive sessions.
+
+**Adding a session:**
+
+1. **Deck, if any.** Read it first, speaker notes too: once committed
+   it is public (see *The deck is public now* below). Then run
+   `python3 "PD Day/render-deck.py" deck.pptx "PD Day/assets/october-2026/<id>" --name <id>-slides`
+   (a `.pdf` works too, e.g. a Google Slides export). It writes
+   `slides/`, `thumbs/` and the downloads, and prints a `DECKS` entry
+   whose captions and alt text come from the slides' own words. Read
+   them, fix the order, and add the Arabic session name. It stops if
+   the deck uses a font that isn't installed (see DM Sans below);
+   `SOFFICE` names the LibreOffice command if `soffice` alone hangs, as
+   it does in Claude's sandbox.
+2. **`DECKS` in the page script** gets that entry, keyed by `<id>`.
+3. **A section** after the last one, copied from the existing session:
+   `id="<id>"`, the header, whatever links it needs, and
+   `<div class="mt-4" data-sv="<id>"></div>` where the viewer goes. The
+   script builds a viewer into every `[data-sv]`; each one runs on its
+   own, so keys only move the one that has focus. An unknown key warns
+   in the console and leaves the placeholder empty.
+4. **A card** in `#sessions`, in the same order, with `href="#<id>"`.
+5. **Analytics:** name every `data-track` in the section
+   `pd-day:<id>:<thing>`, and the card `pd-day:index:<id>`.
+6. **Search, optionally:** a `search-index.js` entry per session
+   (`url: "PD%20Day/october-2026.html#<id>"`) makes it findable by
+   title. That is a change to `search-index.js`, so it means the full
+   `?v=` cascade. Add several sessions' entries at once rather than one
+   cascade each. The same cascade is the time to make the page's own
+   search entry and the `menu.js` palette line generic. Both still
+   describe only *Choose your own AI adventure*. The home banner already
+   reads "session slides, games & links".
+
+The page's tests are not in the repo (they need Chromium and a local
+Tailwind build). What they checked is worth repeating after a change:
+every card points at a session and every session has a card, two
+viewers on one page don't interfere, no sideways scroll at 390 px, and
+the Arabic view shows no English spans.
 
 **It is linked from three places, and they move together:**
 
@@ -874,15 +911,11 @@ Those last two are what set off the cascade to `gate.js?v=27`.
 thumbnails, *Present* for full screen), plus the original `.pptx` and a
 PDF to download. The viewer is pinned `dir="ltr"`, because the slides are
 English and run left to right in either language. The images are
-rendered from the `.pptx`, so **edit the deck, then re-render all three**
-(`slides/`, `thumbs/` and the PDF) and update `SLIDES` in the page
-script, which holds each slide's caption and alt text:
-
-```
-soffice --headless --convert-to pdf deck.pptx       # with DM Sans installed
-pdftoppm -png -scale-to-x 1600 -scale-to-y 900 deck.pdf raw
-# then each page → slides/slide-NN.webp (q≈86) and thumbs/slide-NN.webp (400×225)
-```
+rendered from the `.pptx`, so **edit the deck, then re-run
+`render-deck.py`** into the same folder (it clears the old slides first,
+so a shorter deck leaves none behind) and update that deck's entry in
+`DECKS`. Two renders of the same deck differ by a pixel here and there,
+so don't re-render just to "refresh".
 
 **Install DM Sans first** (static Regular, Bold and Italic from Google
 Fonts; the variable font only gave LibreOffice the regular weight). It is

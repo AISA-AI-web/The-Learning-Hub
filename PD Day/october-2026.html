@@ -47,12 +47,17 @@
         .hub-card { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
         .hub-card:hover { transform: translateY(-3px); box-shadow: 0 22px 40px -22px rgba(33, 7, 108, .55); }
 
+        /* Sessions follow one another down the page; a rule between them
+           keeps one session's "Before you go" from reading as the next
+           one's introduction. */
+        .session + .session { margin-top: 4rem; padding-top: 3rem; border-top: 1px solid #e2e8f0; }
+
         /* ---- Slide viewer ----------------------------------------------
-           Styled here rather than with Tailwind utilities because its state
-           classes are set from script, and a class that appears nowhere in
-           the served HTML is not something to leave to the CDN's JIT. The
-           viewer is pinned dir="ltr": the slides are in English and run
-           left to right whichever language the Hub is in. */
+           Built by the page script into each [data-sv] placeholder, so it
+           is styled here rather than with Tailwind utilities: a class that
+           appears nowhere in the served HTML is not something to leave to
+           the CDN's JIT. The viewer is pinned dir="ltr": slides run left
+           to right whichever language the Hub is in. */
         .sv-stage {
             position: relative; aspect-ratio: 16 / 9; width: 100%;
             background: #120542; border-radius: 1rem; overflow: hidden;
@@ -81,17 +86,29 @@
         .sv-wrap { min-width: 0; }
         .sv-thumbs {
             position: relative; display: flex; gap: .5rem; overflow-x: auto; min-width: 0;
-            padding: .25rem .1rem .6rem; scroll-snap-type: x proximity;
+            margin-top: .75rem; padding: .25rem .1rem .6rem; scroll-snap-type: x proximity;
         }
         .sv-thumb {
             flex: 0 0 auto; width: 7.5rem; padding: 0; border: 2px solid transparent;
             border-radius: .55rem; overflow: hidden; background: #e2e8f0; cursor: pointer;
             scroll-snap-align: start; opacity: .7; transition: opacity .2s ease, border-color .2s ease;
         }
-        .sv-thumb img { display: block; width: 100%; aspect-ratio: 16 / 9; }
+        .sv-thumb img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #120542; }
         .sv-thumb:hover { opacity: 1; }
         .sv-thumb.is-current { border-color: #D8B664; opacity: 1; }
-        .sv-stage:focus-visible, .sv-thumb:focus-visible, .sv-nav:focus-visible {
+        .sv-nav svg { width: 1.25rem; height: 1.25rem; }
+        .sv-bar { margin-top: .75rem; display: flex; align-items: center; justify-content: space-between; gap: .75rem; }
+        .sv-caption { margin: 0; min-width: 0; font-size: .875rem; line-height: 1.25rem; color: #475569; }
+        .sv-count { font-weight: 700; color: #21076C; font-variant-numeric: tabular-nums; }
+        .sv-dot { color: #94a3b8; }
+        .sv-present {
+            flex-shrink: 0; display: inline-flex; align-items: center; gap: .375rem; cursor: pointer;
+            border-radius: .5rem; border: 1px solid #cbd5e1; background: #fff; color: #21076C;
+            font-size: .875rem; font-weight: 600; padding: .375rem .75rem; transition: border-color .2s ease;
+        }
+        .sv-present:hover { border-color: #21076C; }
+        .sv-present svg { width: 1rem; height: 1rem; }
+        .sv-stage:focus-visible, .sv-thumb:focus-visible, .sv-nav:focus-visible, .sv-present:focus-visible {
             outline: 3px solid #D8B664; outline-offset: 2px;
         }
     </style>
@@ -102,10 +119,10 @@
 <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
 
     <!-- ===================== HERO =====================
-         One page per PD day. Sessions are listed in the hero and each one
-         is a <section class="session"> below. To add a session, copy the
-         chip in "On this page" and a session block, and give it its own
-         assets folder under assets/october-2026/. -->
+         One page per PD day, one <section class="session"> per session.
+         Adding a session: a card in SESSIONS below, a section after the
+         last one, an assets folder under assets/october-2026/<id>/, and,
+         if it has slides, an entry in DECKS in the page script. -->
     <header class="rounded-3xl bg-gradient-to-br from-[#21076C] via-[#2a0d85] to-[#3b1aa8] text-white p-6 sm:p-9 shadow-xl">
         <p class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-[#D8B664]">
             <span class="lang-en">PD Day &middot; 19–20 October 2026</span>
@@ -123,24 +140,50 @@
             <span class="lang-en">The slides, links and activities from the October PD days, in one place. Finish what you started, try what you missed, or take it back to your team.</span>
             <span class="lang-ar">الشرائح والروابط والأنشطة من يومَي التطوير المهني في أكتوبر، في مكان واحد. أكملوا ما بدأتموه، أو جرّبوا ما فاتكم، أو شاركوه مع فريقكم.</span>
         </p>
-
-        <nav class="mt-6" aria-label="Sessions on this page" data-aria-label-en="Sessions on this page" data-aria-label-ar="الجلسات في هذه الصفحة">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-200">
-                <span class="lang-en">Sessions on this page</span>
-                <span class="lang-ar">الجلسات في هذه الصفحة</span>
-            </p>
-            <div class="mt-2 flex flex-wrap gap-2">
-                <a href="#ai-adventure" class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/25 hover:bg-white/20 px-4 py-2 text-sm font-semibold transition-colors">
-                    <span aria-hidden="true">🦁</span>
-                    <span class="lang-en">Choose your own AI adventure</span>
-                    <span class="lang-ar">اختاروا مغامرتكم مع الذكاء الاصطناعي</span>
-                </a>
-            </div>
-        </nav>
     </header>
 
+    <!-- ===================== SESSIONS =====================
+         One card per session, in the order they appear below. The card's
+         href is the session section's id. -->
+    <section id="sessions" class="mt-8">
+        <div class="flex items-baseline justify-between gap-3 flex-wrap">
+            <h2 class="font-heading font-bold text-xl sm:text-2xl text-[#21076C]">
+                <span class="lang-en">Sessions</span>
+                <span class="lang-ar">الجلسات</span>
+            </h2>
+            <p class="text-sm text-slate-500">
+                <span class="lang-en">More sessions will be added here as presenters share their material.</span>
+                <span class="lang-ar">ستُضاف جلسات أخرى هنا تباعاً عندما يشارك مقدّموها موادّهم.</span>
+            </p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            <a href="#ai-adventure" data-track="pd-day:index:ai-adventure"
+               class="hub-card group rounded-2xl bg-white border border-slate-200 hover:border-[#21076C]/40 p-5 flex gap-4">
+                <span class="h-12 w-12 rounded-xl bg-[#21076C] text-2xl flex items-center justify-center shrink-0" aria-hidden="true">🦁</span>
+                <span class="min-w-0 flex-1">
+                    <span class="block text-[10px] font-bold uppercase tracking-widest text-[#7a5a00]">
+                        <span class="lang-en">60 min &middot; hands-on</span><span class="lang-ar">٦٠ دقيقة · تطبيق عملي</span>
+                    </span>
+                    <span class="block font-heading font-bold text-lg text-slate-900 leading-snug mt-0.5">
+                        <span class="lang-en">Choose your own AI adventure</span>
+                        <span class="lang-ar">اختاروا مغامرتكم مع الذكاء الاصطناعي</span>
+                    </span>
+                    <span class="block text-sm text-slate-500 mt-0.5">
+                        <span class="lang-en">Brandon Baki &middot; AI &amp; Innovation</span>
+                        <span class="lang-ar">براندون باكي · الذكاء الاصطناعي والابتكار</span>
+                    </span>
+                    <span class="mt-3 flex flex-wrap gap-1.5">
+                        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Slides</span><span class="lang-ar">الشرائح</span></span>
+                        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Game</span><span class="lang-ar">لعبة</span></span>
+                        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">7 station guides</span><span class="lang-ar">أدلّة المحطات السبع</span></span>
+                    </span>
+                </span>
+            </a>
+        </div>
+    </section>
+
     <!-- ===================== SESSION: CHOOSE YOUR OWN AI ADVENTURE ===================== -->
-    <section id="ai-adventure" class="session mt-8">
+    <section id="ai-adventure" class="session mt-12">
         <div class="flex items-center gap-2 flex-wrap">
             <span class="text-[10px] font-bold uppercase tracking-widest text-white bg-[#21076C] rounded-full px-2.5 py-1">
                 <span class="lang-en">Session</span><span class="lang-ar">جلسة</span>
@@ -210,7 +253,7 @@
                 </p>
                 <div class="mt-5 flex flex-wrap items-center gap-3">
                     <a href="https://aisa-ai-web.github.io/arcade/" data-lang-href="https://aisa-ai-web.github.io/arcade/"
-                       target="_blank" rel="noopener noreferrer" data-track="pd-day:arcade-play"
+                       target="_blank" rel="noopener noreferrer" data-track="pd-day:ai-adventure:arcade-play"
                        class="inline-flex items-center gap-2 rounded-xl bg-[#D8B664] hover:bg-[#e4c77c] text-[#21076C] font-heading font-bold px-5 py-3 transition-colors">
                         <span class="lang-en">Play the game</span>
                         <span class="lang-ar">العبوا الآن</span>
@@ -262,7 +305,7 @@
                         <span class="lang-ar">المحطات السبع</span>
                     </h3>
                     <a href="https://aisa-ai-web.github.io/arcade/stations.html" data-lang-href="https://aisa-ai-web.github.io/arcade/stations.html"
-                       target="_blank" rel="noopener noreferrer" data-track="pd-day:arcade-stations"
+                       target="_blank" rel="noopener noreferrer" data-track="pd-day:ai-adventure:arcade-stations"
                        class="text-xs font-semibold text-indigo-700 hover:text-indigo-900 underline underline-offset-2">
                         <span class="lang-en">All guides ↗</span>
                         <span class="lang-ar">كل الأدلّة ↗</span>
@@ -273,37 +316,37 @@
                     <span class="lang-ar">تجاوزوا اللعبة وافتحوا دليل المحطة مباشرة.</span>
                 </p>
                 <ol class="mt-3 space-y-1">
-                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-1-Differentiation/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-1-Differentiation/" target="_blank" rel="noopener noreferrer" data-track="pd-day:station-1" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
+                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-1-Differentiation/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-1-Differentiation/" target="_blank" rel="noopener noreferrer" data-track="pd-day:ai-adventure:station-1" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
                         <span class="h-7 w-7 rounded-full bg-[#21076C] text-white text-xs font-bold flex items-center justify-center shrink-0">1</span>
                         <span class="min-w-0"><span class="block font-semibold text-sm text-slate-900"><span class="lang-en">Differentiation &amp; Scaffolding</span><span class="lang-ar">التمايز والدعم التدريجي</span></span>
                         <span class="block text-xs text-slate-500"><span class="lang-en">Re-level text, translate and vocabulary lists in the Classroom Gemini tab.</span><span class="lang-ar">إعادة ضبط مستوى النص والترجمة وقوائم المفردات في تبويب Gemini في Classroom.</span></span></span>
                     </a></li>
-                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-2-Lesson-Decks/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-2-Lesson-Decks/" target="_blank" rel="noopener noreferrer" data-track="pd-day:station-2" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
+                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-2-Lesson-Decks/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-2-Lesson-Decks/" target="_blank" rel="noopener noreferrer" data-track="pd-day:ai-adventure:station-2" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
                         <span class="h-7 w-7 rounded-full bg-[#21076C] text-white text-xs font-bold flex items-center justify-center shrink-0">2</span>
                         <span class="min-w-0"><span class="block font-semibold text-sm text-slate-900"><span class="lang-en">Polished Lesson Decks, Fast</span><span class="lang-ar">عروض دروس متقنة… بسرعة</span></span>
                         <span class="block text-xs text-slate-500"><span class="lang-en">Three routes to a Google Slides deck with Gemini.</span><span class="lang-ar">ثلاث طرق للوصول إلى عرض Google Slides مع Gemini.</span></span></span>
                     </a></li>
-                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-3-Engagement/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-3-Engagement/" target="_blank" rel="noopener noreferrer" data-track="pd-day:station-3" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
+                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-3-Engagement/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-3-Engagement/" target="_blank" rel="noopener noreferrer" data-track="pd-day:ai-adventure:station-3" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
                         <span class="h-7 w-7 rounded-full bg-[#21076C] text-white text-xs font-bold flex items-center justify-center shrink-0">3</span>
                         <span class="min-w-0"><span class="block font-semibold text-sm text-slate-900"><span class="lang-en">Engagement &amp; Active Participation</span><span class="lang-ar">التفاعل والمشاركة النشطة</span></span>
                         <span class="block text-xs text-slate-500"><span class="lang-en">A lesson hook and a choice board for Grade 8 science.</span><span class="lang-ar">افتتاحية مشوّقة للدرس ولوحة خيارات لمادة العلوم في الصف ٨.</span></span></span>
                     </a></li>
-                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-4-Lesson-Video/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-4-Lesson-Video/" target="_blank" rel="noopener noreferrer" data-track="pd-day:station-4" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
+                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-4-Lesson-Video/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-4-Lesson-Video/" target="_blank" rel="noopener noreferrer" data-track="pd-day:ai-adventure:station-4" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
                         <span class="h-7 w-7 rounded-full bg-[#21076C] text-white text-xs font-bold flex items-center justify-center shrink-0">4</span>
                         <span class="min-w-0"><span class="block font-semibold text-sm text-slate-900"><span class="lang-en">Turn Your Slides into a Video</span><span class="lang-ar">حوّلوا شرائحكم إلى فيديو</span></span>
                         <span class="block text-xs text-slate-500"><span class="lang-en">Google Vids: script, voices, language and music.</span><span class="lang-ar">Google Vids: النص والأصوات واللغة والموسيقى.</span></span></span>
                     </a></li>
-                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-5-Coding-Activities/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-5-Coding-Activities/" target="_blank" rel="noopener noreferrer" data-track="pd-day:station-5" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
+                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-5-Coding-Activities/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-5-Coding-Activities/" target="_blank" rel="noopener noreferrer" data-track="pd-day:ai-adventure:station-5" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
                         <span class="h-7 w-7 rounded-full bg-[#21076C] text-white text-xs font-bold flex items-center justify-center shrink-0">5</span>
                         <span class="min-w-0"><span class="block font-semibold text-sm text-slate-900"><span class="lang-en">Code Your Own Class Activities</span><span class="lang-ar">برمجوا أنشطة صفّكم بأنفسكم</span></span>
                         <span class="block text-xs text-slate-500"><span class="lang-en">Gemini Canvas to the AISA Activity Hub: link, QR code and Classroom.</span><span class="lang-ar">من Gemini Canvas إلى منصة أنشطة AISA: رابط ورمز QR وزر Classroom.</span></span></span>
                     </a></li>
-                    <li><a href="https://aisa-ai-web.github.io/data-anonymizer/" target="_blank" rel="noopener noreferrer" data-track="pd-day:station-6" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
+                    <li><a href="https://aisa-ai-web.github.io/data-anonymizer/" target="_blank" rel="noopener noreferrer" data-track="pd-day:ai-adventure:station-6" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
                         <span class="h-7 w-7 rounded-full bg-[#21076C] text-white text-xs font-bold flex items-center justify-center shrink-0">6</span>
                         <span class="min-w-0"><span class="block font-semibold text-sm text-slate-900"><span class="lang-en">Student Data Anonymizer</span><span class="lang-ar">أداة إخفاء هوية بيانات الطلاب</span></span>
                         <span class="block text-xs text-slate-500"><span class="lang-en">Use AI with student data without the AI ever seeing who the students are.</span><span class="lang-ar">استخدموا الذكاء الاصطناعي مع بيانات الطلاب من دون أن يعرف هويتهم أبداً.</span></span></span>
                     </a></li>
-                    <li><a href="../PD%20Modules/ai-and-assessment.html" data-track="pd-day:station-7" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
+                    <li><a href="../PD%20Modules/ai-and-assessment.html" data-track="pd-day:ai-adventure:station-7" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
                         <span class="h-7 w-7 rounded-full bg-[#21076C] text-white text-xs font-bold flex items-center justify-center shrink-0">7</span>
                         <span class="min-w-0"><span class="block font-semibold text-sm text-slate-900"><span class="lang-en">AI &amp; Assessment</span><span class="lang-ar">الذكاء الاصطناعي والتقييم</span></span>
                         <span class="block text-xs text-slate-500"><span class="lang-en">Why AI detectors can’t prove who wrote it, and how to design assessments that don’t need one. A Learning Hub module.</span><span class="lang-ar">لماذا لا تثبت كاشفات الذكاء الاصطناعي من كتب النص، وكيف تُصمَّم تقييمات لا تحتاج إليها. وحدة على منصّة التعلّم.</span></span></span>
@@ -315,8 +358,9 @@
         <!-- ---- The slides ----
              Images rendered from the .pptx beside them (LibreOffice, with
              the deck's DM Sans installed). Edit the deck and re-render all
-             three: slides/, thumbs/ and the PDF. SLIDES in the page script
-             holds each slide's alt text. -->
+             three: slides/, thumbs/ and the PDF. The viewer is built into
+             the data-sv placeholder from DECKS['ai-adventure'] in the page
+             script, which holds each slide's caption and alt text. -->
         <div id="ai-adventure-slides" class="mt-10">
             <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
                 <div>
@@ -330,13 +374,13 @@
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2 shrink-0">
-                    <a href="assets/october-2026/ai-adventure/choose-your-own-ai-adventure-slides.pptx" download data-track="pd-day:slides-pptx"
+                    <a href="assets/october-2026/ai-adventure/choose-your-own-ai-adventure-slides.pptx" download data-track="pd-day:ai-adventure:slides-pptx"
                        class="inline-flex items-center gap-2 rounded-xl bg-[#21076C] hover:bg-[#2f0f99] text-white text-sm font-semibold px-4 py-2.5 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v11m0 0l-4-4m4 4l4-4M5 19h14"></path></svg>
                         <span class="lang-en">PowerPoint</span><span class="lang-ar">PowerPoint</span>
                         <span class="text-white/60 text-xs font-normal" dir="ltr">.pptx</span>
                     </a>
-                    <a href="assets/october-2026/ai-adventure/choose-your-own-ai-adventure-slides.pdf" target="_blank" rel="noopener noreferrer" data-track="pd-day:slides-pdf"
+                    <a href="assets/october-2026/ai-adventure/choose-your-own-ai-adventure-slides.pdf" target="_blank" rel="noopener noreferrer" data-track="pd-day:ai-adventure:slides-pdf"
                        class="inline-flex items-center gap-2 rounded-xl bg-white border border-slate-300 hover:border-[#21076C] text-[#21076C] text-sm font-semibold px-4 py-2.5 transition-colors">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 3h7l5 5v13H7zM14 3v5h5"></path></svg>
                         <span class="lang-en">PDF</span><span class="lang-ar">PDF</span>
@@ -344,37 +388,7 @@
                 </div>
             </div>
 
-            <div class="sv-wrap mt-4" dir="ltr" id="sv">
-                <div class="sv-stage" id="sv-stage" tabindex="0" role="region" aria-roledescription="slide viewer"
-                     aria-label="Slides: Choose your own AI adventure"
-                     data-aria-label-en="Slides: Choose your own AI adventure"
-                     data-aria-label-ar="الشرائح: اختاروا مغامرتكم مع الذكاء الاصطناعي">
-                    <img id="sv-img" src="assets/october-2026/ai-adventure/slides/slide-01.webp" width="1600" height="900"
-                         alt="Title slide. AISA AI PD Stations: Make something you’ll use next week. A hands-on hour with the AI tools you already have. PD Day, 19–20 October 2026. Brandon Baki, Head of AI &amp; Innovation.">
-                    <button type="button" class="sv-nav sv-prev" id="sv-prev" disabled
-                            aria-label="Previous slide" data-aria-label-en="Previous slide" data-aria-label-ar="الشريحة السابقة">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M15 19l-7-7 7-7"></path></svg>
-                    </button>
-                    <button type="button" class="sv-nav sv-next" id="sv-next"
-                            aria-label="Next slide" data-aria-label-en="Next slide" data-aria-label-ar="الشريحة التالية">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M9 5l7 7-7 7"></path></svg>
-                    </button>
-                </div>
-                <div class="mt-3 flex items-center justify-between gap-3">
-                    <p class="text-sm text-slate-600 min-w-0" aria-live="polite">
-                        <span class="font-bold text-[#21076C] tabular-nums" id="sv-count">1 / 14</span>
-                        <span class="text-slate-400" aria-hidden="true">&middot;</span>
-                        <span id="sv-title">Make something you’ll use next week</span>
-                    </p>
-                    <button type="button" id="sv-present" data-track="pd-day:slides-present"
-                            class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white hover:border-[#21076C] text-[#21076C] text-sm font-semibold px-3 py-1.5 transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg>
-                        <span class="lang-en">Present</span><span class="lang-ar">عرض</span>
-                    </button>
-                </div>
-                <div class="sv-thumbs mt-3" id="sv-thumbs" role="group" aria-label="All slides"
-                     data-aria-label-en="All slides" data-aria-label-ar="كل الشرائح"></div>
-            </div>
+            <div class="mt-4" data-sv="ai-adventure"></div>
         </div>
 
         <!-- ---- Before you go ----
@@ -392,7 +406,7 @@
             </p>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSd7JMXD4iwn_VZD1guU8zYIc-4MI6tZoeP5kJjmFX0LbznGxA/viewform"
-                   target="_blank" rel="noopener noreferrer" data-track="pd-day:exit-ticket"
+                   target="_blank" rel="noopener noreferrer" data-track="pd-day:ai-adventure:exit-ticket"
                    class="hub-card group rounded-2xl bg-white border border-slate-200 hover:border-[#21076C]/40 p-5 flex flex-col">
                     <span class="h-11 w-11 rounded-xl bg-[#21076C]/10 flex items-center justify-center text-2xl" aria-hidden="true">🎟️</span>
                     <p class="font-heading font-bold text-slate-900 mt-3">
@@ -407,7 +421,7 @@
                     </span>
                 </a>
                 <a href="https://docs.google.com/forms/d/e/1FAIpQLSe_Lf4xbgeZUcwqfVFqdaDfRz-a2yY9gT046EpmZVJ5DHO9Fw/viewform"
-                   target="_blank" rel="noopener noreferrer" data-track="pd-day:meeting-log"
+                   target="_blank" rel="noopener noreferrer" data-track="pd-day:ai-adventure:meeting-log"
                    class="hub-card group rounded-2xl bg-white border border-slate-200 hover:border-[#21076C]/40 p-5 flex flex-col">
                     <span class="h-11 w-11 rounded-xl bg-[#21076C]/10 flex items-center justify-center text-2xl" aria-hidden="true">📝</span>
                     <p class="font-heading font-bold text-slate-900 mt-3">
@@ -422,7 +436,7 @@
                         <span class="lang-en">Open the meeting log ↗</span><span class="lang-ar">افتحوا سجلّ الاجتماعات ↗</span>
                     </span>
                 </a>
-                <a href="mailto:bbaki@aisa.sch.ae?subject=PD%20Day%20stations" data-track="pd-day:email"
+                <a href="mailto:bbaki@aisa.sch.ae?subject=PD%20Day%20stations" data-track="pd-day:ai-adventure:email"
                    class="hub-card group rounded-2xl bg-white border border-slate-200 hover:border-[#21076C]/40 p-5 flex flex-col">
                     <span class="h-11 w-11 rounded-xl bg-[#D8B664]/30 flex items-center justify-center text-2xl" aria-hidden="true">💡</span>
                     <p class="font-heading font-bold text-slate-900 mt-3">
@@ -436,6 +450,12 @@
                 </a>
             </div>
         </div>
+
+        <p class="mt-8">
+            <a href="#sessions" class="text-sm font-semibold text-indigo-700 hover:text-indigo-900">
+                <span class="lang-en">↑ All sessions</span><span class="lang-ar">↑ كل الجلسات</span>
+            </a>
+        </p>
     </section>
 
     <footer class="mt-12 border-t border-slate-200 pt-5 pb-8 text-xs text-slate-500 flex flex-col sm:flex-row gap-1 sm:items-center sm:justify-between">
@@ -473,100 +493,152 @@
 <!-- Slide viewer, arcade language links, dated notices. -->
 <script>
     (function () {
-        var BASE = 'assets/october-2026/ai-adventure/';
-        var SLIDES = [
-            { t: 'Make something you’ll use next week', alt: 'Title slide. AISA AI PD Stations: Make something you’ll use next week. A hands-on hour with the AI tools you already have. PD Day, 19–20 October 2026. Brandon Baki, Head of AI & Innovation.' },
-            { t: 'The next 60 minutes', alt: 'The next 60 minutes: mostly doing, very little talking. 5 minutes to arrive and settle in, 5 minutes of welcome and updates, 40 minutes of stations (choose your own path through the six stations), 7 minutes to share what you made, 3 minutes for the exit ticket.' },
-            { t: 'Goodbye to MagicSchool', alt: 'An update: we’re saying goodbye to MagicSchool. AISA is not renewing MagicSchool. Nearly everything we did there, we can now do with tools we already have, inside our Google accounts. Before access ends on Tuesday 20 October, open your MagicSchool history and save anything you want to keep: copy it into a Google Doc or download it to your Drive.' },
-            { t: 'Built from what you told us', alt: 'Why these stations? Built from what you told us: 140 staff survey responses, 70 Secondary personal goals, 261 Learning Hub AI module answers and about 40 emails and chats asking for help. The gap we found: 103 of 140 of you use AI often or daily. Your top asks: differentiation, polished decks, fast and engaging activities instead of worksheets.' },
-            { t: 'The stations', alt: 'Six stations, all using tools in your AISA account. 1, Classroom Gemini: Differentiation and Scaffolding, “One text doesn’t fit every reader.” 2, Gemini and Slides: Polished Lesson Decks, Fast, “Slides take my whole evening.” 3, Classroom Gemini: Engagement and Participation, “I need every student thinking.” 4, Google Vids: Turn Slides into a Video, “Absent students miss the lesson.” 5, Canvas and Activity Hub: Code Class Activities, “I want a game, but I can’t code.” 6, built at AISA: Data Anonymizer, “My data has student names in it.” 7, Learning Hub online module: Academic Integrity and AI, “Does the school have any AI detection software?”' },
-            { t: 'Today’s goal', alt: 'Today’s goal: You won’t use a tool until you’ve used it once. So no demos today. You’ll build real resources for lessons you’re teaching soon.' },
-            { t: 'Two ground rules', alt: 'Before you start, two ground rules. 1, no student personal data: describe your class in general terms; names, IDs and wellbeing details never go into an AI tool. 2, you are the expert: check every fact before students see it. In our demos Gemini unbalanced a chemical equation and invented a statistic.' },
-            { t: 'Four steps', alt: 'How it works, four steps: 1, open the PD arcade page. 2, pick the station that fixes your problem. 3, follow the steps, using a real lesson. 4, done? Move on to another station; the more you try, the better. Quick tips: Gemini busy? If you see “high demand” or an error, type Please try again. Work in pairs if you like: one drives, one checks. Stuck? Raise a hand and I’ll come to you.' },
-            { t: 'Go make something', alt: 'Station time: Go make something. aisa-ai-web.github.io/arcade' },
-            { t: 'What did you make?', alt: 'Time’s up: what did you make? Turn to the person next to you. Show them what you made in 60 seconds, and which lesson it’s for. Pair share, 1 minute each. Made a game? See it in the Activity Hub library on screen.' },
-            { t: 'What happens next', alt: 'After today, what happens next. The guides stay online: finish a station or try the ones you missed, any time. Two-week check-in: a short follow-up, did you use it, and what happened? Share your ideas: loved a station? Have an idea for a new station? Help run it next time.' },
-            { t: 'Exit ticket', alt: 'Exit ticket, 5 minutes: help shape the next AI PD. Your answers decide which tools we support, what we train next, and whether anything is still missing. A QR code opens the exit ticket form.' },
-            { t: 'Professional Meeting Log', alt: 'Professional Meeting Log 2026–2027. Meeting name: Choose your own AI adventure. A QR code and the link tinyurl.com/ycycht85 open the log.' },
-            { t: 'Thank you', alt: 'Thank you for giving these tools a real try. Go use what you made this week. Questions or ideas? bbaki@aisa.sch.ae' }
-        ];
-        function src(dir, i) { return BASE + dir + '/slide-' + (i < 9 ? '0' : '') + (i + 1) + '.webp'; }
+        // One entry per slide deck on the page, keyed by the data-sv of its
+        // placeholder. `base` is the session's assets folder, whose slides/
+        // and thumbs/ hold slide-01.webp onwards, in order. Per slide, `t`
+        // is the caption and `alt` the slide's full text for screen readers.
+        var DECKS = {
+            'ai-adventure': {
+                base: 'assets/october-2026/ai-adventure/',
+                name: { en: 'Choose your own AI adventure', ar: 'اختاروا مغامرتكم مع الذكاء الاصطناعي' },
+                slides: [
+                    { t: 'Make something you’ll use next week', alt: 'Title slide. AISA AI PD Stations: Make something you’ll use next week. A hands-on hour with the AI tools you already have. PD Day, 19–20 October 2026. Brandon Baki, Head of AI & Innovation.' },
+                    { t: 'The next 60 minutes', alt: 'The next 60 minutes: mostly doing, very little talking. 5 minutes to arrive and settle in, 5 minutes of welcome and updates, 40 minutes of stations (choose your own path through the six stations), 7 minutes to share what you made, 3 minutes for the exit ticket.' },
+                    { t: 'Goodbye to MagicSchool', alt: 'An update: we’re saying goodbye to MagicSchool. AISA is not renewing MagicSchool. Nearly everything we did there, we can now do with tools we already have, inside our Google accounts. Before access ends on Tuesday 20 October, open your MagicSchool history and save anything you want to keep: copy it into a Google Doc or download it to your Drive.' },
+                    { t: 'Built from what you told us', alt: 'Why these stations? Built from what you told us: 140 staff survey responses, 70 Secondary personal goals, 261 Learning Hub AI module answers and about 40 emails and chats asking for help. The gap we found: 103 of 140 of you use AI often or daily. Your top asks: differentiation, polished decks, fast and engaging activities instead of worksheets.' },
+                    { t: 'The stations', alt: 'Six stations, all using tools in your AISA account. 1, Classroom Gemini: Differentiation and Scaffolding, “One text doesn’t fit every reader.” 2, Gemini and Slides: Polished Lesson Decks, Fast, “Slides take my whole evening.” 3, Classroom Gemini: Engagement and Participation, “I need every student thinking.” 4, Google Vids: Turn Slides into a Video, “Absent students miss the lesson.” 5, Canvas and Activity Hub: Code Class Activities, “I want a game, but I can’t code.” 6, built at AISA: Data Anonymizer, “My data has student names in it.” 7, Learning Hub online module: Academic Integrity and AI, “Does the school have any AI detection software?”' },
+                    { t: 'Today’s goal', alt: 'Today’s goal: You won’t use a tool until you’ve used it once. So no demos today. You’ll build real resources for lessons you’re teaching soon.' },
+                    { t: 'Two ground rules', alt: 'Before you start, two ground rules. 1, no student personal data: describe your class in general terms; names, IDs and wellbeing details never go into an AI tool. 2, you are the expert: check every fact before students see it. In our demos Gemini unbalanced a chemical equation and invented a statistic.' },
+                    { t: 'Four steps', alt: 'How it works, four steps: 1, open the PD arcade page. 2, pick the station that fixes your problem. 3, follow the steps, using a real lesson. 4, done? Move on to another station; the more you try, the better. Quick tips: Gemini busy? If you see “high demand” or an error, type Please try again. Work in pairs if you like: one drives, one checks. Stuck? Raise a hand and I’ll come to you.' },
+                    { t: 'Go make something', alt: 'Station time: Go make something. aisa-ai-web.github.io/arcade' },
+                    { t: 'What did you make?', alt: 'Time’s up: what did you make? Turn to the person next to you. Show them what you made in 60 seconds, and which lesson it’s for. Pair share, 1 minute each. Made a game? See it in the Activity Hub library on screen.' },
+                    { t: 'What happens next', alt: 'After today, what happens next. The guides stay online: finish a station or try the ones you missed, any time. Two-week check-in: a short follow-up, did you use it, and what happened? Share your ideas: loved a station? Have an idea for a new station? Help run it next time.' },
+                    { t: 'Exit ticket', alt: 'Exit ticket, 5 minutes: help shape the next AI PD. Your answers decide which tools we support, what we train next, and whether anything is still missing. A QR code opens the exit ticket form.' },
+                    { t: 'Professional Meeting Log', alt: 'Professional Meeting Log 2026–2027. Meeting name: Choose your own AI adventure. A QR code and the link tinyurl.com/ycycht85 open the log.' },
+                    { t: 'Thank you', alt: 'Thank you for giving these tools a real try. Go use what you made this week. Questions or ideas? bbaki@aisa.sch.ae' }
+                ]
+            }
+        };
 
-        var stage = document.getElementById('sv-stage');
-        var img = document.getElementById('sv-img');
-        var prev = document.getElementById('sv-prev');
-        var next = document.getElementById('sv-next');
-        var count = document.getElementById('sv-count');
-        var title = document.getElementById('sv-title');
-        var strip = document.getElementById('sv-thumbs');
-        var present = document.getElementById('sv-present');
-        var cur = 0, thumbs = [];
+        var ICON = {
+            prev: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M15 19l-7-7 7-7"></path></svg>',
+            next: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M9 5l7 7-7 7"></path></svg>',
+            present: '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg>'
+        };
+        var lang = document.documentElement.getAttribute('lang') === 'ar' ? 'ar' : 'en';
 
-        SLIDES.forEach(function (s, i) {
-            var b = document.createElement('button');
-            b.type = 'button';
-            b.className = 'sv-thumb' + (i === 0 ? ' is-current' : '');
-            b.setAttribute('aria-label', 'Slide ' + (i + 1) + ': ' + s.t);
-            if (i === 0) b.setAttribute('aria-current', 'true');
-            var t = document.createElement('img');
-            t.src = src('thumbs', i); t.alt = ''; t.loading = 'lazy'; t.width = 400; t.height = 225;
-            b.appendChild(t);
-            b.addEventListener('click', function () { show(i); });
-            strip.appendChild(b);
-            thumbs.push(b);
-        });
+        // menu.js swaps data-aria-label-en/-ar when the language changes;
+        // this sets the starting one.
+        function label(el, en, ar) {
+            el.setAttribute('data-aria-label-en', en);
+            el.setAttribute('data-aria-label-ar', ar);
+            el.setAttribute('aria-label', lang === 'ar' ? ar : en);
+        }
 
-        function show(i) {
-            if (i < 0 || i >= SLIDES.length) return;
-            thumbs[cur].classList.remove('is-current');
-            thumbs[cur].removeAttribute('aria-current');
-            cur = i;
-            img.src = src('slides', i);
-            img.alt = SLIDES[i].alt;
-            count.textContent = (i + 1) + ' / ' + SLIDES.length;
-            title.textContent = SLIDES[i].t;
-            prev.disabled = i === 0;
-            next.disabled = i === SLIDES.length - 1;
-            thumbs[i].classList.add('is-current');
-            thumbs[i].setAttribute('aria-current', 'true');
-            // Scroll the strip only, never the page.
-            var tb = thumbs[i];
-            var left = tb.offsetLeft - (strip.clientWidth - tb.offsetWidth) / 2;
-            strip.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
-            [i - 1, i + 1].forEach(function (j) {
-                if (j >= 0 && j < SLIDES.length) { var p = new Image(); p.src = src('slides', j); }
+        function build(root) {
+            var key = root.getAttribute('data-sv');
+            var deck = DECKS[key];
+            if (!deck) { console.warn('[pd-day] no DECKS entry for data-sv="' + key + '"'); return; }
+            var S = deck.slides, cur = 0, thumbs = [];
+            function src(dir, i) { return deck.base + dir + '/slide-' + (i < 9 ? '0' : '') + (i + 1) + '.webp'; }
+
+            root.classList.add('sv-wrap');
+            root.setAttribute('dir', 'ltr');
+            root.innerHTML =
+                '<div class="sv-stage" tabindex="0" role="region" aria-roledescription="slide viewer">' +
+                    '<img class="sv-img" width="1600" height="900" alt="">' +
+                    '<button type="button" class="sv-nav sv-prev">' + ICON.prev + '</button>' +
+                    '<button type="button" class="sv-nav sv-next">' + ICON.next + '</button>' +
+                '</div>' +
+                '<div class="sv-bar">' +
+                    '<p class="sv-caption" aria-live="polite"><span class="sv-count"></span> <span class="sv-dot" aria-hidden="true">&middot;</span> <span class="sv-title"></span></p>' +
+                    '<button type="button" class="sv-present" data-track="pd-day:' + key + ':slides-present">' + ICON.present +
+                        '<span class="lang-en">Present</span><span class="lang-ar">عرض</span></button>' +
+                '</div>' +
+                '<div class="sv-thumbs" role="group"></div>';
+
+            var stage = root.querySelector('.sv-stage');
+            var img = root.querySelector('.sv-img');
+            var prev = root.querySelector('.sv-prev');
+            var next = root.querySelector('.sv-next');
+            var count = root.querySelector('.sv-count');
+            var title = root.querySelector('.sv-title');
+            var strip = root.querySelector('.sv-thumbs');
+            var present = root.querySelector('.sv-present');
+            label(stage, 'Slides: ' + deck.name.en, 'الشرائح: ' + deck.name.ar);
+            label(prev, 'Previous slide', 'الشريحة السابقة');
+            label(next, 'Next slide', 'الشريحة التالية');
+            label(strip, 'All slides', 'كل الشرائح');
+
+            S.forEach(function (s, i) {
+                var b = document.createElement('button');
+                b.type = 'button';
+                b.className = 'sv-thumb';
+                b.setAttribute('aria-label', 'Slide ' + (i + 1) + ': ' + s.t);
+                var t = document.createElement('img');
+                t.src = src('thumbs', i); t.alt = ''; t.loading = 'lazy'; t.width = 400; t.height = 225;
+                b.appendChild(t);
+                b.addEventListener('click', function () { show(i); });
+                strip.appendChild(b);
+                thumbs.push(b);
             });
+
+            function show(i, quiet) {
+                if (i < 0 || i >= S.length) return;
+                thumbs[cur].classList.remove('is-current');
+                thumbs[cur].removeAttribute('aria-current');
+                cur = i;
+                img.src = src('slides', i);
+                img.alt = S[i].alt;
+                count.textContent = (i + 1) + ' / ' + S.length;
+                title.textContent = S[i].t;
+                prev.disabled = i === 0;
+                next.disabled = i === S.length - 1;
+                thumbs[i].classList.add('is-current');
+                thumbs[i].setAttribute('aria-current', 'true');
+                if (quiet) return;
+                // Scroll the strip only, never the page.
+                var tb = thumbs[i];
+                strip.scrollTo({ left: Math.max(0, tb.offsetLeft - (strip.clientWidth - tb.offsetWidth) / 2), behavior: 'smooth' });
+                [i - 1, i + 1].forEach(function (j) {
+                    if (j >= 0 && j < S.length) { var p = new Image(); p.src = src('slides', j); }
+                });
+            }
+
+            prev.addEventListener('click', function () { show(cur - 1); });
+            next.addEventListener('click', function () { show(cur + 1); });
+
+            function onKey(e) {
+                if (e.altKey || e.ctrlKey || e.metaKey) return;
+                var k = e.key;
+                if (k === 'ArrowRight' || k === 'PageDown' || (k === ' ' && document.fullscreenElement === stage)) { show(cur + 1); e.preventDefault(); }
+                else if (k === 'ArrowLeft' || k === 'PageUp') { show(cur - 1); e.preventDefault(); }
+                else if (k === 'Home') { show(0); e.preventDefault(); }
+                else if (k === 'End') { show(S.length - 1); e.preventDefault(); }
+            }
+            // Arrow keys work when this viewer has focus, and always in full screen.
+            stage.addEventListener('keydown', onKey);
+            strip.addEventListener('keydown', onKey);
+
+            // Swipe on touch screens.
+            var x0 = null;
+            stage.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+            stage.addEventListener('touchend', function (e) {
+                if (x0 === null) return;
+                var dx = e.changedTouches[0].clientX - x0; x0 = null;
+                if (Math.abs(dx) > 40) show(cur + (dx < 0 ? 1 : -1));
+            });
+
+            if (!stage.requestFullscreen) present.hidden = true;
+            present.addEventListener('click', function () {
+                if (document.fullscreenElement) { document.exitFullscreen(); return; }
+                stage.requestFullscreen().then(function () { stage.focus(); }).catch(function () {});
+            });
+
+            show(0, true);
         }
 
-        prev.addEventListener('click', function () { show(cur - 1); });
-        next.addEventListener('click', function () { show(cur + 1); });
-
-        function onKey(e) {
-            if (e.altKey || e.ctrlKey || e.metaKey) return;
-            var k = e.key;
-            if (k === 'ArrowRight' || k === 'PageDown' || (k === ' ' && document.fullscreenElement === stage)) { show(cur + 1); e.preventDefault(); }
-            else if (k === 'ArrowLeft' || k === 'PageUp') { show(cur - 1); e.preventDefault(); }
-            else if (k === 'Home') { show(0); e.preventDefault(); }
-            else if (k === 'End') { show(SLIDES.length - 1); e.preventDefault(); }
-        }
-        // Arrow keys work when the viewer has focus, and always in full screen.
-        stage.addEventListener('keydown', onKey);
-        strip.addEventListener('keydown', onKey);
-
-        // Swipe on touch screens.
-        var x0 = null;
-        stage.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
-        stage.addEventListener('touchend', function (e) {
-            if (x0 === null) return;
-            var dx = e.changedTouches[0].clientX - x0; x0 = null;
-            if (Math.abs(dx) > 40) show(cur + (dx < 0 ? 1 : -1));
-        });
-
-        if (!stage.requestFullscreen) present.hidden = true;
-        present.addEventListener('click', function () {
-            if (document.fullscreenElement) { document.exitFullscreen(); return; }
-            stage.requestFullscreen().then(function () { stage.focus(); }).catch(function () {});
-        });
+        document.querySelectorAll('[data-sv]').forEach(build);
     })();
 
     (function () {
