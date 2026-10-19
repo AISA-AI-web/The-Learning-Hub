@@ -611,10 +611,11 @@ the request-transport rework to `?v=22`, the fix for the outage it
 caused to `?v=23`, the AI Literacy Hub to `?v=24`, and the data-loading
 audit (23 September 2026) to `?v=25`, and the Sustainability release
 (7 October 2026) to `?v=26`, the PD Day page (19 October 2026) to
-`?v=27`, and its per-session search entries (the same day) to `?v=28`.
+`?v=27`, its per-session search entries (the same day) to `?v=28`, and
+the Data to Action session's entry to `?v=29`.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
-their own pins — `certificate.js?v=7`, `search-index.js?v=13`,
+their own pins — `certificate.js?v=7`, `search-index.js?v=14`,
 `menu.js?v=19`, `dwell.js?v=2` — so **editing one of those helpers
 means bumping its pin inside `gate.js`, which is itself a change to
 `gate.js`, which means bumping `?v=N` on all 49 pages again.** Adding a
@@ -847,7 +848,7 @@ works now. The copy is `COPY` in the page's last script.
 ## PD Day material — October 2026, added 19 October 2026
 
 `PD Day/october-2026.html` holds the material from the PD days of 19–20
-October 2026. Brandon asked for "a section of the hub" for it. Three
+October 2026. Brandon asked for "a section of the hub" for it. Four
 sessions so far, in page order:
 
 | id | session | presenter | material |
@@ -855,6 +856,7 @@ sessions so far, in page order:
 | `ai-adventure` | Choose your own AI adventure | Brandon Baki | slides (.pptx + PDF), the PD Arcade, 7 station guides |
 | `oracy` | Getting the Room to Think (Aloud!) | Amira El Turabi | slides (PDF only), Mon 19 Oct |
 | `differentiation` | Small Changes, Big Reach: Proactive Differentiation | Amira El Turabi | slides (PDF only), Mon 19 + Tue 20 Oct |
+| `data-to-action` | Data to Action (data literacy) | Quitney Price | tracker to copy, Mon 19 Oct; **slides to follow** |
 
 **More sessions are coming.** Brandon said on 19 October 2026 that
 several PDs will be placed here, so the page is built for many sessions:
@@ -910,8 +912,9 @@ the Arabic view shows no English spans.
 - `search-index.js`: the page, one entry per session, and the arcade
   itself as an external entry.
 
-Those last two set off the cascade to `gate.js?v=27`, and Amira's
-sessions (with the per-session search entries) took it to `?v=28`.
+Those last two set off the cascade to `gate.js?v=27`. Amira's
+sessions (with the per-session search entries) took it to `?v=28`, and
+Quitney's search entry to `?v=29`.
 
 **The slides** are a viewer on the page (arrows, arrow keys, swipe,
 thumbnails, *Present* for full screen), plus the original `.pptx` and a
@@ -1002,10 +1005,38 @@ title was given. Things that are deliberate:
 - **Differentiation's exit ticket** was a FlexiQuiz live quiz that only
   worked during the session, so the page doesn't link it.
 
+**Quitney Price's *Data to Action*, added 19 October 2026.** The
+meeting log calls it **Data Literacy (Monday Oct. 19)**, which is what
+Brandon called it too, so the session is titled as the deck is and
+labelled "Data literacy", and the meeting name is printed as on her
+slide. No job title was given, so she is credited by name only.
+
+- **The tracker is the main thing on it.** It is her Google Sheet, linked
+  as `…/spreadsheets/d/<id>/copy`, which makes every teacher their own
+  copy (Brandon asked for exactly that link). `/copy` needs the sheet to
+  be viewable by whoever clicks, and it is shared "anyone with the
+  link". So it works for staff, and because the link is in this public
+  repo, for anyone. If she narrows the sharing to `@aisa.sch.ae`, staff
+  can still copy it.
+- **Its sample rows use made-up names** (*Friends* characters in the
+  Class Tracker tab), checked before linking. The page tells teachers to
+  clear them, and quotes her slide 8 guardrails: use student names only
+  when needed and keep student information secure.
+- **The slides are not on the page yet.** Her deck is a private Google
+  Slides file (`AISA_Data_to_Action_PD`, shared with Brandon and Amira
+  only). This container can't fetch Google's slide images, and the
+  connector's export comes back as base64 too large to pass through. So
+  the section has a dashed "slides to follow" box. When a PDF export
+  arrives, run `render-deck.py` on it into `assets/october-2026/data-to-action/`,
+  add a `DECKS` entry, and swap the box for a viewer and a PDF button
+  like the sessions above. A PDF is the better input here: it is Google's
+  own rendering, so LibreOffice and its fonts never come into it.
+
 **Arabic.** The station names and descriptions are the arcade's own
 Arabic. The rest of the page's Arabic was written fresh for it and has
 not been checked by an Arabic speaker yet. That includes Amira's name
-(أميرة الترابي) and the Arabic titles of her two sessions.
+(أميرة الترابي), Quitney's (كويتني برايس), and the Arabic titles of
+their sessions.
 
 ## Sustainability at AISA — RELEASED to all staff, 7 October 2026
 
