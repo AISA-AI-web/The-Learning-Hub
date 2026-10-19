@@ -116,7 +116,7 @@
             outline: 3px solid #D8B664; outline-offset: 2px;
         }
     </style>
-    <script src="../auth/gate.js?v=28"></script>
+    <script src="../auth/gate.js?v=29"></script>
 </head>
 <body class="bg-slate-50 text-slate-900">
 
@@ -223,6 +223,28 @@
                     <span class="mt-3 flex flex-wrap gap-1.5">
                         <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Slides</span><span class="lang-ar">الشرائح</span></span>
                         <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Planning prompts</span><span class="lang-ar">أسئلة للتخطيط</span></span>
+                        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Meeting log</span><span class="lang-ar">سجلّ الاجتماعات</span></span>
+                    </span>
+                </span>
+            </a>
+            <a href="#data-to-action" data-track="pd-day:index:data-to-action"
+               class="hub-card group rounded-2xl bg-white border border-slate-200 hover:border-[#21076C]/40 p-5 flex gap-4">
+                <span class="h-12 w-12 rounded-xl bg-sky-700 text-2xl flex items-center justify-center shrink-0" aria-hidden="true">📊</span>
+                <span class="min-w-0 flex-1">
+                    <span class="block text-[10px] font-bold uppercase tracking-widest text-[#7a5a00]">
+                        <span class="lang-en">Data literacy &middot; Mon 19 Oct</span><span class="lang-ar">الثقافة في البيانات · الاثنين ١٩ أكتوبر</span>
+                    </span>
+                    <span class="block font-heading font-bold text-lg text-slate-900 leading-snug mt-0.5">
+                        <span class="lang-en">Data to Action</span>
+                        <span class="lang-ar">من البيانات إلى الفعل</span>
+                    </span>
+                    <span class="block text-sm text-slate-500 mt-0.5">
+                        <span class="lang-en">Quitney Price</span>
+                        <span class="lang-ar">كويتني برايس</span>
+                    </span>
+                    <span class="mt-3 flex flex-wrap gap-1.5">
+                        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Tracker to copy</span><span class="lang-ar">متتبّع للنسخ</span></span>
+                        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Planning steps</span><span class="lang-ar">خطوات التخطيط</span></span>
                         <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Meeting log</span><span class="lang-ar">سجلّ الاجتماعات</span></span>
                     </span>
                 </span>
@@ -705,6 +727,139 @@
                 </div>
             </div>
             <div class="mt-4" data-sv="differentiation"></div>
+        </div>
+
+        <p class="mt-8">
+            <a href="#sessions" class="text-sm font-semibold text-indigo-700 hover:text-indigo-900">
+                <span class="lang-en">↑ All sessions</span><span class="lang-ar">↑ كل الجلسات</span>
+            </a>
+        </p>
+    </section>
+
+    <!-- ===================== SESSION: DATA TO ACTION =====================
+         Quitney Price's data literacy workshop ("Data Literacy" on the
+         meeting log). The tracker is her Google Sheet, offered through its
+         /copy link so every teacher gets their own copy; it is shared
+         "anyone with the link", which /copy needs. Its sample rows use
+         made-up names. The slides are not on the page yet: her deck is a
+         private Google Slides file, so they need a PDF export run through
+         render-deck.py. When that arrives, replace the "slides to follow"
+         block with a data-sv viewer and a PDF button, as the sessions above. -->
+    <section id="data-to-action" class="session">
+        <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-white bg-[#21076C] rounded-full px-2.5 py-1">
+                <span class="lang-en">Session</span><span class="lang-ar">جلسة</span>
+            </span>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-teal-900 bg-teal-50 border border-teal-200 rounded-full px-2.5 py-1">
+                <span class="lang-en">Data literacy &middot; Mon 19 Oct &middot; 60 minutes</span><span class="lang-ar">الثقافة في البيانات · الاثنين ١٩ أكتوبر · ٦٠ دقيقة</span>
+            </span>
+        </div>
+        <h2 class="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-[#21076C] mt-3 leading-tight">
+            <span class="lang-en">Data to Action</span>
+            <span class="lang-ar">من البيانات إلى الفعل</span>
+        </h2>
+        <p class="lang-ar text-sm text-slate-500 mt-1"><span dir="ltr">Data to Action</span></p>
+        <p class="font-heading font-semibold text-slate-700 mt-1.5">
+            <span class="lang-en">Making formative assessment work for every learner &middot; Grades 6–12, all subjects</span>
+            <span class="lang-ar">جعل التقييم التكويني فعّالاً لكل متعلّم · الصفوف ٦–١٢، جميع المواد</span>
+        </p>
+        <p class="text-slate-700 mt-3 max-w-3xl leading-relaxed">
+            <span class="lang-en">Make the formative checks you already use more useful, and turn what they show into an instructional decision: check, interpret, respond, recheck. The session starts from a decision, shows what formative evidence looks like in every subject (PE, the arts and design included), puts you to work as a data detective on a Grade 7 science exit ticket, and ends with one formative check designed for a lesson you are teaching soon, logged in a simple tracker that is not another gradebook.</span>
+            <span class="lang-ar">اجعلوا الاختبارات التكوينية التي تستخدمونها أصلاً أكثر فائدة، وحوّلوا ما تكشفه إلى قرار تعليمي: تحقّقوا، ثم فسّروا، ثم استجيبوا، ثم أعيدوا التحقّق. تبدأ الجلسة بقرار، وتعرض كيف يبدو الدليل التكويني في كل مادة، بما فيها التربية البدنية والفنون والتصميم، ثم تضعكم في دور «محقّق البيانات» أمام بطاقة خروج في العلوم للصف السابع، وتنتهي باختبار تكويني واحد تصمّمونه لدرس ستدرّسونه قريباً، وتسجّلونه في متتبّع بسيط ليس سجلّ درجات آخر.</span>
+        </p>
+        <p class="text-sm text-slate-500 mt-2">
+            <span class="lang-en">Quitney Price</span>
+            <span class="lang-ar">كويتني برايس</span>
+        </p>
+
+        <!-- The tracker: the thing teachers leave with. -->
+        <div class="mt-6 rounded-2xl bg-gradient-to-br from-[#21076C] to-[#3b1aa8] text-white p-6 sm:p-7 shadow-lg">
+            <div class="flex flex-col md:flex-row md:items-center gap-5">
+                <div class="flex items-start gap-4 flex-1 min-w-0">
+                    <div class="h-14 w-14 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-3xl shrink-0" aria-hidden="true">📊</div>
+                    <div class="min-w-0">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-[#D8B664]">
+                            <span class="lang-en">Google Sheets &middot; your own copy</span>
+                            <span class="lang-ar">Google Sheets · نسختكم الخاصة</span>
+                        </p>
+                        <h3 class="font-heading font-extrabold text-xl sm:text-2xl leading-tight mt-0.5">
+                            <span class="lang-en">The formative assessment tracker</span>
+                            <span class="lang-ar">متتبّع التقييم التكويني</span>
+                        </h3>
+                        <p class="mt-2 text-indigo-100 leading-relaxed">
+                            <span class="lang-en">Three tabs: an <strong class="text-white">Assessment Plan</strong> that walks you through target, check, criteria, respond and recheck; a <strong class="text-white">Class Tracker</strong>; and a <strong class="text-white">Formative Check Tracker</strong> with one row per quick check.</span>
+                            <span class="lang-ar">ثلاث علامات تبويب: <strong class="text-white">خطة التقييم</strong> التي ترشدكم عبر الهدف والتحقّق والمعايير والاستجابة وإعادة التحقّق، و<strong class="text-white">متتبّع الصف</strong>، و<strong class="text-white">متتبّع الاختبارات التكوينية</strong> بصفّ واحد لكل اختبار سريع.</span>
+                        </p>
+                    </div>
+                </div>
+                <a href="https://docs.google.com/spreadsheets/d/1MKxva-VPn2IL6TH_4D80Rvi8kTYoTBSO014L2ka4US0/copy" target="_blank" rel="noopener noreferrer" data-track="pd-day:data-to-action:tracker-copy"
+                   class="shrink-0 self-start md:self-center inline-flex items-center gap-2 rounded-xl bg-[#D8B664] hover:bg-[#e4c77c] text-[#21076C] font-heading font-bold px-5 py-3 transition-colors">
+                    <span class="lang-en">Make your own copy</span>
+                    <span class="lang-ar">أنشئوا نسختكم الخاصة</span>
+                    <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5h5v5M19 5l-8 8M10 7H6a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1v-4"></path></svg>
+                </a>
+            </div>
+            <p class="mt-4 text-xs text-indigo-200/90 leading-relaxed">
+                <span class="lang-en">Opens Google Sheets and asks you to make a copy in your own Drive. The example rows use made-up names, so clear them before you start. Use student names only when needed, and keep student information secure.</span>
+                <span class="lang-ar">يفتح Google Sheets ويطلب منكم إنشاء نسخة في Drive الخاص بكم. صفوف المثال تستخدم أسماءً مختلَقة، فاحذفوها قبل البدء. استخدموا أسماء الطلاب عند الحاجة فقط، وحافظوا على أمان معلوماتهم.</span>
+            </p>
+            <p class="mt-1 text-xs font-semibold text-[#D8B664]">
+                <span class="lang-en">Design test: could you update it in about two minutes after a lesson?</span>
+                <span class="lang-ar">اختبار التصميم: هل يمكنكم تحديثه في نحو دقيقتين بعد الدرس؟</span>
+            </p>
+        </div>
+
+        <!-- Quoted from the deck, so it stays the presenter's words. -->
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mt-4">
+            <div class="lg:col-span-3 rounded-2xl bg-teal-50 border border-teal-200 p-5 sm:p-6">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-teal-800">
+                    <span class="lang-en">Take it to your planning</span>
+                    <span class="lang-ar">خذوها إلى تخطيطكم</span>
+                </p>
+                <h3 class="font-heading font-bold text-lg sm:text-xl text-teal-950 mt-1">
+                    <span class="lang-en">Design a formative check</span>
+                    <span class="lang-ar">صمّموا اختباراً تكوينياً</span>
+                </h3>
+                <ol class="mt-3 space-y-2 text-sm sm:text-base text-slate-800">
+                    <li class="flex gap-3"><span class="h-6 w-6 rounded-full bg-teal-700 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">1</span><span class="min-w-0"><span class="lang-en"><strong class="text-teal-900">Target:</strong> What should students know or be able to do?</span><span class="lang-ar"><strong class="text-teal-900">الهدف:</strong> ماذا يجب أن يعرف الطلاب أو يستطيعوا فعله؟</span></span></li>
+                    <li class="flex gap-3"><span class="h-6 w-6 rounded-full bg-teal-700 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">2</span><span class="min-w-0"><span class="lang-en"><strong class="text-teal-900">Check:</strong> What quick task will reveal their thinking?</span><span class="lang-ar"><strong class="text-teal-900">التحقّق:</strong> ما المهمة السريعة التي ستكشف تفكيرهم؟</span></span></li>
+                    <li class="flex gap-3"><span class="h-6 w-6 rounded-full bg-teal-700 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">3</span><span class="min-w-0"><span class="lang-en"><strong class="text-teal-900">Criteria:</strong> What will successful learning look or sound like?</span><span class="lang-ar"><strong class="text-teal-900">المعايير:</strong> كيف سيبدو التعلّم الناجح، أو كيف سيُسمَع؟</span></span></li>
+                    <li class="flex gap-3"><span class="h-6 w-6 rounded-full bg-teal-700 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">4</span><span class="min-w-0"><span class="lang-en"><strong class="text-teal-900">Response:</strong> What will you do if students struggle—or are secure?</span><span class="lang-ar"><strong class="text-teal-900">الاستجابة:</strong> ماذا ستفعلون إذا واجه الطلاب صعوبة، أو إذا كانوا متمكّنين؟</span></span></li>
+                    <li class="flex gap-3"><span class="h-6 w-6 rounded-full bg-teal-700 text-white text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">5</span><span class="min-w-0"><span class="lang-en"><strong class="text-teal-900">Recheck:</strong> What new evidence will show whether learning improved?</span><span class="lang-ar"><strong class="text-teal-900">إعادة التحقّق:</strong> ما الدليل الجديد الذي سيبيّن ما إذا تحسّن التعلّم؟</span></span></li>
+                </ol>
+                <p class="mt-4 text-sm font-semibold text-teal-900">
+                    <span class="lang-en">The goal isn’t more data. It’s better decisions about learning.</span>
+                    <span class="lang-ar">الهدف ليس المزيد من البيانات، بل قرارات أفضل بشأن التعلّم.</span>
+                </p>
+            </div>
+
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSe_Lf4xbgeZUcwqfVFqdaDfRz-a2yY9gT046EpmZVJ5DHO9Fw/viewform" target="_blank" rel="noopener noreferrer" data-track="pd-day:data-to-action:meeting-log"
+               class="lg:col-span-2 hub-card group rounded-2xl bg-white border border-slate-200 hover:border-[#21076C]/40 p-5 flex flex-col">
+                <span class="h-11 w-11 rounded-xl bg-[#21076C]/10 flex items-center justify-center text-2xl" aria-hidden="true">📝</span>
+                <p class="font-heading font-bold text-slate-900 mt-3">
+                    <span class="lang-en">Professional Meeting Log</span><span class="lang-ar">سجلّ الاجتماعات المهنية</span>
+                </p>
+                <p class="text-sm text-slate-600 mt-1 flex-1">
+                    <span class="lang-en">Log that you attended. The meeting name is:</span>
+                    <span class="lang-ar">سجّلوا حضوركم. اسم الاجتماع:</span>
+                    <span class="block font-semibold text-slate-900 mt-1"><span dir="ltr">Data Literacy (Monday Oct. 19)</span></span>
+                </p>
+                <span class="mt-3 text-sm font-semibold text-indigo-700 group-hover:text-indigo-900">
+                    <span class="lang-en">Open the meeting log ↗</span><span class="lang-ar">افتحوا سجلّ الاجتماعات ↗</span>
+                </span>
+            </a>
+        </div>
+
+        <!-- ---- The slides: to follow (see the comment at the top of this section). ---- -->
+        <div id="data-to-action-slides" class="mt-10 rounded-2xl border-2 border-dashed border-slate-300 bg-white p-5 sm:p-6">
+            <h3 class="font-heading font-bold text-xl sm:text-2xl text-[#21076C]">
+                <span class="lang-en">The slides</span>
+                <span class="lang-ar">الشرائح</span>
+            </h3>
+            <p class="text-sm text-slate-500 mt-1">
+                <span class="lang-en">The slides from this session will be added here soon.</span>
+                <span class="lang-ar">ستُضاف شرائح هذه الجلسة هنا قريباً.</span>
+            </p>
         </div>
 
         <p class="mt-8">
