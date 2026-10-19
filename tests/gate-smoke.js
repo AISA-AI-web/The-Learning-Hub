@@ -7,7 +7,7 @@
  * and 1 on failure, so it drops into CI later if the repo ever grows
  * any.
  *
- * WHY THIS EXISTS. gate.js is loaded by all 46 pages and every backend
+ * WHY THIS EXISTS. gate.js is loaded by all 49 pages and every backend
  * call in the Hub goes through it, so a crash there is a total outage —
  * and it is a file nothing ever executes until a teacher opens a page.
  * On 18 September 2026 the request transport was added below
