@@ -310,6 +310,7 @@ No. 6, with a verdict on each.
 | Sat 26 Sep | Logo sharpened | Leave out |
 | **Wed 7 Oct** | **Sustainability at AISA released: required for all staff**, about 30 minutes, certificate 0.5 h. Requested and resourced by **Ms Nastassia van Jaarsveldt, Chair of the Sustainability Committee**, so credit her | **Tier 1.** Note the module page has its own launch-email button. Check sent mail for a Sustainability launch email. If it went out, the newsletter *reminds* and doesn't *announce* |
 | Wed 7 Oct | Anti-Bullying Policy module, built from material supplied by Joel Hunter | **Hold. Preview only (three reviewers).** Not released, so do not announce it. When it is released, credit Joel Hunter |
+| Mon 19 Oct | **PD Day material, October 2026:** a new Hub page (`PD Day/october-2026.html`) for the *Choose your own AI adventure* session: the slides (viewer, PPTX, PDF), the PD Arcade game, all seven station guides, the exit ticket and the meeting log. On the home page, in the menu and in search | Tier 2, as the follow-up to the PD days: "the guides stay online". The deck also announced that MagicSchool is not being renewed (access ended Tue 20 Oct) |
 
 ---
 

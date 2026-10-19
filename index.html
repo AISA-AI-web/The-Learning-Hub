@@ -91,7 +91,7 @@
         html[dir="rtl"] .hub-card .arrow { transform: scaleX(-1); }
         html[dir="rtl"] .hub-card:hover .arrow { transform: scaleX(-1) translateX(4px); }
     </style>
-    <script src="auth/gate.js?v=26"></script>
+    <script src="auth/gate.js?v=27"></script>
 </head>
 <body class="hub-bg text-white min-h-screen flex flex-col">
 
@@ -111,30 +111,55 @@
                  anywhere; the globe button on the bar flips language. -->
 
 
-            <!-- Survey link — understated, inline; reserves Leo's corner on sm+ -->
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLScMbNJ1xK6-63sCTpkAN8C6cXKirHGsXwj5furPuzTqS9j7Fw/viewform?usp=header"
-               target="_blank" rel="noopener noreferrer"
-               class="survey-banner shrink-0 group flex items-center gap-2.5 rounded-xl bg-white/[0.05] border border-white/10 hover:bg-white/[0.09] hover:border-white/20 px-3 py-2 transition-colors sm:mr-20"
-               aria-label="Take the 2-minute AI &amp; Innovation survey"
-               data-aria-label-en="Take the 2-minute AI &amp; Innovation survey"
-               data-aria-label-ar="شاركوا في استبيان الذكاء الاصطناعي والابتكار — دقيقتان">
-                <span class="text-sm shrink-0 opacity-70" aria-hidden="true">📋</span>
-                <span class="flex-1 min-w-0 text-[12px] sm:text-[13px] leading-tight">
-                    <span class="font-semibold text-slate-200">
-                        <span class="lang-en">2-min AI &amp; Innovation survey</span>
-                        <span class="lang-ar">استبيان الذكاء الاصطناعي والابتكار — دقيقتان</span>
+            <!-- Timely links, one row on sm+ so the fit-to-screen grid below
+                 keeps its height. The row reserves Leo's corner on sm+.
+                 PD Day: point it at the latest PD day's page, or remove it
+                 once that material is no longer news. -->
+            <div class="shrink-0 flex flex-col sm:flex-row gap-2 sm:gap-3 sm:mr-20">
+                <a href="PD%20Day/october-2026.html" data-track="hub:pd-day"
+                   class="pd-day-banner sm:flex-1 min-w-0 group flex items-center gap-2.5 rounded-xl bg-amber-300/[0.12] border border-amber-300/30 hover:bg-amber-300/[0.2] hover:border-amber-300/50 px-3 py-2 transition-colors">
+                    <span class="text-sm shrink-0" aria-hidden="true">🦁</span>
+                    <span class="flex-1 min-w-0 text-[12px] sm:text-[13px] leading-tight sm:truncate">
+                        <span class="font-semibold text-amber-100">
+                            <span class="lang-en">PD Day · October 2026</span>
+                            <span class="lang-ar">يوما التطوير المهني · أكتوبر ٢٠٢٦</span>
+                        </span>
+                        <span class="text-amber-100/70">
+                            <span class="lang-en">· slides &amp; the PD Arcade game</span>
+                            <span class="lang-ar">· الشرائح ولعبة PD Arcade</span>
+                        </span>
                     </span>
-                    <span class="hidden sm:inline text-slate-400">
-                        <span class="lang-en">· optional — helps shape what we build next</span>
-                        <span class="lang-ar">· اختياري — يساهم في تحديد ما نبنيه تالياً</span>
+                    <span class="inline-flex items-center gap-1 text-amber-200/80 group-hover:text-amber-100 text-[11px] font-medium shrink-0 transition-colors">
+                        <span class="lang-en">Open</span>
+                        <span class="lang-ar">فتح</span>
+                        <svg class="w-3.5 h-3.5 arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
                     </span>
-                </span>
-                <span class="inline-flex items-center gap-1 text-slate-400 group-hover:text-slate-200 text-[11px] font-medium shrink-0 transition-colors">
-                    <span class="lang-en">Open</span>
-                    <span class="lang-ar">فتح</span>
-                    <svg class="w-3.5 h-3.5 arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                </span>
-            </a>
+                </a>
+
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLScMbNJ1xK6-63sCTpkAN8C6cXKirHGsXwj5furPuzTqS9j7Fw/viewform?usp=header"
+                   target="_blank" rel="noopener noreferrer"
+                   class="survey-banner sm:flex-1 min-w-0 group flex items-center gap-2.5 rounded-xl bg-white/[0.05] border border-white/10 hover:bg-white/[0.09] hover:border-white/20 px-3 py-2 transition-colors"
+                   aria-label="Take the 2-minute AI &amp; Innovation survey"
+                   data-aria-label-en="Take the 2-minute AI &amp; Innovation survey"
+                   data-aria-label-ar="شاركوا في استبيان الذكاء الاصطناعي والابتكار — دقيقتان">
+                    <span class="text-sm shrink-0 opacity-70" aria-hidden="true">📋</span>
+                    <span class="flex-1 min-w-0 text-[12px] sm:text-[13px] leading-tight sm:truncate">
+                        <span class="font-semibold text-slate-200">
+                            <span class="lang-en">2-min AI &amp; Innovation survey</span>
+                            <span class="lang-ar">استبيان الذكاء الاصطناعي والابتكار — دقيقتان</span>
+                        </span>
+                        <span class="hidden sm:inline text-slate-400">
+                            <span class="lang-en">· optional — helps shape what we build next</span>
+                            <span class="lang-ar">· اختياري — يساهم في تحديد ما نبنيه تالياً</span>
+                        </span>
+                    </span>
+                    <span class="inline-flex items-center gap-1 text-slate-400 group-hover:text-slate-200 text-[11px] font-medium shrink-0 transition-colors">
+                        <span class="lang-en">Open</span>
+                        <span class="lang-ar">فتح</span>
+                        <svg class="w-3.5 h-3.5 arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
+                    </span>
+                </a>
+            </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 sm:flex-1 sm:min-h-[18rem] sm:[grid-template-rows:1fr_1fr]">
 

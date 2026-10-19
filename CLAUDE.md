@@ -603,20 +603,21 @@ The `aisa_onboarding_v1` localStorage key is orphaned on staff devices.
 Harmless — nothing reads it.
 
 Note the cache-busting convention: `gate.js` is included as
-`auth/gate.js?v=N` by **46 pages**, so **changing `gate.js` means bumping
+`auth/gate.js?v=N` by **49 pages**, so **changing `gate.js` means bumping
 `N` on every one of them** or returning visitors keep running the
 cached copy. That change took it to `?v=19`; the September 18
 newsletter took it to `?v=20`, the newsletter mail-out to `?v=21`, and
 the request-transport rework to `?v=22`, the fix for the outage it
 caused to `?v=23`, the AI Literacy Hub to `?v=24`, and the data-loading
 audit (23 September 2026) to `?v=25`, and the Sustainability release
-(7 October 2026) to `?v=26`.
+(7 October 2026) to `?v=26`, and the PD Day page (19 October 2026) to
+`?v=27`.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
-their own pins — `certificate.js?v=7`, `search-index.js?v=10`,
-`menu.js?v=16`, `dwell.js?v=2` — so **editing one of those helpers
+their own pins — `certificate.js?v=7`, `search-index.js?v=12`,
+`menu.js?v=18`, `dwell.js?v=2` — so **editing one of those helpers
 means bumping its pin inside `gate.js`, which is itself a change to
-`gate.js`, which means bumping `?v=N` on all 46 pages again.** Adding a
+`gate.js`, which means bumping `?v=N` on all 49 pages again.** Adding a
 page to the menu or the search index is enough to trigger the whole
 cascade. Skip it and returning staff keep the cached helper and never
 see the new entry.
@@ -842,6 +843,84 @@ works now. The copy is `COPY` in the page's last script.
 - **"Repeated annually."** A Hub completion is permanent. To re-run it
   next year, the module needs a new id (e.g. `anti-bullying-2027`) and a
   new `MODULES` entry. Otherwise last year's completion counts for ever.
+
+## PD Day material — October 2026, added 19 October 2026
+
+`PD Day/october-2026.html` holds the material from the PD days of 19–20
+October 2026. Brandon asked for "a section of the hub" for it, starting
+with one session, **Choose your own AI adventure**: his slides and the
+PD Arcade game. More sessions are expected, so the page is built to take
+them.
+
+**One page per PD day, one `<section class="session">` per session.** A
+new session is a chip in the hero's *Sessions on this page*, a section
+below, and its own folder under `PD Day/assets/october-2026/`. A new PD
+day is a new page in `PD Day/`, plus repointing the three links below.
+
+**It is linked from three places, and they move together:**
+
+- The **home page**, as a gold banner beside the survey banner. The two
+  share one row on `sm+` so the fit-to-screen grid keeps its height (the
+  checks at 1024×880, 1280×900 and 1536×960 all still fit). Repoint it at
+  the next PD day, or remove it once this stops being news. With it gone,
+  the survey banner needs nothing back: the row's `sm:mr-20` is what
+  reserves Leo's corner now.
+- `menu.js`: the drawer (*PD Day · Oct 2026*) and the fallback palette.
+- `search-index.js`: the page, and the arcade itself as an external entry.
+
+Those last two are what set off the cascade to `gate.js?v=27`.
+
+**The slides** are a viewer on the page (arrows, arrow keys, swipe,
+thumbnails, *Present* for full screen), plus the original `.pptx` and a
+PDF to download. The viewer is pinned `dir="ltr"`, because the slides are
+English and run left to right in either language. The images are
+rendered from the `.pptx`, so **edit the deck, then re-render all three**
+(`slides/`, `thumbs/` and the PDF) and update `SLIDES` in the page
+script, which holds each slide's caption and alt text:
+
+```
+soffice --headless --convert-to pdf deck.pptx       # with DM Sans installed
+pdftoppm -png -scale-to-x 1600 -scale-to-y 900 deck.pdf raw
+# then each page → slides/slide-NN.webp (q≈86) and thumbs/slide-NN.webp (400×225)
+```
+
+**Install DM Sans first** (static Regular, Bold and Italic from Google
+Fonts; the variable font only gave LibreOffice the regular weight). It is
+the deck's font. Without it LibreOffice substitutes a wider one, and slide
+3's title runs into its paragraph.
+
+Two things in the deck are as Brandon supplied it and were left alone:
+slide 5 is titled *Six stations* but lists seven, and the seventh card
+runs off the bottom edge of the slide.
+
+**The arcade is a separate repo, `AISA-AI-web/arcade`** (GitHub Pages at
+`aisa-ai-web.github.io/arcade`): the *pD-Day 2026* game with Leo, and
+`stations.html`, the plain list of guides. Both read `?lang=en|ar`, so
+every arcade link on the page carries `data-lang-href` and the page
+appends the Hub's current language, again on `aisa:lang-change`. Station
+6 is the Data Anonymizer (another repo) and station 7 is this Hub's own
+`ai-and-assessment.html`.
+
+**The station list is a copy** of `stations.html` in that repo, English
+and Arabic both. If a station is renamed, added or moved there, change it
+here too.
+
+**The exit ticket and the meeting log** are the Google Forms the QR codes
+on slides 12 and 13 open (decoded from the deck). Neither URL carries an
+`ouid`. If either is replaced, strip it again: this repo is public.
+
+**The MagicSchool notice** (from slide 3) carries `data-show-until` and
+hides itself once 20 October has passed. Nothing else on the page is
+dated.
+
+**The deck is public now**, speaker notes included, like everything in
+this repo: the survey figures, the MagicSchool decision, Brandon's
+address. None of it is personal data. Check that again before putting any
+later session's deck here.
+
+**Arabic.** The station names and descriptions are the arcade's own
+Arabic. The rest of the page's Arabic was written fresh for it and has
+not been checked by an Arabic speaker yet.
 
 ## Sustainability at AISA — RELEASED to all staff, 7 October 2026
 

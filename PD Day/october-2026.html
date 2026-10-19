@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | PD Day · October 2026</title>
+    <meta name="description" content="Material from the AISA PD days, 19–20 October 2026: the Choose your own AI adventure session slides, the PD Arcade game and its seven station guides.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+
+        /* Bilingual: the toggle lives in the global app-bar (auth/menu.js),
+           which owns the shared `aisa-newsletter-lang` key and sets
+           html[lang] / html[dir]. No page-local toggle. */
+        html[lang="en"] .lang-ar { display: none !important; }
+        html[lang="ar"] .lang-en { display: none !important; }
+
+        html[lang="ar"] body,
+        html[lang="ar"] .font-heading { font-family: 'Cairo', 'Inter', sans-serif; }
+        html[lang="ar"] .uppercase { text-transform: none; letter-spacing: normal; }
+        html[lang="ar"] .tracking-widest,
+        html[lang="ar"] .tracking-wider { letter-spacing: normal; }
+        html[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+
+        /* Anchors clear the fixed app-bar (menu.js BAR_HEIGHT = 3.75rem). */
+        html { scroll-behavior: smooth; }
+        [id] { scroll-margin-top: 5.5rem; }
+
+        /* A class beats the hidden attribute's UA display:none. */
+        [hidden] { display: none !important; }
+
+        .hub-card { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
+        .hub-card:hover { transform: translateY(-3px); box-shadow: 0 22px 40px -22px rgba(33, 7, 108, .55); }
+
+        /* ---- Slide viewer ----------------------------------------------
+           Styled here rather than with Tailwind utilities because its state
+           classes are set from script, and a class that appears nowhere in
+           the served HTML is not something to leave to the CDN's JIT. The
+           viewer is pinned dir="ltr": the slides are in English and run
+           left to right whichever language the Hub is in. */
+        .sv-stage {
+            position: relative; aspect-ratio: 16 / 9; width: 100%;
+            background: #120542; border-radius: 1rem; overflow: hidden;
+            box-shadow: 0 25px 50px -20px rgba(33, 7, 108, .55);
+        }
+        .sv-stage img { display: block; width: 100%; height: 100%; object-fit: contain; }
+        .sv-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 2.75rem; height: 2.75rem; border-radius: 9999px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255, 255, 255, .92); color: #21076C; border: 0; cursor: pointer;
+            box-shadow: 0 6px 18px -6px rgba(0, 0, 0, .45);
+            transition: opacity .2s ease, transform .2s ease;
+        }
+        .sv-nav:hover { transform: translateY(-50%) scale(1.06); }
+        .sv-nav:disabled { opacity: 0; pointer-events: none; }
+        .sv-prev { left: .75rem; }
+        .sv-next { right: .75rem; }
+        .sv-stage:fullscreen { border-radius: 0; background: #000; aspect-ratio: auto; }
+        .sv-stage:fullscreen .sv-nav { width: 3.25rem; height: 3.25rem; }
+
+        /* The thumbnail row scrolls sideways. min-width:0 on it and its
+           parent is load-bearing: a nowrap row's min-content width is the
+           whole row, and without it the page scrolls sideways on a phone
+           (the AI Growth Test guide's jump-strip trap). */
+        .sv-wrap { min-width: 0; }
+        .sv-thumbs {
+            position: relative; display: flex; gap: .5rem; overflow-x: auto; min-width: 0;
+            padding: .25rem .1rem .6rem; scroll-snap-type: x proximity;
+        }
+        .sv-thumb {
+            flex: 0 0 auto; width: 7.5rem; padding: 0; border: 2px solid transparent;
+            border-radius: .55rem; overflow: hidden; background: #e2e8f0; cursor: pointer;
+            scroll-snap-align: start; opacity: .7; transition: opacity .2s ease, border-color .2s ease;
+        }
+        .sv-thumb img { display: block; width: 100%; aspect-ratio: 16 / 9; }
+        .sv-thumb:hover { opacity: 1; }
+        .sv-thumb.is-current { border-color: #D8B664; opacity: 1; }
+        .sv-stage:focus-visible, .sv-thumb:focus-visible, .sv-nav:focus-visible {
+            outline: 3px solid #D8B664; outline-offset: 2px;
+        }
+    </style>
+    <script src="../auth/gate.js?v=27"></script>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+<main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+    <!-- ===================== HERO =====================
+         One page per PD day. Sessions are listed in the hero and each one
+         is a <section class="session"> below. To add a session, copy the
+         chip in "On this page" and a session block, and give it its own
+         assets folder under assets/october-2026/. -->
+    <header class="rounded-3xl bg-gradient-to-br from-[#21076C] via-[#2a0d85] to-[#3b1aa8] text-white p-6 sm:p-9 shadow-xl">
+        <p class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-[#D8B664]">
+            <span class="lang-en">PD Day &middot; 19–20 October 2026</span>
+            <span class="lang-ar">يوما التطوير المهني · ١٩–٢٠ أكتوبر ٢٠٢٦</span>
+        </p>
+        <h1 class="font-heading font-black text-3xl sm:text-4xl md:text-5xl leading-tight mt-2">
+            <span class="lang-en">PD Day material</span>
+            <span class="lang-ar">مواد يومَي التطوير المهني</span>
+        </h1>
+        <p class="font-heading font-bold text-xl sm:text-2xl text-white/85 mt-1">
+            <span class="lang-en">October 2026</span>
+            <span class="lang-ar">أكتوبر ٢٠٢٦</span>
+        </p>
+        <p class="mt-4 text-indigo-100 text-base sm:text-lg leading-relaxed max-w-3xl">
+            <span class="lang-en">The slides, links and activities from the October PD days, in one place. Finish what you started, try what you missed, or take it back to your team.</span>
+            <span class="lang-ar">الشرائح والروابط والأنشطة من يومَي التطوير المهني في أكتوبر، في مكان واحد. أكملوا ما بدأتموه، أو جرّبوا ما فاتكم، أو شاركوه مع فريقكم.</span>
+        </p>
+
+        <nav class="mt-6" aria-label="Sessions on this page" data-aria-label-en="Sessions on this page" data-aria-label-ar="الجلسات في هذه الصفحة">
+            <p class="text-[10px] font-bold uppercase tracking-widest text-indigo-200">
+                <span class="lang-en">Sessions on this page</span>
+                <span class="lang-ar">الجلسات في هذه الصفحة</span>
+            </p>
+            <div class="mt-2 flex flex-wrap gap-2">
+                <a href="#ai-adventure" class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/25 hover:bg-white/20 px-4 py-2 text-sm font-semibold transition-colors">
+                    <span aria-hidden="true">🦁</span>
+                    <span class="lang-en">Choose your own AI adventure</span>
+                    <span class="lang-ar">اختاروا مغامرتكم مع الذكاء الاصطناعي</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- ===================== SESSION: CHOOSE YOUR OWN AI ADVENTURE ===================== -->
+    <section id="ai-adventure" class="session mt-8">
+        <div class="flex items-center gap-2 flex-wrap">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-white bg-[#21076C] rounded-full px-2.5 py-1">
+                <span class="lang-en">Session</span><span class="lang-ar">جلسة</span>
+            </span>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-[#5b4300] bg-[#D8B664]/30 border border-[#D8B664]/60 rounded-full px-2.5 py-1">
+                <span class="lang-en">60 minutes &middot; hands-on</span><span class="lang-ar">٦٠ دقيقة · تطبيق عملي</span>
+            </span>
+        </div>
+        <h2 class="font-heading font-black text-2xl sm:text-3xl md:text-4xl text-[#21076C] mt-3 leading-tight">
+            <span class="lang-en">Choose your own AI adventure</span>
+            <span class="lang-ar">اختاروا مغامرتكم مع الذكاء الاصطناعي</span>
+        </h2>
+        <p class="lang-ar text-sm text-slate-500 mt-1"><span dir="ltr">Choose your own AI adventure</span></p>
+        <p class="font-heading font-semibold text-slate-700 mt-1.5">
+            <span class="lang-en">AI PD stations &middot; Make something you’ll use next week</span>
+            <span class="lang-ar">محطات التطوير المهني في الذكاء الاصطناعي · اصنعوا شيئاً ستستخدمونه الأسبوع المقبل</span>
+        </p>
+        <p class="text-slate-700 mt-3 max-w-3xl leading-relaxed">
+            <span class="lang-en">A hands-on hour with the AI tools already in your AISA account. Pick the station that fixes a problem you actually have, work through its guide with a real lesson, and leave with something finished.</span>
+            <span class="lang-ar">ساعة تطبيقية مع أدوات الذكاء الاصطناعي المتاحة أصلاً في حسابكم في AISA. اختاروا المحطة التي تحلّ مشكلة تواجهونها فعلاً، واتّبعوا دليلها على درس حقيقي، واخرجوا بشيء جاهز للاستخدام.</span>
+        </p>
+        <p class="text-sm text-slate-500 mt-2">
+            <span class="lang-en">Brandon Baki &middot; Head of AI &amp; Innovation</span>
+            <span class="lang-ar">براندون باكي · رئيس قسم الذكاء الاصطناعي والابتكار</span>
+        </p>
+
+        <!-- MagicSchool notice, from slide 3. Hidden by the page script once
+             data-show-until has passed, so it never tells anyone to rush
+             for a deadline that is already gone. -->
+        <div class="mt-5 rounded-2xl border border-amber-300 bg-amber-50 p-4 sm:p-5 flex gap-3" data-show-until="2026-10-21T00:00:00+04:00">
+            <span class="text-xl leading-none shrink-0" aria-hidden="true">⚠️</span>
+            <div class="min-w-0">
+                <p class="font-heading font-bold text-amber-900">
+                    <span class="lang-en">MagicSchool access ends Tuesday 20 October</span>
+                    <span class="lang-ar">ينتهي الوصول إلى MagicSchool يوم الثلاثاء ٢٠ أكتوبر</span>
+                </p>
+                <p class="text-sm text-amber-900/85 mt-1 leading-relaxed">
+                    <span class="lang-en">AISA is not renewing MagicSchool. Open your MagicSchool history and save anything you want to keep: copy it into a Google Doc or download it to your Drive. Nearly everything we did there, we can now do with tools we already have, inside our Google accounts.</span>
+                    <span class="lang-ar">لن تجدّد AISA اشتراك MagicSchool. افتحوا سجلّكم في MagicSchool واحفظوا كل ما تريدون الاحتفاظ به: انسخوه إلى مستند Google أو نزّلوه إلى Drive. ويمكننا الآن القيام بكل ما كنّا نفعله هناك تقريباً بأدوات نملكها أصلاً، داخل حسابات Google الخاصة بنا.</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- ---- The game + the seven stations ----
+             Arcade links carry data-lang-href: the page script appends
+             ?lang=en|ar so the game and its guides open in the language the
+             Hub is in (both read ?lang=, see the arcade repo's README). -->
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 mt-6">
+
+            <div class="lg:col-span-3 rounded-2xl bg-gradient-to-br from-[#21076C] to-[#3b1aa8] text-white p-6 sm:p-7 shadow-lg flex flex-col">
+                <div class="flex items-center gap-4">
+                    <div class="h-16 w-16 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-4xl shrink-0" aria-hidden="true">🦁</div>
+                    <div class="min-w-0">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-[#D8B664]">
+                            <span class="lang-en">The game &middot; pD-Day 2026</span>
+                            <span class="lang-ar">اللعبة · pD-Day 2026</span>
+                        </p>
+                        <h3 class="font-heading font-extrabold text-2xl sm:text-3xl leading-tight">
+                            <span class="lang-en">The PD Arcade</span>
+                            <span class="lang-ar">لعبة PD Arcade</span>
+                        </h3>
+                    </div>
+                </div>
+                <p class="mt-4 text-indigo-100 leading-relaxed">
+                    <span class="lang-en">Walk around the school with Leo the lion. Each room is one station: read the briefing, tick off the missions with step-by-step help and screenshots, then pass Leo’s quiz to earn the badge. Collect all seven to become Leader of the Pride, with a certificate to print.</span>
+                    <span class="lang-ar">تجوّلوا في المدرسة مع الأسد ليو. كل غرفة محطة واحدة: اقرأوا الإحاطة، وأنجزوا المهام بمساعدة خطوة بخطوة ولقطات شاشة، ثم اجتازوا اختبار ليو لتنالوا الوسام. اجمعوا الأوسمة السبعة لتصبحوا «قائد العرين»، مع شهادة يمكنكم طباعتها.</span>
+                </p>
+                <div class="mt-5 flex flex-wrap items-center gap-3">
+                    <a href="https://aisa-ai-web.github.io/arcade/" data-lang-href="https://aisa-ai-web.github.io/arcade/"
+                       target="_blank" rel="noopener noreferrer" data-track="pd-day:arcade-play"
+                       class="inline-flex items-center gap-2 rounded-xl bg-[#D8B664] hover:bg-[#e4c77c] text-[#21076C] font-heading font-bold px-5 py-3 transition-colors">
+                        <span class="lang-en">Play the game</span>
+                        <span class="lang-ar">العبوا الآن</span>
+                        <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5h5v5M19 5l-8 8M10 7H6a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1v-4"></path></svg>
+                    </a>
+                    <span class="text-sm text-indigo-200 font-mono" dir="ltr">aisa-ai-web.github.io/arcade</span>
+                </div>
+                <p class="mt-4 text-xs text-indigo-200/90 leading-relaxed">
+                    <span class="lang-en">Opens in a new tab, in English or Arabic to match the Hub. Your name and badges are saved in that browser only, so finish on the same laptop you started on.</span>
+                    <span class="lang-ar">تفتح في علامة تبويب جديدة، بالإنجليزية أو العربية حسب لغة المنصّة. يُحفَظ اسمكم وأوسمتكم في ذلك المتصفّح فقط، لذا أكملوا على الحاسوب نفسه الذي بدأتم عليه.</span>
+                </p>
+
+                <!-- From slide 7. Kept on the page because they matter just as
+                     much to someone doing a station alone, later. -->
+                <div class="mt-auto pt-6">
+                    <p class="text-[10px] font-bold uppercase tracking-widest text-[#D8B664]">
+                        <span class="lang-en">Before you start &middot; two ground rules</span>
+                        <span class="lang-ar">قبل أن تبدأوا · قاعدتان أساسيتان</span>
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                        <div class="rounded-xl bg-white/[0.07] border border-white/15 p-4">
+                            <p class="font-heading font-bold"><span class="text-[#D8B664] me-1">1</span>
+                                <span class="lang-en">No student personal data</span>
+                                <span class="lang-ar">لا بيانات شخصية للطلاب</span>
+                            </p>
+                            <p class="text-sm text-indigo-100/90 mt-1 leading-snug">
+                                <span class="lang-en">Describe your class in general terms. Names, IDs and wellbeing details never go into an AI tool.</span>
+                                <span class="lang-ar">صِفوا صفّكم بعبارات عامة. الأسماء وأرقام الهوية وتفاصيل الرفاه لا تُدخَل أبداً في أي أداة ذكاء اصطناعي.</span>
+                            </p>
+                        </div>
+                        <div class="rounded-xl bg-white/[0.07] border border-white/15 p-4">
+                            <p class="font-heading font-bold"><span class="text-[#D8B664] me-1">2</span>
+                                <span class="lang-en">You are the expert</span>
+                                <span class="lang-ar">أنتم الخبراء</span>
+                            </p>
+                            <p class="text-sm text-indigo-100/90 mt-1 leading-snug">
+                                <span class="lang-en">Check every fact before students see it. In our demos Gemini unbalanced a chemical equation and invented a statistic.</span>
+                                <span class="lang-ar">تحقّقوا من كل معلومة قبل أن يراها الطلاب. في عروضنا التجريبية أخلّ Gemini بموازنة معادلة كيميائية واختلق إحصائية.</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 rounded-2xl bg-white border border-slate-200 p-5 sm:p-6 shadow-sm">
+                <div class="flex items-baseline justify-between gap-3 flex-wrap">
+                    <h3 class="font-heading font-bold text-lg text-[#21076C]">
+                        <span class="lang-en">The seven stations</span>
+                        <span class="lang-ar">المحطات السبع</span>
+                    </h3>
+                    <a href="https://aisa-ai-web.github.io/arcade/stations.html" data-lang-href="https://aisa-ai-web.github.io/arcade/stations.html"
+                       target="_blank" rel="noopener noreferrer" data-track="pd-day:arcade-stations"
+                       class="text-xs font-semibold text-indigo-700 hover:text-indigo-900 underline underline-offset-2">
+                        <span class="lang-en">All guides ↗</span>
+                        <span class="lang-ar">كل الأدلّة ↗</span>
+                    </a>
+                </div>
+                <p class="text-xs text-slate-500 mt-1">
+                    <span class="lang-en">Skip the game and open a station’s guide directly.</span>
+                    <span class="lang-ar">تجاوزوا اللعبة وافتحوا دليل المحطة مباشرة.</span>
+                </p>
+                <ol class="mt-3 space-y-1">
+                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-1-Differentiation/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-1-Differentiation/" target="_blank" rel="noopener noreferrer" data-track="pd-day:station-1" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
+                        <span class="h-7 w-7 rounded-full bg-[#21076C] text-white text-xs font-bold flex items-center justify-center shrink-0">1</span>
+                        <span class="min-w-0"><span class="block font-semibold text-sm text-slate-900"><span class="lang-en">Differentiation &amp; Scaffolding</span><span class="lang-ar">التمايز والدعم التدريجي</span></span>
+                        <span class="block text-xs text-slate-500"><span class="lang-en">Re-level text, translate and vocabulary lists in the Classroom Gemini tab.</span><span class="lang-ar">إعادة ضبط مستوى النص والترجمة وقوائم المفردات في تبويب Gemini في Classroom.</span></span></span>
+                    </a></li>
+                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-2-Lesson-Decks/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-2-Lesson-Decks/" target="_blank" rel="noopener noreferrer" data-track="pd-day:station-2" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
+                        <span class="h-7 w-7 rounded-full bg-[#21076C] text-white text-xs font-bold flex items-center justify-center shrink-0">2</span>
+                        <span class="min-w-0"><span class="block font-semibold text-sm text-slate-900"><span class="lang-en">Polished Lesson Decks, Fast</span><span class="lang-ar">عروض دروس متقنة… بسرعة</span></span>
+                        <span class="block text-xs text-slate-500"><span class="lang-en">Three routes to a Google Slides deck with Gemini.</span><span class="lang-ar">ثلاث طرق للوصول إلى عرض Google Slides مع Gemini.</span></span></span>
+                    </a></li>
+                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-3-Engagement/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-3-Engagement/" target="_blank" rel="noopener noreferrer" data-track="pd-day:station-3" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
+                        <span class="h-7 w-7 rounded-full bg-[#21076C] text-white text-xs font-bold flex items-center justify-center shrink-0">3</span>
+                        <span class="min-w-0"><span class="block font-semibold text-sm text-slate-900"><span class="lang-en">Engagement &amp; Active Participation</span><span class="lang-ar">التفاعل والمشاركة النشطة</span></span>
+                        <span class="block text-xs text-slate-500"><span class="lang-en">A lesson hook and a choice board for Grade 8 science.</span><span class="lang-ar">افتتاحية مشوّقة للدرس ولوحة خيارات لمادة العلوم في الصف ٨.</span></span></span>
+                    </a></li>
+                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-4-Lesson-Video/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-4-Lesson-Video/" target="_blank" rel="noopener noreferrer" data-track="pd-day:station-4" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
+                        <span class="h-7 w-7 rounded-full bg-[#21076C] text-white text-xs font-bold flex items-center justify-center shrink-0">4</span>
+                        <span class="min-w-0"><span class="block font-semibold text-sm text-slate-900"><span class="lang-en">Turn Your Slides into a Video</span><span class="lang-ar">حوّلوا شرائحكم إلى فيديو</span></span>
+                        <span class="block text-xs text-slate-500"><span class="lang-en">Google Vids: script, voices, language and music.</span><span class="lang-ar">Google Vids: النص والأصوات واللغة والموسيقى.</span></span></span>
+                    </a></li>
+                    <li><a href="https://aisa-ai-web.github.io/arcade/Station-5-Coding-Activities/" data-lang-href="https://aisa-ai-web.github.io/arcade/Station-5-Coding-Activities/" target="_blank" rel="noopener noreferrer" data-track="pd-day:station-5" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
+                        <span class="h-7 w-7 rounded-full bg-[#21076C] text-white text-xs font-bold flex items-center justify-center shrink-0">5</span>
+                        <span class="min-w-0"><span class="block font-semibold text-sm text-slate-900"><span class="lang-en">Code Your Own Class Activities</span><span class="lang-ar">برمجوا أنشطة صفّكم بأنفسكم</span></span>
+                        <span class="block text-xs text-slate-500"><span class="lang-en">Gemini Canvas to the AISA Activity Hub: link, QR code and Classroom.</span><span class="lang-ar">من Gemini Canvas إلى منصة أنشطة AISA: رابط ورمز QR وزر Classroom.</span></span></span>
+                    </a></li>
+                    <li><a href="https://aisa-ai-web.github.io/data-anonymizer/" target="_blank" rel="noopener noreferrer" data-track="pd-day:station-6" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
+                        <span class="h-7 w-7 rounded-full bg-[#21076C] text-white text-xs font-bold flex items-center justify-center shrink-0">6</span>
+                        <span class="min-w-0"><span class="block font-semibold text-sm text-slate-900"><span class="lang-en">Student Data Anonymizer</span><span class="lang-ar">أداة إخفاء هوية بيانات الطلاب</span></span>
+                        <span class="block text-xs text-slate-500"><span class="lang-en">Use AI with student data without the AI ever seeing who the students are.</span><span class="lang-ar">استخدموا الذكاء الاصطناعي مع بيانات الطلاب من دون أن يعرف هويتهم أبداً.</span></span></span>
+                    </a></li>
+                    <li><a href="../PD%20Modules/ai-and-assessment.html" data-track="pd-day:station-7" class="flex gap-3 rounded-xl px-2 py-2 hover:bg-indigo-50 transition-colors">
+                        <span class="h-7 w-7 rounded-full bg-[#21076C] text-white text-xs font-bold flex items-center justify-center shrink-0">7</span>
+                        <span class="min-w-0"><span class="block font-semibold text-sm text-slate-900"><span class="lang-en">AI &amp; Assessment</span><span class="lang-ar">الذكاء الاصطناعي والتقييم</span></span>
+                        <span class="block text-xs text-slate-500"><span class="lang-en">Why AI detectors can’t prove who wrote it, and how to design assessments that don’t need one. A Learning Hub module.</span><span class="lang-ar">لماذا لا تثبت كاشفات الذكاء الاصطناعي من كتب النص، وكيف تُصمَّم تقييمات لا تحتاج إليها. وحدة على منصّة التعلّم.</span></span></span>
+                    </a></li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- ---- The slides ----
+             Images rendered from the .pptx beside them (LibreOffice, with
+             the deck's DM Sans installed). Edit the deck and re-render all
+             three: slides/, thumbs/ and the PDF. SLIDES in the page script
+             holds each slide's alt text. -->
+        <div id="ai-adventure-slides" class="mt-10">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+                <div>
+                    <h3 class="font-heading font-bold text-xl sm:text-2xl text-[#21076C]">
+                        <span class="lang-en">The slides</span>
+                        <span class="lang-ar">الشرائح</span>
+                    </h3>
+                    <p class="text-sm text-slate-500 mt-0.5">
+                        <span class="lang-en">14 slides, in English. Use the arrows, the arrow keys or the thumbnails, or press Present for full screen.</span>
+                        <span class="lang-ar">١٤ شريحة باللغة الإنجليزية. استخدموا الأسهم أو مفاتيح الأسهم أو الصور المصغّرة، أو اضغطوا «عرض» لملء الشاشة.</span>
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2 shrink-0">
+                    <a href="assets/october-2026/ai-adventure/choose-your-own-ai-adventure-slides.pptx" download data-track="pd-day:slides-pptx"
+                       class="inline-flex items-center gap-2 rounded-xl bg-[#21076C] hover:bg-[#2f0f99] text-white text-sm font-semibold px-4 py-2.5 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M12 4v11m0 0l-4-4m4 4l4-4M5 19h14"></path></svg>
+                        <span class="lang-en">PowerPoint</span><span class="lang-ar">PowerPoint</span>
+                        <span class="text-white/60 text-xs font-normal" dir="ltr">.pptx</span>
+                    </a>
+                    <a href="assets/october-2026/ai-adventure/choose-your-own-ai-adventure-slides.pdf" target="_blank" rel="noopener noreferrer" data-track="pd-day:slides-pdf"
+                       class="inline-flex items-center gap-2 rounded-xl bg-white border border-slate-300 hover:border-[#21076C] text-[#21076C] text-sm font-semibold px-4 py-2.5 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 3h7l5 5v13H7zM14 3v5h5"></path></svg>
+                        <span class="lang-en">PDF</span><span class="lang-ar">PDF</span>
+                    </a>
+                </div>
+            </div>
+
+            <div class="sv-wrap mt-4" dir="ltr" id="sv">
+                <div class="sv-stage" id="sv-stage" tabindex="0" role="region" aria-roledescription="slide viewer"
+                     aria-label="Slides: Choose your own AI adventure"
+                     data-aria-label-en="Slides: Choose your own AI adventure"
+                     data-aria-label-ar="الشرائح: اختاروا مغامرتكم مع الذكاء الاصطناعي">
+                    <img id="sv-img" src="assets/october-2026/ai-adventure/slides/slide-01.webp" width="1600" height="900"
+                         alt="Title slide. AISA AI PD Stations: Make something you’ll use next week. A hands-on hour with the AI tools you already have. PD Day, 19–20 October 2026. Brandon Baki, Head of AI &amp; Innovation.">
+                    <button type="button" class="sv-nav sv-prev" id="sv-prev" disabled
+                            aria-label="Previous slide" data-aria-label-en="Previous slide" data-aria-label-ar="الشريحة السابقة">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <button type="button" class="sv-nav sv-next" id="sv-next"
+                            aria-label="Next slide" data-aria-label-en="Next slide" data-aria-label-ar="الشريحة التالية">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.6" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+                <div class="mt-3 flex items-center justify-between gap-3">
+                    <p class="text-sm text-slate-600 min-w-0" aria-live="polite">
+                        <span class="font-bold text-[#21076C] tabular-nums" id="sv-count">1 / 14</span>
+                        <span class="text-slate-400" aria-hidden="true">&middot;</span>
+                        <span id="sv-title">Make something you’ll use next week</span>
+                    </p>
+                    <button type="button" id="sv-present" data-track="pd-day:slides-present"
+                            class="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white hover:border-[#21076C] text-[#21076C] text-sm font-semibold px-3 py-1.5 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"></path></svg>
+                        <span class="lang-en">Present</span><span class="lang-ar">عرض</span>
+                    </button>
+                </div>
+                <div class="sv-thumbs mt-3" id="sv-thumbs" role="group" aria-label="All slides"
+                     data-aria-label-en="All slides" data-aria-label-ar="كل الشرائح"></div>
+            </div>
+        </div>
+
+        <!-- ---- Before you go ----
+             The two forms are the ones the QR codes on slides 12 and 13
+             open. Neither link carries an ouid; keep it that way if they
+             are ever replaced, because this repo is public. -->
+        <div class="mt-10">
+            <h3 class="font-heading font-bold text-xl sm:text-2xl text-[#21076C]">
+                <span class="lang-en">Before you go</span>
+                <span class="lang-ar">قبل أن تغادروا</span>
+            </h3>
+            <p class="text-sm text-slate-500 mt-0.5 max-w-3xl">
+                <span class="lang-en">The station guides stay online, so come back any time. In about two weeks there will be a short check-in: did you use it, and what happened?</span>
+                <span class="lang-ar">تبقى أدلّة المحطات متاحة على الإنترنت، فعودوا إليها متى شئتم. وبعد نحو أسبوعين ستصلكم متابعة قصيرة: هل استخدمتموه، وماذا حدث؟</span>
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSd7JMXD4iwn_VZD1guU8zYIc-4MI6tZoeP5kJjmFX0LbznGxA/viewform"
+                   target="_blank" rel="noopener noreferrer" data-track="pd-day:exit-ticket"
+                   class="hub-card group rounded-2xl bg-white border border-slate-200 hover:border-[#21076C]/40 p-5 flex flex-col">
+                    <span class="h-11 w-11 rounded-xl bg-[#21076C]/10 flex items-center justify-center text-2xl" aria-hidden="true">🎟️</span>
+                    <p class="font-heading font-bold text-slate-900 mt-3">
+                        <span class="lang-en">Exit ticket</span><span class="lang-ar">بطاقة الخروج</span>
+                    </p>
+                    <p class="text-sm text-slate-600 mt-1 flex-1">
+                        <span class="lang-en">Five minutes. Your answers decide which tools we support, what we train next, and whether anything is still missing.</span>
+                        <span class="lang-ar">خمس دقائق. إجاباتكم تحدّد الأدوات التي ندعمها، وما ندرّب عليه لاحقاً، وما إذا كان شيء ما زال ناقصاً.</span>
+                    </p>
+                    <span class="mt-3 text-sm font-semibold text-indigo-700 group-hover:text-indigo-900">
+                        <span class="lang-en">Open the exit ticket ↗</span><span class="lang-ar">افتحوا بطاقة الخروج ↗</span>
+                    </span>
+                </a>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSe_Lf4xbgeZUcwqfVFqdaDfRz-a2yY9gT046EpmZVJ5DHO9Fw/viewform"
+                   target="_blank" rel="noopener noreferrer" data-track="pd-day:meeting-log"
+                   class="hub-card group rounded-2xl bg-white border border-slate-200 hover:border-[#21076C]/40 p-5 flex flex-col">
+                    <span class="h-11 w-11 rounded-xl bg-[#21076C]/10 flex items-center justify-center text-2xl" aria-hidden="true">📝</span>
+                    <p class="font-heading font-bold text-slate-900 mt-3">
+                        <span class="lang-en">Professional Meeting Log</span><span class="lang-ar">سجلّ الاجتماعات المهنية</span>
+                    </p>
+                    <p class="text-sm text-slate-600 mt-1 flex-1">
+                        <span class="lang-en">Log that you attended. The meeting name is:</span>
+                        <span class="lang-ar">سجّلوا حضوركم. اسم الاجتماع:</span>
+                        <span class="block font-semibold text-slate-900 mt-0.5"><span dir="ltr">Choose your own AI adventure</span></span>
+                    </p>
+                    <span class="mt-3 text-sm font-semibold text-indigo-700 group-hover:text-indigo-900">
+                        <span class="lang-en">Open the meeting log ↗</span><span class="lang-ar">افتحوا سجلّ الاجتماعات ↗</span>
+                    </span>
+                </a>
+                <a href="mailto:bbaki@aisa.sch.ae?subject=PD%20Day%20stations" data-track="pd-day:email"
+                   class="hub-card group rounded-2xl bg-white border border-slate-200 hover:border-[#21076C]/40 p-5 flex flex-col">
+                    <span class="h-11 w-11 rounded-xl bg-[#D8B664]/30 flex items-center justify-center text-2xl" aria-hidden="true">💡</span>
+                    <p class="font-heading font-bold text-slate-900 mt-3">
+                        <span class="lang-en">Questions or ideas?</span><span class="lang-ar">أسئلة أو أفكار؟</span>
+                    </p>
+                    <p class="text-sm text-slate-600 mt-1 flex-1">
+                        <span class="lang-en">Loved a station, or have an idea for a new one? Help run it next time.</span>
+                        <span class="lang-ar">أعجبتكم محطة، أو لديكم فكرة لمحطة جديدة؟ ساعدوا في تقديمها في المرة القادمة.</span>
+                    </p>
+                    <span class="mt-3 text-sm font-semibold text-indigo-700 group-hover:text-indigo-900" dir="ltr">bbaki@aisa.sch.ae</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="mt-12 border-t border-slate-200 pt-5 pb-8 text-xs text-slate-500 flex flex-col sm:flex-row gap-1 sm:items-center sm:justify-between">
+        <p>
+            <span class="lang-en">&copy; 2026 American International School in Abu Dhabi &middot; AI &amp; Innovation</span>
+            <span class="lang-ar">&copy; ٢٠٢٦ المدرسة الأمريكية الدولية في أبوظبي · الذكاء الاصطناعي والابتكار</span>
+        </p>
+        <p>
+            <span class="lang-en">PD Day &middot; October 2026</span>
+            <span class="lang-ar">يوما التطوير المهني · أكتوبر ٢٠٢٦</span>
+        </p>
+    </footer>
+
+</main>
+
+<!-- Apply the saved language before menu.js arrives, so Arabic readers
+     get no flash of English, and keep the tab title in step. -->
+<script>
+    (function () {
+        var TITLES = { en: 'AISA | PD Day · October 2026', ar: 'AISA | يوما التطوير المهني · أكتوبر ٢٠٢٦' };
+        function syncTitle() {
+            var lang = document.documentElement.getAttribute('lang') === 'ar' ? 'ar' : 'en';
+            document.title = TITLES[lang];
+        }
+        try {
+            var saved = localStorage.getItem('aisa-newsletter-lang') === 'ar' ? 'ar' : 'en';
+            document.documentElement.setAttribute('lang', saved);
+            document.documentElement.setAttribute('dir', saved === 'ar' ? 'rtl' : 'ltr');
+        } catch (e) {}
+        syncTitle();
+        document.addEventListener('aisa:lang-change', syncTitle);
+    })();
+</script>
+
+<!-- Slide viewer, arcade language links, dated notices. -->
+<script>
+    (function () {
+        var BASE = 'assets/october-2026/ai-adventure/';
+        var SLIDES = [
+            { t: 'Make something you’ll use next week', alt: 'Title slide. AISA AI PD Stations: Make something you’ll use next week. A hands-on hour with the AI tools you already have. PD Day, 19–20 October 2026. Brandon Baki, Head of AI & Innovation.' },
+            { t: 'The next 60 minutes', alt: 'The next 60 minutes: mostly doing, very little talking. 5 minutes to arrive and settle in, 5 minutes of welcome and updates, 40 minutes of stations (choose your own path through the six stations), 7 minutes to share what you made, 3 minutes for the exit ticket.' },
+            { t: 'Goodbye to MagicSchool', alt: 'An update: we’re saying goodbye to MagicSchool. AISA is not renewing MagicSchool. Nearly everything we did there, we can now do with tools we already have, inside our Google accounts. Before access ends on Tuesday 20 October, open your MagicSchool history and save anything you want to keep: copy it into a Google Doc or download it to your Drive.' },
+            { t: 'Built from what you told us', alt: 'Why these stations? Built from what you told us: 140 staff survey responses, 70 Secondary personal goals, 261 Learning Hub AI module answers and about 40 emails and chats asking for help. The gap we found: 103 of 140 of you use AI often or daily. Your top asks: differentiation, polished decks, fast and engaging activities instead of worksheets.' },
+            { t: 'The stations', alt: 'Six stations, all using tools in your AISA account. 1, Classroom Gemini: Differentiation and Scaffolding, “One text doesn’t fit every reader.” 2, Gemini and Slides: Polished Lesson Decks, Fast, “Slides take my whole evening.” 3, Classroom Gemini: Engagement and Participation, “I need every student thinking.” 4, Google Vids: Turn Slides into a Video, “Absent students miss the lesson.” 5, Canvas and Activity Hub: Code Class Activities, “I want a game, but I can’t code.” 6, built at AISA: Data Anonymizer, “My data has student names in it.” 7, Learning Hub online module: Academic Integrity and AI, “Does the school have any AI detection software?”' },
+            { t: 'Today’s goal', alt: 'Today’s goal: You won’t use a tool until you’ve used it once. So no demos today. You’ll build real resources for lessons you’re teaching soon.' },
+            { t: 'Two ground rules', alt: 'Before you start, two ground rules. 1, no student personal data: describe your class in general terms; names, IDs and wellbeing details never go into an AI tool. 2, you are the expert: check every fact before students see it. In our demos Gemini unbalanced a chemical equation and invented a statistic.' },
+            { t: 'Four steps', alt: 'How it works, four steps: 1, open the PD arcade page. 2, pick the station that fixes your problem. 3, follow the steps, using a real lesson. 4, done? Move on to another station; the more you try, the better. Quick tips: Gemini busy? If you see “high demand” or an error, type Please try again. Work in pairs if you like: one drives, one checks. Stuck? Raise a hand and I’ll come to you.' },
+            { t: 'Go make something', alt: 'Station time: Go make something. aisa-ai-web.github.io/arcade' },
+            { t: 'What did you make?', alt: 'Time’s up: what did you make? Turn to the person next to you. Show them what you made in 60 seconds, and which lesson it’s for. Pair share, 1 minute each. Made a game? See it in the Activity Hub library on screen.' },
+            { t: 'What happens next', alt: 'After today, what happens next. The guides stay online: finish a station or try the ones you missed, any time. Two-week check-in: a short follow-up, did you use it, and what happened? Share your ideas: loved a station? Have an idea for a new station? Help run it next time.' },
+            { t: 'Exit ticket', alt: 'Exit ticket, 5 minutes: help shape the next AI PD. Your answers decide which tools we support, what we train next, and whether anything is still missing. A QR code opens the exit ticket form.' },
+            { t: 'Professional Meeting Log', alt: 'Professional Meeting Log 2026–2027. Meeting name: Choose your own AI adventure. A QR code and the link tinyurl.com/ycycht85 open the log.' },
+            { t: 'Thank you', alt: 'Thank you for giving these tools a real try. Go use what you made this week. Questions or ideas? bbaki@aisa.sch.ae' }
+        ];
+        function src(dir, i) { return BASE + dir + '/slide-' + (i < 9 ? '0' : '') + (i + 1) + '.webp'; }
+
+        var stage = document.getElementById('sv-stage');
+        var img = document.getElementById('sv-img');
+        var prev = document.getElementById('sv-prev');
+        var next = document.getElementById('sv-next');
+        var count = document.getElementById('sv-count');
+        var title = document.getElementById('sv-title');
+        var strip = document.getElementById('sv-thumbs');
+        var present = document.getElementById('sv-present');
+        var cur = 0, thumbs = [];
+
+        SLIDES.forEach(function (s, i) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'sv-thumb' + (i === 0 ? ' is-current' : '');
+            b.setAttribute('aria-label', 'Slide ' + (i + 1) + ': ' + s.t);
+            if (i === 0) b.setAttribute('aria-current', 'true');
+            var t = document.createElement('img');
+            t.src = src('thumbs', i); t.alt = ''; t.loading = 'lazy'; t.width = 400; t.height = 225;
+            b.appendChild(t);
+            b.addEventListener('click', function () { show(i); });
+            strip.appendChild(b);
+            thumbs.push(b);
+        });
+
+        function show(i) {
+            if (i < 0 || i >= SLIDES.length) return;
+            thumbs[cur].classList.remove('is-current');
+            thumbs[cur].removeAttribute('aria-current');
+            cur = i;
+            img.src = src('slides', i);
+            img.alt = SLIDES[i].alt;
+            count.textContent = (i + 1) + ' / ' + SLIDES.length;
+            title.textContent = SLIDES[i].t;
+            prev.disabled = i === 0;
+            next.disabled = i === SLIDES.length - 1;
+            thumbs[i].classList.add('is-current');
+            thumbs[i].setAttribute('aria-current', 'true');
+            // Scroll the strip only, never the page.
+            var tb = thumbs[i];
+            var left = tb.offsetLeft - (strip.clientWidth - tb.offsetWidth) / 2;
+            strip.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+            [i - 1, i + 1].forEach(function (j) {
+                if (j >= 0 && j < SLIDES.length) { var p = new Image(); p.src = src('slides', j); }
+            });
+        }
+
+        prev.addEventListener('click', function () { show(cur - 1); });
+        next.addEventListener('click', function () { show(cur + 1); });
+
+        function onKey(e) {
+            if (e.altKey || e.ctrlKey || e.metaKey) return;
+            var k = e.key;
+            if (k === 'ArrowRight' || k === 'PageDown' || (k === ' ' && document.fullscreenElement === stage)) { show(cur + 1); e.preventDefault(); }
+            else if (k === 'ArrowLeft' || k === 'PageUp') { show(cur - 1); e.preventDefault(); }
+            else if (k === 'Home') { show(0); e.preventDefault(); }
+            else if (k === 'End') { show(SLIDES.length - 1); e.preventDefault(); }
+        }
+        // Arrow keys work when the viewer has focus, and always in full screen.
+        stage.addEventListener('keydown', onKey);
+        strip.addEventListener('keydown', onKey);
+
+        // Swipe on touch screens.
+        var x0 = null;
+        stage.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+        stage.addEventListener('touchend', function (e) {
+            if (x0 === null) return;
+            var dx = e.changedTouches[0].clientX - x0; x0 = null;
+            if (Math.abs(dx) > 40) show(cur + (dx < 0 ? 1 : -1));
+        });
+
+        if (!stage.requestFullscreen) present.hidden = true;
+        present.addEventListener('click', function () {
+            if (document.fullscreenElement) { document.exitFullscreen(); return; }
+            stage.requestFullscreen().then(function () { stage.focus(); }).catch(function () {});
+        });
+    })();
+
+    (function () {
+        // The game and its guides read ?lang=en|ar, so open them in the
+        // language the Hub is showing.
+        function lang() { return document.documentElement.getAttribute('lang') === 'ar' ? 'ar' : 'en'; }
+        function syncLinks() {
+            document.querySelectorAll('[data-lang-href]').forEach(function (a) {
+                var u = a.getAttribute('data-lang-href');
+                a.href = u + (u.indexOf('?') < 0 ? '?' : '&') + 'lang=' + lang();
+            });
+        }
+        // Dated notices disappear once their date has passed.
+        document.querySelectorAll('[data-show-until]').forEach(function (el) {
+            var until = Date.parse(el.getAttribute('data-show-until'));
+            if (!isNaN(until) && Date.now() >= until) el.hidden = true;
+        });
+        syncLinks();
+        document.addEventListener('aisa:lang-change', syncLinks);
+    })();
+</script>
+
+</body>
+</html>
