@@ -856,7 +856,7 @@ sessions so far, in page order:
 | `ai-adventure` | Choose your own AI adventure | Brandon Baki | slides (.pptx + PDF), the PD Arcade, 7 station guides |
 | `oracy` | Getting the Room to Think (Aloud!) | Amira El Turabi | slides (PDF only), Mon 19 Oct |
 | `differentiation` | Small Changes, Big Reach: Proactive Differentiation | Amira El Turabi | slides (PDF only), Mon 19 + Tue 20 Oct |
-| `data-to-action` | Data to Action (data literacy) | Quitney Price | tracker to copy, Mon 19 Oct; **slides to follow** |
+| `data-to-action` | Data to Action (data literacy) | Quitney Price | slides (PDF only), tracker to copy, Mon 19 Oct |
 
 **More sessions are coming.** Brandon said on 19 October 2026 that
 several PDs will be placed here, so the page is built for many sessions:
@@ -938,6 +938,8 @@ missing one. So far:
   driven by ligatures, so without it every icon renders as its name:
   "psychology", "record_voice_over". Those names also leak into the
   script's draft alt text, so take them out by hand.
+- **Montserrat** (Quitney's deck): static Regular, Bold and Italic from
+  Google Fonts, the same way as DM Sans.
 
 A 16:9 deck gets `is-169` on its viewer and fills the frame with
 `object-fit: cover`; with `contain`, a white slide showed a sub-pixel
@@ -1022,15 +1024,21 @@ slide. No job title was given, so she is credited by name only.
   Class Tracker tab), checked before linking. The page tells teachers to
   clear them, and quotes her slide 8 guardrails: use student names only
   when needed and keep student information secure.
-- **The slides are not on the page yet.** Her deck is a private Google
-  Slides file (`AISA_Data_to_Action_PD`, shared with Brandon and Amira
-  only). This container can't fetch Google's slide images, and the
-  connector's export comes back as base64 too large to pass through. So
-  the section has a dashed "slides to follow" box. When a PDF export
-  arrives, run `render-deck.py` on it into `assets/october-2026/data-to-action/`,
-  add a `DECKS` entry, and swap the box for a viewer and a PDF button
-  like the sessions above. A PDF is the better input here: it is Google's
-  own rendering, so LibreOffice and its fonts never come into it.
+- **The slides went in a day later, on 20 October 2026,** from a .pptx
+  Brandon attached: 20 slides, PDF only (`--no-pptx`). In Drive her deck
+  (`AISA_Data_to_Action_PD`) is shared with Brandon and Amira alone, so
+  the editable file stays out of the repo. The speaker notes are
+  ordinary facilitator notes, and the PDF carries none of them. Until
+  then the section had a "slides to follow" box, because this container
+  can't fetch Google's slide images and the connector's export is base64
+  too large to pass through. **For a private Google Slides deck, ask
+  for a file** rather than trying the connector.
+- **Two things in the deck are as she made it.** Slide 3's title sits
+  hard against the top-left corner, and four slides carry Pear Deck's
+  "Students, write your response!" bar. The PDF keeps her two links:
+  slide 14 to the Common Core standard, and slide 16's title to the
+  tracker's `/copy` link. Slide 7's class grid uses the same made-up
+  *Friends* first names as the tracker.
 
 **Arabic.** The station names and descriptions are the arcade's own
 Arabic. The rest of the page's Arabic was written fresh for it and has
