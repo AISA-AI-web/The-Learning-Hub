@@ -243,6 +243,7 @@
                         <span class="lang-ar">كويتني برايس</span>
                     </span>
                     <span class="mt-3 flex flex-wrap gap-1.5">
+                        <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Slides</span><span class="lang-ar">الشرائح</span></span>
                         <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Tracker to copy</span><span class="lang-ar">متتبّع للنسخ</span></span>
                         <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Planning steps</span><span class="lang-ar">خطوات التخطيط</span></span>
                         <span class="text-[11px] font-semibold text-slate-600 bg-slate-100 rounded-full px-2 py-0.5"><span class="lang-en">Meeting log</span><span class="lang-ar">سجلّ الاجتماعات</span></span>
@@ -741,10 +742,9 @@
          meeting log). The tracker is her Google Sheet, offered through its
          /copy link so every teacher gets their own copy; it is shared
          "anyone with the link", which /copy needs. Its sample rows use
-         made-up names. The slides are not on the page yet: her deck is a
-         private Google Slides file, so they need a PDF export run through
-         render-deck.py. When that arrives, replace the "slides to follow"
-         block with a data-sv viewer and a PDF button, as the sessions above. -->
+         made-up names. Slides added 20 Oct 2026 from the .pptx Brandon
+         supplied, offered as a PDF only: in Drive the deck is shared with
+         Brandon and Amira alone, so the editable file stays out of the repo. -->
     <section id="data-to-action" class="session">
         <div class="flex items-center gap-2 flex-wrap">
             <span class="text-[10px] font-bold uppercase tracking-widest text-white bg-[#21076C] rounded-full px-2.5 py-1">
@@ -850,16 +850,28 @@
             </a>
         </div>
 
-        <!-- ---- The slides: to follow (see the comment at the top of this section). ---- -->
-        <div id="data-to-action-slides" class="mt-10 rounded-2xl border-2 border-dashed border-slate-300 bg-white p-5 sm:p-6">
-            <h3 class="font-heading font-bold text-xl sm:text-2xl text-[#21076C]">
-                <span class="lang-en">The slides</span>
-                <span class="lang-ar">الشرائح</span>
-            </h3>
-            <p class="text-sm text-slate-500 mt-1">
-                <span class="lang-en">The slides from this session will be added here soon.</span>
-                <span class="lang-ar">ستُضاف شرائح هذه الجلسة هنا قريباً.</span>
-            </p>
+        <!-- ---- The slides ---- built from DECKS['data-to-action'], PDF only. -->
+        <div id="data-to-action-slides" class="mt-10">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
+                <div>
+                    <h3 class="font-heading font-bold text-xl sm:text-2xl text-[#21076C]">
+                        <span class="lang-en">The slides</span>
+                        <span class="lang-ar">الشرائح</span>
+                    </h3>
+                    <p class="text-sm text-slate-500 mt-0.5">
+                        <span class="lang-en">20 slides, in English.</span>
+                        <span class="lang-ar">٢٠ شريحة باللغة الإنجليزية.</span>
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2 shrink-0">
+                    <a href="assets/october-2026/data-to-action/data-to-action-slides.pdf" target="_blank" rel="noopener noreferrer" data-track="pd-day:data-to-action:slides-pdf"
+                       class="inline-flex items-center gap-2 rounded-xl bg-[#21076C] hover:bg-[#2f0f99] text-white text-sm font-semibold px-4 py-2.5 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M7 3h7l5 5v13H7zM14 3v5h5"></path></svg>
+                        <span class="lang-en">PDF</span><span class="lang-ar">PDF</span>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-4" data-sv="data-to-action"></div>
         </div>
 
         <p class="mt-8">
@@ -966,6 +978,32 @@
                     { t: 'Exit Ticket', alt: 'Exit ticket: let’s see which table got it! Scan the QR code, join the quiz, and let’s finish strong. Ready? Phones out. Game on. The QR code opened a live quiz during the session.' },
                     { t: 'Professional Meeting Log, Mon 19 Oct', alt: 'Professional Meeting Log 2026–2027. Meeting name: Small Changes - Big Reach: Proactive Differentiation (Mon 19 Oct). A QR code and the link tinyurl.com/ycycht85 open the log.' },
                     { t: 'Professional Meeting Log, Tue 20 Oct', alt: 'Professional Meeting Log 2026–2027. Meeting name: Small Changes - Big Reach: Proactive Differentiation (Tue 20 Oct). A QR code and the link tinyurl.com/ycycht85 open the log.' }
+                ]
+            },
+            'data-to-action': {
+                base: 'assets/october-2026/data-to-action/',
+                name: { en: 'Data to Action', ar: 'من البيانات إلى الفعل' },
+                slides: [
+                    { t: 'Data to Action', alt: 'Title slide. AISA Secondary Professional Learning: Data to Action. Making formative assessment work for every learner. Grades 6 to 12, all subjects, 60 minutes. Check, interpret, respond, recheck.' },
+                    { t: 'Start with a decision', alt: 'Start with a decision. 25 students completed an exit ticket: 8 meeting, students demonstrate the target understanding; 11 developing, students show partial understanding; 6 not yet, students show a gap or misconception. Your turn: what would you do in the next lesson? Think independently for 30 seconds, compare your decision with a partner, and be ready to explain what evidence informed your choice. A Pear Deck response bar runs along the bottom.' },
+                    { t: 'Our shared cycle', alt: 'Our shared cycle, a five-step data cycle. 1, collect and chart data: use common formative assessments (classroom data). 2, analyse and prioritise needs: it’s not just the numbers alone; high-performing data teams look at data and student work, and ask what they can do to respond to what the data is telling them. 3, set a SMART goal: for every data cycle, typically one unit of about 4 to 6 weeks, have a goal that is specific, measurable, achievable, relevant and time oriented. 4, select instructional strategies: which strategies will we commit to as a team to implement? 5, determine results indicators: what do we anticipate as the result, and what will we look for in student behaviour and in our teaching? Evidence is only useful when it helps us decide what to do next.' },
+                    { t: 'Formative evidence looks different across subjects', alt: 'Formative evidence looks different across subjects: all subjects, same thinking. Core subjects: maths, a worked problem and explanation; science, a model and claim with evidence; English, annotation or class discussion. Specialist subjects: PE, a skill observation checklist; arts, music and drama, a rehearsal or draft; design and computer science, a prototype or debugging task. The common thread: a clear learning target, observable success criteria, and a decision based on the evidence. The evidence can vary. The process stays the same.' },
+                    { t: 'Formative assessments: different ways, same goal', alt: 'Formative assessments: different ways, same goal. Give students multiple ways to show what they know, understand and can do. Say it: oral explanation, discussion, conference, teach-a-partner, debate. Write it: exit ticket, journal, short response, reflection, error analysis. Show it: drawing, diagram, concept map, model, infographic. Do it: demonstration, role play, performance task, investigation, problem solving. Reflect on it: self-assessment, peer feedback, traffic light, learning reflection, goal setting. More ways to assess equals more ways to grow.' },
+                    { t: 'Methods to check for understanding', alt: 'Methods to check for understanding: gather real-time evidence to adjust instruction instantly. Checklists: quick yes or no tracking, best for specific skill mastery, focused on key procedural steps, fast to fill during active work. Observational notes: qualitative evidence and anecdotes, capturing the student’s thinking process, identifying misconceptions live, highlighting peer interaction. Single-margin rubrics: evaluate criteria levels, give clear success criteria for all, provide actionable feedback, support student self-check. Choose the tool that gives you immediate, actionable insight without delaying learning.' },
+                    { t: 'An example class tracker', alt: 'An example class tracker: two blank grids with made-up first names (Chandler, Phoebe, Ross, Rachel, Joey, Monica, Richard, Janice, Emily, Janine) down the side. One grid has columns for the standards CCSS.ELA-Literacy.SL.9-10.1.a, come prepared, and SL.9-10.1.c, pose and respond to questions. The other has a column for CCSS.Math.Content.6.SP.B.4, display numerical data in plots on a number line, including dot plots, histograms and box plots.' },
+                    { t: 'Activity: be a data detective', alt: 'Activity, be a data detective: Grade 7 science, explaining a phenomenon. 18 of 25 can describe what happened; 10 of 25 use relevant scientific evidence; 7 of 25 clearly connect evidence to explanation. Group task: notice, what patterns stand out? Interpret, what might explain the pattern? Act, what will you change in the next lesson? Recheck, what evidence will show whether it helped? 3 minutes to analyse, 5 to agree, 5 to share. A Pear Deck response bar runs along the bottom.' },
+                    { t: 'From evidence to an instructional decision', alt: 'From evidence to an instructional decision: debrief, keep it practical. What we know: most students can describe the phenomenon, but fewer connect evidence to their explanation. What we might do: model how to connect a claim to evidence and reasoning, and scaffold students who need it. What we will recheck: ask students to explain a new example using evidence and reasoning. Discuss: what would you want to see in the actual student responses? Would every student need the same follow-up? How would you know whether your next lesson made a difference? A Pear Deck response bar runs along the bottom.' },
+                    { t: 'A simple tracker, not another gradebook', alt: 'A simple tracker, not another gradebook: Google Sheets, 25 to 35 minutes. One row per formative check; keep the routine short. Columns: date and class, learning target, formative check, evidence snapshot, instructional response, recheck. Example row: Oct 20, G7B; explain cause and effect; exit ticket; 8 secure, 11 developing, 6 not yet; model reasoning and small-group support; parallel question. Start with class-level patterns. Track individual students only when follow-up is needed.' },
+                    { t: 'Keep the data routine manageable', alt: 'Keep the data routine manageable: track what helps you teach. Tab 1, formative log: date and class, learning target, assessment and success criteria, evidence snapshot, instructional response, recheck date and result. Tab 2, class overview: recent learning targets, patterns across checks, rechecks due, follow-up actions, brief reflections on what helped. Guardrails: not every check needs a grade, not every student needs a score entry, use student names only when needed, keep student information secure. Design test: could you update it in about two minutes after a lesson?' },
+                    { t: 'How formative assessment drives student learning', alt: 'Why it matters: how formative assessment drives student learning. 1, proactive differentiation: anticipate student needs before gaps widen, and adjust instruction dynamically based on real-time evidence to support struggling learners and challenge secure ones. 2, feedback through conferencing: ground discussions with students and parents in concrete work samples and targeted data, making learning goals and progress explicit and actionable. 3, accuracy in grading: ensure grades reflect genuine mastery of targets rather than compliance; continuous checks reduce surprise outcomes at summatives. Key principle: effective formative assessment must be designed intentionally via backwards planning.' },
+                    { t: 'Design a formative check', alt: 'Design a formative check in five steps. 1, target: what should students know or be able to do? 2, check: what quick task will reveal their thinking? 3, criteria: what will successful learning look or sound like? 4, response: what will you do if students struggle, or are secure? 5, recheck: what new evidence will show whether learning improved?' },
+                    { t: 'Example: target, check and criteria', alt: 'Example, design a formative check. Target: key ideas and details, CCSS.ELA-Literacy.RI.9-10.1, cite strong and thorough textual evidence to support analysis of what the text says explicitly as well as inferences drawn from the text; students will select relevant textual evidence to support both an explicit interpretation and an inference, explaining how the evidence supports their thinking. Check: a class discussion on a topic. What does the author explicitly state about the issue? Cite one relevant piece of evidence. What can you infer from the text? Cite evidence and explain how it supports your inference. Criteria: students can identify an accurate, relevant detail explicitly stated in the text, draw a reasonable inference supported by the text, and explain how the selected evidence supports their answer rather than only using a quote.' },
+                    { t: 'Example: response and recheck', alt: 'Example, design a formative check, continued. Response: if students choose irrelevant quotations or weak evidence, model how to select stronger evidence. If students identify evidence but struggle to explain an inference, use a think-aloud and a scaffold such as “I can infer ___ because the text states ___, which suggests ___.” Students who demonstrate secure understanding can analyse a more complex inference or compare competing interpretations. Recheck: give students a short passage and one question requiring either an explicit interpretation or an inference supported by textual evidence, and compare their responses against the same success criteria to see whether they can transfer the skill independently.' },
+                    { t: 'Your turn: design a formative check', alt: 'Your turn, design a formative check (the title links to the tracker). 1, target: what should students know or be able to do? 2, check: what quick task will reveal their thinking? 3, criteria: what will successful learning look or sound like? 4, response: what will you do if students struggle, or are secure? 5, recheck: what new evidence will show whether learning improved? Partner feedback: is the check aligned, quick to interpret, and useful for a decision?' },
+                    { t: 'Commit, share and exit', alt: 'Commit, share and exit. Before you leave, complete these four statements: 1, my learning target is… 2, my formative check will be… 3, based on the evidence, I might… 4, I will recheck learning by… What will you do differently because of the evidence you collect? A Pear Deck response bar runs along the bottom.' },
+                    { t: 'A small pilot, then refine', alt: 'After the workshop: a small pilot, then refine, with observations next week. Try it: use a tracker for one learning target. Reflect: what did the evidence reveal? What changed? Collaborate: share one example and refine the template. Success means evidence changes instruction, not the number of rows logged.' },
+                    { t: 'The goal isn’t more data', alt: 'The goal isn’t more data. It’s better decisions about learning. Check, interpret, respond, recheck. Thank you.' },
+                    { t: 'Professional Meeting Log', alt: 'Professional Meeting Log 2026–2027. Meeting name: Data Literacy, Monday Oct. 19. A QR code and the link tinyurl.com/ycycht85 open the log.' }
                 ]
             }
         };
