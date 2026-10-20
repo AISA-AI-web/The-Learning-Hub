@@ -611,11 +611,13 @@ the request-transport rework to `?v=22`, the fix for the outage it
 caused to `?v=23`, the AI Literacy Hub to `?v=24`, and the data-loading
 audit (23 September 2026) to `?v=25`, and the Sustainability release
 (7 October 2026) to `?v=26`, the PD Day page (19 October 2026) to
-`?v=27`, its per-session search entries (the same day) to `?v=28`, and
-the Data to Action session's entry to `?v=29`.
+`?v=27`, its per-session search entries (the same day) to `?v=28`,
+the Data to Action session's entry to `?v=29`, and the station-guide
+download with MagicSchool and Chalkie leaving Tools & Resources
+(20 October 2026) to `?v=30`.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
-their own pins — `certificate.js?v=7`, `search-index.js?v=14`,
+their own pins — `certificate.js?v=7`, `search-index.js?v=15`,
 `menu.js?v=19`, `dwell.js?v=2` — so **editing one of those helpers
 means bumping its pin inside `gate.js`, which is itself a change to
 `gate.js`, which means bumping `?v=N` on all 49 pages again.** Adding a
@@ -853,7 +855,7 @@ sessions so far, in page order:
 
 | id | session | presenter | material |
 |---|---|---|---|
-| `ai-adventure` | Choose your own AI adventure | Brandon Baki | slides (.pptx + PDF), the PD Arcade, 7 station guides |
+| `ai-adventure` | Choose your own AI adventure | Brandon Baki | slides (.pptx + PDF), the PD Arcade, 7 station guides (online, and a .zip of PDFs) |
 | `oracy` | Getting the Room to Think (Aloud!) | Amira El Turabi | slides (PDF only), Mon 19 Oct |
 | `differentiation` | Small Changes, Big Reach: Proactive Differentiation | Amira El Turabi | slides (PDF only), Mon 19 + Tue 20 Oct |
 | `data-to-action` | Data to Action (data literacy) | Quitney Price | slides (PDF only), tracker to copy, Mon 19 Oct |
@@ -915,6 +917,21 @@ the Arabic view shows no English spans.
 Those last two set off the cascade to `gate.js?v=27`. Amira's
 sessions (with the per-session search entries) took it to `?v=28`, and
 Quitney's search entry to `?v=29`.
+
+**The station guides as PDFs, added 20 October 2026.**
+`assets/october-2026/ai-adventure/AISA-AI-PD-Station-Guides.zip` holds
+every station guide on paper, in an `English` and an `Arabic` folder
+(14 PDFs, 31 MB): the arcade repo's printouts, made there with
+`node print/build.js zip`. When a guide changes, rebuild it there and
+replace this file; nothing here needs editing unless the size changes,
+which both links mention. It is offered in two places: the button under
+*The seven stations* in the session, and a card in Tools & Resources
+(*AI Teaching Assistants*, format *Guide*) with a search entry pointing
+there. The same day Brandon took **MagicSchool** (not renewed after
+20 October) and **Chalkie** off Tools & Resources and out of the search
+index. The Chalkie PD module stays (pd.html, the menu, the dashboards),
+"in case anyone decides to buy it for themselves". Those search changes
+took the cascade to `?v=30`.
 
 **The slides** are a viewer on the page (arrows, arrow keys, swipe,
 thumbnails, *Present* for full screen), plus the original `.pptx` and a
