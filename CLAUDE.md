@@ -712,6 +712,41 @@ needs every `required: true` one, and the avg-modules denominator and PD
 hours both change. Releasing AI Literacy as required on 16 Sept 2026 did
 exactly that, which looks like a regression and is not one.
 
+## "Thank you for completing …" drafts — not the Hub, 23 October 2026
+
+Brandon's Drafts folder filled up with one-line drafts, one per module
+completion: addressed to the teacher, subject the bare `module_id`, body
+"Thank you for completing `<module_id>`". There were about 1,264 by
+23 October 2026. He doesn't use them and wants them gone.
+
+**Nothing in this repo makes them, and nothing in the live Apps Script
+project does either.** The project was downloaded on 23 October and its
+15 files match `auth/apps-script/` apart from trailing newlines. There
+is no `GmailApp` or `createDraft` anywhere in git history. The drafts come
+from a **Google Workspace Studio flow** on `bbaki@`. It starts when a row
+is added to the `events` tab of *AISA Learning Hub — PD Completions*, and
+its one step drafts an email. The evidence:
+
+- Each draft lands about 5 seconds after its `events` row.
+- The first drafts are test runs on 21 May 2026, the day that spreadsheet
+  was created. The first had no recipient; the next went to `bbaki@`.
+- The raw headers read `Received: from 653651007783 … by
+  gmailapi.google.com with HTTPREST`, with a `Message-Id` starting
+  `<CAOvF=2`. Those match the *Daily UAE News Brief* Studio flow exactly.
+  Mail the Hub sends through `MailApp` arrives by SMTP with an
+  `autogen-java-…@google.com` id.
+
+**Turning it off happens in Studio** (studio.workspace.google.com → the
+flow → off, then delete). No connector reaches Studio, and no change in
+this repo can stop it, so don't search the backend for it again. Don't
+rename or move the `events` tab to break the flow either: the whole Hub
+reads that tab.
+
+Two tabs in that spreadsheet look related but are not. `certificate_emails`
+is empty, left over from the certificate-by-email feature that was added
+and reverted on 9 June 2026 (`1f5a087`, `b6130f4`); nothing writes to it.
+`Sheet1` is empty.
+
 ## Admin dashboard — three tabs
 
 `admin-dashboard.html` splits into **PD Data**, **Survey Data** and
