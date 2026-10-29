@@ -1625,11 +1625,11 @@ What was tested (the scripts need Chromium and are not in the repo):
 - the menu's search and drawer have the same computed styles here as on
   the AI Growth Test guide.
 
-**Open question:** who is in the pilot. The card says *Pilot* but the
-guide does not, and it tells every teacher to sign in with their AISA
-Google account. If the pilot is a named group, staff outside it will
-reach a sign-in that does not work, and the page may want a line saying
-who it is for.
+**The pilot is open to all teachers** (Brandon, 29 October 2026), so
+the guide needs no line saying who it is for. **Student rostering was
+still in progress** that day. The *Classes* and *Share & see results*
+sections assume students are in Flint, so check rostering has finished
+before pointing teachers at them in a newsletter or email.
 
 ## AI Growth Test guide — added 18 September 2026
 
