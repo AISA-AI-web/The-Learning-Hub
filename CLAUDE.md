@@ -1818,6 +1818,96 @@ arrangement and the dates land, both belong in the next issue rather
 than as an edit to this one.
 
 
+## Digital Lion — Issue No. 6, held for release (written 29 October 2026)
+
+`Media Hub/oct30.html`, dated Friday 30 October 2026. Brandon asked for an
+issue he could release the next day, visible only to `bbaki@` and `hodai@`
+until he pressed a release button. Sources: this repo, Brandon's own task
+list and weekly agenda, his sent mail, and the other AISA-AI-web repos
+(`AI-Lessons` holds the launcher, the Activity Hub, AI Lessons and the
+Assessment Calendar; `data-anonymizer`; `map-data-tool`).
+
+In it: MagicSchool ended and the Flint pilot (lead), AISA Tools
+(`aisa-tools.pages.dev`), the Activity Hub, the Data Anonymizer, AI Lessons'
+new address and home-language lessons, the Assessment Calendar, the PD Day
+material, a Sustainability reminder, NotebookLM ⇄ Drive sync, and six
+smaller items. Deliberately left out: anything not aimed at AISA staff,
+the Anti-Bullying module (still preview), and internal planning that
+staff have not been told about.
+
+### How the release works: the bell notification is the switch
+
+`Media Hub/issue-release.js` is shared by the issue, `media.html` and
+`index.html`. An issue counts as released when **any active bell
+notification links to its page** (`Media%20Hub/oct30.html`). Until then:
+
+- the issue shows a "not out yet" panel to everyone but the senders, who
+  see it with a *Preview* ribbon and a tools bar at the bottom;
+- `media.html` and the home page keep Issue No. 5 as the latest, and show
+  Issue No. 6 (with a *Preview* badge) only to the senders.
+
+**Release** in the tools bar posts a broadcast notification whose body
+links to the page. Within about 90 seconds (the bell's cache) the issue,
+the Media Hub card and the home-page card switch for everyone. **Email
+all staff** stays locked until then, so nobody is mailed a link they
+cannot open. **Undo release** deletes the notification and switches it
+all back.
+
+So **deleting that notification from Send Notifications un-releases the
+issue.** Don't tidy it away.
+
+Why the bell rather than a flag of its own: it needs no backend change,
+no redeploy and no `gate.js` cascade, so it works on the backend that is
+live today; the menu already fetches the bell on every page; and staff
+should be told when an issue is out anyway.
+
+Two details that matter:
+
+- Releasing is `post_notification`, which the backend allows to the
+  `admins` tab, not to `NEWSLETTER_SENDERS`. If `hodai@` is not an admin,
+  it can preview and email but not release; the bar says so.
+- `SENDERS` in `issue-release.js` mirrors `NEWSLETTER_SENDERS` in
+  `00_settings.gs`. It only decides what the page shows. The page itself
+  is public on GitHub either way, so nothing unpublishable goes in an
+  unreleased issue.
+
+A failed bell read never hides an issue this browser has already seen
+released (`aisa_dl_released_v1` in localStorage); otherwise the page says
+it could not check and offers *Try again*.
+
+The next issue can reuse all of this: give its page the same gate, bar
+and `ISSUE_KEY`, and add its key to the `data-dl-*` attributes on
+`media.html` and `index.html`.
+
+### After Issue No. 6 is released
+
+1. Add it to `menu.js` (fallback palette) and `search-index.js`, which
+   means bumping their pins in `gate.js` and the `?v=` cascade. That was
+   left out on purpose: either file would have shown it to everyone
+   before the release.
+2. Run `build-past-issues.py`, then update the harvester's
+   `reference-pack.md` (ledger, *Shipped since*, *Open threads*). Not
+   before: the pack would describe an issue staff haven't seen.
+3. Once it has been out a while, the gate can stay. It costs nothing,
+   and the bell notification keeps it open.
+
+### Facts to recheck before reusing them
+
+- The Sustainability credit says **Ms Nastassia van Jaarsveldt**, as the
+  module does. Her email signature reads *Nastassia Enslin*,
+  *Sustainability Coordinator*. Worth confirming which name
+  she wants.
+- Flint: students were not rostered on 29 October, so the issue tells
+  teachers to use Preview, not to share with classes. When rostering is
+  done, that is news for the next issue.
+- The Arabic was written for this issue and has not been checked by an
+  Arabic speaker.
+
+`check-issue.py` now fails only on links to the Hub's own production host
+(`github.io/The-Learning-Hub`). The Data Anonymizer, the MAP Dashboard and
+the arcade live on `github.io` too, and an absolute link is the only way
+to reach them.
+
 ## Newsletter harvester — added 13 October 2026
 
 `Media Hub/newsletter-harvester/` holds a weekly Claude Code routine that
@@ -1868,12 +1958,8 @@ needs them.
 
 ## Next Digital Lion Newsletter — items to include
 
-- **NotebookLM ⇄ Google Drive auto-sync.** Files uploaded to NotebookLM
-  now auto-sync from Google Drive — no more re-uploading after edits.
-  Worth a dedicated section (huge daily-use win for teachers building
-  unit packs and study guides). Link to Drive and to the existing
-  NotebookLM PD module. **Held back from Issue No. 5** on 18 Sept 2026 —
-  that issue was entirely AI-literacy rollout and this did not fit.
+Nothing at the moment. NotebookLM ⇄ Google Drive auto-sync, held back
+from Issue No. 5, went into Issue No. 6.
 
 ## Browse bar — pd.html + tools.html, 18 September 2026
 

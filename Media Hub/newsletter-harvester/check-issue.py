@@ -16,7 +16,8 @@ Checks:
   - the gate.js ?v= pin matches the one the rest of the Hub uses
   - the mail-out block (ISSUE, HEADLINE, ITEMS) is filled in and names the
     same issue number as the page
-  - no hardcoded production host and no Google ouid= parameter
+  - no hardcoded link to the Hub's own production host, and no Google
+    ouid= parameter
   - tags balance
 
 No dependencies beyond the standard library.
@@ -162,7 +163,10 @@ def main(path):
     for value, line in w.links:
         if 'ouid=' in value:
             fails.append('line %d: link carries a Google ouid= (owner id); strip it' % line)
-        if 'github.io' in value:
+        # The Hub's own host only. The other tools (the Data Anonymizer, the
+        # MAP Dashboard, the arcade) live on github.io too, and an absolute
+        # link is the only way to reach them.
+        if re.search(r'github\.io/The-Learning-Hub', value, re.I):
             fails.append('line %d: hardcoded production host %s; use a relative link' % (line, value))
         parts = urlsplit(value)
         if parts.scheme or value.startswith(('#', '//', 'mailto:', 'tel:', 'javascript:')):
