@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AISA | Flint Master Guide</title>
+<meta name="description" content="How to plan, differentiate, give feedback and build student AI activities in Flint, with copy-ready prompts. AISA's Flint pilot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+/* Layout: purple cover band, then sticky section index (side rail on desktop, chip strip on phones) beside a single reading column.
+   On the Hub: menu.js puts a fixed bar of --topbar above everything, so every sticky top and
+   scroll-margin clears it. Element rules are scoped to the guide's own blocks with :where(),
+   which keeps their specificity, so they never restyle the menu, the search or the sign-in screen. */
+:root{
+  --topbar:3.75rem; /* matches BAR_HEIGHT in auth/menu.js */
+  --purple:#21076C; --gold:#D8B664; --bg:#FFFFFF; --ink:#1A1A1A; --muted:#555555;
+  --tint:#F2EFFA; --line:#C8BEE8; --surface:#FFFFFF; --head:#21076C; --gold-ink:#8A6A1F;
+  --cover-bg:#21076C; --cover-ink:#FFFFFF; --cover-sub:#D9D2F2;
+  --ok:#2E7D4F; --warn-bg:#FFF6E0; --warn-line:#D8B664; --care:#9A6B00; --stop:#B3261E;
+  --font:'DM Sans',ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --r:10px; --maxw:780px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#120A2B; --ink:#ECE8F7; --muted:#B4ABD3; --tint:#1E1442; --line:#3A2E6E; --surface:#181036; --head:#CFC4FF; --gold-ink:#E2C77E;
+  --cover-bg:#1A0E4A; --cover-ink:#FFFFFF; --cover-sub:#CFC4FF; --ok:#7FD3A3; --warn-bg:#2A2140; --warn-line:#D8B664; --care:#F2C46B; --stop:#FF8A80; color-scheme:dark}}
+.lvl{display:inline-flex;align-items:center;gap:.45rem;font-weight:800;white-space:nowrap}
+.lvl::before{content:"";width:.7rem;height:.7rem;border-radius:50%;background:currentColor}
+.lvl.ok{color:var(--ok)} .lvl.care{color:var(--care)} .lvl.stop{color:var(--stop)}
+.data-tbl td:first-child{width:8.5rem}
+:root[data-theme="dark"]{
+  --bg:#120A2B; --ink:#ECE8F7; --muted:#B4ABD3; --tint:#1E1442; --line:#3A2E6E; --surface:#181036; --head:#CFC4FF; --gold-ink:#E2C77E;
+  --cover-bg:#1A0E4A; --cover-ink:#FFFFFF; --cover-sub:#CFC4FF; --ok:#7FD3A3; --warn-bg:#2A2140; --warn-line:#D8B664; --care:#F2C46B; --stop:#FF8A80; color-scheme:dark}
+
+*,*::before,*::after{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16.5px;line-height:1.6;margin:0}
+:where(.cover,.shell,.foot) a{color:var(--head);text-underline-offset:3px}
+:where(.cover,.shell,.lb) :is(a,button,input):focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
+:where(.cover,.shell) :is(h1,h2,h3,h4){font-family:var(--font);color:var(--head);text-wrap:balance;line-height:1.2;margin:0}
+:where(.shell) h2{font-size:clamp(1.6rem,3.2vw,2.1rem);font-weight:800;letter-spacing:-.01em}
+:where(.shell) h3{font-size:1.2rem;font-weight:700;margin-top:2.2rem}
+:where(.cover,.shell,.foot) p{margin:0}
+.back{display:block;width:fit-content;font-size:.85rem;font-weight:700;color:var(--cover-sub);text-decoration:none;margin-bottom:1rem}
+.back:hover{color:#fff}
+.eyebrow{font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-ink)}
+.gutter{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+
+/* Cover */
+.cover{background:var(--cover-bg);color:var(--cover-ink)}
+.cover-in{max-width:1180px;margin:0 auto;padding-block:48px 56px;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:48px;align-items:center}
+.cover .eyebrow{color:var(--gold)}
+.cover h1{color:#fff;font-size:clamp(2.4rem,6vw,4rem);font-weight:800;letter-spacing:-.025em;margin:.4rem 0 1rem}
+.cover h1 span{color:var(--gold)}
+.cover p.lead{color:var(--cover-sub);font-size:1.12rem;max-width:34rem}
+.cover .meta{color:var(--cover-sub);font-size:.85rem;margin-top:1.4rem;opacity:.85}
+.cta-row{display:flex;flex-wrap:wrap;gap:10px;margin-top:1.6rem}
+.btn{display:inline-flex;align-items:center;gap:.5rem;font:700 .95rem/1 var(--font);padding:.8rem 1.1rem;border-radius:999px;text-decoration:none;border:1.5px solid transparent;cursor:pointer}
+.btn-gold{background:var(--gold);color:#21076C}
+.btn-ghost{border-color:rgba(255,255,255,.45);color:#fff}
+.btn-ghost:hover{background:rgba(255,255,255,.08)}
+.btn-gold:hover{filter:brightness(1.05)}
+
+/* Animated composer (mirrors Flint's message box) */
+.composer{background:#fff;color:#1A1A1A;border-radius:16px;box-shadow:0 30px 60px -20px rgba(0,0,0,.45);padding:18px;border:2px solid #7B2A82}
+.composer .who{display:flex;align-items:center;gap:10px;font-size:.85rem;color:#555;margin-bottom:12px}
+.composer .who b{color:#21076C}
+.composer .dot{width:28px;height:28px;border-radius:50%;background:#F2EFFA;display:grid;place-items:center;font-size:15px}
+.composer .box{min-height:96px;font-size:1rem;line-height:1.5;color:#1A1A1A}
+.composer .caret{display:inline-block;width:2px;height:1.1em;background:#7B2A82;vertical-align:-3px;margin-left:1px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.composer .bar{display:flex;justify-content:space-between;align-items:center;margin-top:12px;border-top:1px solid #eee;padding-top:12px;gap:8px;flex-wrap:wrap}
+.composer .chip{font-size:.78rem;border:1px solid #ddd;border-radius:8px;padding:4px 10px;color:#444}
+.composer .tool-tag{font-size:.75rem;font-weight:700;color:#7B2A82;background:#F6EAF7;border-radius:999px;padding:4px 10px}
+.composer .send{width:32px;height:32px;border-radius:8px;background:#F6EAF7;display:grid;place-items:center;color:#7B2A82;font-weight:700}
+
+/* Index + main */
+.shell{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:220px minmax(0,1fr);gap:56px;padding-block:40px 80px}
+.toc{position:sticky;top:calc(var(--topbar) + 20px);align-self:start;font-size:.9rem}
+.toc p{margin-bottom:.6rem}
+.toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;counter-reset:t}
+.toc a{display:flex;gap:.6rem;padding:.42rem .6rem;border-radius:8px;text-decoration:none;color:var(--muted)}
+.toc a::before{counter-increment:t;content:counter(t,decimal-leading-zero);font-variant-numeric:tabular-nums;color:var(--gold-ink);font-weight:700;font-size:.8rem;padding-top:.1rem}
+.toc a:hover{background:var(--tint);color:var(--head)}
+.toc a.on{background:var(--tint);color:var(--head);font-weight:700}
+main{min-width:0;max-width:var(--maxw)}
+main section{padding-block:8px 56px;border-bottom:1px solid var(--line);margin-bottom:48px;scroll-margin-top:calc(var(--topbar) + 24px)}
+main section:last-of-type{border-bottom:0}
+main h3[id]{scroll-margin-top:calc(var(--topbar) + 24px)}
+section > .eyebrow{display:block;margin-bottom:.5rem}
+.intro{font-size:1.08rem;color:var(--muted);margin-top:.8rem;max-width:62ch}
+
+/* Steps */
+ol.steps{list-style:none;padding:0;margin:1.2rem 0 0;counter-reset:s;display:flex;flex-direction:column;gap:.7rem}
+ol.steps > li{counter-increment:s;display:grid;grid-template-columns:2rem minmax(0,1fr);gap:.8rem;align-items:start}
+ol.steps > li::before{content:counter(s);width:2rem;height:2rem;border-radius:50%;background:var(--tint);color:var(--head);font-weight:800;display:grid;place-items:center;font-size:.9rem;border:1.5px solid var(--line)}
+ol.steps > li > div{padding-top:.2rem;min-width:0}
+kbd,.ui{font-family:var(--font);font-weight:700;color:var(--head);background:var(--tint);border:1px solid var(--line);border-radius:6px;padding:.05rem .4rem;font-size:.92em;white-space:nowrap}
+
+figure{margin:1.4rem 0 0}
+figure img{display:block;width:100%;height:auto;border-radius:var(--r);border:1px solid var(--line);cursor:zoom-in;background:#fff}
+figcaption{font-size:.86rem;color:var(--muted);margin-top:.5rem;font-style:italic}
+
+.callout{margin-top:1.2rem;border-radius:var(--r);padding:.9rem 1rem .9rem 1.1rem;background:var(--tint);border-left:4px solid var(--gold)}
+.callout.warn{background:var(--warn-bg);border-left-color:var(--purple)}
+:root[data-theme="dark"] .callout.warn{border-left-color:var(--head)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .callout.warn{border-left-color:var(--head)}}
+.callout b.k{display:block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-ink);margin-bottom:.2rem}
+.callout.warn b.k{color:var(--head)}
+
+/* Four ways grid */
+.ways{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:1.4rem}
+.way{border:1px solid var(--line);border-radius:var(--r);padding:1rem 1.1rem;background:var(--surface);text-decoration:none;color:var(--ink);display:flex;flex-direction:column;gap:.3rem}
+.way:hover{border-color:var(--head)}
+.way h4{font-size:1.02rem}
+.way p{font-size:.92rem;color:var(--muted)}
+.way .go{font-size:.82rem;font-weight:700;color:var(--head);margin-top:auto;padding-top:.4rem}
+
+/* Legend */
+.legend{list-style:none;padding:0;margin:1rem 0 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.6rem 1.4rem}
+.legend li{display:grid;grid-template-columns:1.7rem minmax(0,1fr);gap:.6rem;font-size:.95rem}
+.legend .n{width:1.7rem;height:1.7rem;border-radius:50%;background:var(--purple);color:#fff;border:2px solid var(--gold);display:grid;place-items:center;font-size:.8rem;font-weight:800}
+
+/* Table */
+.tbl{overflow-x:auto;margin-top:1.2rem;border:1px solid var(--line);border-radius:var(--r)}
+table{border-collapse:collapse;width:100%;font-size:.93rem}
+th,td{text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--tint);color:var(--head);font-weight:700}
+tr:last-child td{border-bottom:0}
+
+/* Prompt blocks */
+.prompt{margin-top:.8rem;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.prompt-h{display:flex;justify-content:space-between;align-items:center;gap:.6rem;padding:.45rem .5rem .45rem .9rem;background:var(--tint);border-bottom:1px solid var(--line)}
+.prompt-h span{font-size:.72rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.prompt-b{padding:.8rem .95rem;font-size:.95rem;white-space:pre-wrap;overflow-wrap:anywhere}
+.prompt-b em{font-style:normal;color:var(--gold-ink);font-weight:700}
+.copy{font:700 .8rem/1 var(--font);background:var(--purple);color:#fff;border:0;border-radius:999px;padding:.5rem .85rem;cursor:pointer;display:inline-flex;gap:.35rem;align-items:center;min-height:32px}
+:root[data-theme="dark"] .copy{background:var(--gold);color:#21076C}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .copy{background:var(--gold);color:#21076C}}
+.copy.done{background:var(--ok);color:#fff}
+
+/* Tool directory */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:1.4rem;align-items:center}
+.fchip{font:600 .86rem/1 var(--font);border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:.5rem .85rem;cursor:pointer}
+.fchip[aria-pressed="true"]{background:var(--purple);border-color:var(--purple);color:#fff}
+:root[data-theme="dark"] .fchip[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#21076C}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .fchip[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:#21076C}}
+.search{flex:1 1 200px;min-width:0;font:500 .92rem var(--font);border:1.5px solid var(--line);border-radius:999px;padding:.55rem .95rem;background:var(--surface);color:var(--ink)}
+.tools{display:flex;flex-direction:column;gap:14px;margin-top:1.2rem}
+.tool{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:1.1rem 1.1rem 1.2rem}
+.tool-top{display:flex;gap:.9rem;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.tool-id{display:flex;gap:.8rem;align-items:flex-start;min-width:0;flex:1 1 280px}
+.tool-ic{width:2.6rem;height:2.6rem;flex:none;border-radius:10px;background:var(--tint);display:grid;place-items:center;font-size:1.3rem}
+.tool h4{font-size:1.08rem}
+.tool .what{font-size:.93rem;color:var(--muted);margin-top:.15rem}
+.tool .tag{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-ink);margin-top:.35rem}
+/* .tool-scoped: menu.js puts a bare "open" class on its search, drawer and menu button */
+.tool .open{font:700 .85rem/1 var(--font);color:var(--head);border:1.5px solid var(--head);border-radius:999px;padding:.5rem .85rem;text-decoration:none;white-space:nowrap}
+.tool .open:hover{background:var(--tint)}
+.empty{color:var(--muted);font-size:.95rem;padding:1rem 0}
+.more{columns:2;gap:2rem;margin-top:1rem;padding-left:1.1rem}
+.more li{margin-bottom:.35rem;break-inside:avoid}
+
+/* Stepper */
+.stepper{margin-top:1.6rem;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);overflow:hidden}
+.st-head{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.8rem 1rem;background:var(--tint);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.st-head .count{font-size:.8rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-variant-numeric:tabular-nums}
+.st-dots{display:flex;gap:6px}
+.st-dots button{width:26px;height:6px;border-radius:3px;border:0;background:var(--line);cursor:pointer;padding:0}
+.st-dots button[aria-current="step"]{background:var(--gold)}
+.st-body{padding:1.2rem 1.2rem .4rem}
+.st-slide h4{font-size:1.15rem}
+.st-slide p{margin-top:.5rem}
+.st-slide figure{margin-top:1rem}
+.st-slide{animation:fade .3s ease}
+@keyframes fade{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}}
+.st-nav{display:flex;justify-content:space-between;gap:10px;padding:1rem 1.2rem 1.2rem}
+.st-nav button{font:700 .92rem/1 var(--font);border-radius:999px;padding:.75rem 1.2rem;cursor:pointer;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)}
+.st-nav button.next{background:var(--purple);border-color:var(--purple);color:#fff}
+:root[data-theme="dark"] .st-nav button.next{background:var(--gold);border-color:var(--gold);color:#21076C}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .st-nav button.next{background:var(--gold);border-color:var(--gold);color:#21076C}}
+.st-nav button:disabled{opacity:.4;cursor:default}
+
+/* Recipe */
+.recipe{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:1.2rem}
+.recipe div{border:1px solid var(--line);border-radius:var(--r);padding:.8rem .9rem;background:var(--surface)}
+.recipe b{display:block;color:var(--head);font-size:.98rem}
+.recipe span{font-size:.88rem;color:var(--muted)}
+
+/* Templates */
+details.tpl{border:1px solid var(--line);border-radius:12px;margin-top:10px;background:var(--surface)}
+details.tpl summary{cursor:pointer;padding:.9rem 1rem;font-weight:700;color:var(--head);list-style:none;display:flex;justify-content:space-between;gap:1rem}
+details.tpl summary::-webkit-details-marker{display:none}
+details.tpl summary::after{content:"+";font-size:1.2rem;line-height:1;color:var(--gold-ink)}
+details.tpl[open] summary::after{content:"–"}
+details.tpl summary small{display:block;font-weight:500;color:var(--muted);font-size:.86rem}
+details.tpl .in{padding:0 1rem 1rem}
+
+/* Lightbox */
+dialog.lb{border:0;padding:0;background:transparent;max-width:min(96vw,1400px);max-height:94vh}
+dialog.lb::backdrop{background:rgba(10,4,30,.82)}
+dialog.lb img{max-width:100%;max-height:88vh;display:block;border-radius:10px;background:#fff}
+dialog.lb button{position:absolute;top:8px;right:8px;font:700 .9rem var(--font);background:#fff;color:#21076C;border:0;border-radius:999px;padding:.5rem .9rem;cursor:pointer}
+
+footer.foot{background:var(--cover-bg);color:var(--cover-sub);font-size:.85rem}
+footer.foot .in{max-width:1180px;margin:0 auto;padding-block:28px;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+footer.foot b{color:#fff}
+
+@media (max-width:1000px){
+  .cover-in{grid-template-columns:minmax(0,1fr);gap:32px;padding-block:36px 40px}
+  .shell{grid-template-columns:minmax(0,1fr);gap:0;padding-block:0 60px}
+  .toc{position:sticky;top:var(--topbar);z-index:20;background:var(--bg);border-bottom:1px solid var(--line);margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px))) 32px;padding:.6rem max(16px,env(safe-area-inset-left,0px))}
+  .toc p{display:none}
+  .toc ol{flex-direction:row;overflow-x:auto;gap:6px;scrollbar-width:none}
+  .toc ol::-webkit-scrollbar{display:none}
+  .toc a{white-space:nowrap;border:1px solid var(--line);border-radius:999px;padding:.35rem .75rem;font-size:.84rem}
+  .toc a::before{display:none}
+  main section,main h3[id]{scroll-margin-top:calc(var(--topbar) + 70px)}
+}
+@media (max-width:640px){
+  .ways,.legend,.recipe{grid-template-columns:minmax(0,1fr)}
+  .more{columns:1}
+  body{font-size:16px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+  html{scroll-behavior:auto}
+}
+html{scroll-behavior:smooth}
+</style>
+<script src="../auth/gate.js?v=31"></script>
+</head>
+<body>
+
+<!-- English only. menu.js's language toggle sets dir="rtl" on <html>, so each block pins ltr. -->
+<header class="cover" dir="ltr">
+  <div class="cover-in gutter">
+    <div>
+      <a class="back" href="tools.html">&larr; Tools &amp; Resources</a>
+      <span class="eyebrow">AISA Staff Guide · AI &amp; Innovation</span>
+      <h1>Flint <span>Master Guide</span></h1>
+      <p class="lead">Everything you need to plan, differentiate, give feedback and build student AI activities in Flint, AISA's ADEK-approved AI platform. Follow the steps, copy a prompt, and you're done.</p>
+      <div class="cta-row">
+        <a class="btn btn-gold" href="https://app.flintk12.com/" target="_blank" rel="noopener">Open Flint ↗</a>
+        <a class="btn btn-ghost" href="#tools">Find a tool</a>
+        <a class="btn btn-ghost" href="#activities">Build a student chatbot</a>
+      </div>
+      <p class="meta">Last updated October 2026 · Screens from app.flintk12.com</p>
+    </div>
+    <div class="composer" aria-label="Animated example of typing a prompt into Flint">
+      <div class="who"><span class="dot" aria-hidden="true">✦</span><span>Ask <b>Sparky</b>, Flint's AI assistant</span></div>
+      <div class="box"><span id="typed"></span><span class="caret" aria-hidden="true"></span></div>
+      <div class="bar"><span class="chip">Context</span><span class="tool-tag" id="typedTool">AI Lesson Plan Generator</span><span class="send" aria-hidden="true">➤</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="shell gutter" dir="ltr">
+  <nav class="toc" aria-label="Guide sections">
+    <p class="eyebrow">In this guide</p>
+    <ol>
+      <li><a href="#start">Start here</a></li>
+      <li><a href="#tour">Quick tour</a></li>
+      <li><a href="#chat">Chat with Sparky</a></li>
+      <li><a href="#tools">Teacher tools</a></li>
+      <li><a href="#activities">Student chatbots</a></li>
+      <li><a href="#results">Share &amp; see results</a></li>
+      <li><a href="#classes">Classes</a></li>
+      <li><a href="#resources">Resources</a></li>
+      <li><a href="#library">Library</a></li>
+      <li><a href="#safe">Safe &amp; smart use</a></li>
+      <li><a href="#help">Troubleshooting &amp; help</a></li>
+    </ol>
+  </nav>
+
+  <main>
+  <!-- START -->
+  <section id="start">
+    <span class="eyebrow">Start here</span>
+    <h2>What is Flint?</h2>
+    <p class="intro">Flint is an AI platform built for schools. You can use it to plan lessons and create materials, and to build AI activities your students work through one-on-one. Its AI assistant is called <b>Sparky</b>. AISA uses Flint because it is approved by ADEK, keeps student use supervised, and shows you what each student understood.</p>
+
+    <h3>Before you start</h3>
+    <ol class="steps">
+      <li><div>Go to <a href="https://app.flintk12.com/" target="_blank" rel="noopener">app.flintk12.com</a> in Chrome.</div></li>
+      <li><div>Sign in with your <b>AISA Google account</b> (your @aisa.sch.ae email).</div></li>
+      <li><div>Check that the school name at the top-left reads <span class="ui">American International School…</span>. If it doesn't, click it and choose AISA.</div></li>
+    </ol>
+    <div class="callout"><b class="k">Tip</b>Bookmark <a href="https://app.flintk12.com/tools" target="_blank" rel="noopener">app.flintk12.com/tools</a>. Most teachers start from the Tools page.</div>
+
+    <h3>Four ways to use Flint</h3>
+    <div class="ways">
+      <a class="way" href="#chat"><h4>Chat with Sparky</h4><p>Ask for anything: a lesson, slides, an image, flashcards, an email.</p><span class="go">Learn how →</span></a>
+      <a class="way" href="#tools"><h4>Use a teacher tool</h4><p>Nearly 70 ready-made tools for planning, assessment, differentiation and feedback.</p><span class="go">See the top tools →</span></a>
+      <a class="way" href="#activities"><h4>Build a student chatbot</h4><p>Create an AI activity that tutors, quizzes or debates with each student.</p><span class="go">Step-by-step →</span></a>
+      <a class="way" href="#library"><h4>Borrow from the Library</h4><p>Copy activities made by AISA colleagues and teachers worldwide.</p><span class="go">Browse →</span></a>
+    </div>
+  </section>
+
+  <!-- TOUR -->
+  <section id="tour">
+    <span class="eyebrow">Quick tour</span>
+    <h2>Find your way around</h2>
+    <p class="intro">This is the Home screen you see after signing in. The left sidebar is the same on every page.</p>
+    <figure><img src="assets/flint/home-screen.jpg" width="1200" height="677" loading="lazy" alt="The Flint Home screen. The numbers match the list below."><figcaption>The Flint Home screen. The numbers match the list below.</figcaption></figure>
+    <ul class="legend">
+      <li><span class="n">1</span><span><b>Message box</b>: type anything to start a chat with Sparky.</span></li>
+      <li><span class="n">2</span><span><b>Chats, Activities, Resources</b>: your past chats, your student activities, and everything you've created.</span></li>
+      <li><span class="n">3</span><span><b>Classes</b>: add or find the classes you teach.</span></li>
+      <li><span class="n">4</span><span><b>Tools and Library</b> (bottom-left): ready-made teacher tools and shared activities.</span></li>
+      <li><span class="n">5</span><span><b>Tools for you</b>: suggestions based on your work. Click <span class="ui">Browse all tools</span> for the full list.</span></li>
+      <li><span class="n">6</span><span><b>Learn more about Flint</b>: help articles and the free AI Literacy for Teachers course.</span></li>
+    </ul>
+    <div class="tbl"><table>
+      <thead><tr><th>Area</th><th>What it's for</th><th>Direct link</th></tr></thead>
+      <tbody>
+        <tr><td>Home</td><td>Start a chat, see suggestions</td><td><a href="https://app.flintk12.com/" target="_blank" rel="noopener">Open</a></td></tr>
+        <tr><td>Chats</td><td>New chat and your chat history</td><td><a href="https://app.flintk12.com/chats/new" target="_blank" rel="noopener">Open</a></td></tr>
+        <tr><td>Tools</td><td>All teacher and student tools</td><td><a href="https://app.flintk12.com/tools" target="_blank" rel="noopener">Open</a></td></tr>
+        <tr><td>Activities</td><td>Student AI activities you've built</td><td><a href="https://app.flintk12.com/activities" target="_blank" rel="noopener">Open</a></td></tr>
+        <tr><td>Resources</td><td>Slides, docs and images you've made</td><td><a href="https://app.flintk12.com/resources" target="_blank" rel="noopener">Open</a></td></tr>
+        <tr><td>Library</td><td>Shared activities from AISA and beyond</td><td><a href="https://app.flintk12.com/library" target="_blank" rel="noopener">Open</a></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- CHAT -->
+  <section id="chat">
+    <span class="eyebrow">Chat with Sparky</span>
+    <h2>Ask Sparky for anything</h2>
+    <p class="intro">Use a chat when you need something quickly and no tool fits: slides, an image, flashcards, a simulation, or help thinking through a lesson.</p>
+    <ol class="steps">
+      <li><div>Click <span class="ui">Chats</span> in the left sidebar, or type straight into the message box on <span class="ui">Home</span>.</div></li>
+      <li><div>Type what you need. Include the grade, subject, and what students should be able to do.</div></li>
+      <li><div>To use your own material, click the paperclip <span class="ui">Add attachment(s)</span> and choose a file.</div></li>
+      <li><div>To make something specific, click the wand <span class="ui">Generate content</span> and choose <b>Video, Image, Slides, Graph, 3D model, Live simulation, Flashcards</b> or <b>Practice problems</b>.</div></li>
+      <li><div>Press <kbd>Enter</kbd> or click the send arrow. Then reply to refine it: "shorter", "add an answer key", "simpler English for EAL learners".</div></li>
+    </ol>
+    <figure><img src="assets/flint/generate-content-menu.jpg" width="930" height="370" loading="lazy" alt="The Generate content menu (wand icon) creates slides, images, flashcards, simulations and more."><figcaption>The Generate content menu (wand icon) creates slides, images, flashcards, simulations and more.</figcaption></figure>
+
+    <h3>Know your message-box buttons</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Button (hover to see the name)</th><th>What it does</th></tr></thead>
+      <tbody>
+        <tr><td><b>Context</b></td><td>Shows what Sparky knows: files in this chat, school context, and what it remembers about you.</td></tr>
+        <tr><td>Create a document / whiteboard / spreadsheet</td><td>Opens an editable doc, whiteboard or sheet inside the chat.</td></tr>
+        <tr><td>Write code / Insert an equation</td><td>For computer science and maths.</td></tr>
+        <tr><td>Add attachment(s) / Take a photo</td><td>Give Sparky your unit planner, a text, or a photo of student work (with no names showing).</td></tr>
+        <tr><td>Generate content (wand)</td><td>Video, image, slides, graph, 3D model, live simulation, flashcards, practice problems.</td></tr>
+        <tr><td>Speak message (microphone)</td><td>Talk instead of typing. You can edit the transcript before sending.</td></tr>
+      </tbody>
+    </table></div>
+    <figure><img src="assets/flint/context-panel.jpg" width="930" height="450" loading="lazy" alt="Click Context to see what Sparky is using: this chat&#x27;s files, School context, and your Profile memories."><figcaption>Click Context to see what Sparky is using: this chat's files, School context, and your Profile memories.</figcaption></figure>
+
+    <h3>Sample prompts</h3>
+    <div class="prompt"><div class="prompt-h"><span>Slides</span><button type="button" class="copy" aria-label="Copy prompt: Slides">Copy</button></div><div class="prompt-b">I teach Grade 8 MYP Individuals and Societies. Create a 10-slide presentation on <em>[the causes of World War I]</em> for students with mixed English levels. Include a key vocabulary slide, one image per slide, and a 3-question exit ticket at the end.</div></div>
+    <div class="prompt"><div class="prompt-h"><span>From your own file</span><button type="button" class="copy" aria-label="Copy prompt: From your own file">Copy</button></div><div class="prompt-b">I've attached my unit planner. Turn it into a one-page student-friendly overview with the learning goals written as "I can" statements, the key vocabulary, and the summative task explained in plain English.</div></div>
+    <div class="prompt"><div class="prompt-h"><span>Flashcards</span><button type="button" class="copy" aria-label="Copy prompt: Flashcards">Copy</button></div><div class="prompt-b">Make 15 flashcards for Grade <em>[5]</em> on <em>[the water cycle]</em>. Each card needs the term, a student-friendly definition, and an example sentence.</div></div>
+    <div class="prompt"><div class="prompt-h"><span>Live simulation</span><button type="button" class="copy" aria-label="Copy prompt: Live simulation">Copy</button></div><div class="prompt-b">Build a live simulation for Grade <em>[9]</em> physics where students change <em>[the angle and launch speed]</em> of a projectile and see how far it travels. Add 3 guiding questions underneath.</div></div>
+    <div class="prompt"><div class="prompt-h"><span>Image</span><button type="button" class="copy" aria-label="Copy prompt: Image">Copy</button></div><div class="prompt-b">Create a clean, labeled diagram of <em>[a plant cell]</em> for Grade <em>[7]</em>. White background, large clear labels, no extra decoration.</div></div>
+  </section>
+
+  <!-- TOOLS -->
+  <section id="tools">
+    <span class="eyebrow">Teacher tools</span>
+    <h2>Use a ready-made tool</h2>
+    <p class="intro">Each tool is a chat that already knows the job. Sparky asks you questions, so you can answer them one by one or paste a full prompt to skip ahead.</p>
+    <ol class="steps">
+      <li><div>Click <span class="ui">Tools</span> at the bottom of the left sidebar.</div></li>
+      <li><div>Search for a tool, or click a category such as <span class="ui">Build lesson materials</span> or <span class="ui">Differentiate instruction</span>.</div></li>
+      <li><div>Click a tool card. A chat opens with the tool's name at the top.</div></li>
+      <li><div>Paste one of the prompts below, change the parts in <em style="font-style:normal;color:var(--gold-ink);font-weight:700">[brackets]</em>, and press <kbd>Enter</kbd>.</div></li>
+      <li><div>Ask for changes until it's right. Your result is saved in <span class="ui">Chats</span> (and in <span class="ui">Resources</span> if Sparky made a file).</div></li>
+    </ol>
+    <figure><img src="assets/flint/tools-page.jpg" width="1184" height="767" loading="lazy" alt="The Tools page. Search at the top, or filter by category."><figcaption>The Tools page. Search at the top, or filter by category.</figcaption></figure>
+    <figure><img src="assets/flint/tool-chat.jpg" width="1184" height="767" loading="lazy" alt="Opening a tool starts a chat. Sparky asks its first question straight away."><figcaption>Opening a tool starts a chat. Sparky asks its first question straight away.</figcaption></figure>
+    <div class="callout"><b class="k">Tip</b>Tools marked <b>For students</b> (AI Tutor, Quiz Me!, Study Guide Maker) are for student use. To give students a guided AI experience, build an activity instead (see <a href="#activities">Student chatbots</a>).</div>
+
+    <h3>The tools AISA teachers use most</h3>
+    <div class="filters" role="group" aria-label="Filter tools">
+      <button class="fchip" aria-pressed="true" data-f="all">All</button>
+      <button class="fchip" aria-pressed="false" data-f="plan">Plan</button>
+      <button class="fchip" aria-pressed="false" data-f="assess">Assess</button>
+      <button class="fchip" aria-pressed="false" data-f="diff">Differentiate</button>
+      <button class="fchip" aria-pressed="false" data-f="feedback">Feedback</button>
+      <button class="fchip" aria-pressed="false" data-f="comms">Communicate</button>
+      <button class="fchip" aria-pressed="false" data-f="create">Create</button>
+      <input class="search" id="toolSearch" type="search" placeholder="Search tools…" aria-label="Search tools">
+    </div>
+    <div class="tools" id="toolList"><article class="tool" data-cat="plan"><div class="tool-top"><div class="tool-id"><span class="tool-ic" aria-hidden="true">🗒️</span><div><h4>AI Lesson Plan Generator</h4><p class="what">Drafts a full lesson whose activities and checks for understanding match your objective.</p><span class="tag">Plan</span></div></div><a class="open" href="https://app.flintk12.com/chats/new?tool=2a80ac8f-fb76-4915-99d3-546de393dc5a" target="_blank" rel="noopener">Open in Flint ↗</a></div><div class="prompt"><div class="prompt-h"><span>Single lesson</span><button type="button" class="copy" aria-label="Copy prompt: Single lesson">Copy</button></div><div class="prompt-b">Plan a <em>[50]</em>-minute Grade <em>[6]</em> MYP <em>[Science]</em> lesson on <em>[states of matter]</em>. Learning objective: students can <em>[explain how particles behave in solids, liquids and gases]</em>. Include a hands-on starter, a main activity in pairs, differentiation for EAL learners and a 3-question exit ticket.</div></div><div class="prompt"><div class="prompt-h"><span>PYP inquiry lesson</span><button type="button" class="copy" aria-label="Copy prompt: PYP inquiry lesson">Copy</button></div><div class="prompt-b">Plan a Grade <em>[2]</em> PYP lesson for the unit <em>[How the world works: Materials change]</em>. Line of inquiry: <em>[how materials change when heated or cooled]</em>. Include a provocation, a small-group investigation, and a reflection that links to the learner profile attribute <em>[Inquirers]</em>.</div></div></article><article class="tool" data-cat="plan"><div class="tool-top"><div class="tool-id"><span class="tool-ic" aria-hidden="true">🗂️</span><div><h4>Unit Plan Generator</h4><p class="what">Builds a coherent unit that connects standards, learning experiences, assessment and pacing.</p><span class="tag">Plan</span></div></div><a class="open" href="https://app.flintk12.com/chats/new?tool=c40ce0ce-27da-4701-8fa6-64f9bc0a888c" target="_blank" rel="noopener">Open in Flint ↗</a></div><div class="prompt"><div class="prompt-h"><span>MYP unit</span><button type="button" class="copy" aria-label="Copy prompt: MYP unit">Copy</button></div><div class="prompt-b">Draft a <em>[6]</em>-week Grade <em>[8]</em> MYP <em>[Language and Literature]</em> unit. Key concept: <em>[Communication]</em>. Related concepts: <em>[audience, purpose]</em>. Global context: <em>[Identities and relationships]</em>. Include a statement of inquiry, factual/conceptual/debatable questions, weekly learning experiences, and a summative task assessed against MYP criteria <em>[A and C]</em>.</div></div><div class="prompt"><div class="prompt-h"><span>High school unit</span><button type="button" class="copy" aria-label="Copy prompt: High school unit">Copy</button></div><div class="prompt-b">Create a <em>[4]</em>-week Grade <em>[11]</em> unit on <em>[linear functions]</em> with clear learning goals, a week-by-week plan, formative checks each week, and an end-of-unit assessment. Students have mixed prior knowledge.</div></div></article><article class="tool" data-cat="assess"><div class="tool-top"><div class="tool-id"><span class="tool-ic" aria-hidden="true">📐</span><div><h4>AI Rubric Generator</h4><p class="what">Creates a rubric with criteria, performance levels and scoring guidance.</p><span class="tag">Assess</span></div></div><a class="open" href="https://app.flintk12.com/chats/new?tool=c3788cc9-0b6a-4852-b0f9-8092349fdcdb" target="_blank" rel="noopener">Open in Flint ↗</a></div><div class="prompt"><div class="prompt-h"><span>Analytic rubric</span><button type="button" class="copy" aria-label="Copy prompt: Analytic rubric">Copy</button></div><div class="prompt-b">Create a 4-level analytic rubric for a Grade <em>[7]</em> <em>[persuasive speech]</em> on <em>[a local environmental issue in the UAE]</em>. Criteria: <em>[argument, use of evidence, delivery, language]</em>. Write each level in student-friendly language and add a short self-assessment checklist.</div></div><div class="prompt"><div class="prompt-h"><span>MYP criterion</span><button type="button" class="copy" aria-label="Copy prompt: MYP criterion">Copy</button></div><div class="prompt-b">Write a task-specific clarification of MYP <em>[Science]</em> Criterion <em>[B: Inquiring and designing]</em> for a Grade <em>[9]</em> lab on <em>[the rate of reaction]</em>. Use the 1–8 bands and write each band as clear 'The student…' statements.</div></div></article><article class="tool" data-cat="assess"><div class="tool-top"><div class="tool-id"><span class="tool-ic" aria-hidden="true">❓</span><div><h4>Multiple Choice Quiz Generator</h4><p class="what">Writes multiple-choice questions with plausible distractors and answer rationales.</p><span class="tag">Assess</span></div></div><a class="open" href="https://app.flintk12.com/chats/new?tool=25d8d164-508d-4218-9087-e347659c9361" target="_blank" rel="noopener">Open in Flint ↗</a></div><div class="prompt"><div class="prompt-h"><span>Quick check</span><button type="button" class="copy" aria-label="Copy prompt: Quick check">Copy</button></div><div class="prompt-b">Create <em>[10]</em> multiple-choice questions for Grade <em>[9]</em> on <em>[cell structure and function]</em>. Mix recall and application. Each question needs 4 options, one correct answer, plausible distractors based on common misconceptions, and a one-line rationale.</div></div><div class="prompt"><div class="prompt-h"><span>From your text</span><button type="button" class="copy" aria-label="Copy prompt: From your text">Copy</button></div><div class="prompt-b">Using the text I'm pasting below, create <em>[8]</em> multiple-choice questions that check comprehension and inference for Grade <em>[6]</em>. Put the answer key with explanations at the end.
+
+<em>[Paste text here]</em></div></div></article><article class="tool" data-cat="assess"><div class="tool-top"><div class="tool-id"><span class="tool-ic" aria-hidden="true">🧠</span><div><h4>DOK Questions</h4><p class="what">Creates questions at chosen levels of Webb's Depth of Knowledge.</p><span class="tag">Assess</span></div></div><a class="open" href="https://app.flintk12.com/chats/new?tool=1bbc4f4f-dc3d-45f5-ae97-de375e44b34f" target="_blank" rel="noopener">Open in Flint ↗</a></div><div class="prompt"><div class="prompt-h"><span>DOK 1–4 set</span><button type="button" class="copy" aria-label="Copy prompt: DOK 1–4 set">Copy</button></div><div class="prompt-b">Create questions at DOK levels 1, 2, 3 and 4 (three per level) for Grade <em>[10]</em> <em>[History]</em> on <em>[the causes of the Industrial Revolution]</em>. Label each level and add a model answer for the DOK 3 and 4 questions.</div></div><div class="prompt"><div class="prompt-h"><span>Discussion questions</span><button type="button" class="copy" aria-label="Copy prompt: Discussion questions">Copy</button></div><div class="prompt-b">Give me <em>[6]</em> DOK 3 discussion questions for a Grade <em>[5]</em> class reading <em>[Charlotte's Web, chapters 1–5]</em>. Students should use evidence from the text.</div></div></article><article class="tool" data-cat="diff"><div class="tool-top"><div class="tool-id"><span class="tool-ic" aria-hidden="true">📶</span><div><h4>AI Text Leveler</h4><p class="what">Adjusts a text's reading level while keeping the key ideas, facts and vocabulary.</p><span class="tag">Differentiate</span></div></div><a class="open" href="https://app.flintk12.com/chats/new?tool=fd7d8cd5-8564-406f-88b7-95c5afb46ba6" target="_blank" rel="noopener">Open in Flint ↗</a></div><div class="prompt"><div class="prompt-h"><span>Three levels</span><button type="button" class="copy" aria-label="Copy prompt: Three levels">Copy</button></div><div class="prompt-b">Rewrite the text below at three reading levels: Grade <em>[3]</em>, Grade <em>[5]</em> and Grade <em>[8]</em>. Keep the key facts and the words <em>[photosynthesis, chlorophyll, glucose]</em>. Add a 5-word glossary to the easiest version.
+
+<em>[Paste text here]</em></div></div><div class="prompt"><div class="prompt-h"><span>EAL version</span><button type="button" class="copy" aria-label="Copy prompt: EAL version">Copy</button></div><div class="prompt-b">Level this text for Grade <em>[6]</em> students who are early English learners (WIDA level <em>[2]</em>). Use short sentences, keep the main ideas, and bold the key vocabulary.
+
+<em>[Paste text here]</em></div></div></article><article class="tool" data-cat="diff"><div class="tool-top"><div class="tool-id"><span class="tool-ic" aria-hidden="true">🪜</span><div><h4>Text Scaffolder</h4><p class="what">Adds clearer language, vocabulary support and manageable chunks to a text.</p><span class="tag">Differentiate</span></div></div><a class="open" href="https://app.flintk12.com/chats/new?tool=c73c8c77-c56a-4c68-ad0f-20684af41b93" target="_blank" rel="noopener">Open in Flint ↗</a></div><div class="prompt"><div class="prompt-h"><span>Chunk and support</span><button type="button" class="copy" aria-label="Copy prompt: Chunk and support">Copy</button></div><div class="prompt-b">Scaffold the text below for Grade <em>[7]</em> EAL learners. Break it into short sections, add a guiding question after each section, give a pre-reading vocabulary list with simple definitions, and add sentence starters for a final summary.
+
+<em>[Paste text here]</em></div></div><div class="prompt"><div class="prompt-h"><span>Arabic support</span><button type="button" class="copy" aria-label="Copy prompt: Arabic support">Copy</button></div><div class="prompt-b">Scaffold this Grade <em>[4]</em> science text for students who are stronger in Arabic than English. Add an English–Arabic glossary of the <em>[8]</em> key terms and a picture suggestion for each section.
+
+<em>[Paste text here]</em></div></div></article><article class="tool" data-cat="feedback"><div class="tool-top"><div class="tool-id"><span class="tool-ic" aria-hidden="true">🖊️</span><div><h4>AI Writing Feedback</h4><p class="what">Drafts specific, constructive feedback on student writing for you to review.</p><span class="tag">Feedback</span></div></div><a class="open" href="https://app.flintk12.com/chats/new?tool=7ac5b30b-64b2-4386-9a33-a1d15f693188" target="_blank" rel="noopener">Open in Flint ↗</a></div><div class="prompt"><div class="prompt-h"><span>Feedback on a draft</span><button type="button" class="copy" aria-label="Copy prompt: Feedback on a draft">Copy</button></div><div class="prompt-b">Give feedback on this Grade <em>[8]</em> <em>[argumentative essay]</em> using these criteria: <em>[claim, evidence, organisation, conventions]</em>. Give two specific strengths, two next steps with an example of how to improve, and one question for the student to think about. Write it to the student in a warm tone.
+
+<em>[Paste the anonymised student writing here, with no name]</em></div></div><div class="prompt"><div class="prompt-h"><span>Whole-class trends</span><button type="button" class="copy" aria-label="Copy prompt: Whole-class trends">Copy</button></div><div class="prompt-b">Here are <em>[5]</em> anonymised Grade <em>[6]</em> paragraphs. Identify the three most common strengths and the three most common errors across them, and suggest a 10-minute mini-lesson for the biggest gap.
+
+<em>[Paste paragraphs labelled Student A, B, C…]</em></div></div></article><article class="tool" data-cat="feedback"><div class="tool-top"><div class="tool-id"><span class="tool-ic" aria-hidden="true">💬</span><div><h4>Report Card Commenter</h4><p class="what">Drafts specific report comments from documented strengths, progress and next steps.</p><span class="tag">Feedback</span></div></div><a class="open" href="https://app.flintk12.com/chats/new?tool=d34cb0c5-28d8-485d-b365-11a582c184b7" target="_blank" rel="noopener">Open in Flint ↗</a></div><div class="prompt"><div class="prompt-h"><span>One comment</span><button type="button" class="copy" aria-label="Copy prompt: One comment">Copy</button></div><div class="prompt-b">Write a <em>[60–80]</em>-word report card comment for a Grade <em>[4]</em> student in <em>[Mathematics]</em>. Strengths: <em>[mental addition, explains reasoning clearly]</em>. Area to grow: <em>[checking work for errors]</em>. Next step: <em>[use the inverse operation to check answers]</em>. Use 'they' and a positive, professional tone. Do not invent anything.</div></div><div class="prompt"><div class="prompt-h"><span>Comment bank</span><button type="button" class="copy" aria-label="Copy prompt: Comment bank">Copy</button></div><div class="prompt-b">Create a comment bank for Grade <em>[9]</em> <em>[Design]</em> with <em>[4]</em> comments for each MYP achievement band (1–2, 3–4, 5–6, 7–8) on <em>[Criterion C: Creating the solution]</em>. Keep each under <em>[50]</em> words.</div></div></article><article class="tool" data-cat="comms"><div class="tool-top"><div class="tool-id"><span class="tool-ic" aria-hidden="true">👨‍👩‍👧</span><div><h4>Email Family Generator</h4><p class="what">Drafts a family email about progress, concerns, updates or good news.</p><span class="tag">Communicate</span></div></div><a class="open" href="https://app.flintk12.com/chats/new?tool=b336f6aa-c864-4381-a2af-3b2370a39840" target="_blank" rel="noopener">Open in Flint ↗</a></div><div class="prompt"><div class="prompt-h"><span>Class update</span><button type="button" class="copy" aria-label="Copy prompt: Class update">Copy</button></div><div class="prompt-b">Draft a warm, short email to Grade <em>[3]</em> families about <em>[our field trip to Al Ain Zoo on 12 November]</em>. Include what students will learn, what to pack, timings, and who to contact with questions. Keep it under <em>[150]</em> words.</div></div><div class="prompt"><div class="prompt-h"><span>Positive news</span><button type="button" class="copy" aria-label="Copy prompt: Positive news">Copy</button></div><div class="prompt-b">Write a short positive email to a family about their child's <em>[excellent effort in our science fair project]</em>, mentioning <em>[their careful testing and clear presentation]</em>. Use <em>[Student]</em>'s first name only, which I will add myself.</div></div></article><article class="tool" data-cat="comms"><div class="tool-top"><div class="tool-id"><span class="tool-ic" aria-hidden="true">🌐</span><div><h4>Text Translator</h4><p class="what">Translates classroom text and messages while keeping meaning, tone and formatting.</p><span class="tag">Communicate</span></div></div><a class="open" href="https://app.flintk12.com/chats/new?tool=f6e3292b-0ceb-4fba-826b-da70ef7fc54c" target="_blank" rel="noopener">Open in Flint ↗</a></div><div class="prompt"><div class="prompt-h"><span>English to Arabic</span><button type="button" class="copy" aria-label="Copy prompt: English to Arabic">Copy</button></div><div class="prompt-b">Translate this family newsletter paragraph into Modern Standard Arabic. Keep a warm, respectful tone suitable for families in the UAE, and keep the dates and headings formatted the same way.
+
+<em>[Paste text here]</em></div></div><div class="prompt"><div class="prompt-h"><span>Bilingual handout</span><button type="button" class="copy" aria-label="Copy prompt: Bilingual handout">Copy</button></div><div class="prompt-b">Translate these <em>[10]</em> science vocabulary words and definitions into <em>[Arabic]</em> and present them as a two-column English | Arabic table for Grade <em>[5]</em>.
+
+<em>[Paste list here]</em></div></div></article><article class="tool" data-cat="create"><div class="tool-top"><div class="tool-id"><span class="tool-ic" aria-hidden="true">🧾</span><div><h4>AI Worksheet Generator</h4><p class="what">Creates a worksheet with clear directions, varied practice and a separate answer key.</p><span class="tag">Create</span></div></div><a class="open" href="https://app.flintk12.com/chats/new?tool=cefc324b-19dd-44c5-8ea3-fd924fbe26b9" target="_blank" rel="noopener">Open in Flint ↗</a></div><div class="prompt"><div class="prompt-h"><span>Practice worksheet</span><button type="button" class="copy" aria-label="Copy prompt: Practice worksheet">Copy</button></div><div class="prompt-b">Create a Grade <em>[5]</em> worksheet on <em>[equivalent fractions]</em> with three sections: warm-up (4 questions), practice (8 questions, getting harder), and a challenge word problem set in <em>[a souq in Abu Dhabi]</em>. Put the answer key on a separate page.</div></div><div class="prompt"><div class="prompt-h"><span>Reading response</span><button type="button" class="copy" aria-label="Copy prompt: Reading response">Copy</button></div><div class="prompt-b">Make a one-page worksheet for Grade <em>[8]</em> on the text below with 3 retrieval questions, 3 inference questions and 1 extended response question. Include a short answer key.
+
+<em>[Paste text here]</em></div></div></article><article class="tool" data-cat="create"><div class="tool-top"><div class="tool-id"><span class="tool-ic" aria-hidden="true">🎨</span><div><h4>Image Generator</h4><p class="what">Creates or edits a classroom visual with a clear teaching purpose.</p><span class="tag">Create</span></div></div><a class="open" href="https://app.flintk12.com/chats/new?tool=ccb53a48-9353-4246-bebb-ed56db6f190c" target="_blank" rel="noopener">Open in Flint ↗</a></div><div class="prompt"><div class="prompt-h"><span>Diagram</span><button type="button" class="copy" aria-label="Copy prompt: Diagram">Copy</button></div><div class="prompt-b">Create a clear labelled diagram of <em>[the water cycle]</em> for Grade <em>[3]</em>: evaporation, condensation, precipitation and collection. Large labels, simple shapes, white background.</div></div><div class="prompt"><div class="prompt-h"><span>Writing prompt image</span><button type="button" class="copy" aria-label="Copy prompt: Writing prompt image">Copy</button></div><div class="prompt-b">Create an illustration to use as a creative writing prompt for Grade <em>[6]</em>: <em>[a mysterious door in the sand dunes of Liwa at sunset]</em>. No text in the image.</div></div></article></div>
+    <p class="empty" id="toolEmpty" hidden>No tools match. Try another word, or <a href="https://app.flintk12.com/tools" target="_blank" rel="noopener">search all tools in Flint</a>.</p>
+
+    <h3>More tools worth knowing</h3>
+    <ul class="more">
+      <li><a href="https://app.flintk12.com/chats/new?tool=f32f5801-bfff-45c7-9ed6-d70e1a3e780f" target="_blank" rel="noopener">Lesson hook generator</a></li>
+      <li><a href="https://app.flintk12.com/chats/new?tool=adab6b30-c3fb-4ae9-a232-53790467a280" target="_blank" rel="noopener">Vocabulary List Generator</a></li>
+      <li><a href="https://app.flintk12.com/chats/new?tool=b2cc0e13-75d1-431f-8920-6f2fde9c1b5f" target="_blank" rel="noopener">Sentence Starters Generator</a></li>
+      <li><a href="https://app.flintk12.com/chats/new?tool=5e56dd48-7b56-4771-a3d8-82e9480edf87" target="_blank" rel="noopener">AI accommodation suggestion tool</a></li>
+      <li><a href="https://app.flintk12.com/chats/new?tool=abea698d-f9d1-4a11-8a8d-067de3e3fbc1" target="_blank" rel="noopener">Universal Design for Learning (UDL) Tool</a></li>
+      <li><a href="https://app.flintk12.com/chats/new?tool=05fc7824-9a38-4671-9984-6d4e07c4cbcd" target="_blank" rel="noopener">Project Based Learning (PBL) Tool</a></li>
+      <li><a href="https://app.flintk12.com/chats/new?tool=8d995e5c-0cef-4622-ae77-c513ee707520" target="_blank" rel="noopener">AI Email Writer</a></li>
+      <li><a href="https://app.flintk12.com/chats/new?tool=422349f5-dadb-47f4-a7cf-652cb62853bb" target="_blank" rel="noopener">PLC Agenda</a></li>
+      <li><a href="https://app.flintk12.com/chats/new?tool=be111103-d27a-406a-8aa7-57c247acc06d" target="_blank" rel="noopener">Multi-Step Assignment</a></li>
+      <li><a href="https://app.flintk12.com/chats/new?tool=723215fe-4a18-4252-99a0-ab26e27947d1" target="_blank" rel="noopener">Classroom Management Tool</a></li>
+    </ul>
+  </section>
+
+  <!-- ACTIVITIES -->
+  <section id="activities">
+    <span class="eyebrow">Student chatbots</span>
+    <h2>Design a student chatbot activity</h2>
+    <p class="intro">An activity is an AI chatbot you design for students. Each student works through it in their own one-on-one chat with Sparky. You decide Sparky's role, rules, materials and how it ends. Flint then shows you each student's strengths and gaps.</p>
+    <figure><img src="assets/flint/activities-page.jpg" width="1200" height="677" loading="lazy" alt="The Activities page. Click Create activity to start."><figcaption>The Activities page. Click Create activity to start.</figcaption></figure>
+
+    <h3>Three kinds of activity</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Choose…</th><th>When</th></tr></thead>
+      <tbody>
+        <tr><td><b>Chat with Sparky</b></td><td>Tutoring, practice, debate, role-play, writing coaching. <b>This is the student chatbot.</b></td></tr>
+        <tr><td><b>Take a test or quiz</b></td><td>Students answer your questions on their own, with no Sparky and no hints.</td></tr>
+        <tr><td><b>Hand in a file</b></td><td>Students upload finished work, like an essay or lab report. Sparky can draft feedback for you.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Build one, step by step</h3>
+    <div class="stepper" id="stepper" aria-roledescription="carousel" aria-label="Activity builder walkthrough">
+      <div class="st-head"><span class="count" id="stCount">Step 1 of 8</span><div class="st-dots" id="stDots" role="tablist" aria-label="Choose a step"></div></div>
+      <div class="st-body" id="stBody" aria-live="polite"></div>
+      <div class="st-nav"><button type="button" id="stPrev">← Back</button><button type="button" class="next" id="stNext">Next →</button></div>
+    </div>
+    <template id="stSlides">
+      <div class="st-slide" data-t="Open Activities"><h4>Open Activities and click Create activity</h4><p>Click <span class="ui">Activities</span> in the left sidebar, then click <span class="ui">+ Create activity</span>. You can also use <a href="https://app.flintk12.com/activities" target="_blank" rel="noopener">this direct link</a>.</p><figure><img src="assets/flint/activities-page.jpg" width="1200" height="677" loading="lazy" alt="Create activity is in the middle of the page (and in the sidebar once you have activities)."><figcaption>Create activity is in the middle of the page (and in the sidebar once you have activities).</figcaption></figure></div>
+      <div class="st-slide"><h4>Choose Chat with Sparky</h4><p>Click <span class="ui">Chat with Sparky</span>, then click <span class="ui">Start building</span>.</p><figure><img src="assets/flint/activity-type.jpg" width="780" height="510" loading="lazy" alt="Pick the type first. Start building turns purple once you&#x27;ve chosen."><figcaption>Pick the type first. Start building turns purple once you've chosen.</figcaption></figure></div>
+      <div class="st-slide"><h4>Meet the builder</h4><p>On the left, you chat with Sparky to design the activity. On the right, <span class="ui">Settings</span> fills in as you go. Click a starter such as <b>Tutor my students on a topic</b>, or describe your own idea.</p><figure><img src="assets/flint/activity-builder.jpg" width="1200" height="677" loading="lazy" alt="The builder: chat on the left, Settings and Preview on the right."><figcaption>The builder: chat on the left, Settings and Preview on the right.</figcaption></figure></div>
+      <div class="st-slide"><h4>Describe your chatbot in one message</h4><p>Say who Sparky is, what students should learn, the rules Sparky must follow, and how it ends. Copy a template from <a href="#templates">Chatbot templates</a> below, then press <kbd>Enter</kbd>.</p><figure><img src="assets/flint/activity-description.jpg" width="728" height="301" loading="lazy" alt="A full description gets a near-finished activity in about a minute."><figcaption>A full description gets a near-finished activity in about a minute.</figcaption></figure></div>
+      <div class="st-slide"><h4>Check what Sparky built</h4><p>Sparky names the activity and fills in the greeting, role, rules and rubric. Read the summary on the left and the <span class="ui">Settings</span> on the right. Ask for changes in plain English, such as "make the exit check 5 questions".</p><figure><img src="assets/flint/activity-built.jpg" width="1200" height="677" loading="lazy" alt="Sparky fills in every settings section for you."><figcaption>Sparky fills in every settings section for you.</figcaption></figure></div>
+      <div class="st-slide"><h4>Fine-tune the settings</h4><p>Click any section to open it. Always set the <span class="ui">Grade level</span>, and check <span class="ui">Sparky's role</span> and <span class="ui">Guidelines for Sparky</span>. Use <span class="ui">Response style</span> to make Sparky more <b>Concise</b> for younger students.</p><figure><img src="assets/flint/activity-behavior.jpg" width="728" height="401" loading="lazy" alt="Activity behavior: grade level, Sparky&#x27;s role, response style and guidelines."><figcaption>Activity behavior: grade level, Sparky's role, response style and guidelines.</figcaption></figure></div>
+      <div class="st-slide"><h4>Test it as a student</h4><p>Click <span class="ui">Preview</span>. Choose a simulated student level (<b>Excellent, Proficient, Developing, Needs improvement</b>) and press play to watch a practice run, or click <span class="ui">Try session myself</span>.</p><figure><img src="assets/flint/preview-levels.jpg" width="728" height="200" loading="lazy" alt="Simulate a strong or struggling student before your class tries it."><figcaption>Simulate a strong or struggling student before your class tries it.</figcaption></figure><figure><img src="assets/flint/try-session.jpg" width="728" height="600" loading="lazy" alt="Try session myself shows exactly what students will see. Reset preview starts again."><figcaption>Try session myself shows exactly what students will see. Reset preview starts again.</figcaption></figure></div>
+      <div class="st-slide"><h4>Save it with Create activity</h4><p>When you're happy, click <span class="ui">Create activity</span> (top-right). This saves the activity. Nothing is shared with students until you share it (see the next section).</p><div class="callout warn"><b class="k">Watch out</b>Your activity is not saved until you click <b>Create activity</b>. If your browser asks whether to leave the page, stay and click it first.</div></div>
+    </template>
+
+    <h3>The recipe for a great chatbot</h3>
+    <p class="intro" style="margin-top:.4rem">Strong activities include all six of these. Weak ones usually miss the rules or the ending.</p>
+    <div class="recipe">
+      <div><b>Role</b><span>Who Sparky is: a coach, a historical figure, a debate opponent.</span></div>
+      <div><b>Goal</b><span>What students should understand or be able to do by the end.</span></div>
+      <div><b>Rules</b><span>One question at a time. Hints, not answers. Stay on topic.</span></div>
+      <div><b>Materials</b><span>Attach your text, notes or unit planner so Sparky uses your content.</span></div>
+      <div><b>Level</b><span>Grade level, English level, and any EAL or learning support needs.</span></div>
+      <div><b>Ending</b><span>An exit check, a summary, or a reflection question to finish.</span></div>
+    </div>
+    <div class="prompt"><div class="prompt-h"><span>Fill-in-the-blanks chatbot recipe</span><button type="button" class="copy" aria-label="Copy prompt: Fill-in-the-blanks chatbot recipe">Copy</button></div><div class="prompt-b">Create a Grade <em>[__]</em> <em>[subject]</em> activity on <em>[topic]</em>.
+Sparky's role: <em>[a friendly coach / a historical figure / a debate opponent]</em>.
+Goal: by the end, students can <em>[learning goal]</em>.
+Rules: ask one question at a time; give hints, not answers; keep replies short; stay on topic; if a student asks for the answer, guide them to work it out.
+Watch for these misconceptions: <em>[list]</em>.
+Level: use simple English suitable for EAL learners <em>[adjust as needed]</em>.
+Ending: finish with <em>[a 3-question exit check / a one-sentence reflection]</em> and tell the student what to work on next.</div></div>
+
+    <h3 id="templates">Chatbot templates</h3>
+    <p class="intro" style="margin-top:.4rem">Copy one into the activity builder and change the parts in [brackets].</p>
+    <details class="tpl"><summary><span>Socratic tutor<small>Guides students to understanding with questions and hints</small></span></summary><div class="in"><div class="prompt"><div class="prompt-h"><span>Paste into the activity builder</span><button type="button" class="copy" aria-label="Copy prompt: Paste into the activity builder">Copy</button></div><div class="prompt-b">Create a Grade <em>[7]</em> <em>[science]</em> tutoring activity on <em>[photosynthesis]</em>. Sparky is a friendly, patient coach. Goal: students can <em>[explain the inputs and outputs of photosynthesis and where it happens]</em>. Rules: ask one question at a time; never give the answer straight away, give a hint first; praise reasoning, not just correct answers; correct these misconceptions gently: <em>[plants get their food from the soil]</em>. Use simple English for EAL learners. End with a 3-question exit check and tell the student one thing to review.</div></div></div></details><details class="tpl"><summary><span>Retrieval practice quiz coach<small>Low-stakes quizzing that adapts to each student</small></span></summary><div class="in"><div class="prompt"><div class="prompt-h"><span>Paste into the activity builder</span><button type="button" class="copy" aria-label="Copy prompt: Paste into the activity builder">Copy</button></div><div class="prompt-b">Create a retrieval practice activity for Grade <em>[9]</em> <em>[History]</em> on <em>[the causes of World War I]</em>. Sparky asks <em>[10]</em> questions one at a time, mixing multiple choice and short answer, starting easy and getting harder. After each answer, Sparky gives brief feedback and explains the correct answer if the student is wrong. If a student gets two wrong in a row, Sparky reteaches the idea in simpler words before moving on. End with a score and the two topics to revise. I've attached my notes; only use this content.</div></div></div></details><details class="tpl"><summary><span>Debate partner<small>Students argue a position and defend it against counterarguments</small></span></summary><div class="in"><div class="prompt"><div class="prompt-h"><span>Paste into the activity builder</span><button type="button" class="copy" aria-label="Copy prompt: Paste into the activity builder">Copy</button></div><div class="prompt-b">Create a debate activity for Grade <em>[10]</em> on the motion: <em>[Social media does more harm than good for teenagers]</em>. Sparky asks the student to choose a side, then takes the opposite side. Rules: Sparky makes one counterargument at a time, asks the student to respond with evidence, and stays respectful. After <em>[4]</em> exchanges, Sparky gives feedback on the student's use of claim, evidence and reasoning, and names their strongest point.</div></div></div></details><details class="tpl"><summary><span>World language conversation partner<small>Speaking and writing practice in Arabic, French or Spanish</small></span></summary><div class="in"><div class="prompt"><div class="prompt-h"><span>Paste into the activity builder</span><button type="button" class="copy" aria-label="Copy prompt: Paste into the activity builder">Copy</button></div><div class="prompt-b">Create a conversation practice activity in <em>[Arabic]</em> for Grade <em>[6]</em> <em>[non-native learners]</em> at a <em>[beginner]</em> level. Topic: <em>[ordering food at a restaurant]</em>. Sparky plays <em>[a waiter]</em> and speaks only in <em>[Arabic]</em>, using short sentences and the vocabulary <em>[list]</em>. If the student makes a mistake, Sparky models the correct form in its next reply without lecturing. After <em>[8]</em> exchanges, Sparky switches to English and gives 2 strengths and 2 corrections.</div></div></div></details><details class="tpl"><summary><span>Interview a historical figure<small>Role-play that brings people and ideas to life</small></span></summary><div class="in"><div class="prompt"><div class="prompt-h"><span>Paste into the activity builder</span><button type="button" class="copy" aria-label="Copy prompt: Paste into the activity builder">Copy</button></div><div class="prompt-b">Create a role-play activity for Grade <em>[8]</em> where students interview <em>[Ibn Battuta]</em> about <em>[his travels and what he learned about different cultures]</em>. Sparky stays in character, speaks in first person, and only shares historically accurate information appropriate to the period. If a student asks something the figure couldn't know, Sparky says so in character. Students must ask at least <em>[5]</em> questions. At the end, Sparky steps out of character and asks the student to summarise three things they learned.</div></div></div></details><details class="tpl"><summary><span>Writing coach (no rewriting)<small>Feedback that keeps the writing the student's own</small></span></summary><div class="in"><div class="prompt"><div class="prompt-h"><span>Paste into the activity builder</span><button type="button" class="copy" aria-label="Copy prompt: Paste into the activity builder">Copy</button></div><div class="prompt-b">Create a writing coach activity for Grade <em>[8]</em> students drafting a <em>[persuasive paragraph]</em>. Students paste their draft. Sparky never rewrites the student's work or writes sentences for them. Instead it gives one strength and one next step at a time, linked to these criteria: <em>[clear claim, relevant evidence, explanation, conventions]</em>, and asks the student to revise and paste the new version. After <em>[3]</em> rounds, Sparky summarises how the paragraph improved.</div></div></div></details><details class="tpl"><summary><span>PYP wonder buddy<small>Curiosity-driven questioning for younger learners</small></span></summary><div class="in"><div class="prompt"><div class="prompt-h"><span>Paste into the activity builder</span><button type="button" class="copy" aria-label="Copy prompt: Paste into the activity builder">Copy</button></div><div class="prompt-b">Create an activity for Grade <em>[1]</em> students for the PYP unit <em>[How the world works: Living things grow and change]</em>. Sparky is a curious, kind friend who uses very short sentences and emojis sparingly. Sparky asks one simple question at a time about <em>[what plants and animals need to grow]</em>, celebrates the student's ideas, and asks 'What do you wonder?' at least twice. Keep every reply under 25 words. End by asking the student to draw or tell their teacher one new thing they learned.</div></div></div></details>
+
+    <div class="callout"><b class="k">Tip</b>Attach your own materials (a reading, your notes, a rubric) with the paperclip in the builder. Sparky then teaches from your content rather than general knowledge.</div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="results">
+    <span class="eyebrow">Share &amp; see results</span>
+    <h2>Give it to students and see what they learned</h2>
+    <h3>Share an activity</h3>
+    <ol class="steps">
+      <li><div>Open the activity from <span class="ui">Activities</span>.</div></li>
+      <li><div>Click <span class="ui">Share activity</span>.</div></li>
+      <li><div>Choose how students get in:
+        <br>• <span class="ui">Copy link</span>: paste the link into Google Classroom or an email.
+        <br>• <span class="ui">Display join code</span>: show a short code on your screen. Students click <span class="ui">Enter join code</span> on their Flint home page.
+        <br>• Type names or emails and click <span class="ui">Invite</span>, with <b>Can participate</b> for students or <b>Can edit</b> for co-teachers.</div></li>
+      <li><div>Click <span class="ui">Done</span>.</div></li>
+    </ol>
+    <div class="callout warn"><b class="k">Watch out</b>New activities can be open to <b>Anyone with the link</b>. Check <b>General access</b> in the Share window before you post the link anywhere public.</div>
+    <div class="callout"><b class="k">Tip</b>To stop new work (for example, after a deadline), open <span class="ui">Settings</span> → <span class="ui">Assignment</span> and turn on <span class="ui">Pause activity</span>. You can also set a due date or a session time limit there.</div>
+
+    <h3>See what students understood</h3>
+    <p style="margin-top:.6rem">Open the activity to see its results. For a <b>Chat with Sparky</b> activity you'll find:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Section</th><th>What it shows</th></tr></thead>
+      <tbody>
+        <tr><td><b>Activity analytics</b></td><td>Three class-wide cards: <b>Strengths</b>, <b>Areas of improvement</b> and <b>Follow-up</b>. Appears once at least 3 students have submitted. Click a highlighted phrase to see the student messages behind it.</td></tr>
+        <tr><td><b>Needs attention</b> (LIVE)</td><td>Alerts that appear while students are working. Click a card to see the message, and tick it when it's resolved.</td></tr>
+        <tr><td><b>Sessions table</b></td><td>Every student's session. Tabs: <b>Overview</b>, <b>Session analytics</b>, and <b>Grades</b> (if your rubric has several categories). Use <b>Download as CSV</b> or <b>Print transcripts</b>.</td></tr>
+        <tr><td><b>Create a follow-up activity</b></td><td>At the bottom of the Follow-up card. It drafts the next activity for you from the class's gaps.</td></tr>
+      </tbody>
+    </table></div>
+    <figure><img src="assets/flint/session-analysis.jpg" width="728" height="430" loading="lazy" alt="Each session gets Strengths, Areas of improvement and Follow-up. This one comes from a simulated preview student."><figcaption>Each session gets Strengths, Areas of improvement and Follow-up. This one comes from a simulated preview student.</figcaption></figure>
+    <div class="callout"><b class="k">Tip</b>Click any student's row to read their full chat, with their own analysis and rubric feedback at the top.</div>
+  </section>
+
+  <!-- CLASSES -->
+  <section id="classes">
+    <span class="eyebrow">Classes</span>
+    <h2>Set up your classes</h2>
+    <p class="intro">Classes let you put activities and resources in front of the right students. Check whether your class already exists before you create one.</p>
+    <ol class="steps">
+      <li><div>In the left sidebar under <b>Classes</b>, click <span class="ui">+ Add a class</span>.</div></li>
+      <li><div>Click <span class="ui">Browse classes</span> first. If your class is listed, join it.</div></li>
+      <li><div>If it isn't there, click <span class="ui">Create in school</span>, type the class <b>Name</b> (for example "G7 Science 7B"), and click <span class="ui">Create</span>.</div></li>
+      <li><div>On the class's <b>People</b> page, click <span class="ui">Add people</span> to add students by email, or <span class="ui">Share class</span> to send them a link.</div></li>
+    </ol>
+    <figure><img src="assets/flint/add-class.jpg" width="520" height="180" loading="lazy" alt="Add a class: Browse classes to find an existing one, or Create in school."><figcaption>Add a class: Browse classes to find an existing one, or Create in school.</figcaption></figure>
+    <div class="callout"><b class="k">Tip</b>Use a clear name with grade, subject and section so colleagues and students can find it. Leave <b>Import from SIS and LMS</b> to the AI &amp; Innovation team.</div>
+  </section>
+
+  <!-- RESOURCES -->
+  <section id="resources">
+    <span class="eyebrow">Resources</span>
+    <h2>Find, present and download what you've made</h2>
+    <p class="intro">Every file Sparky creates for you (slides, documents, images) is saved in <span class="ui">Resources</span>, with the chat it came from.</p>
+    <ol class="steps">
+      <li><div>Click <span class="ui">Resources</span> in the left sidebar (or <a href="https://app.flintk12.com/resources" target="_blank" rel="noopener">open Resources</a>).</div></li>
+      <li><div>Click a resource's name to open it.</div></li>
+      <li><div>Use the buttons at the top-right: <span class="ui">Present</span>, <span class="ui">Open in Google Slides</span>, <span class="ui">Download</span>, or <span class="ui">Maximize</span>.</div></li>
+      <li><div>To do more, click the <span class="ui">⋮</span> at the end of its row: <b>Open in chat</b> (keep editing with Sparky), <b>Share</b>, or <b>Add to class</b>.</div></li>
+    </ol>
+    <figure><img src="assets/flint/resource-viewer.jpg" width="880" height="760" loading="lazy" alt="A slide deck open in the viewer. Open in Google Slides gives you an editable copy."><figcaption>A slide deck open in the viewer. Open in Google Slides gives you an editable copy.</figcaption></figure>
+    <figure><img src="assets/flint/resource-menu.jpg" width="1184" height="270" loading="lazy" alt="The ⋮ menu: reopen the chat to keep editing, share, or add to a class."><figcaption>The ⋮ menu: reopen the chat to keep editing, share, or add to a class.</figcaption></figure>
+  </section>
+
+  <!-- LIBRARY -->
+  <section id="library">
+    <span class="eyebrow">Library</span>
+    <h2>Borrow an activity instead of starting from scratch</h2>
+    <ol class="steps">
+      <li><div>Click <span class="ui">Library</span> at the bottom of the left sidebar (or <a href="https://app.flintk12.com/library" target="_blank" rel="noopener">open the Library</a>).</div></li>
+      <li><div>Switch between <span class="ui">Public library</span> and <span class="ui">School library</span> (activities shared by AISA colleagues).</div></li>
+      <li><div>Click a subject, or filter by <span class="ui">Type</span> and <span class="ui">Grade level</span>.</div></li>
+      <li><div>Open an activity to preview it. To use it, duplicate it into your own classes, then edit it like any activity you built.</div></li>
+      <li><div>Made something great? Click <span class="ui">+ Publish to library</span> to share it with AISA.</div></li>
+    </ol>
+    <figure><img src="assets/flint/library.jpg" width="1184" height="376" loading="lazy" alt="The Library. School library shows activities from AISA colleagues."><figcaption>The Library. School library shows activities from AISA colleagues.</figcaption></figure>
+    <div class="callout"><b class="k">Tip</b>Public library activities are written for many schools. Always check the grade level and wording, and preview before sharing with students.</div>
+  </section>
+
+  <!-- SAFE -->
+  <section id="safe">
+    <span class="eyebrow">Safe &amp; smart use</span>
+    <h2>Student data: what goes into Flint</h2>
+    <p class="intro">Flint is built to hold student data. Students sign in with their AISA accounts, and their chats and work are saved so you can see what they learned. Flint states that student data is never used to train AI models, is kept separate from other schools' data, and belongs to AISA. The question is what <b>you</b> type or upload into your own chats and tools. Give Sparky only what the task needs.</p>
+    <div class="tbl"><table class="data-tbl">
+      <thead><tr><th>Level</th><th>What it covers</th></tr></thead>
+      <tbody>
+        <tr><td><span class="lvl ok">Fine</span></td><td>Students using Flint activities with their own accounts. Class-level information: grade, subject, unit, reading levels, common errors across the class. Student work with names removed.</td></tr>
+        <tr><td><span class="lvl care">Take care</span></td><td>Anything about one student, such as a report comment or feedback on a piece of writing. Use a first name or "Student A", and add the full name yourself afterwards. Before uploading a spreadsheet, run it through the <a href="https://aisa-ai-web.github.io/data-anonymizer/" target="_blank" rel="noopener">AISA Data Anonymizer</a>.</td></tr>
+        <tr><td><span class="lvl stop">Keep out</span></td><td>Health or medical information, learning-support diagnoses, safeguarding or child-protection concerns, behaviour incidents, family circumstances, and student ID or passport numbers.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><b class="k">Why the care?</b>Your prompts are processed by the AI companies Flint runs on (Anthropic and OpenAI) and stored in the United States for as long as the account is active. Flint's privacy documents don't yet cover sensitive categories such as health, learning support or safeguarding. Read more in Flint's <a href="https://flintk12.com/security" target="_blank" rel="noopener">security page</a> and <a href="https://flintk12.com/dpia" target="_blank" rel="noopener">data protection assessment</a>.</div>
+
+    <h3>Four more rules for using Flint well</h3>
+    <ol class="steps">
+      <li><div><b>You are the teacher.</b> Sparky drafts; you decide. Read and edit everything before it reaches students or families. Grading and feedback tools are marked "for educator review" for this reason.</div></li>
+      <li><div><b>Check facts and bias.</b> Check dates, figures and cultural content, especially for UAE, Arabic and Islamic Studies contexts.</div></li>
+      <li><div><b>Preview before you share.</b> Run every activity in <span class="ui">Preview</span> at two or three student levels, and check who can access it.</div></li>
+      <li><div><b>Follow the AISA AI &amp; Assessment policy.</b> Design tasks that show student thinking. Don't rely on AI detectors.</div></li>
+    </ol>
+    <div class="callout warn"><b class="k">Watch out</b>Support-plan tools (IEP, 504, BIP and accommodation tools) are designed for student details, but learning-support information falls under <b>Keep out</b> above. For now, use them to draft wording with no names or diagnoses. Follow AISA's learning support procedures for any real plan.</div>
+  </section>
+
+  <!-- HELP -->
+  <section id="help">
+    <span class="eyebrow">Troubleshooting &amp; help</span>
+    <h2>If something isn't working</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>If…</th><th>Do this</th></tr></thead>
+      <tbody>
+        <tr><td>The tool keeps asking me questions</td><td>That's how tools work. Paste a full prompt from this guide so Sparky has everything at once.</td></tr>
+        <tr><td>The result is too long or too hard</td><td>Reply "shorter" or "rewrite for a Grade 4 reading level". In activities, set <b>Response style</b> to Concise and set the <b>Grade level</b>.</td></tr>
+        <tr><td><span class="ui">Create activity</span> is greyed out</td><td>Some required settings are empty (name, summary, Sparky's role, guidelines, greeting). Describe your activity to Sparky in the builder chat and it fills them in.</td></tr>
+        <tr><td>Activity analytics says it isn't available yet</td><td>Class analysis needs at least 3 submitted student sessions.</td></tr>
+        <tr><td>A student can't open the activity</td><td>Check they're signed in with their AISA Google account, then check the activity's share settings or give them the join code again.</td></tr>
+        <tr><td>I can't find my class</td><td>Click <span class="ui">+ Add a class</span> → <span class="ui">Browse classes</span>. A colleague may have created it already.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>Need help?</h3>
+    <p style="margin-top:.6rem">Contact the <b>AI &amp; Innovation team</b>. These Flint pages are also useful:</p>
+    <ul style="margin-top:.6rem;padding-left:1.2rem;display:flex;flex-direction:column;gap:.35rem">
+      <li><a href="https://help.flintk12.com/en/articles/9126131-get-started-with-flint-for-teachers" target="_blank" rel="noopener">Get started with Flint (for teachers)</a></li>
+      <li><a href="https://help.flintk12.com/en/articles/9038823-activities-everything-you-can-do-with-them" target="_blank" rel="noopener">Activities: everything you can do with them</a></li>
+      <li><a href="https://help.flintk12.com/articles/understanding-activity-analytics-in-flint" target="_blank" rel="noopener">Understanding activity analytics</a></li>
+      <li><a href="https://help.flintk12.com/help/articles/training-videos-for-flint" target="_blank" rel="noopener">Flint training videos</a></li>
+      <li><a href="https://app.flintk12.com/course/ai-literacy-teachers-level-1" target="_blank" rel="noopener">AI Literacy for Teachers · Level 1</a> and <a href="https://app.flintk12.com/course/ai-literacy-teachers-level-2" target="_blank" rel="noopener">Level 2</a> (inside Flint)</li>
+      <li><a href="https://help.flintk12.com" target="_blank" rel="noopener">Flint Help Center</a></li>
+    </ul>
+  </section>
+  </main>
+</div>
+
+<footer class="foot" dir="ltr"><div class="in gutter"><span><b>AISA</b> · American International School in Abu Dhabi</span><span>Flint Master Guide · AI &amp; Innovation · October 2026</span></div></footer>
+
+<dialog class="lb" id="lb"><button type="button" id="lbClose">Close ✕</button><img id="lbImg" alt=""></dialog>
+
+<script>
+(function(){
+  // Hub analytics: gate.js logs a click on any [data-track] element, so name the
+  // links into Flint by what they open and the copy buttons by their prompt.
+  function slug(s){ return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60); }
+  function headText(el, sel){ var h = el && el.querySelector(sel); return h ? h.firstChild.textContent : ''; }
+  document.querySelectorAll('a[href*="app.flintk12.com"]').forEach(function(a){
+    var row = a.closest('tr');
+    var name = headText(a.closest('.tool'), 'h4') || (row ? row.cells[0].textContent : a.textContent);
+    a.setAttribute('data-track', 'flint-guide:open:' + slug(name));
+  });
+  document.querySelectorAll('.copy').forEach(function(b){
+    var where = headText(b.closest('.tool'), 'h4') || headText(b.closest('details.tpl'), 'summary > span') || (b.closest('section') || {}).id;
+    b.setAttribute('data-track', 'flint-guide:copy:' + slug(where + ' ' + b.closest('.prompt').querySelector('.prompt-h span').textContent));
+  });
+
+  // Copy buttons
+  document.addEventListener('click', function(e){
+    var b = e.target.closest('.copy'); if(!b) return;
+    var body = b.closest('.prompt').querySelector('.prompt-b');
+    var text = body.innerText.trim();
+    var done = function(){ b.classList.add('done'); b.textContent = '✓ Copied'; setTimeout(function(){ b.classList.remove('done'); b.textContent = 'Copy'; }, 1800); };
+    var fallback = function(){ var r = document.createRange(); r.selectNodeContents(body); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); try { document.execCommand('copy') ? done() : (b.textContent='Press Ctrl+C'); } catch(_) { b.textContent='Press Ctrl+C'; } };
+    try { if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback(); } catch(_) { fallback(); }
+  });
+
+  // Lightbox
+  var lb = document.getElementById('lb'), lbImg = document.getElementById('lbImg');
+  document.addEventListener('click', function(e){
+    var img = e.target.closest('figure img'); if(!img || !lb.showModal) return;
+    lbImg.src = img.src; lbImg.alt = img.alt; lb.showModal();
+  });
+  document.getElementById('lbClose').addEventListener('click', function(){ lb.close(); });
+  lb.addEventListener('click', function(e){ if(e.target === lb) lb.close(); });
+
+  // Tool filter
+  var chips = document.querySelectorAll('.fchip'), q = document.getElementById('toolSearch'), cur = 'all';
+  function apply(){
+    var term = (q.value||'').toLowerCase().trim(), n = 0;
+    document.querySelectorAll('.tool').forEach(function(t){
+      var ok = (cur==='all' || t.dataset.cat===cur) && (!term || t.textContent.toLowerCase().indexOf(term) > -1);
+      t.hidden = !ok; if(ok) n++;
+    });
+    document.getElementById('toolEmpty').hidden = n > 0;
+  }
+  chips.forEach(function(c){ c.addEventListener('click', function(){ chips.forEach(function(x){ x.setAttribute('aria-pressed','false'); }); c.setAttribute('aria-pressed','true'); cur = c.dataset.f; apply(); }); });
+  q.addEventListener('input', apply);
+
+  // Stepper
+  var slides = Array.prototype.slice.call(document.getElementById('stSlides').content.children);
+  var body = document.getElementById('stBody'), dots = document.getElementById('stDots'), i = 0;
+  slides.forEach(function(_, k){ var d = document.createElement('button'); d.type='button'; d.setAttribute('aria-label','Go to step '+(k+1)); d.addEventListener('click', function(){ go(k); }); dots.appendChild(d); });
+  function go(k){
+    i = Math.max(0, Math.min(slides.length-1, k));
+    body.innerHTML = ''; body.appendChild(slides[i].cloneNode(true));
+    document.getElementById('stCount').textContent = 'Step ' + (i+1) + ' of ' + slides.length;
+    Array.prototype.forEach.call(dots.children, function(d, j){ if(j===i) d.setAttribute('aria-current','step'); else d.removeAttribute('aria-current'); });
+    document.getElementById('stPrev').disabled = i===0;
+    var nx = document.getElementById('stNext'); nx.textContent = i===slides.length-1 ? 'Start again ↺' : 'Next →';
+  }
+  document.getElementById('stPrev').addEventListener('click', function(){ go(i-1); });
+  document.getElementById('stNext').addEventListener('click', function(){ go(i===slides.length-1 ? 0 : i+1); });
+  document.getElementById('stepper').addEventListener('keydown', function(e){ if(e.key==='ArrowRight') go(i+1); if(e.key==='ArrowLeft') go(i-1); });
+  go(0);
+
+  // Section index highlight
+  var links = document.querySelectorAll('.toc a');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ links.forEach(function(a){ a.classList.toggle('on', a.getAttribute('href')==='#'+en.target.id); }); } }); }, {rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('main section').forEach(function(s){ io.observe(s); });
+  }
+
+  // Typing animation
+  var demos = [
+    ['AI Lesson Plan Generator', 'Plan a 50-minute Grade 6 MYP Science lesson on states of matter, with a hands-on starter and an exit ticket.'],
+    ['AI Text Leveler', 'Rewrite this article for Grade 4 EAL learners. Keep the key facts and add a glossary of 5 words.'],
+    ['Student chatbot', 'Create a friendly Grade 7 science coach that asks one question at a time and gives hints, not answers.'],
+    ['Email Family Generator', 'Draft a warm email to Grade 3 families about our upcoming field trip to Al Ain Zoo.']
+  ];
+  var el = document.getElementById('typed'), tag = document.getElementById('typedTool');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) { el.textContent = demos[0][1]; return; }
+  var d = 0, c = 0, del = false;
+  el.textContent = demos[0][1].slice(0, 40);
+  c = 40;
+  (function tick(){
+    var full = demos[d][1];
+    if(!del){ c++; el.textContent = full.slice(0,c); if(c>=full.length){ del=true; return setTimeout(tick, 2200); } return setTimeout(tick, 32); }
+    c -= 3; el.textContent = full.slice(0, Math.max(0,c));
+    if(c<=0){ del=false; c=0; d=(d+1)%demos.length; tag.textContent = demos[d][0]; return setTimeout(tick, 350); }
+    setTimeout(tick, 12);
+  })();
+})();
+</script>
+
+</body>
+</html>

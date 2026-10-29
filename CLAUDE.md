@@ -603,7 +603,7 @@ The `aisa_onboarding_v1` localStorage key is orphaned on staff devices.
 Harmless — nothing reads it.
 
 Note the cache-busting convention: `gate.js` is included as
-`auth/gate.js?v=N` by **49 pages**, so **changing `gate.js` means bumping
+`auth/gate.js?v=N` by **50 pages**, so **changing `gate.js` means bumping
 `N` on every one of them** or returning visitors keep running the
 cached copy. That change took it to `?v=19`; the September 18
 newsletter took it to `?v=20`, the newsletter mail-out to `?v=21`, and
@@ -614,13 +614,14 @@ audit (23 September 2026) to `?v=25`, and the Sustainability release
 `?v=27`, its per-session search entries (the same day) to `?v=28`,
 the Data to Action session's entry to `?v=29`, and the station-guide
 download with MagicSchool and Chalkie leaving Tools & Resources
-(20 October 2026) to `?v=30`.
+(20 October 2026) to `?v=30`, and the Flint Master Guide (29 October
+2026) to `?v=31`, which also made it 50 pages.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
-their own pins — `certificate.js?v=7`, `search-index.js?v=15`,
-`menu.js?v=19`, `dwell.js?v=2` — so **editing one of those helpers
+their own pins — `certificate.js?v=7`, `search-index.js?v=16`,
+`menu.js?v=20`, `dwell.js?v=2` — so **editing one of those helpers
 means bumping its pin inside `gate.js`, which is itself a change to
-`gate.js`, which means bumping `?v=N` on all 49 pages again.** Adding a
+`gate.js`, which means bumping `?v=N` on all 50 pages again.** Adding a
 page to the menu or the search index is enough to trigger the whole
 cascade. Skip it and returning staff keep the cached helper and never
 see the new entry.
@@ -1551,6 +1552,84 @@ silently falls back to English.
 Content sourced verbatim from ADEK's Train-the-Trainer Day 1 deck and
 Participant Worksheet Packet — the Ms Hana case in segment 3 is
 Worksheet 3 unaltered, including its Grade 7 setting.
+
+## Flint Master Guide — pilot, added 29 October 2026
+
+`Tools and Resources/flint-guide.html` is Brandon's *Flint Master Guide*
+for Flint (`app.flintk12.com`), the AI platform AISA started piloting in
+October 2026. Brandon asked for it on the Hub "for teachers to access".
+He supplied one self-contained HTML file (DM Sans, AISA purple and gold,
+its own dark mode) with 19 screenshots inlined as base64. Those are now
+18 files in `Tools and Resources/assets/flint/` (760 KB), because
+`activities-page.jpg` appears twice. **The words are his and unchanged.**
+
+It is reached from:
+
+- a card, first in *AI Teaching Assistants* on `tools.html`. The card
+  opens the guide, and its *Pilot · Open Flint* strip opens Flint;
+- `search-index.js` (type *Guide*);
+- the fallback palette in `menu.js`.
+
+The last two set off the cascade to `?v=31`. Like the AI Growth Test
+guide, it is **not a PD module**: it is in no `MODULES` array and has no
+completion or certificate.
+
+**What was changed to fit it into the Hub.** Re-apply all of this if
+Brandon sends a new version:
+
+- the `gate.js` include, and a back link to Tools & Resources in the
+  cover;
+- `--topbar` (menu.js's 60px bar) in the sticky index's `top` and in
+  every `scroll-margin-top`;
+- `dir="ltr"` on the cover, the shell and the footer, because it is
+  English only and the menu's Arabic toggle sets `rtl` on `<html>`;
+- its bare element rules (`a`, `p`, `h1`–`h4`, the focus ring), scoped
+  to its own blocks with `:where()`, which keeps their specificity;
+- `.open` (the *Open in Flint* pills) and `.tag`, scoped to `.tool`.
+  **menu.js puts a bare `open` class on its search overlay, drawer and
+  menu button**, and the guide's pill style turned the whole search
+  overlay into a bordered ellipse. Before using a generic class name
+  unscoped in a self-contained page, grep `classList.add(` in
+  `auth/*.js`;
+- the Claude-artifact meta tag, `viewport-fit=cover` and a `body::before`
+  safe-area strip, all removed (the Hub's topbar owns the top edge);
+- a short script that tags every link into Flint as
+  `flint-guide:open:<what>` and every Copy button as
+  `flint-guide:copy:<tool or template>-<prompt>`. The clicks sheet then
+  shows which tools and prompts the pilot teachers actually use.
+
+The screenshots were pulled out in order with a few lines of Python,
+which decode each `data:image/jpeg;base64` URI and name it by what it
+shows. Do the same for a new version, then diff its text against this
+page.
+
+**All 18 screenshots were checked before committing.** They show
+demonstration content only: a Grade 7 photosynthesis activity and a
+simulated preview student. The only name in any of them is Brandon's
+own, from his Flint account: the Home greeting, the sidebar, *Brandon
+Baki created*, and the preview session greeting him. His name is
+already public throughout this repo. No student or other member of staff
+appears. **Check any replacement screenshot the same way**, because the
+repo is public.
+
+The `?tool=<uuid>` links open Flint's own tool templates, which are the
+same for every school. They carry no AISA or personal identifier.
+
+What was tested (the scripts need Chromium and are not in the repo):
+
+- no sideways scroll at 390 px;
+- the section index sticks under the topbar;
+- every anchor lands clear of the bars;
+- the Arabic Hub setting leaves it LTR;
+- Hub search finds it;
+- the menu's search and drawer have the same computed styles here as on
+  the AI Growth Test guide.
+
+**Open question:** who is in the pilot. The card says *Pilot* but the
+guide does not, and it tells every teacher to sign in with their AISA
+Google account. If the pilot is a named group, staff outside it will
+reach a sign-in that does not work, and the page may want a line saying
+who it is for.
 
 ## AI Growth Test guide — added 18 September 2026
 
