@@ -615,11 +615,12 @@ audit (23 September 2026) to `?v=25`, and the Sustainability release
 the Data to Action session's entry to `?v=29`, and the station-guide
 download with MagicSchool and Chalkie leaving Tools & Resources
 (20 October 2026) to `?v=30`, and the Flint Master Guide (29 October
-2026) to `?v=31`, which also made it 50 pages.
+2026) to `?v=31`, which also made it 50 pages, and the search-result
+overflow fix (the same day) to `?v=32`.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
-their own pins — `certificate.js?v=7`, `search-index.js?v=16`,
-`menu.js?v=20`, `dwell.js?v=2` — so **editing one of those helpers
+their own pins — `certificate.js?v=7`, `search-index.js?v=17`,
+`menu.js?v=21`, `dwell.js?v=2` — so **editing one of those helpers
 means bumping its pin inside `gate.js`, which is itself a change to
 `gate.js`, which means bumping `?v=N` on all 50 pages again.** Adding a
 page to the menu or the search index is enough to trigger the whole
@@ -635,6 +636,24 @@ grep -rn 'gate\.js?v=' --include='*.html' . | grep -o 'v=[0-9]*' | sort -u
 
 The second command should print exactly one version. Two means a page
 was missed.
+
+## Search results — text ran under the type chip, fixed 29 October 2026
+
+In the Ctrl+K overlay a long description ran on under the result's type
+chip and was cut off by the card edge, with its last letters showing
+beyond the chip, and the title and description shared one line. The CSS
+already had `min-width:0` on `.body` and `overflow:hidden` +
+`text-overflow:ellipsis` on `.tt`/`.dd`; none of it ever applied,
+because `.tt` and `.dd` are `<span>`s. Only `.body` is blockified (it is
+the flex item), so its children stayed **inline, where `overflow` and
+`text-overflow` do nothing** while `white-space:nowrap` still applies.
+`.tt` is now `display:block` (one line, ellipsis) and `.dd` a two-line
+clamp, the same pattern as the bell's `.nb`. Checked at 1280 px and
+390 px, left-to-right and right-to-left.
+
+Same commit: five `search-index.js` entries had a literal `&amp;`, which
+`menu.js` escapes, so the overlay printed "&amp;". **Write a plain `&` in
+`search-index.js`**; `menu.js` is its only reader and escapes every field.
 
 ## Logo — sharpened 26 September 2026
 

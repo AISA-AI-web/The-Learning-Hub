@@ -452,9 +452,12 @@
                 'text-decoration:none;color:#0f172a;font:inherit;cursor:pointer;transition:background .12s;border:none;background:transparent;text-align:left;}',
             '.aisa-search-result:hover,.aisa-search-result.active{background:#eef2ff;}',
             '.aisa-search-result .ic{width:2.2rem;height:2.2rem;border-radius:.5rem;background:#f1f5f9;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem;}',
+            /* .tt and .dd are <span>s: without a block display they stay inline, where
+               overflow and text-overflow do nothing and the text runs out under the tag. */
             '.aisa-search-result .body{min-width:0;flex:1;}',
-            '.aisa-search-result .tt{font-weight:700;font-size:.92rem;color:#0f172a;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
-            '.aisa-search-result .dd{font-size:.78rem;color:#64748b;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+            '.aisa-search-result .tt{display:block;font-weight:700;font-size:.92rem;color:#0f172a;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}',
+            '.aisa-search-result .dd{font-size:.78rem;color:#64748b;margin-top:1px;line-height:1.35;',
+                'display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
             '.aisa-search-result .tag{font-size:.6rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;color:#4f46e5;background:#eef2ff;padding:.2rem .45rem;border-radius:9999px;flex-shrink:0;}',
 
             /* === Full-view notification modal === */
