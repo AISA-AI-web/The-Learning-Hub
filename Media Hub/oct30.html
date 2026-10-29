@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<!--
+    The Digital Lion, Issue No. 6 (Friday, October 30, 2026).
+
+    Held back until released. Until someone presses Release in the bar at
+    the bottom, only the newsletter senders (bbaki@, hodai@) see this page;
+    everyone else gets the "not out yet" panel. Releasing posts the
+    announcement to every member of staff's notification bell, and that
+    notification is what makes the issue visible here, on media.html and
+    on the home page. Deleting it takes the issue back. See issue-release.js.
+
+    The repo is public, so this file is readable on GitHub whatever the
+    page shows. Nothing in it may be anything that could not be published.
+-->
+<html lang="en" dir="ltr" class="dl-pending">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Digital Lion Newsletter — October 30</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        if (window.tailwind) {
+            tailwind.config = {
+                theme: {
+                    extend: {
+                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        colors: { primary: '#0b2545', secondary: '#0891b2', accent: '#f59e0b' },
+                        animation: { 'blob': 'blob 7s infinite' },
+                        keyframes: {
+                            blob: {
+                                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+                            },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-heading { font-family: 'Poppins', sans-serif; }
+        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(8, 47, 73, 0.25); }
+        .hero-gradient { background: linear-gradient(135deg, #0a1929 0%, #0b3559 35%, #0e6e91 75%, #0891b2 100%); }
+        .hero-overlay {
+            background-image:
+                radial-gradient(circle at 20% 30%, rgba(34, 211, 238, 0.18) 0, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(251, 191, 36, 0.15) 0, transparent 45%);
+        }
+
+        /* --- Headline CTA: pulsing amber glow on the lead item's button --- */
+        .hub-cta { animation: hubPulse 2.4s ease-in-out infinite; }
+        @keyframes hubPulse {
+            0%, 100% { box-shadow: 0 6px 18px 0 rgba(245, 158, 11, 0.55), 0 0 0 0 rgba(245, 158, 11, 0.5); }
+            50%      { box-shadow: 0 12px 30px 0 rgba(245, 158, 11, 0.65), 0 0 0 14px rgba(245, 158, 11, 0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hub-cta { animation: none; }
+        }
+
+        /* --- Bilingual toggle: show only the active language --- */
+        html[lang="en"] .lang-ar { display: none !important; }
+        html[lang="ar"] .lang-en { display: none !important; }
+
+        /* Arabic typography */
+        html[lang="ar"] body,
+        html[lang="ar"] .font-heading { font-family: 'Cairo', 'Inter', sans-serif; }
+        html[lang="ar"] .uppercase { text-transform: none; letter-spacing: normal; }
+        html[lang="ar"] .tracking-widest,
+        html[lang="ar"] .tracking-wider { letter-spacing: normal; }
+
+        /* RTL flow: flip directional margins and arrow icons */
+        html[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
+        html[dir="rtl"] .mr-1\.5 { margin-right: 0; margin-left: 0.375rem; }
+        html[dir="rtl"] .mr-2 { margin-right: 0; margin-left: 0.5rem; }
+        html[dir="rtl"] .mr-3 { margin-right: 0; margin-left: 0.75rem; }
+        html[dir="rtl"] .ml-2 { margin-left: 0; margin-right: 0.5rem; }
+        html[dir="rtl"] .text-left { text-align: right; }
+
+        /* Latin runs inside Arabic sentences keep their own direction */
+        .ltr { direction: ltr; unicode-bidi: isolate; }
+
+        /* --- Release gate (issue-release.js) ---
+           Until the page knows whether the issue is out, and for good if
+           it isn't and the viewer is not a sender, the issue stays hidden
+           and #dl-gate says why. The class is on <html> in the markup, so
+           nothing flashes before the answer. */
+        html.dl-pending [data-dl-content],
+        html.dl-closed  [data-dl-content] { display: none !important; }
+        #dl-gate { display: none; }
+        html.dl-pending #dl-gate,
+        html.dl-closed  #dl-gate { display: block; }
+        #dl-gate [data-state] { display: none; }
+        #dl-gate[data-show="checking"] [data-state="checking"],
+        #dl-gate[data-show="notyet"]   [data-state="notyet"],
+        #dl-gate[data-show="error"]    [data-state="error"] { display: block; }
+        .dl-spinner { display: inline-block; width: 1.1rem; height: 1.1rem; border-radius: 999px;
+                      border: 3px solid rgba(207, 250, 254, .35); border-top-color: #fbbf24;
+                      animation: dlSpin .8s linear infinite; vertical-align: -3px; }
+        @keyframes dlSpin { to { transform: rotate(360deg); } }
+        @media (prefers-reduced-motion: reduce) { .dl-spinner { animation: none; } }
+
+        /* Shown to the senders only, while the issue is not out yet. */
+        #dl-preview { background: #fef3c7; color: #78350f; border-bottom: 2px solid #f59e0b;
+                      font-size: .85rem; padding: .6rem 1rem; text-align: center; }
+
+        /* Newsletter tools bar. Deliberately off-palette (AISA purple, not
+           the Digital Lion navy) so it never reads as content. */
+        #nl-send { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+                   background: #21076C; color: #fff; padding: .85rem 1rem;
+                   box-shadow: 0 -8px 24px -12px rgba(0,0,0,.6); }
+        #nl-send .nl-inner { max-width: 60rem; margin: 0 auto; display: flex;
+                             flex-wrap: wrap; align-items: center; gap: .6rem .9rem; }
+        #nl-send .nl-kicker { font-size: .62rem; font-weight: 800; letter-spacing: .09em;
+                              text-transform: uppercase; color: #D8B664; }
+        #nl-send button { font: inherit; font-weight: 700; font-size: .8rem; cursor: pointer;
+                          border-radius: 999px; padding: .5rem 1.1rem; border: 2px solid #D8B664; }
+        #nl-send .nl-go   { background: #D8B664; color: #21076C; }
+        #nl-send .nl-test { background: transparent; color: #D8B664; }
+        #nl-send .nl-release { background: #f59e0b; border-color: #f59e0b; color: #1e1b4b; }
+        #nl-send .nl-undo { background: transparent; color: #E9E4F7; border-color: rgba(233,228,247,.45); }
+        #nl-send button[disabled] { opacity: .55; cursor: not-allowed; }
+        #nl-send .nl-msg { font-size: .78rem; color: #E9E4F7; flex-basis: 100%; margin: 0; }
+        #nl-state { font-size: .82rem; }
+
+        /* At-a-glance table */
+        .dates-table th, .dates-table td { padding: 0.7rem 0.9rem; vertical-align: top; }
+        .dates-table tbody tr + tr { border-top: 1px solid rgba(207, 250, 254, 0.16); }
+        .dates-table a { color: #fde68a; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+    </style>
+    <script src="../auth/gate.js?v=31"></script>
+    <script src="issue-release.js?v=1"></script>
+</head>
+<body class="bg-slate-50 text-gray-800 min-h-screen flex flex-col">
+
+    <!-- Release gate: what everyone but the senders sees until the issue is out -->
+    <section id="dl-gate" data-show="checking" class="hero-gradient text-white relative overflow-hidden flex-grow" aria-live="polite">
+        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
+        <div class="container mx-auto px-6 py-16 md:py-24 relative z-10 max-w-2xl text-center">
+            <img src="the_digital_lion_logo.png" alt="Digital Lion — AISA's Teaching &amp; Learning newsletter" class="w-full max-w-md mx-auto rounded-2xl shadow-2xl border border-white/20 mb-10">
+
+            <div data-state="checking">
+                <p class="text-lg text-cyan-50">
+                    <span class="dl-spinner" aria-hidden="true"></span>
+                    <span class="lang-en">Checking whether this issue is out…</span>
+                    <span class="lang-ar">جارٍ التحقّق من صدور هذا العدد…</span>
+                </p>
+            </div>
+
+            <div data-state="notyet">
+                <h2 class="text-3xl md:text-4xl font-heading font-extrabold mb-4">
+                    <span class="lang-en">This issue isn't out yet</span>
+                    <span class="lang-ar">لم يصدر هذا العدد بعد</span>
+                </h2>
+                <p class="text-lg text-cyan-50 mb-8">
+                    <span class="lang-en">It will appear here, and in your notifications, as soon as it's released. Until then, the latest issue is No. 5.</span>
+                    <span class="lang-ar">سيظهر هنا وفي إشعاراتكم فور صدوره. وحتى ذلك الحين، آخر عدد صادر هو العدد الخامس.</span>
+                </p>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <a href="sep18.html" class="inline-flex items-center justify-center bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3 rounded-full font-bold hover:from-amber-600 hover:to-orange-600 transition-transform hover:scale-105">
+                        <span class="mr-2">📰</span>
+                        <span class="lang-en">Read Issue No. 5</span>
+                        <span class="lang-ar">اقرأوا العدد الخامس</span>
+                    </a>
+                    <a href="media.html" class="inline-flex items-center justify-center bg-white/15 border border-white/30 text-white px-7 py-3 rounded-full font-bold hover:bg-white/25">
+                        <span class="lang-en">All issues</span>
+                        <span class="lang-ar">كل الأعداد</span>
+                    </a>
+                </div>
+            </div>
+
+            <div data-state="error">
+                <h2 class="text-3xl md:text-4xl font-heading font-extrabold mb-4">
+                    <span class="lang-en">We couldn't check whether this issue is out</span>
+                    <span class="lang-ar">تعذّر التحقّق من صدور هذا العدد</span>
+                </h2>
+                <p class="text-lg text-cyan-50 mb-8">
+                    <span class="lang-en">Check your connection and try again. If it keeps happening, email me.</span>
+                    <span class="lang-ar">تحقّقوا من اتصالكم وحاولوا مجددًا. إن تكرّر ذلك، راسلوني.</span>
+                </p>
+                <button type="button" id="dl-retry" class="inline-flex items-center justify-center bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3 rounded-full font-bold hover:from-amber-600 hover:to-orange-600">
+                    <span class="lang-en">Try again</span>
+                    <span class="lang-ar">حاولوا مجددًا</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Senders only, while the issue is not out yet -->
+    <div id="dl-preview" style="display:none" data-dl-content>
+        <strong>Preview, not released.</strong> Only the newsletter senders can see this issue.
+        Staff will see it when you press <strong>Release</strong> in the bar at the bottom.
+    </div>
+
+    <!-- Hero -->
+    <section class="hero-gradient text-white relative overflow-hidden" data-dl-content>
+        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
+        <div class="absolute -top-20 -left-20 w-72 h-72 bg-cyan-400/25 rounded-full blur-3xl animate-blob"></div>
+        <div class="absolute -bottom-24 -right-16 w-80 h-80 bg-amber-300/25 rounded-full blur-3xl animate-blob" style="animation-delay: 2s;"></div>
+        <div class="container mx-auto px-6 py-12 md:py-16 relative z-10 max-w-4xl">
+
+            <figure class="mb-8 flex justify-center">
+                <img src="the_digital_lion_logo.png" alt="Digital Lion — AISA's Teaching &amp; Learning newsletter" class="w-full max-w-2xl rounded-2xl shadow-2xl border border-white/20">
+            </figure>
+            <p class="text-xs font-bold uppercase tracking-widest text-amber-300 text-center mb-4">
+                <span class="lang-en">Issue No. 6 &middot; October 30</span>
+                <span class="lang-ar">العدد السادس · ٣٠ أكتوبر</span>
+            </p>
+            <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-5 drop-shadow-lg text-center">
+                <span class="lang-en">New tools, and one place to find them</span>
+                <span class="lang-ar">أدوات جديدة، ومكان واحد يجمعها</span>
+            </h2>
+            <p class="text-lg md:text-xl max-w-3xl mx-auto text-cyan-50 drop-shadow text-center">
+                <span class="lang-en">It's been six weeks since the last issue. MagicSchool has gone, Flint is open to every teacher, and the tools we've built this term now sit on one page. Here's what changed, what's new, and what — if anything — you need to do.</span>
+                <span class="lang-ar">مرّت ستة أسابيع على العدد الماضي. انتهى اشتراك MagicSchool، وأصبحت منصة Flint متاحة لكل معلّم، وباتت الأدوات التي بنيناها هذا الفصل في صفحة واحدة. إليكم ما تغيّر، وما الجديد، وما المطلوب منكم — إن وُجد.</span>
+            </p>
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-3 text-sm">
+                <span class="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3 py-1 font-semibold">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span class="lang-en">October 30</span>
+                    <span class="lang-ar">٣٠ أكتوبر</span>
+                </span>
+                <span class="inline-flex items-center gap-1.5 bg-white/15 border border-white/20 rounded-full px-3 py-1 font-semibold">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-5.13a4 4 0 11-8 0 4 4 0 018 0zm6 3a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    <span class="lang-en">For All Teaching Staff</span>
+                    <span class="lang-ar">لجميع الطاقم التدريسي</span>
+                </span>
+            </div>
+            <p class="mt-5 text-center text-sm text-cyan-100/90">
+                <span class="lang-en">Every item below says who it's for. Skip anything that isn't yours.</span>
+                <span class="lang-ar">يوضّح كل بند أدناه الفئة المعنيّة به. تجاوزوا ما لا يخصّكم.</span>
+            </p>
+        </div>
+    </section>
+
+    <!-- Main -->
+    <main class="flex-grow" data-dl-content>
+        <div class="container mx-auto px-6 py-14 max-w-4xl">
+
+            <!-- At a glance -->
+            <section class="bg-blue-950 text-cyan-50 rounded-2xl shadow-lg border-t-8 border-amber-400 p-6 md:p-8 mb-10">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-amber-300 mb-1">
+                    <span class="lang-en">Read this bit if you read nothing else</span>
+                    <span class="lang-ar">إن لم تقرأوا شيئًا سوى هذا</span>
+                </p>
+                <h3 class="text-2xl md:text-3xl font-heading font-extrabold mb-5">
+                    <span class="lang-en">At a glance</span>
+                    <span class="lang-ar">باختصار</span>
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="dates-table w-full text-sm text-left">
+                        <thead>
+                            <tr class="text-[11px] uppercase tracking-widest text-amber-300 border-b border-cyan-200/20">
+                                <th scope="col"><span class="lang-en">What to do</span><span class="lang-ar">المطلوب</span></th>
+                                <th scope="col"><span class="lang-en">Who it's for</span><span class="lang-ar">الفئة المعنيّة</span></th>
+                                <th scope="col"><span class="lang-en">Where</span><span class="lang-ar">أين</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="lang-en">Finish <strong>Sustainability at AISA</strong> if you haven't yet. It's required.</span><span class="lang-ar">أكملوا وحدة <strong>الاستدامة في AISA</strong> إن لم تكملوها بعد، فهي إلزامية.</span></td>
+                                <td class="text-cyan-100/85"><span class="lang-en">Every member of staff</span><span class="lang-ar">جميع الموظفين</span></td>
+                                <td class="whitespace-nowrap"><a href="../PD%20Modules/sustainability-module.html" data-track="digital-lion:oct30:glance-sustainability"><span class="lang-en">The module</span><span class="lang-ar">الوحدة</span></a></td>
+                            </tr>
+                            <tr>
+                                <td><span class="lang-en">Try <strong>Flint</strong>. The pilot runs until the end of this term.</span><span class="lang-ar">جرّبوا منصة <strong>Flint</strong>. تستمر التجربة حتى نهاية هذا الفصل.</span></td>
+                                <td class="text-cyan-100/85"><span class="lang-en">All teachers</span><span class="lang-ar">جميع المعلّمين</span></td>
+                                <td class="whitespace-nowrap"><a href="../Tools%20and%20Resources/flint-guide.html" data-track="digital-lion:oct30:glance-flint"><span class="lang-en">Flint Master Guide</span><span class="lang-ar">دليل Flint الشامل</span></a></td>
+                            </tr>
+                            <tr>
+                                <td><span class="lang-en">Bookmark one link for every tool: <strong>AISA Tools</strong>.</span><span class="lang-ar">احفظوا في المفضلة رابطًا واحدًا لكل الأدوات: <strong><span class="ltr">AISA Tools</span></strong>.</span></td>
+                                <td class="text-cyan-100/85"><span class="lang-en">All teachers</span><span class="lang-ar">جميع المعلّمين</span></td>
+                                <td class="whitespace-nowrap"><a href="https://aisa-tools.pages.dev/" target="_blank" rel="noopener" data-track="digital-lion:oct30:glance-tools"><span class="lang-en">AISA Tools ↗</span><span class="lang-ar">افتحوا <span class="ltr">AISA Tools</span> ↗</span></a></td>
+                            </tr>
+                            <tr>
+                                <td><span class="lang-en">Check the <strong>Assessment Calendar</strong> before you book a test.</span><span class="lang-ar">راجعوا <strong>تقويم التقييمات</strong> قبل تحديد موعد أي اختبار.</span></td>
+                                <td class="text-cyan-100/85"><span class="lang-en">Teachers of Grades 6&ndash;12</span><span class="lang-ar">معلّمو الصفوف ٦–١٢</span></td>
+                                <td class="whitespace-nowrap"><a href="https://aisa-assessment-calendar.pages.dev/" target="_blank" rel="noopener" data-track="digital-lion:oct30:glance-calendar"><span class="lang-en">The calendar ↗</span><span class="lang-ar">التقويم ↗</span></a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- LEAD: MagicSchool ends, Flint begins -->
+            <section id="flint" class="bg-gradient-to-br from-amber-50 via-white to-cyan-50 rounded-2xl shadow-lg border-t-8 border-amber-500 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-200 via-amber-100 to-cyan-100 flex items-center justify-center">
+                            <span class="text-3xl">✨</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-700 mb-1">
+                            <span class="lang-en">For: All teachers &middot; Start here</span>
+                            <span class="lang-ar">لِمَن: جميع المعلّمين · ابدأوا بهذا</span>
+                        </p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-3">
+                            <span class="lang-en">MagicSchool has ended. Flint is open to every teacher.</span>
+                            <span class="lang-ar">انتهى MagicSchool، وأصبحت Flint متاحة لكل معلّم</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            <span class="lang-en">MagicSchool moved to its free version on <strong>Tuesday, October 20</strong>, and it is no longer one of the school's tools. In its place, AISA is piloting <strong>Flint</strong>, an AI platform approved by ADEK. It does the jobs most of you used MagicSchool for: lesson plans, rubrics, differentiation and feedback. It can also build AI activities that your students work through one-on-one, and it shows you what each student understood.</span>
+                            <span class="lang-ar">تحوّل حساب MagicSchool إلى النسخة المجانية يوم <strong>الثلاثاء ٢٠ أكتوبر</strong>، ولم يعد من أدوات المدرسة. وبدلًا منه، تجرّب AISA منصة <strong>Flint</strong>، وهي منصة ذكاء اصطناعي معتمدة من دائرة التعليم والمعرفة (ADEK). تؤدي المهام التي استخدم معظمكم MagicSchool من أجلها: خطط الدروس ومعايير التقييم والتمايز والتغذية الراجعة. ويمكنها أيضًا بناء أنشطة ذكاء اصطناعي يعمل عليها طلابكم بشكل فردي، وتُظهر لكم ما فهمه كل طالب.</span>
+                        </p>
+                        <p class="text-gray-700 leading-relaxed mb-5">
+                            <span class="lang-en">The pilot is open to <strong>every teacher</strong> and runs <strong>until the end of this term</strong>. Sign in at <span class="ltr">app.flintk12.com</span> with your AISA Google account. Your feedback decides whether we keep it, so please tell me what works and what doesn't.</span>
+                            <span class="lang-ar">التجربة متاحة <strong>لكل معلّم</strong> وتستمر <strong>حتى نهاية هذا الفصل</strong>. سجّلوا الدخول عبر <span class="ltr">app.flintk12.com</span> بحساب Google المدرسي. ملاحظاتكم هي التي ستحدّد ما إذا كنا سنحتفظ بالمنصة، فأخبروني بما ينجح وما لا ينجح.</span>
+                        </p>
+                        <div class="flex flex-wrap items-center gap-x-5 gap-y-3 mb-6">
+                            <a href="../Tools%20and%20Resources/flint-guide.html" data-track="digital-lion:oct30:flint-guide" class="hub-cta inline-flex items-center justify-center bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3 rounded-full font-bold hover:from-amber-600 hover:to-orange-600 transition-transform hover:scale-105">
+                                <span class="mr-2">🧭</span>
+                                <span class="lang-en">Open the Flint Master Guide</span>
+                                <span class="lang-ar">افتحوا دليل Flint الشامل</span>
+                            </a>
+                            <a href="https://app.flintk12.com/" target="_blank" rel="noopener" data-track="digital-lion:oct30:flint-open" class="inline-flex items-center text-sm font-bold text-cyan-800 hover:text-cyan-900">
+                                <span class="mr-2">↗</span>
+                                <span class="lang-en">Open Flint</span>
+                                <span class="lang-ar">افتحوا Flint</span>
+                            </a>
+                        </div>
+                        <h4 class="font-heading font-bold text-blue-950 mb-2">
+                            <span class="lang-en">What's in the guide</span>
+                            <span class="lang-ar">ماذا يتضمّن الدليل</span>
+                        </h4>
+                        <ul class="space-y-2 text-gray-700 leading-relaxed mb-6 list-disc ps-5 marker:text-amber-600">
+                            <li>
+                                <span class="lang-en">A quick tour, and how to ask Sparky, Flint's assistant, for slides, flashcards or a simulation.</span>
+                                <span class="lang-ar">جولة سريعة، وكيف تطلبون من Sparky، مساعد Flint، شرائح عرض أو بطاقات تعليمية أو محاكاة.</span>
+                            </li>
+                            <li>
+                                <span class="lang-en">The teacher tools AISA uses most, each with a prompt you can copy and change.</span>
+                                <span class="lang-ar">أدوات المعلّم الأكثر استخدامًا في AISA، ولكل أداة أمر جاهز يمكنكم نسخه وتعديله.</span>
+                            </li>
+                            <li>
+                                <span class="lang-en">How to build a student chatbot that tutors, quizzes or debates.</span>
+                                <span class="lang-ar">كيف تبنون روبوت محادثة للطلاب يدرّس أو يختبر أو يناظر.</span>
+                            </li>
+                            <li>
+                                <span class="lang-en"><a href="../Tools%20and%20Resources/flint-guide.html#safe" data-track="digital-lion:oct30:flint-safe" class="font-semibold text-cyan-800 underline">What student information may go into Flint</a>, and what must stay out.</span>
+                                <span class="lang-ar"><a href="../Tools%20and%20Resources/flint-guide.html#safe" data-track="digital-lion:oct30:flint-safe" class="font-semibold text-cyan-800 underline">ما المعلومات الطلابية المسموح بإدخالها في Flint</a>، وما يجب إبقاؤه خارجها.</span>
+                            </li>
+                        </ul>
+                        <div class="bg-amber-50 border-s-4 border-amber-500 rounded-xl p-4 mb-4">
+                            <p class="text-sm text-gray-800 leading-relaxed">
+                                <span class="lang-en"><strong>Students aren't in Flint yet.</strong> Student accounts and classes are still being set up. Until I tell you they're ready, use Flint for your own planning, and try student activities in Preview rather than sharing them with a class.</span>
+                                <span class="lang-ar"><strong>الطلاب ليسوا على Flint بعد.</strong> ما زال إعداد حسابات الطلاب والصفوف جاريًا. إلى أن أبلغكم بجاهزيتها، استخدموا Flint في تخطيطكم الخاص، وجرّبوا أنشطة الطلاب في وضع المعاينة (Preview) بدلًا من مشاركتها مع الصف.</span>
+                            </p>
+                        </div>
+                        <div class="bg-cyan-50 border-s-4 border-cyan-500 rounded-xl p-5">
+                            <h4 class="font-heading font-bold text-blue-950 mb-2">
+                                <span class="lang-en">Still have work in MagicSchool?</span>
+                                <span class="lang-ar">هل ما زالت لديكم أعمال على MagicSchool؟</span>
+                            </h4>
+                            <p class="text-sm text-gray-700 leading-relaxed">
+                                <span class="lang-en">Your account still works as a free account, but it is not a school tool any more, so please keep student information out of it. You also still have Gemini and NotebookLM with your AISA account. If you'd like help moving something across, email me.</span>
+                                <span class="lang-ar">ما زال حسابكم يعمل كحساب مجاني، لكنه لم يعد من أدوات المدرسة، لذا يُرجى عدم إدخال أي معلومات عن الطلاب فيه. وما زالت لديكم أداتا Gemini وNotebookLM بحسابكم المدرسي. إن احتجتم إلى مساعدة في نقل أي شيء، راسلوني.</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AISA Tools: one front door -->
+            <section id="tools" class="bg-white rounded-2xl shadow-lg border-t-8 border-cyan-600 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-cyan-100 to-blue-100 flex items-center justify-center">
+                            <span class="text-3xl">🧰</span>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-700 mb-1">
+                            <span class="lang-en">For: All teachers</span>
+                            <span class="lang-ar">لِمَن: جميع المعلّمين</span>
+                        </p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-3">
+                            <span class="lang-en">Every tool we've built, on one page</span>
+                            <span class="lang-ar">كل الأدوات التي بنيناها، في صفحة واحدة</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-5">
+                            <span class="lang-en">This term the AI &amp; Innovation team built several tools for AISA teachers. They now share one front door, <strong>AISA Tools</strong>. Bookmark it once and open everything from there. The tools that save your work sign you in with your AISA account, and the two data tools never send your files anywhere.</span>
+                            <span class="lang-ar">بنى فريق الذكاء الاصطناعي والابتكار هذا الفصل عدة أدوات لمعلّمي AISA، وأصبح لها الآن مدخل واحد هو <strong><span class="ltr">AISA Tools</span></strong>. احفظوه في المفضلة مرة واحدة، وافتحوا منه كل شيء. الأدوات التي تحفظ عملكم تسجّل دخولكم بحسابكم المدرسي، وأداتا البيانات لا ترسلان ملفاتكم إلى أي مكان.</span>
+                        </p>
+                        <div class="grid sm:grid-cols-2 gap-3 mb-6">
+                            <a href="https://aisa-ai-lessons.pages.dev/" target="_blank" rel="noopener" data-track="digital-lion:oct30:tools-ai-lessons" class="block bg-slate-50 border border-slate-200 hover:border-cyan-400 rounded-xl p-4">
+                                <span class="block font-heading font-bold text-blue-950 mb-1"><span class="mr-1.5">📘</span><span class="lang-en">AI Lessons</span><span class="lang-ar">دروس الذكاء الاصطناعي</span></span>
+                                <span class="block text-sm text-gray-700 leading-relaxed"><span class="lang-en">AI Literacy lessons for Grades 6–12, with your class dashboards and the teaching calendar.</span><span class="lang-ar">دروس الثقافة في الذكاء الاصطناعي للصفوف ٦–١٢، مع لوحات متابعة صفوفكم وتقويم التدريس.</span></span>
+                            </a>
+                            <a href="https://aisa-activity-hub.pages.dev/" target="_blank" rel="noopener" data-track="digital-lion:oct30:tools-activity-hub" class="block bg-slate-50 border border-slate-200 hover:border-cyan-400 rounded-xl p-4">
+                                <span class="block font-heading font-bold text-blue-950 mb-1"><span class="mr-1.5">🧩</span><span class="lang-en">Activity Hub</span><span class="lang-ar">مركز الأنشطة</span></span>
+                                <span class="block text-sm text-gray-700 leading-relaxed"><span class="lang-en">Paste HTML from any AI tool and get a class activity with its own link and QR code.</span><span class="lang-ar">الصقوا كود HTML من أي أداة ذكاء اصطناعي واحصلوا على نشاط صفي برابط ورمز QR خاصين به.</span></span>
+                            </a>
+                            <a href="https://aisa-assessment-calendar.pages.dev/" target="_blank" rel="noopener" data-track="digital-lion:oct30:tools-calendar" class="block bg-slate-50 border border-slate-200 hover:border-cyan-400 rounded-xl p-4">
+                                <span class="block font-heading font-bold text-blue-950 mb-1"><span class="mr-1.5">🗓️</span><span class="lang-en">Assessment Calendar</span><span class="lang-ar">تقويم التقييمات</span></span>
+                                <span class="block text-sm text-gray-700 leading-relaxed"><span class="lang-en">See what your students already have on a day before you book an assessment.</span><span class="lang-ar">اطّلعوا على ما لدى طلابكم في يوم ما قبل تحديد موعد أي تقييم.</span></span>
+                            </a>
+                            <a href="https://aisa-ai-web.github.io/map-data-tool/" target="_blank" rel="noopener" data-track="digital-lion:oct30:tools-map" class="block bg-slate-50 border border-slate-200 hover:border-cyan-400 rounded-xl p-4">
+                                <span class="block font-heading font-bold text-blue-950 mb-1"><span class="mr-1.5">📊</span><span class="lang-en">MAP Dashboard</span><span class="lang-ar">لوحة بيانات MAP</span></span>
+                                <span class="block text-sm text-gray-700 leading-relaxed"><span class="lang-en">Turn your NWEA MAP Growth exports into a class plan: who grew, who needs support, how to group.</span><span class="lang-ar">حوّلوا ملفات NWEA MAP Growth إلى خطة للصف: من تقدّم، ومن يحتاج إلى دعم، وكيف توزّعون المجموعات.</span></span>
+                            </a>
+                            <a href="https://aisa-ai-web.github.io/data-anonymizer/" target="_blank" rel="noopener" data-track="digital-lion:oct30:tools-anonymizer" class="block bg-slate-50 border border-slate-200 hover:border-cyan-400 rounded-xl p-4">
+                                <span class="block font-heading font-bold text-blue-950 mb-1"><span class="mr-1.5">🛡️</span><span class="lang-en">Data Anonymizer</span><span class="lang-ar">أداة إخفاء الهوية</span></span>
+                                <span class="block text-sm text-gray-700 leading-relaxed"><span class="lang-en">Swap student names for codes before a spreadsheet goes to an AI tool, then put the names back.</span><span class="lang-ar">استبدلوا أسماء الطلاب برموز قبل إرسال جدول البيانات إلى أداة ذكاء اصطناعي، ثم أعيدوا الأسماء.</span></span>
+                            </a>
+                            <a href="../index.html" data-track="digital-lion:oct30:tools-hub" class="block bg-slate-50 border border-slate-200 hover:border-cyan-400 rounded-xl p-4">
+                                <span class="block font-heading font-bold text-blue-950 mb-1"><span class="mr-1.5">🎓</span><span class="lang-en">Learning Hub</span><span class="lang-ar">مركز التعلّم</span></span>
+                                <span class="block text-sm text-gray-700 leading-relaxed"><span class="lang-en">Where you are now: PD modules, the PD days and the AI Literacy Hub.</span><span class="lang-ar">حيث أنتم الآن: وحدات التطوير المهني وأيام التطوير المهني ومركز الثقافة في الذكاء الاصطناعي.</span></span>
+                            </a>
+                        </div>
+                        <a href="https://aisa-tools.pages.dev/" target="_blank" rel="noopener" data-track="digital-lion:oct30:tools-open" class="inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-cyan-700 text-white px-6 py-2.5 rounded-full font-bold hover:from-blue-950 hover:to-cyan-800 transition-transform hover:scale-105">
+                            <span class="mr-2">🔖</span>
+                            <span class="lang-en">Open AISA Tools</span>
+                            <span class="lang-ar">افتحوا <span class="ltr">AISA Tools</span></span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Activity Hub -->
+            <section id="activity-hub" class="bg-white rounded-2xl shadow-lg border-t-8 border-amber-500 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-100 to-cyan-100 flex items-center justify-center">
+                            <span class="text-3xl">🧩</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-700 mb-1">
+                            <span class="lang-en">For: All teachers</span>
+                            <span class="lang-ar">لِمَن: جميع المعلّمين</span>
+                        </p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-3">
+                            <span class="lang-en">Activity Hub: turn what an AI tool makes into a class activity</span>
+                            <span class="lang-ar">مركز الأنشطة: حوّلوا ما تصنعه أداة الذكاء الاصطناعي إلى نشاط صفي</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            <span class="lang-en">Ask Gemini, Flint or any other AI tool for an interactive activity: a quiz, a sorting game, a simulation. Paste the code into the Activity Hub and you get a link, a QR code and a Google Classroom button. Students open it without signing in. What you publish also goes into a shared library, so you can find, use and remix what colleagues have made.</span>
+                            <span class="lang-ar">اطلبوا من Gemini أو Flint أو أي أداة ذكاء اصطناعي أخرى نشاطًا تفاعليًا: اختبارًا قصيرًا أو لعبة تصنيف أو محاكاة. الصقوا الكود في مركز الأنشطة، فتحصلوا على رابط ورمز QR وزر للنشر في Google Classroom. يفتح الطلاب النشاط دون تسجيل دخول. وكل ما تنشرونه يُضاف إلى مكتبة مشتركة، لتجدوا ما صنعه زملاؤكم وتستخدموه وتعدّلوه.</span>
+                        </p>
+                        <div class="bg-cyan-50 border-s-4 border-cyan-500 rounded-xl p-5 mb-4">
+                            <h4 class="font-heading font-bold text-blue-950 mb-2">
+                                <span class="lang-en">Your first one, in five minutes</span>
+                                <span class="lang-ar">نشاطكم الأول في خمس دقائق</span>
+                            </h4>
+                            <ol class="text-sm text-gray-700 leading-relaxed list-decimal ps-5 space-y-1.5">
+                                <li>
+                                    <span class="lang-en">Ask your AI tool: <em>“Make an interactive [matching game] for Grade [6] on [the water cycle], as one self-contained HTML file.”</em></span>
+                                    <span class="lang-ar">اطلبوا من أداة الذكاء الاصطناعي: <em>«أنشئ [لعبة مطابقة] تفاعلية للصف [السادس] عن [دورة الماء]، في ملف HTML واحد مستقل.»</em></span>
+                                </li>
+                                <li>
+                                    <span class="lang-en">Copy the code it gives you. If some of the chat comes with it, that's fine.</span>
+                                    <span class="lang-ar">انسخوا الكود الذي تقدّمه لكم. لا بأس إن نُسخ معه جزء من المحادثة.</span>
+                                </li>
+                                <li>
+                                    <span class="lang-en">Open the Activity Hub, paste it in, and play it through in the preview.</span>
+                                    <span class="lang-ar">افتحوا مركز الأنشطة، والصقوا الكود، وجرّبوا النشاط كاملًا في المعاينة.</span>
+                                </li>
+                                <li>
+                                    <span class="lang-en">Add a title and grade, then press <strong>Publish &amp; get link</strong>.</span>
+                                    <span class="lang-ar">أضيفوا عنوانًا والصف، ثم اضغطوا <strong><span class="ltr">Publish &amp; get link</span></strong>.</span>
+                                </li>
+                            </ol>
+                        </div>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            <span class="lang-en"><strong>You're still the teacher:</strong> AI tools sometimes get answers wrong, so check every question before your students see it.</span>
+                            <span class="lang-ar"><strong>أنتم المعلّمون في النهاية:</strong> قد تخطئ أدوات الذكاء الاصطناعي في الإجابات أحيانًا، فراجعوا كل سؤال قبل أن يراه طلابكم.</span>
+                        </p>
+                        <div class="bg-amber-50 border-s-4 border-amber-500 rounded-xl p-4 mb-5">
+                            <p class="text-sm text-gray-800 leading-relaxed">
+                                <span class="lang-en"><strong>It moved on Saturday, October 24.</strong> The Activity Hub now lives at a faster address. Links, QR codes and Classroom posts you made before still open the same activities. If it says you're not on the teacher list, email me.</span>
+                                <span class="lang-ar"><strong>انتقل المركز يوم السبت ٢٤ أكتوبر</strong> إلى عنوان جديد وأسرع. الروابط ورموز QR ومنشورات Classroom التي أنشأتموها سابقًا ما زالت تفتح الأنشطة نفسها. إن ظهر لكم أنكم لستم على قائمة المعلّمين، راسلوني.</span>
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
+                            <a href="https://aisa-activity-hub.pages.dev/" target="_blank" rel="noopener" data-track="digital-lion:oct30:activity-hub" class="inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-cyan-700 text-white px-6 py-2.5 rounded-full font-bold hover:from-blue-950 hover:to-cyan-800 transition-transform hover:scale-105">
+                                <span class="mr-2">🧩</span>
+                                <span class="lang-en">Open the Activity Hub</span>
+                                <span class="lang-ar">افتحوا مركز الأنشطة</span>
+                            </a>
+                            <a href="https://aisa-activity-hub.pages.dev/library.html" target="_blank" rel="noopener" data-track="digital-lion:oct30:activity-library" class="inline-flex items-center text-sm font-bold text-cyan-800 hover:text-cyan-900">
+                                <span class="mr-2">📚</span>
+                                <span class="lang-en">Browse the library</span>
+                                <span class="lang-ar">تصفّحوا المكتبة</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Data Anonymizer -->
+            <section id="anonymizer" class="bg-white rounded-2xl shadow-lg border-t-8 border-blue-900 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center">
+                            <span class="text-3xl">🛡️</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-blue-800 mb-1">
+                            <span class="lang-en">For: Anyone who puts student data in a spreadsheet: MAP, grades, class lists</span>
+                            <span class="lang-ar">لِمَن: كل من يضع بيانات الطلاب في جداول بيانات: MAP والدرجات وقوائم الصفوف</span>
+                        </p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-3">
+                            <span class="lang-en">Data Anonymizer: let AI read your spreadsheet without seeing who your students are</span>
+                            <span class="lang-ar">أداة إخفاء الهوية: دعوا الذكاء الاصطناعي يقرأ جدولكم دون أن يعرف من هم طلابكم</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            <span class="lang-en">Before a class list or a results spreadsheet goes into an AI tool, run it through the Data Anonymizer. It swaps names and IDs for codes like <span class="ltr">STU-004</span>, takes out emails, phone numbers and medical or learning-support details, and flags anything risky that's left. You give the AI the coded file. When the AI's answer comes back, the app puts the real names back in.</span>
+                            <span class="lang-ar">قبل إدخال قائمة صف أو جدول نتائج في أي أداة ذكاء اصطناعي، مرّروه عبر أداة إخفاء الهوية. تستبدل الأداة الأسماء وأرقام الهوية برموز مثل <span class="ltr">STU-004</span>، وتحذف البريد الإلكتروني وأرقام الهواتف والبيانات الطبية وبيانات الدعم التعلّمي، وتنبّهكم إلى أي خطر متبقٍّ. تعطون الذكاء الاصطناعي الملف المرمَّز، وعندما تعود إجابته، تعيد الأداة الأسماء الحقيقية إليها.</span>
+                        </p>
+                        <div class="bg-cyan-50 border-s-4 border-cyan-500 rounded-xl p-5 mb-4">
+                            <h4 class="font-heading font-bold text-blue-950 mb-2">
+                                <span class="lang-en">Nothing leaves your computer</span>
+                                <span class="lang-ar">لا شيء يغادر جهازكم</span>
+                            </h4>
+                            <p class="text-sm text-gray-700 leading-relaxed">
+                                <span class="lang-en">There is no upload and no server: the file is read in your own browser. The app also gives you a key file, the only thing that turns the codes back into names. Keep it safe, and never give it to the AI tool.</span>
+                                <span class="lang-ar">لا يوجد رفع للملفات ولا خادم: يُقرأ الملف داخل متصفحكم. وتمنحكم الأداة أيضًا ملف مفتاح، وهو الشيء الوحيد الذي يعيد الرموز إلى أسماء. احفظوه جيدًا، ولا تعطوه أبدًا لأداة الذكاء الاصطناعي.</span>
+                            </p>
+                        </div>
+                        <div class="bg-amber-50 border-s-4 border-amber-500 rounded-xl p-4 mb-4">
+                            <p class="text-sm text-gray-800 leading-relaxed">
+                                <span class="lang-en"><strong>Some things never go into an AI tool, coded or not:</strong> health information, learning-support diagnoses, safeguarding concerns and behaviour incidents. The Flint guide has the full list.</span>
+                                <span class="lang-ar"><strong>بعض المعلومات لا تُدخل أبدًا في أي أداة ذكاء اصطناعي، مرمّزة كانت أم لا:</strong> المعلومات الصحية، وتشخيصات الدعم التعلّمي، ومخاوف حماية الطفل، وحوادث السلوك. تجدون القائمة الكاملة في دليل Flint.</span>
+                            </p>
+                        </div>
+                        <p class="text-gray-700 leading-relaxed mb-5">
+                            <span class="lang-en">New to it? Press <strong>Try it with a made-up class list</strong> on the first screen. There's a short video and a user guide in the app's header.</span>
+                            <span class="lang-ar">جديدون عليها؟ اضغطوا <strong><span class="ltr">Try it with a made-up class list</span></strong> في الشاشة الأولى. ستجدون فيديو قصيرًا ودليل استخدام في أعلى التطبيق.</span>
+                        </p>
+                        <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
+                            <a href="https://aisa-ai-web.github.io/data-anonymizer/" target="_blank" rel="noopener" data-track="digital-lion:oct30:anonymizer" class="inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-cyan-700 text-white px-6 py-2.5 rounded-full font-bold hover:from-blue-950 hover:to-cyan-800 transition-transform hover:scale-105">
+                                <span class="mr-2">🛡️</span>
+                                <span class="lang-en">Open the Data Anonymizer</span>
+                                <span class="lang-ar">افتحوا أداة إخفاء الهوية</span>
+                            </a>
+                            <a href="../Tools%20and%20Resources/flint-guide.html#safe" data-track="digital-lion:oct30:anonymizer-rules" class="inline-flex items-center text-sm font-bold text-cyan-800 hover:text-cyan-900">
+                                <span class="mr-2">📋</span>
+                                <span class="lang-en">What may go into an AI tool</span>
+                                <span class="lang-ar">ما الذي يجوز إدخاله في أدوات الذكاء الاصطناعي</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Lessons -->
+            <section id="ai-lessons" class="bg-white rounded-2xl shadow-lg border-t-8 border-cyan-600 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-cyan-100 to-blue-100 flex items-center justify-center">
+                            <span class="text-3xl">📘</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-700 mb-1">
+                            <span class="lang-en">For: Teachers of AI Literacy, Grades 6&ndash;12</span>
+                            <span class="lang-ar">لِمَن: معلّمو الثقافة في الذكاء الاصطناعي، الصفوف ٦–١٢</span>
+                        </p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-3">
+                            <span class="lang-en">AI Lessons: a faster home, and lessons in home languages</span>
+                            <span class="lang-ar">دروس الذكاء الاصطناعي: موقع أسرع، ودروس بلغات الطلاب الأم</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            <span class="lang-en">Since <strong>Friday, October 23</strong>, AI Lessons has lived at a new, much faster address. The lessons, your teaching calendar, the dashboard and your class lists work as before, and your students' work moved across with them. Lesson links you posted in Google Classroom still work.</span>
+                            <span class="lang-ar">منذ <strong>الجمعة ٢٣ أكتوبر</strong>، انتقل تطبيق دروس الذكاء الاصطناعي إلى عنوان جديد وأسرع بكثير. الدروس وتقويم التدريس ولوحة المتابعة وقوائم الصفوف تعمل كما كانت، وقد انتقل معها كل ما أنجزه طلابكم. وما زالت روابط الدروس التي نشرتموها في Google Classroom تعمل.</span>
+                        </p>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            <span class="lang-en"><strong>New: lessons in a student's home language.</strong> For Learning Support students who are still learning English, every Main course week of Grades 6, 8, 9 and 10 now has a language menu on the lesson page: Russian, Korean, Japanese and Chinese. It changes the words on the page. The activities, answers and scores stay the same. Thank you to Amira El Turabi, Brian Kelley and Stephanie Brown, who worked out with me how these students can catch up.</span>
+                            <span class="lang-ar"><strong>جديد: دروس بلغة الطالب الأم.</strong> لطلاب الدعم التعلّمي الذين ما زالوا يتعلّمون الإنجليزية، أصبحت في كل أسابيع المسار الرئيسي للصفوف ٦ و٨ و٩ و١٠ قائمة لغات في صفحة الدرس: الروسية والكورية واليابانية والصينية. تغيّر القائمة كلمات الصفحة، وتبقى الأنشطة والإجابات والدرجات كما هي. شكرًا لأميرة الترابي وبراين كيلي وستيفاني براون، الذين عملوا معي على إيجاد طريقة يلحق بها هؤلاء الطلاب بالدروس.</span>
+                        </p>
+                        <div class="bg-amber-50 border-s-4 border-amber-500 rounded-xl p-4 mb-5">
+                            <p class="text-sm text-gray-800 leading-relaxed">
+                                <span class="lang-en"><strong>Got an automatic reminder?</strong> The app emails you when a lesson planned for your class hasn't been taught yet. If it's wrong — you taught it, or it isn't your class — reply to the email and I'll correct the record.</span>
+                                <span class="lang-ar"><strong>وصلكم تذكير تلقائي؟</strong> يرسل التطبيق بريدًا عندما لا يكون درس مخطّط لصفكم قد دُرِّس بعد. إن كان التذكير خاطئًا — درّستم الدرس، أو الصف ليس صفكم — ردّوا على الرسالة وسأصحّح السجل.</span>
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
+                            <a href="https://aisa-ai-lessons.pages.dev/" target="_blank" rel="noopener" data-track="digital-lion:oct30:ai-lessons" class="inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-cyan-700 text-white px-6 py-2.5 rounded-full font-bold hover:from-blue-950 hover:to-cyan-800 transition-transform hover:scale-105">
+                                <span class="mr-2">📘</span>
+                                <span class="lang-en">Open AI Lessons</span>
+                                <span class="lang-ar">افتحوا دروس الذكاء الاصطناعي</span>
+                            </a>
+                            <a href="https://aisa-ai-lessons.pages.dev/dashboard" target="_blank" rel="noopener" data-track="digital-lion:oct30:ai-lessons-dashboard" class="inline-flex items-center text-sm font-bold text-cyan-800 hover:text-cyan-900">
+                                <span class="mr-2">📊</span>
+                                <span class="lang-en">My dashboard</span>
+                                <span class="lang-ar">لوحة المتابعة</span>
+                            </a>
+                            <a href="https://aisa-ai-lessons.pages.dev/calendar" target="_blank" rel="noopener" data-track="digital-lion:oct30:ai-lessons-calendar" class="inline-flex items-center text-sm font-bold text-cyan-800 hover:text-cyan-900">
+                                <span class="mr-2">📅</span>
+                                <span class="lang-en">Teaching calendar</span>
+                                <span class="lang-ar">تقويم التدريس</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Assessment Calendar -->
+            <section id="assessment-calendar" class="bg-white rounded-2xl shadow-lg border-t-8 border-amber-500 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-100 to-cyan-100 flex items-center justify-center">
+                            <span class="text-3xl">🗓️</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-700 mb-1">
+                            <span class="lang-en">For: Teachers of Grades 6&ndash;12</span>
+                            <span class="lang-ar">لِمَن: معلّمو الصفوف ٦–١٢</span>
+                        </p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-3">
+                            <span class="lang-en">Assessment Calendar: check the day before you book</span>
+                            <span class="lang-ar">تقويم التقييمات: راجعوا اليوم قبل أن تحجزوه</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            <span class="lang-en">Before you set a test or a major assignment, the Assessment Calendar shows what your students already have that day. It keeps to no more than <strong>two summative assessments per student per day</strong>. When you add one, you see only the classes you teach, and everything entered on the old calendar has been carried across.</span>
+                            <span class="lang-ar">قبل تحديد موعد اختبار أو مهمة كبيرة، يُظهر لكم تقويم التقييمات ما لدى طلابكم في ذلك اليوم. ويلتزم بحدّ أقصى هو <strong>تقييمان ختاميان للطالب في اليوم الواحد</strong>. عند إضافة تقييم، لا ترون إلا الصفوف التي تدرّسونها، وقد نُقل كل ما أُدخل في التقويم القديم.</span>
+                        </p>
+                        <div class="bg-amber-50 border-s-4 border-amber-500 rounded-xl p-4 mb-4">
+                            <p class="text-sm text-gray-800 leading-relaxed">
+                                <span class="lang-en"><strong>New address since Monday, October 26.</strong> It's faster, and the old link opens a page that points you here.</span>
+                                <span class="lang-ar"><strong>عنوان جديد منذ الاثنين ٢٦ أكتوبر.</strong> الموقع أسرع، والرابط القديم يفتح صفحة توجّهكم إليه.</span>
+                            </p>
+                        </div>
+                        <p class="text-gray-700 leading-relaxed mb-5">
+                            <span class="lang-en">Thank you to Brian Kelley, Savvas Largatzis and Cristina Martin, who tested it and shaped how it works.</span>
+                            <span class="lang-ar">شكرًا لبراين كيلي وسافاس لارغاتزيس وكريستينا مارتن على تجربته والمساهمة في تشكيل طريقة عمله.</span>
+                        </p>
+                        <a href="https://aisa-assessment-calendar.pages.dev/" target="_blank" rel="noopener" data-track="digital-lion:oct30:assessment-calendar" class="inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-cyan-700 text-white px-6 py-2.5 rounded-full font-bold hover:from-blue-950 hover:to-cyan-800 transition-transform hover:scale-105">
+                            <span class="mr-2">🗓️</span>
+                            <span class="lang-en">Open the Assessment Calendar</span>
+                            <span class="lang-ar">افتحوا تقويم التقييمات</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PD Day material -->
+            <section id="pd-day" class="bg-white rounded-2xl shadow-lg border-t-8 border-blue-900 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center">
+                            <span class="text-3xl">🎮</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-blue-800 mb-1">
+                            <span class="lang-en">For: All teaching staff</span>
+                            <span class="lang-ar">لِمَن: جميع الطاقم التدريسي</span>
+                        </p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-3">
+                            <span class="lang-en">The October PD Day material stays online</span>
+                            <span class="lang-ar">مواد أيام التطوير المهني في أكتوبر متاحة دائمًا</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            <span class="lang-en">Thank you for the PD days on October 19 and 20. The AI stations were among your highest-rated sessions, along with Getting the Room to Think (Aloud!) and Proactive Differentiation. The slides and resources from four sessions are on the Hub, to go back to or to catch up on one you missed.</span>
+                            <span class="lang-ar">شكرًا لكم على أيام التطوير المهني في ١٩ و٢٠ أكتوبر. كانت محطات الذكاء الاصطناعي من أعلى الجلسات تقييمًا لديكم، إلى جانب «اجعلوا الصفّ كلّه يفكّر (بصوتٍ عالٍ!)» و«التمايز الاستباقي». الشرائح والموارد من أربع جلسات متاحة على المركز، لتعودوا إليها أو لتلحقوا بجلسة فاتتكم.</span>
+                        </p>
+                        <ul class="space-y-2 text-gray-700 leading-relaxed mb-4 list-disc ps-5 marker:text-blue-800">
+                            <li>
+                                <span class="lang-en"><a href="../PD%20Day/october-2026.html#ai-adventure" data-track="digital-lion:oct30:pd-ai-adventure" class="font-semibold text-cyan-800 underline">Choose your own AI adventure</a> &middot; Brandon Baki: the slides, the PD Arcade and the seven station guides, also as PDFs.</span>
+                                <span class="lang-ar"><a href="../PD%20Day/october-2026.html#ai-adventure" data-track="digital-lion:oct30:pd-ai-adventure" class="font-semibold text-cyan-800 underline">اختاروا مغامرتكم مع الذكاء الاصطناعي</a> · براندون باكي: الشرائح وأركيد التطوير المهني وأدلّة المحطات السبع، وهي متاحة أيضًا بصيغة PDF.</span>
+                            </li>
+                            <li>
+                                <span class="lang-en"><a href="../PD%20Day/october-2026.html#oracy" data-track="digital-lion:oct30:pd-oracy" class="font-semibold text-cyan-800 underline">Getting the Room to Think (Aloud!)</a> &middot; Amira El Turabi, on oracy.</span>
+                                <span class="lang-ar"><a href="../PD%20Day/october-2026.html#oracy" data-track="digital-lion:oct30:pd-oracy" class="font-semibold text-cyan-800 underline">اجعلوا الصفّ كلّه يفكّر (بصوتٍ عالٍ!)</a> · أميرة الترابي، عن مهارات التحدّث.</span>
+                            </li>
+                            <li>
+                                <span class="lang-en"><a href="../PD%20Day/october-2026.html#differentiation" data-track="digital-lion:oct30:pd-differentiation" class="font-semibold text-cyan-800 underline">Small Changes, Big Reach: Proactive Differentiation</a> &middot; Amira El Turabi.</span>
+                                <span class="lang-ar"><a href="../PD%20Day/october-2026.html#differentiation" data-track="digital-lion:oct30:pd-differentiation" class="font-semibold text-cyan-800 underline">تغييرات صغيرة، أثر واسع: التمايز الاستباقي</a> · أميرة الترابي.</span>
+                            </li>
+                            <li>
+                                <span class="lang-en"><a href="../PD%20Day/october-2026.html#data-to-action" data-track="digital-lion:oct30:pd-data-to-action" class="font-semibold text-cyan-800 underline">Data to Action</a> &middot; Quitney Price, with a class tracker you can copy to your own Drive.</span>
+                                <span class="lang-ar"><a href="../PD%20Day/october-2026.html#data-to-action" data-track="digital-lion:oct30:pd-data-to-action" class="font-semibold text-cyan-800 underline">من البيانات إلى الفعل</a> · كويتني برايس، مع متتبّع للصف يمكنكم نسخه إلى Drive الخاص بكم.</span>
+                            </li>
+                        </ul>
+                        <p class="text-gray-700 leading-relaxed mb-5">
+                            <span class="lang-en">Thank you to Amira and Quitney for sharing their slides.</span>
+                            <span class="lang-ar">شكرًا لأميرة وكويتني على مشاركة شرائحهما.</span>
+                        </p>
+                        <a href="../PD%20Day/october-2026.html" data-track="digital-lion:oct30:pd-day" class="inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-cyan-700 text-white px-6 py-2.5 rounded-full font-bold hover:from-blue-950 hover:to-cyan-800 transition-transform hover:scale-105">
+                            <span class="mr-2">🎮</span>
+                            <span class="lang-en">Open the PD Day page</span>
+                            <span class="lang-ar">افتحوا صفحة أيام التطوير المهني</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sustainability reminder -->
+            <section id="sustainability" class="bg-white rounded-2xl shadow-lg border-t-8 border-cyan-600 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-cyan-100 to-blue-100 flex items-center justify-center">
+                            <span class="text-3xl">🌱</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-700 mb-1">
+                            <span class="lang-en">For: Every member of staff &middot; Required</span>
+                            <span class="lang-ar">لِمَن: جميع الموظفين · إلزامي</span>
+                        </p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-3">
+                            <span class="lang-en">Sustainability at AISA: have you finished it?</span>
+                            <span class="lang-ar">الاستدامة في AISA: هل أكملتم الوحدة؟</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            <span class="lang-en">Sustainability at AISA is <strong>required training for every member of staff</strong>, teaching and non-teaching. It takes about 20–30 minutes and ends with a certificate that counts towards your PD record. Not sure whether you finished? Your dashboard shows it.</span>
+                            <span class="lang-ar">وحدة الاستدامة في AISA <strong>تدريب إلزامي لجميع الموظفين</strong>، من الهيئة التدريسية وغيرها. تستغرق نحو ٢٠–٣٠ دقيقة، وتنتهي بشهادة تُحتسب في سجل تطويركم المهني. لستم متأكدين من إكمالها؟ لوحة المتابعة الخاصة بكم تُظهر ذلك.</span>
+                        </p>
+                        <p class="text-gray-700 leading-relaxed mb-5">
+                            <span class="lang-en">Thank you again to Ms Nastassia van Jaarsveldt, Chair of the Sustainability Committee, who asked for this training and supplied its material.</span>
+                            <span class="lang-ar">شكرًا مجددًا للأستاذة ناستاسيا فان يارسفلت، رئيسة لجنة الاستدامة، التي طلبت هذا التدريب وقدّمت مادّته.</span>
+                        </p>
+                        <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
+                            <a href="../PD%20Modules/sustainability-module.html" data-track="digital-lion:oct30:sustainability" class="inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-cyan-700 text-white px-6 py-2.5 rounded-full font-bold hover:from-blue-950 hover:to-cyan-800 transition-transform hover:scale-105">
+                                <span class="mr-2">🌱</span>
+                                <span class="lang-en">Open the module</span>
+                                <span class="lang-ar">افتحوا الوحدة</span>
+                            </a>
+                            <a href="../dashboard.html" data-track="digital-lion:oct30:dashboard" class="inline-flex items-center text-sm font-bold text-cyan-800 hover:text-cyan-900">
+                                <span class="mr-2">✅</span>
+                                <span class="lang-en">My dashboard</span>
+                                <span class="lang-ar">لوحة المتابعة</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- NotebookLM + Drive -->
+            <section id="notebooklm" class="bg-white rounded-2xl shadow-lg border-t-8 border-amber-500 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-100 to-cyan-100 flex items-center justify-center">
+                            <span class="text-3xl">📓</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-700 mb-1">
+                            <span class="lang-en">For: Anyone who uses NotebookLM</span>
+                            <span class="lang-ar">لِمَن: كل من يستخدم NotebookLM</span>
+                        </p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-3">
+                            <span class="lang-en">NotebookLM now keeps up with your Drive files</span>
+                            <span class="lang-ar">أصبح NotebookLM يواكب ملفاتكم على Drive</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-5">
+                            <span class="lang-en">Sources you add to NotebookLM from Google Drive now sync automatically. Edit the file in Drive and the notebook picks up the change, so there's no more re-uploading after every edit. That makes NotebookLM much easier to use for things that grow over a unit: a unit pack, a study guide, your class notes.</span>
+                            <span class="lang-ar">المصادر التي تضيفونها إلى NotebookLM من Google Drive أصبحت تتزامن تلقائيًا. عدّلوا الملف في Drive، فيلتقط الدفتر التعديل، دون الحاجة إلى إعادة الرفع بعد كل تعديل. وهذا يجعل NotebookLM أسهل بكثير لما يكبر على مدار الوحدة: حزمة الوحدة، أو دليل المراجعة، أو ملاحظات الصف.</span>
+                        </p>
+                        <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
+                            <a href="https://notebooklm.google.com/" target="_blank" rel="noopener" data-track="digital-lion:oct30:notebooklm" class="inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-cyan-700 text-white px-6 py-2.5 rounded-full font-bold hover:from-blue-950 hover:to-cyan-800 transition-transform hover:scale-105">
+                                <span class="mr-2">📓</span>
+                                <span class="lang-en">Open NotebookLM</span>
+                                <span class="lang-ar">افتحوا NotebookLM</span>
+                            </a>
+                            <a href="https://drive.google.com/" target="_blank" rel="noopener" data-track="digital-lion:oct30:drive" class="inline-flex items-center text-sm font-bold text-cyan-800 hover:text-cyan-900">
+                                <span class="mr-2">📁</span>
+                                <span class="lang-en">Open Google Drive</span>
+                                <span class="lang-ar">افتحوا Google Drive</span>
+                            </a>
+                            <a href="../PD%20Modules/notebooklm-module.html" data-track="digital-lion:oct30:notebooklm-module" class="inline-flex items-center text-sm font-bold text-cyan-800 hover:text-cyan-900">
+                                <span class="mr-2">🎓</span>
+                                <span class="lang-en">The NotebookLM module</span>
+                                <span class="lang-ar">وحدة NotebookLM التدريبية</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Smaller upgrades -->
+            <section id="smaller" class="bg-white rounded-2xl shadow-lg border-t-8 border-blue-900 card-hover p-7 md:p-9 mb-8">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-blue-800 mb-1">
+                    <span class="lang-en">For: Everyone</span>
+                    <span class="lang-ar">لِمَن: الجميع</span>
+                </p>
+                <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-5">
+                    <span class="lang-en">Smaller upgrades worth a mention</span>
+                    <span class="lang-ar">تحديثات أصغر تستحق الذكر</span>
+                </h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                        <h4 class="font-heading font-bold text-blue-950 mb-1">
+                            <span class="mr-1.5">🌍</span>
+                            <span class="lang-en">AI &amp; Assessment Design, now in Arabic</span>
+                            <span class="lang-ar">وحدة الذكاء الاصطناعي وتصميم التقييم، بالعربية الآن</span>
+                        </h4>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            <span class="lang-en">The <a href="../PD%20Modules/ai-and-assessment.html" data-track="digital-lion:oct30:ai-assessment" class="font-semibold text-cyan-800 underline">whole module</a> now reads in Arabic. Switch with the language button in the Hub's top bar.</span>
+                            <span class="lang-ar">أصبحت <a href="../PD%20Modules/ai-and-assessment.html" data-track="digital-lion:oct30:ai-assessment" class="font-semibold text-cyan-800 underline">الوحدة كاملة</a> متاحة بالعربية. بدّلوا اللغة من زر اللغة في الشريط العلوي للمركز.</span>
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                        <h4 class="font-heading font-bold text-blue-950 mb-1">
+                            <span class="mr-1.5">🧭</span>
+                            <span class="lang-en">The AI Literacy Hub</span>
+                            <span class="lang-ar">مركز الثقافة في الذكاء الاصطناعي</span>
+                        </h4>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            <span class="lang-en"><a href="../AI%20Literacy%20Hub/ai-literacy-hub.html" data-track="digital-lion:oct30:ai-literacy-hub" class="font-semibold text-cyan-800 underline">One front door</a> for AI Literacy: the training, the KG–12 Scope &amp; Sequence and the assessment tracker. It's on the home page.</span>
+                            <span class="lang-ar"><a href="../AI%20Literacy%20Hub/ai-literacy-hub.html" data-track="digital-lion:oct30:ai-literacy-hub" class="font-semibold text-cyan-800 underline">مدخل واحد</a> لكل ما يخص الثقافة في الذكاء الاصطناعي: التدريب، ونطاق المنهج وتسلسله من الروضة حتى الصف الثاني عشر، ومتتبّع التقييم. تجدونه في الصفحة الرئيسية.</span>
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                        <h4 class="font-heading font-bold text-blue-950 mb-1">
+                            <span class="mr-1.5">📄</span>
+                            <span class="lang-en">The station guides, on paper</span>
+                            <span class="lang-ar">أدلّة المحطات، للطباعة</span>
+                        </h4>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            <span class="lang-en">All seven AI station guides, in English and Arabic, as <a href="../PD%20Day/assets/october-2026/ai-adventure/AISA-AI-PD-Station-Guides.zip" data-track="digital-lion:oct30:station-guides-zip" class="font-semibold text-cyan-800 underline">one download</a> (31 MB). It's also in Tools &amp; Resources.</span>
+                            <span class="lang-ar">أدلّة محطات الذكاء الاصطناعي السبع بالإنجليزية والعربية، في <a href="../PD%20Day/assets/october-2026/ai-adventure/AISA-AI-PD-Station-Guides.zip" data-track="digital-lion:oct30:station-guides-zip" class="font-semibold text-cyan-800 underline">ملف تنزيل واحد</a> (٣١ ميغابايت). وتجدونه أيضًا في صفحة الأدوات والموارد.</span>
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                        <h4 class="font-heading font-bold text-blue-950 mb-1">
+                            <span class="mr-1.5">⚡</span>
+                            <span class="lang-en">A faster Hub</span>
+                            <span class="lang-ar">مركز أسرع</span>
+                        </h4>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            <span class="lang-en">Pages, your dashboard and the notification bell load faster, especially when the whole school is online at once.</span>
+                            <span class="lang-ar">تُحمَّل الصفحات ولوحة المتابعة وجرس الإشعارات بشكل أسرع، خصوصًا عندما تكون المدرسة كلها متصلة في الوقت نفسه.</span>
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                        <h4 class="font-heading font-bold text-blue-950 mb-1">
+                            <span class="mr-1.5">🔢</span>
+                            <span class="lang-en">Tip: let the spreadsheet do the maths</span>
+                            <span class="lang-ar">نصيحة: دعوا جدول البيانات يتولّى الحساب</span>
+                        </h4>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            <span class="lang-en">Asked a chatbot to total a column and got the wrong answer? Chatbots are unreliable at adding up long lists. Use a pivot table in Google Sheets (Insert → Pivot table): it counts exactly, every time.</span>
+                            <span class="lang-ar">طلبتم من روبوت محادثة جمع عمود وحصلتم على نتيجة خاطئة؟ روبوتات المحادثة غير موثوقة في جمع القوائم الطويلة. استخدموا الجدول المحوري في Google Sheets (إدراج ← جدول محوري)، فهو يحسب بدقة في كل مرة.</span>
+                        </p>
+                    </div>
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-5">
+                        <h4 class="font-heading font-bold text-blue-950 mb-1">
+                            <span class="mr-1.5">🧹</span>
+                            <span class="lang-en">Tools &amp; Resources, tidied</span>
+                            <span class="lang-ar">صفحة الأدوات والموارد بعد الترتيب</span>
+                        </h4>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            <span class="lang-en">MagicSchool and Chalkie are off <a href="../Tools%20and%20Resources/tools.html" data-track="digital-lion:oct30:tools-page" class="font-semibold text-cyan-800 underline">the page</a>, and the Flint Master Guide is first under AI Teaching Assistants. The Chalkie PD module stays for anyone who still uses it.</span>
+                            <span class="lang-ar">أُزيلت MagicSchool وChalkie من <a href="../Tools%20and%20Resources/tools.html" data-track="digital-lion:oct30:tools-page" class="font-semibold text-cyan-800 underline">الصفحة</a>، وأصبح دليل Flint الشامل في مقدّمة قسم مساعدي التدريس بالذكاء الاصطناعي. وتبقى وحدة Chalkie التدريبية لمن ما زال يستخدمها.</span>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sign-off -->
+            <section class="bg-blue-950 text-cyan-50 rounded-2xl shadow-lg p-7 md:p-9 text-center">
+                <h3 class="text-2xl font-heading font-bold mb-3">
+                    <span class="lang-en">Questions?</span>
+                    <span class="lang-ar">أسئلة؟</span>
+                </h3>
+                <p class="text-cyan-100/90 mb-5">
+                    <span class="lang-en">Email me any time — especially if something above doesn't match what you're seeing.</span>
+                    <span class="lang-ar">راسلوني في أي وقت — خصوصًا إن كان شيء مما سبق لا يطابق ما ترونه.</span>
+                </p>
+                <a href="mailto:bbaki@aisa.sch.ae" class="inline-flex items-center justify-center bg-gradient-to-r from-amber-500 to-orange-500 text-white px-7 py-3 rounded-full font-bold hover:from-amber-600 hover:to-orange-600 transition-transform hover:scale-105 ltr">
+                    <span class="mr-2">✉️</span> bbaki@aisa.sch.ae
+                </a>
+                <p class="mt-6 text-sm font-semibold text-amber-300">
+                    <span class="lang-en">Brandon Baki &middot; Head of AI and Innovation</span>
+                    <span class="lang-ar">براندون باكي · رئيس قسم الذكاء الاصطناعي والابتكار</span>
+                </p>
+            </section>
+
+        </div>
+    </main>
+
+    <footer class="bg-blue-950 text-cyan-100 mt-auto" data-dl-content>
+        <div class="h-1 bg-gradient-to-r from-blue-950 via-cyan-500 to-amber-400 w-full"></div>
+        <div class="container mx-auto px-6 py-8 text-center">
+            <div class="flex items-center justify-center gap-3 mb-3">
+                <img src="../assets/brand/aisa-seal-white.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
+                <span class="font-heading font-bold text-lg tracking-wide">
+                    <span class="lang-en">AISA Media Hub</span>
+                    <span class="lang-ar">مركز الإعلام في AISA</span>
+                </span>
+            </div>
+            <p class="text-xs text-cyan-200/80">
+                <span class="lang-en">American International School in Abu Dhabi &middot; Teaching &amp; Learning Department</span>
+                <span class="lang-ar">المدرسة الأمريكية الدولية في أبوظبي · قسم التعليم والتعلم</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Newsletter tools: release, then email. Shown to the newsletter
+         senders only. Hiding it is a courtesy, not a control: releasing
+         needs an admin (post_notification) and emailing needs a newsletter
+         sender (send_newsletter), and the backend checks both itself,
+         because the Hub's sign-in gate is client-side and this repo is
+         public. -->
+    <div id="nl-send" hidden>
+        <div class="nl-inner">
+            <span class="nl-kicker">Newsletter tools</span>
+            <span id="nl-state">Checking…</span>
+            <span id="nl-count" style="font-size:.82rem;opacity:.85;"></span>
+            <span style="flex:1"></span>
+            <button type="button" class="nl-release" id="nl-release" disabled>Release to all staff</button>
+            <button type="button" class="nl-undo" id="nl-undo" hidden>Undo release</button>
+            <button type="button" class="nl-test" id="nl-test">Send me a test</button>
+            <button type="button" class="nl-go" id="nl-go" disabled title="Release it first, so the link works for everyone">Email all staff</button>
+            <p class="nl-msg" id="nl-msg"></p>
+        </div>
+    </div>
+
+    <script>
+    (function () {
+        var ISSUE_KEY = 'oct30';
+
+        /* What the email says. Kept here rather than scraped from the page
+           so the trailer can be shorter and blunter than the issue itself. */
+        var ISSUE    = 'Issue No. 6 · October 30';
+        var HEADLINE = "New tools, and one place to find them";
+        var INTRO    = "Six weeks since the last issue: MagicSchool has gone, Flint is open to every teacher, and the tools we've built this term are on one page.";
+        var ITEMS    = [
+            'Flint: the pilot is open to every teacher until the end of this term. Start with the Flint Master Guide on the Hub.',
+            'AISA Tools: one page for AI Lessons, the Activity Hub, the Assessment Calendar, the MAP Dashboard and the Data Anonymizer. Bookmark it.',
+            'Activity Hub: paste HTML from any AI tool and get a class activity with a link and a QR code.',
+            'Data Anonymizer: swap student names for codes before a spreadsheet goes to an AI tool.',
+            'Sustainability at AISA is required for all staff. Not finished? It takes about 20–30 minutes.',
+            'The slides and station guides from the October 19–20 PD days are on the Hub.'
+        ];
+
+        /* What the bell says on release. The link to this page is what
+           marks the issue as released (issue-release.js), so it must stay
+           in the body. */
+        var BELL_TITLE = 'New: The Digital Lion, Issue No. 6';
+        function bellBody() {
+            return "MagicSchool has gone and Flint is open to every teacher, the tools we've built this term are on one page, and the PD Day material is online.\n\n"
+                 + 'صدر العدد السادس من نشرة ديجيتال لايون.\n\n'
+                 + '[Read Issue No. 6 · اقرأوا العدد السادس](' + issueUrl() + ')';
+        }
+
+        // The issue's own address, so neither the email nor the bell needs a hardcoded host.
+        function issueUrl() { return location.origin + location.pathname; }
+
+        var html    = document.documentElement;
+        var gate    = document.getElementById('dl-gate');
+        var preview = document.getElementById('dl-preview');
+        var bar     = document.getElementById('nl-send');
+        var msg     = document.getElementById('nl-msg');
+        var state   = document.getElementById('nl-state');
+        var go      = document.getElementById('nl-go');
+        var test    = document.getElementById('nl-test');
+        var rel     = document.getElementById('nl-release');
+        var undo    = document.getElementById('nl-undo');
+        var cnt     = document.getElementById('nl-count');
+        var released = false;
+
+        function say(t, tone) {
+            msg.textContent = t || '';
+            msg.style.color = tone === 'bad' ? '#FFB4B4' : (tone === 'good' ? '#BDF5C8' : '#E9E4F7');
+        }
+
+        function setReleased(on) {
+            released = on;
+            state.textContent = on ? 'Released ✓ It is in every member of staff’s notification bell.'
+                                   : 'Not released. Only the newsletter senders can see this issue.';
+            rel.hidden = on;
+            rel.disabled = false;
+            undo.hidden = !on;
+            go.disabled = !on;
+            go.title = on ? '' : 'Release it first, so the link works for everyone';
+            preview.style.display = on ? 'none' : '';
+        }
+
+        function busy(on) {
+            go.disabled = on || !released;
+            test.disabled = on; rel.disabled = on; undo.disabled = on;
+        }
+
+        /* ---------- Who sees the issue ---------- */
+
+        function decide() {
+            gate.setAttribute('data-show', 'checking');
+            html.classList.add('dl-pending');
+            html.classList.remove('dl-closed');
+            window.aisaIssueRelease.check(ISSUE_KEY).then(function (s) {
+                if (s.sender) {
+                    html.classList.remove('dl-pending');
+                    showTools(s);
+                    return;
+                }
+                if (s.released) {
+                    html.classList.remove('dl-pending');
+                    return;
+                }
+                html.classList.remove('dl-pending');
+                html.classList.add('dl-closed');
+                gate.setAttribute('data-show', s.ok ? 'notyet' : 'error');
+            });
+        }
+
+        document.getElementById('dl-retry').addEventListener('click', decide);
+
+        /* ---------- The senders' bar ---------- */
+
+        function showTools(s) {
+            bar.hidden = false;
+            document.body.style.paddingBottom = '7rem';
+            if (!s.ok) {
+                state.textContent = 'Could not read the notification bell, so the release state is unknown.';
+                rel.disabled = false;
+                preview.style.display = s.released ? 'none' : '';
+                say('Reload the page to check again before releasing. (' + (s.error || 'unknown error') + ')', 'bad');
+            } else {
+                setReleased(s.released);
+            }
+            window.aisaAuth.newsletterStatus().then(function (r) {
+                if (!r || !r.may_send) {
+                    cnt.textContent = '';
+                    test.disabled = true; go.hidden = true;
+                    say('This account is not on the newsletter sender list, so it cannot email the issue. '
+                        + 'Releasing it still works if the account is an admin.', 'bad');
+                    return;
+                }
+                cnt.textContent = '· ' + (r.recipients || 0) + ' staff on the email list';
+                if (r.mail_authorized === false) {
+                    say('Email is not switched on yet: run authorizeMail() once from the Apps '
+                        + 'Script editor, as the account that owns the script. Nothing will send '
+                        + 'until you do. Releasing does not need it.', 'bad');
+                } else if (r.quota_left != null && r.quota_left < (r.recipients || 0)) {
+                    say('Heads up: ' + r.quota_left + ' emails left in today’s quota, '
+                        + (r.recipients || 0) + ' recipients. Anything over will report as skipped.', 'bad');
+                }
+            }).catch(function (e) {
+                cnt.textContent = '';
+                say('Could not check the email settings (' + ((e && e.message) || e) + '). '
+                    + 'Releasing still works.', 'bad');
+            });
+        }
+
+        function explainRelease(code) {
+            if (code === 'not_admin') {
+                return 'Releasing posts a bell notification, and only accounts on the admins tab of the '
+                     + 'Hub spreadsheet can do that. Sign in as an admin, or add this account to admins.';
+            }
+            return 'Not released: ' + code + '. Nothing was posted; try again.';
+        }
+
+        rel.addEventListener('click', function () {
+            if (!window.confirm('Release Issue No. 6 to all staff?\n\n'
+                + 'This posts it to every member of staff’s notification bell, and it appears on the '
+                + 'Media Hub and the home page within about a minute and a half. '
+                + 'You can email it afterwards, and Undo release takes it back.')) return;
+            busy(true);
+            say('Releasing…');
+            window.aisaIssueRelease.release(ISSUE_KEY, { title: BELL_TITLE, body: bellBody() }).then(function () {
+                busy(false);
+                setReleased(true);
+                say('Released. Staff will see it in their bell, on the Media Hub and on the home page. '
+                    + 'Send yourself a test email, then Email all staff when you are ready.', 'good');
+            }, function (e) {
+                busy(false);
+                setReleased(false);
+                say(explainRelease((e && e.message) || String(e)), 'bad');
+            });
+        });
+
+        undo.addEventListener('click', function () {
+            if (!window.confirm('Take Issue No. 6 back?\n\nThis deletes its bell notification, and the '
+                + 'page, the Media Hub card and the home-page card go back to Issue No. 5 for everyone '
+                + 'but the newsletter senders. Emails already sent cannot be recalled.')) return;
+            busy(true);
+            say('Taking it back…');
+            window.aisaIssueRelease.unrelease(ISSUE_KEY).then(function (n) {
+                busy(false);
+                setReleased(false);
+                say(n ? 'Taken back. The bell notification is deleted.'
+                      : 'There was no release notification to delete.', 'good');
+            }, function (e) {
+                busy(false);
+                say('Could not take it back: ' + ((e && e.message) || e)
+                    + '. Delete the notification from Send Notifications instead.', 'bad');
+            });
+        });
+
+        /* ---------- Email ---------- */
+
+        /* Say what actually went wrong and what to do about it. The one that
+           bites first is mail authorisation: a web app never shows the
+           person clicking the button an auth prompt, so the script owner has
+           to grant it once from the editor. */
+        function explain(r) {
+            var e = (r && r.error) || 'unknown error';
+            if (e === 'mail_not_authorized') {
+                return 'The Apps Script project has not been given permission to send email. '
+                     + 'Open the Apps Script editor and run authorizeMail() once, as the account '
+                     + 'that owns the script, then try again.';
+            }
+            if (e === 'unknown_action') {
+                return 'The Apps Script backend has not been redeployed yet — '
+                     + 'Deploy → Manage deployments → New version.';
+            }
+            if (e === 'not_newsletter_sender') {
+                return 'Your account is not on the newsletter sender list.';
+            }
+            if (e === 'no_recipients') {
+                return 'No recipients found — the roster and sessions tabs are both empty of '
+                     + '@aisa.sch.ae addresses.';
+            }
+            return 'Not sent: ' + e + (r && r.message ? ' (' + r.message + ')' : '');
+        }
+
+        function send(opts) {
+            busy(true);
+            say(opts.testOnly ? 'Sending you a test…' : 'Sending…');
+            window.aisaAuth.sendNewsletter({
+                url: issueUrl(), subject: 'The Digital Lion — ' + HEADLINE,
+                issue: ISSUE, headline: HEADLINE, intro: INTRO, items: ITEMS,
+                linkLabel: 'Read the newsletter',
+                testOnly: !!opts.testOnly, confirm: !opts.testOnly
+            }).then(function (r) {
+                busy(false);
+                if (!r || r.ok === false || r.error) {
+                    say(explain(r), 'bad');
+                    return;
+                }
+                var bits = [r.sent + ' sent'];
+                if (r.failed)  bits.push(r.failed + ' failed');
+                if (r.skipped) bits.push(r.skipped + ' skipped'
+                    + (r.reason === 'daily_quota_exhausted'
+                        ? ' — today’s Gmail quota is used up, try again tomorrow'
+                        : ' — hit the 6-minute limit, click again to send the rest'));
+                say((r.test_only ? 'Test: ' : 'Done: ') + bits.join(', ') + '.',
+                    (r.failed || r.skipped) ? 'bad' : 'good');
+            }).catch(function (e) {
+                busy(false);
+                say(explain({ error: (e && e.message) || String(e), message: e && e.serverMessage }), 'bad');
+            });
+        }
+
+        test.addEventListener('click', function () { send({ testOnly: true }); });
+        go.addEventListener('click', function () {
+            if (!released) return;
+            if (!window.confirm('Email this issue to all AISA staff?\n\nThis sends a real email to '
+                + 'everyone on the roster. Send yourself a test first if you have not.')) return;
+            send({ testOnly: false });
+        });
+
+        if (window.aisaIssueRelease) {
+            decide();
+        } else {
+            gate.setAttribute('data-show', 'error');
+        }
+    })();
+    </script>
+
+    <script>
+        (function () {
+            const STORAGE_KEY = 'aisa-newsletter-lang';
+            const html = document.documentElement;
+            // The toggle itself lives in the Hub topbar (menu.js); this just
+            // applies the saved choice immediately, before menu.js arrives.
+
+            function applyLang(lang) {
+                const next = lang === 'ar' ? 'ar' : 'en';
+                html.setAttribute('lang', next);
+                html.setAttribute('dir', next === 'ar' ? 'rtl' : 'ltr');
+                try { localStorage.setItem(STORAGE_KEY, next); } catch (e) { /* ignore */ }
+            }
+
+            let saved = 'en';
+            try { saved = localStorage.getItem(STORAGE_KEY) || 'en'; } catch (e) { /* ignore */ }
+            applyLang(saved);
+
+        })();
+    </script>
+
+</body>
+</html>
