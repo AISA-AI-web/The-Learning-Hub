@@ -1142,7 +1142,12 @@
              *   items      array of "what's inside" lines, max 8
              *   testOnly   true  -> sends only to the caller
              *   confirm    true  -> required for a real send
-             * and replies { sent, failed, skipped, recipients }. */
+             * and, optionally, for the bilingual email:
+             *   ar         { issue, headline, intro, items, linkLabel, signoff }
+             *   signoff    "Name\nRole", under the English column
+             *   logoUrl    absolute link to the AISA seal, on the issue's own site
+             * and replies { sent, failed, skipped, recipients }, plus
+             * bilingual: true when the backend built the bilingual email. */
             newsletterStatus: function () {
                 return apiCall('newsletter_status');
             },
@@ -1157,6 +1162,16 @@
                     link_label: o.linkLabel  || '',
                     items:      Array.isArray(o.items) ? o.items.join('\n') : (o.items || '')
                 };
+                if (o.ar) {
+                    body.issue_ar      = o.ar.issue     || '';
+                    body.headline_ar   = o.ar.headline  || '';
+                    body.intro_ar      = o.ar.intro     || '';
+                    body.link_label_ar = o.ar.linkLabel || '';
+                    body.signoff_ar    = o.ar.signoff   || '';
+                    body.items_ar      = Array.isArray(o.ar.items) ? o.ar.items.join('\n') : (o.ar.items || '');
+                }
+                if (o.signoff) body.signoff  = o.signoff;
+                if (o.logoUrl) body.logo_url = o.logoUrl;
                 if (o.testOnly) body.test_only = '1';
                 if (o.confirm)  body.confirm   = '1';
                 return apiCall('send_newsletter', body);

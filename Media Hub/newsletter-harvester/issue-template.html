@@ -126,7 +126,7 @@
         .dates-table tbody tr + tr { border-top: 1px solid rgba(207, 250, 254, 0.16); }
     </style>
     <!-- Use the same gate.js ?v= pin as every other page; check-issue.py checks it. -->
-    <script src="../auth/gate.js?v=31"></script>
+    <script src="../auth/gate.js?v=32"></script>
 </head>
 <body class="bg-slate-50 text-gray-800 min-h-screen flex flex-col">
 
@@ -466,13 +466,26 @@
     (function () {
         /* What the email says. Kept here rather than scraped from the page
            so the trailer can be shorter and blunter than the issue itself.
-           Rewrite all four for every issue, or it mails the last one's summary. */
+           Rewrite all of it for every issue, English and Arabic (AR below), or it
+           mails the last one's summary. */
         var ISSUE    = 'Issue No. {{6}} · {{October 19}}';
         var HEADLINE = "{{Headline, same as the hero}}";
         var INTRO    = '{{One or two plain sentences.}}';
         var ITEMS    = [
             '{{One trailer line per item: blunt, action + date, 30 words or fewer. Three to six lines.}}'
         ];
+        /* The Arabic for the bilingual email, line for line with the English.
+           Western digits here, as in Brandon's other bilingual emails. */
+        var AR = {
+            issue:     '{{AR: ديجيتال لايون · العدد ... · date}}',
+            headline:  '{{AR: Headline}}',
+            intro:     '{{AR: Intro}}',
+            items:     ['{{AR: one line per English item, same order}}'],
+            linkLabel: 'اقرأوا النشرة',
+            signoff:   'Brandon\nرئيس قسم الذكاء الاصطناعي والابتكار'
+        };
+        var SUBJECT  = 'The Digital Lion, ' + ISSUE.split(' · ')[0] + ': ' + HEADLINE + ' | {{AR: نشرة ديجيتال لايون، العدد ...}}';
+        var SIGNOFF  = 'Brandon\nHead of AI & Innovation';
 
         var bar = document.getElementById('nl-send');
         var msg = document.getElementById('nl-msg');
@@ -519,9 +532,11 @@
             busy(true);
             say(opts.testOnly ? 'Sending you a test…' : 'Sending…');
             window.aisaAuth.sendNewsletter({
-                url: issueUrl(), subject: 'The Digital Lion — ' + HEADLINE,
-                issue: ISSUE, headline: HEADLINE, intro: INTRO, items: ITEMS,
-                linkLabel: 'Read the newsletter',
+                url: issueUrl(), subject: SUBJECT,
+                issue: 'The Digital Lion · ' + ISSUE, headline: HEADLINE, intro: INTRO, items: ITEMS,
+                linkLabel: 'Read the newsletter', signoff: SIGNOFF, ar: AR,
+                // The white AISA seal for the email's purple header, on this site.
+                logoUrl: new URL('../assets/brand/aisa-seal-white.png', location.href).href,
                 testOnly: !!opts.testOnly, confirm: !opts.testOnly
             }).then(function (r) {
                 busy(false);

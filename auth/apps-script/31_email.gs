@@ -3,7 +3,8 @@
  *
  * Reminder emails (post_notification with send_email) and the newsletter
  * mail-out (send_newsletter), both inside the AISA frame _aisaEmailShell()
- * builds. The one other email, a teacher's copy of their goal, is built in
+ * builds. A newsletter sent with Arabic copy uses the bilingual design at
+ * the end of this file instead. The one other email, a teacher's copy of their goal, is built in
  * 41_surveys.gs from that survey's own list of fields.
  *
  * Nothing here can send until the script's owner has granted the send-mail
@@ -98,7 +99,7 @@ function _emailButtonHtml(url, label) {
  * mid-list with nothing reported at all. */
 const MAIL_TIME_BUDGET_MS = 240000;
 
-/* One personalised email per address: compose(to, greeting) builds it.
+/* One personalised email per address: compose(to, greeting, name) builds it.
  * Counts what happened into `out` (sent / failed / skipped / errors) and
  * never throws, so the caller can tell whoever pressed the button exactly
  * what went out. Stops short of the time budget and of the day's quota;
@@ -113,7 +114,7 @@ function _sendEach(emails, quota, out, replyTo, compose) {
       break;
     }
     const to   = emails[i];
-    const opts = compose(to, _greeting(names[to]));
+    const opts = compose(to, _greeting(names[to]), names[to]);
     if (replyTo) opts.replyTo = replyTo;
 
     try {
@@ -247,6 +248,14 @@ function sendNewsletter(claims, body) {
   const intro    = String(body.intro    || '').trim();
   const label    = String(body.link_label || 'Read the newsletter').trim();
   const items    = _newsletterItems(body.items).slice(0, 8);
+  // Arabic copy turns this into the bilingual email; without it, the
+  // English-only design below, exactly as before.
+  const ar       = _newsletterArabic(body);
+  const en       = { issue: issue, headline: headline, intro: intro, items: items, label: label,
+                     signoff: String(body.signoff || '').trim() };
+  // The AISA seal for the header. Only from the issue's own site, so the
+  // page cannot be made to embed someone else's image in a school-wide email.
+  const logo     = _sameHttpsHost(url, body.logo_url) ? String(body.logo_url).trim() : '';
 
   const emails = testOnly ? [String(claims.email || '').trim().toLowerCase()]
                           : _allStaffEmails();
@@ -254,6 +263,10 @@ function sendNewsletter(claims, body) {
     ok: true, test_only: testOnly, recipients: emails.length,
     sent: 0, failed: 0, skipped: 0, quota_left: 0, errors: []
   };
+  // Tells the page this backend built the bilingual email. An older one
+  // ignores the Arabic and sends English only, and says nothing, so the
+  // page warns when this is missing.
+  if (ar) out.bilingual = true;
   if (!emails.length) { out.ok = false; out.error = 'no_recipients'; return out; }
 
   const q = _mailQuota();
@@ -269,7 +282,16 @@ function sendNewsletter(claims, body) {
   if (quota <= 0) { out.skipped = emails.length; out.reason = 'daily_quota_exhausted'; return out; }
 
   const replyTo = String(claims && claims.email || '').trim();
-  return _sendEach(emails, quota, out, replyTo, function (to, greet) {
+  return _sendEach(emails, quota, out, replyTo, function (to, greet, name) {
+    if (ar) {
+      return {
+        to:       to,
+        subject:  subject,
+        body:     _newsletterTextBilingual(name, en, ar, url),
+        htmlBody: _newsletterHtmlBilingual(name, en, ar, url, logo),
+        name:     'AISA Learning Hub'
+      };
+    }
     return {
       to:       to,
       subject:  subject,
@@ -310,6 +332,182 @@ function _newsletterHtml(greeting, issue, headline, intro, items, url, linkLabel
     'Sent from the AISA Learning Hub. You can read this and every past ' +
     'issue any time from the Media Hub.'
   );
+}
+
+// ---------- The bilingual newsletter ----------
+//
+// When the page sends Arabic copy as well (headline_ar, intro_ar,
+// items_ar ...), the email is AISA's bilingual design, the same one as the
+// emails Brandon sends from Gmail: a purple header with the AISA seal,
+// the headline in both languages, then English on the left and Arabic on
+// the right, each with a gold "in this issue" card and its own button.
+//
+// Colours are written as background-color plus a bgcolor attribute, never
+// the `background:` shorthand: Gmail drops the shorthand when a message is
+// forwarded or edited, and white text is left on white.
+//
+// On a phone the two columns stack, English first (the nl-stack class and
+// the one <style> block). A mail app that ignores <style> keeps them side
+// by side, which still reads.
+
+const NL_FONT_EN = "'DM Sans',Arial,Helvetica,sans-serif";
+const NL_FONT_AR = "Tahoma,'Segoe UI',Arial,sans-serif";
+
+/* The Arabic half of a send_newsletter request, or null when there is
+ * none, which keeps the English-only email. */
+function _newsletterArabic(body) {
+  const ar = {
+    issue:    String(body.issue_ar || '').trim(),
+    headline: String(body.headline_ar || '').trim(),
+    intro:    String(body.intro_ar || '').trim(),
+    items:    _newsletterItems(body.items_ar).slice(0, 8),
+    label:    String(body.link_label_ar || '').trim() || 'اقرأوا النشرة',
+    signoff:  String(body.signoff_ar || '').trim()
+  };
+  return (ar.headline || ar.intro || ar.items.length) ? ar : null;
+}
+
+/* True when both addresses are https on the same host. */
+function _sameHttpsHost(a, b) {
+  const host = function (u) {
+    const m = /^https:\/\/([^\/?#\s"'<>]+)/i.exec(String(u || '').trim());
+    return m ? m[1].toLowerCase() : '';
+  };
+  const h = host(a);
+  return !!h && h === host(b);
+}
+
+/* "Dear Sara," and its Arabic, or the plural when there is no name. */
+function _bilingualGreetings(name) {
+  const first = _firstName(name);
+  return first
+    ? { en: 'Dear ' + first + ',', ar: 'الأستاذ/ة ' + first + ' المحترم/ة،' }
+    : { en: 'Dear colleagues,',    ar: 'الزملاء الأعزاء،' };
+}
+
+/* One language's column of the email. isAr makes it right to left. */
+function _newsletterColumn(copy, greeting, url, arrow, thanks, kicker, isAr) {
+  const font  = isAr ? NL_FONT_AR : NL_FONT_EN;
+  const lh    = isAr ? '1.7' : '1.55';
+  const align = isAr ? 'text-align:right;' : '';
+  const accent = isAr ? 'border-right:5px solid #d8b664;' : 'border-left:5px solid #d8b664;';
+  const text = function (t) { return _escHtml(t).replace(/\n/g, '<br>'); };
+
+  const items = copy.items.map(function (t, i) {
+    const gap = (i === copy.items.length - 1) ? '0' : '0 0 8px';
+    return '<p style="margin:' + gap + ';font-size:14px;line-height:' + lh + ';color:#21076c;font-family:' + font + '">' +
+      '<span style="color:#b8912f;font-weight:700">&#9679;</span>&nbsp; ' + text(t) + '</p>';
+  }).join('');
+
+  const signLines = copy.signoff ? copy.signoff.split(/\r?\n/) : [];
+  const signoff = signLines.length
+    ? '<p style="margin:0;font-size:14px;line-height:1.5;color:#1a1a1a;font-family:' + font + '">' + thanks + '<br>' +
+        '<strong>' + _escHtml(signLines[0]) + '</strong>' +
+        signLines.slice(1).map(function (l) {
+          return '<br><span style="font-size:12px;color:#555555">' + _escHtml(l) + '</span>';
+        }).join('') + '</p>'
+    : '';
+
+  return '<td valign="top" class="nl-stack ' + (isAr ? 'nl-ar' : 'nl-en') + '"' + (isAr ? ' dir="rtl"' : '') +
+      ' style="width:50%;padding:12px 14px;' + align +
+      (isAr ? '' : 'border-right:1px solid #e6e1f5;') + 'font-family:' + font + '">' +
+    '<p style="margin:0 0 12px;font-size:15px;color:#1a1a1a;font-family:' + font + '">' + _escHtml(greeting) + '</p>' +
+    (copy.intro ? '<p style="margin:0 0 14px;font-size:14px;line-height:' + lh + ';color:#1a1a1a;font-family:' + font + '">' +
+      text(copy.intro) + '</p>' : '') +
+    '<table bgcolor="#fbf8ee" role="presentation" width="100%" cellpadding="0" cellspacing="0" ' +
+      'style="margin:0 0 14px;border-collapse:separate;background-color:#fbf8ee;border:1px solid #eadfbf;' + accent +
+      'border-radius:10px"><tr><td' + (isAr ? ' dir="rtl"' : '') + ' style="padding:12px 14px;' + align + 'font-family:' + font + '">' +
+      '<div style="font-size:12px;font-weight:700;letter-spacing:' + (isAr ? '0' : '.04em') + ';color:#7a5200;' +
+        (isAr ? '' : 'text-transform:uppercase;') + 'margin:0 0 8px">' + kicker + '</div>' +
+      items +
+      '<a href="' + _escHtml(url) + '" style="display:inline-block;margin:12px 0 2px;padding:10px 18px;border-radius:999px;' +
+        'font-weight:700;font-size:14px;text-decoration:none;font-family:' + font + ';background-color:#21076c;' +
+        'color:#ffffff;border:2px solid #21076c">' + _escHtml(copy.label) + ' ' + arrow + '</a>' +
+    '</td></tr></table>' +
+    signoff +
+  '</td>';
+}
+
+function _newsletterHtmlBilingual(name, en, ar, url, logoUrl) {
+  const g = _bilingualGreetings(name);
+  const logo = logoUrl
+    ? '<td style="vertical-align:middle;width:1%;padding-right:14px"><img src="' + _escHtml(logoUrl) + '" ' +
+        'alt="AISA" width="44" height="44" style="display:block;height:44px;width:44px;border:0"></td>'
+    : '';
+  const headline = (en.headline || ar.headline)
+    ? '<tr><td style="padding:20px 22px 6px">' +
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>' +
+          '<td valign="top" class="nl-stack" style="width:50%;padding-right:10px;font-family:' + NL_FONT_EN + ';font-size:20px;line-height:1.3;' +
+            'font-weight:700;color:#21076c">' + _escHtml(en.headline) + '</td>' +
+          '<td valign="top" class="nl-stack nl-head-ar" dir="rtl" align="right" style="width:50%;padding-left:10px;font-family:' + NL_FONT_AR + ';' +
+            'font-size:20px;line-height:1.5;font-weight:700;color:#21076c">' + _escHtml(ar.headline || en.headline) + '</td>' +
+        '</tr></table></td></tr>'
+    : '';
+
+  return '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+    '<style>@media only screen and (max-width:600px){' +
+      '.nl-stack{display:block!important;width:auto!important;padding-left:14px!important;padding-right:14px!important}' +
+      '.nl-en{border-right:0!important}' +
+      '.nl-ar{border-top:1px solid #e6e1f5!important;padding-top:18px!important}' +
+      '.nl-head-ar{padding-top:8px!important;text-align:right!important}' +
+    '}</style>' +
+    '</head><body style="margin:0;padding:0;background-color:#f2effa">' +
+    '<div style="margin:0;padding:0;background-color:#f2effa">' +
+    '<table bgcolor="#f2effa" role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f2effa">' +
+    '<tr><td align="center" style="padding:24px 10px">' +
+    '<table bgcolor="#ffffff" role="presentation" width="100%" cellpadding="0" cellspacing="0" ' +
+      'style="width:100%;max-width:680px;background-color:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e6e1f5">' +
+
+      // Header: the seal, the Hub's name, and the issue in both languages
+      '<tr><td bgcolor="#21076c" style="background-color:#21076c;padding:18px 22px;border-bottom:4px solid #d8b664">' +
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>' + logo +
+          '<td style="vertical-align:middle;font-family:' + NL_FONT_EN + ';color:#ffffff;font-size:15px;font-weight:700;line-height:1.5">' +
+            _escHtml(en.issue || 'The Digital Lion') + '<br>' +
+            '<span dir="rtl" style="font-family:' + NL_FONT_AR + ';color:#d8b664">' +
+              _escHtml(ar.issue || en.issue || 'نشرة ديجيتال لايون') + '</span>' +
+          '</td>' +
+        '</tr></table>' +
+      '</td></tr>' +
+
+      headline +
+
+      // English left, Arabic right
+      '<tr><td style="padding:6px 10px 12px">' +
+        '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>' +
+          _newsletterColumn(en, g.en, url, '&rarr;', 'Thank you,', 'In this issue', false) +
+          _newsletterColumn(ar, g.ar, url, '&larr;', 'مع الشكر،', 'في هذا العدد', true) +
+        '</tr></table>' +
+      '</td></tr>' +
+
+      // Where to find it again
+      '<tr><td bgcolor="#fbfafe" style="padding:12px 22px;background-color:#fbfafe;border-top:1px solid #e6e1f5;' +
+        'text-align:center;font-family:' + NL_FONT_EN + ';font-size:12px;line-height:1.6;color:#555555">' +
+        'Sent from the AISA Learning Hub. Every issue is on the Media Hub.<br>' +
+        '<span dir="rtl" style="font-family:' + NL_FONT_AR + '">أُرسلت من مركز التعلّم في AISA. تجدون كل الأعداد في مركز الإعلام.</span>' +
+      '</td></tr>' +
+
+      // Footer band
+      '<tr><td bgcolor="#21076c" style="background-color:#21076c;padding:14px 22px;text-align:center;' +
+        'font-family:' + NL_FONT_EN + ';color:#ffffff;font-size:12px;line-height:1.6">' +
+        'American International School in Abu Dhabi · Learning Hub<br>' +
+        '<span dir="rtl" style="font-family:' + NL_FONT_AR + ';color:#d8b664">المدرسة الأمريكية الدولية في أبوظبي · مركز التعلّم</span>' +
+      '</td></tr>' +
+
+    '</table></td></tr></table></div></body></html>';
+}
+
+/* The plain-text part: English, a rule, then Arabic. */
+function _newsletterTextBilingual(name, en, ar, url) {
+  const g = _bilingualGreetings(name);
+  const part = function (copy, greeting, thanks) {
+    return [greeting, copy.headline, copy.intro,
+            copy.items.map(function (t) { return '• ' + t; }).join('\n'),
+            copy.label + ': ' + url,
+            copy.signoff ? thanks + '\n' + copy.signoff : '']
+      .filter(function (s) { return !!s; }).join('\n\n');
+  };
+  return part(en, g.en, 'Thank you,') + '\n\n———\n\n' + part(ar, g.ar, 'مع الشكر،');
 }
 
 // The end. checkHubInstall() looks for this marker to confirm the whole

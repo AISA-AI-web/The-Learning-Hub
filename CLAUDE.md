@@ -300,6 +300,15 @@ endpoints fail silently and the dependent UIs stay empty:
   stays slow, and the client-side work described below only stops it
   *lying* about why.
 
+- **The bilingual newsletter email (29 October 2026).** `send_newsletter`
+  now takes optional Arabic copy (`issue_ar`, `headline_ar`, `intro_ar`,
+  `items_ar`, `link_label_ar`, `signoff_ar`), a `signoff` and a
+  `logo_url`, and with them sends the AISA bilingual design instead of the
+  English-only one. See *The email* under Issue No. 6 below. No new
+  endpoint, sheet or permission. Until the redeploy the old backend
+  ignores the Arabic and sends English only, and the issue's mail bar
+  says so in red after the test send rather than failing silently.
+
 - **Read cache + one-request admin dashboard (23 September 2026).** The
   backend now answers most reads from `CacheService` and has a new
   `admin_dashboard` endpoint — see *Data loading — audited 23 September
@@ -603,7 +612,7 @@ The `aisa_onboarding_v1` localStorage key is orphaned on staff devices.
 Harmless — nothing reads it.
 
 Note the cache-busting convention: `gate.js` is included as
-`auth/gate.js?v=N` by **50 pages**, so **changing `gate.js` means bumping
+`auth/gate.js?v=N` by **51 pages**, so **changing `gate.js` means bumping
 `N` on every one of them** or returning visitors keep running the
 cached copy. That change took it to `?v=19`; the September 18
 newsletter took it to `?v=20`, the newsletter mail-out to `?v=21`, and
@@ -615,13 +624,15 @@ audit (23 September 2026) to `?v=25`, and the Sustainability release
 the Data to Action session's entry to `?v=29`, and the station-guide
 download with MagicSchool and Chalkie leaving Tools & Resources
 (20 October 2026) to `?v=30`, and the Flint Master Guide (29 October
-2026) to `?v=31`, which also made it 50 pages.
+2026) to `?v=31`, which also made it 50 pages. Issue No. 6 of the
+Digital Lion made it 51, and its bilingual email (29 October 2026) took
+it to `?v=32`.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
 their own pins — `certificate.js?v=7`, `search-index.js?v=16`,
 `menu.js?v=20`, `dwell.js?v=2` — so **editing one of those helpers
 means bumping its pin inside `gate.js`, which is itself a change to
-`gate.js`, which means bumping `?v=N` on all 50 pages again.** Adding a
+`gate.js`, which means bumping `?v=N` on all 51 pages again.** Adding a
 page to the menu or the search index is enough to trigger the whole
 cascade. Skip it and returning staff keep the cached helper and never
 see the new entry.
@@ -1829,9 +1840,10 @@ Assessment Calendar; `data-anonymizer`; `map-data-tool`).
 
 In it: MagicSchool ended and the Flint pilot (lead), AISA Tools
 (`aisa-tools.pages.dev`), the Activity Hub, the Data Anonymizer, AI Lessons'
-new address and home-language lessons, the Assessment Calendar, the PD Day
-material, a Sustainability reminder, NotebookLM ⇄ Drive sync, and six
-smaller items. Deliberately left out: anything not aimed at AISA staff,
+new address and home-language lessons, the Assessment Calendar, the MAP
+Dashboard (added the same day at Brandon's request), the PD Day material,
+a Sustainability reminder, NotebookLM ⇄ Drive sync, and six smaller
+items. Deliberately left out: anything not aimed at AISA staff,
 the Anti-Bullying module (still preview), and internal planning that
 staff have not been told about.
 
@@ -1878,6 +1890,42 @@ it could not check and offers *Try again*.
 The next issue can reuse all of this: give its page the same gate, bar
 and `ISSUE_KEY`, and add its key to the `data-dl-*` attributes on
 `media.html` and `index.html`.
+
+### The email: bilingual, in the AISA design
+
+Brandon's first test send came back English-only and plain, and he asked
+for it bilingual "with the AISA logo and all". The newsletter email is
+built by the backend (`31_email.gs`), so:
+
+- **`send_newsletter` takes Arabic copy.** With any of `headline_ar`,
+  `intro_ar` or `items_ar`, it sends `_newsletterHtmlBilingual()`: a purple
+  header with the white AISA seal and the issue in both languages, the
+  headline in both, then English on the left and Arabic on the right, each
+  with a gold *In this issue* card, its own button and the sign-off. The
+  plain-text part is English, a rule, then Arabic. It is the design of
+  Brandon's other bilingual emails (the `aisa-bilingual-email` skill):
+  `background-color` plus `bgcolor`, never the `background:` shorthand,
+  which Gmail strips. On a phone the columns stack, English first.
+- **The seal comes from the issue's own site.** The page passes
+  `logo_url`, and the backend uses it only when it is https on the same
+  host as the issue's `url`, so no page can put another site's image in a
+  school-wide email. Served over plain http (a local test), the seal is
+  left out.
+- **Without Arabic, nothing changed.** The English-only email the other
+  mail bars send (Sustainability, the AI Literacy Hub, Anti-Bullying) is
+  byte for byte what it was: checked with the simulator's `--strict`
+  comparison against the previous backend.
+- **The reply says `bilingual: true`.** The issue's bar needs a test send
+  before *Email all staff* unlocks, and if the test comes back without
+  that flag it says in red that the backend has not been redeployed, and
+  the confirm dialog repeats it.
+- `gate.js` passes the new fields through (`ar`, `signoff`, `logoUrl` on
+  `sendNewsletter`), which took the cascade to `?v=32`.
+
+The Arabic in the email uses Western digits, as Brandon's bilingual emails
+do; the page itself keeps the Eastern digits of the newsletter series.
+`issue-template.html` carries the same `AR` block, so the next issue's
+email is bilingual too.
 
 ### After Issue No. 6 is released
 

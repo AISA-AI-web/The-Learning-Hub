@@ -1382,6 +1382,46 @@ function permissions(files) {
 
 /* ------------------------------------------------------------------ */
 
+/* The bilingual newsletter. Arabic copy turns the email into the
+ * side-by-side design; the seal is only taken from the issue's own site;
+ * nothing uses the background shorthand that Gmail strips; and without
+ * Arabic the email is the English-only one it always was. */
+function newsletterChecks(files) {
+    const as = (tok, action, extra) => Object.assign({ action: action, session_token: tok }, extra || {});
+    const world = makeWorld(seed());
+    const send = (extra) => {
+        const r = post(files, world, as('tokS', 'send_newsletter', Object.assign({
+            url: 'https://hub.example/Media%20Hub/oct30.html', test_only: '1', issue: 'Issue No. 6',
+            headline: 'New tools', intro: 'Six weeks', items: 'One\nTwo', signoff: 'Brandon\nHead of AI & Innovation'
+        }, extra || {})));
+        return { r: r, m: world.mail[world.mail.length - 1] || {} };
+    };
+    const arabic = {
+        issue_ar: 'العدد السادس', headline_ar: 'أدوات <b>جديدة</b>', intro_ar: 'ستة أسابيع', items_ar: 'واحد\nاثنان',
+        signoff_ar: 'Brandon\nرئيس القسم'
+    };
+
+    const a = send(Object.assign({ logo_url: 'https://hub.example/assets/brand/aisa-seal-white.png' }, arabic));
+    check('newsletter with Arabic copy: sent, and the reply says it was bilingual',
+          a.r.ok && a.r.sent === 1 && a.r.bilingual === true, JSON.stringify(a.r));
+    check('…English and Arabic both in the email, the Arabic right to left',
+          /New tools/.test(a.m.htmlBody) && /ستة أسابيع/.test(a.m.htmlBody) && /dir="rtl"/.test(a.m.htmlBody));
+    check('…both in the plain-text part too', /Two/.test(a.m.body) && /اثنان/.test(a.m.body));
+    check('…the AISA seal, from the issue\'s own site',
+          /<img src="https:\/\/hub\.example\/assets\/brand\/aisa-seal-white\.png"/.test(a.m.htmlBody));
+    check('…the copy is escaped, not markup', /&lt;b&gt;/.test(a.m.htmlBody) && !/<b>/.test(a.m.htmlBody));
+    check('…no background: shorthand, which Gmail strips', !/background:/.test(a.m.htmlBody));
+
+    const b = send(Object.assign({ logo_url: 'https://elsewhere.example/seal.png' }, arabic));
+    check('a seal from another site is left out',
+          b.r.ok && !/elsewhere\.example/.test(b.m.htmlBody) && !/<img/.test(b.m.htmlBody));
+
+    const c = send({});
+    check('without Arabic copy, the English-only email as before',
+          c.r.ok && c.r.bilingual === undefined && !/dir="rtl"/.test(c.m.htmlBody) && /AISA Learning Hub/.test(c.m.htmlBody),
+          JSON.stringify(c.r));
+}
+
 function describe(files) {
     const lines = files.reduce((n, f) => n + f.src.split('\n').length, 0);
     return files.length === 1 ? files[0].name + ' (' + lines + ' lines)'
@@ -1429,6 +1469,9 @@ function main() {
 
     console.log('\nPermissions:');
     permissions(files);
+
+    console.log('\nThe bilingual newsletter:');
+    newsletterChecks(files);
 
     console.log('\nData migration:');
     migrationChecks(files);
