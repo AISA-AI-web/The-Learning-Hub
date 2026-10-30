@@ -134,7 +134,7 @@
         .dates-table tbody tr + tr { border-top: 1px solid rgba(207, 250, 254, 0.16); }
         .dates-table a { color: #fde68a; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
     </style>
-    <script src="../auth/gate.js?v=31"></script>
+    <script src="../auth/gate.js?v=32"></script>
     <script src="issue-release.js?v=1"></script>
 </head>
 <body class="bg-slate-50 text-gray-800 min-h-screen flex flex-col">
@@ -551,6 +551,82 @@
                 </div>
             </section>
 
+            <!-- MAP Dashboard -->
+            <section id="map-dashboard" class="bg-white rounded-2xl shadow-lg border-t-8 border-amber-500 card-hover p-7 md:p-9 mb-8">
+                <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+                    <div class="mb-4 md:mb-0 md:shrink-0">
+                        <div class="h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-100 to-cyan-100 flex items-center justify-center">
+                            <span class="text-3xl">📊</span>
+                        </div>
+                    </div>
+                    <div class="flex-1">
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-amber-700 mb-1">
+                            <span class="lang-en">For: Teachers whose classes sit NWEA MAP Growth</span>
+                            <span class="lang-ar">لِمَن: المعلّمون الذين يخضع طلابهم لاختبار NWEA MAP Growth</span>
+                        </p>
+                        <h3 class="text-2xl md:text-3xl font-heading font-bold text-blue-950 mb-3">
+                            <span class="lang-en">MAP Dashboard: from a MAP export to a class plan</span>
+                            <span class="lang-ar">لوحة بيانات MAP: من ملف MAP إلى خطة للصف</span>
+                        </h3>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            <span class="lang-en">Export your class's results from NWEA MAP and drop the files onto the MAP Dashboard. It shows who grew and who needs support, who to celebrate, and growth goals for the next test. It also suggests table groups and a seating plan, and makes wall posters with no student names on them.</span>
+                            <span class="lang-ar">صدّروا نتائج صفكم من NWEA MAP وأفلتوا الملفات في لوحة بيانات MAP. تُظهر اللوحة من تقدّم ومن يحتاج إلى دعم، ومن يستحق الاحتفاء، وأهداف النمو للاختبار القادم. وتقترح أيضًا مجموعات للطاولات وخطة لجلوس الطلاب، وتصنع ملصقات حائط لا تحمل أسماء الطلاب.</span>
+                        </p>
+                        <div class="bg-cyan-50 border-s-4 border-cyan-500 rounded-xl p-5 mb-4">
+                            <h4 class="font-heading font-bold text-blue-950 mb-2">
+                                <span class="lang-en">Three steps</span>
+                                <span class="lang-ar">ثلاث خطوات</span>
+                            </h4>
+                            <ol class="text-sm text-gray-700 leading-relaxed list-decimal ps-5 space-y-1.5">
+                                <li>
+                                    <span class="lang-en">In NWEA MAP, export the <strong>Achievement Status and Growth (ASG)</strong> report for your class as a CSV. Add the <strong>Class Profile</strong> report for each subject if you also want the instructional areas.</span>
+                                    <span class="lang-ar">في NWEA MAP، صدّروا تقرير <strong><span class="ltr">Achievement Status and Growth (ASG)</span></strong> لصفكم بصيغة CSV. وأضيفوا تقرير <strong><span class="ltr">Class Profile</span></strong> لكل مادة إن أردتم المجالات التعليمية أيضًا.</span>
+                                </li>
+                                <li>
+                                    <span class="lang-en">Drop the files onto the dashboard, all at once.</span>
+                                    <span class="lang-ar">أفلتوا الملفات في اللوحة دفعة واحدة.</span>
+                                </li>
+                                <li>
+                                    <span class="lang-en">Start with the sections it opens on, such as the <strong>Action Board</strong> and <strong>Priority Students</strong>. The rest is under <em>More analysis</em>.</span>
+                                    <span class="lang-ar">ابدأوا بالأقسام التي تفتح عليها اللوحة، مثل <strong>لوحة الإجراءات</strong> و<strong>الطلاب ذوي الأولوية</strong>. وتجدون الباقي تحت <em><span class="ltr">More analysis</span></em>.</span>
+                                </li>
+                            </ol>
+                        </div>
+                        <p class="text-gray-700 leading-relaxed mb-4">
+                            <span class="lang-en"><strong>Only have this fall's results?</strong> A file with one test window gets a start-of-year view: where each student starts, and their growth goals. The growth panels appear once your class has sat a second test.</span>
+                            <span class="lang-ar"><strong>لديكم نتائج الخريف فقط؟</strong> الملف الذي يحوي نافذة اختبار واحدة يعرض لكم بداية العام: أين يبدأ كل طالب، وأهداف نموه. وتظهر لوحات النمو بعد أن يخضع صفكم لاختبار ثانٍ.</span>
+                        </p>
+                        <div class="bg-amber-50 border-s-4 border-amber-500 rounded-xl p-4 mb-4">
+                            <p class="text-sm text-gray-800 leading-relaxed">
+                                <span class="lang-en"><strong>Your file never leaves your computer.</strong> The dashboard reads it in your browser, sends nothing anywhere, and forgets it when you close the tab. That is what makes it safe for real class data, unlike pasting the same file into a chatbot.</span>
+                                <span class="lang-ar"><strong>ملفكم لا يغادر جهازكم.</strong> تقرأ اللوحة الملف داخل متصفحكم، ولا ترسل شيئًا إلى أي مكان، وتنساه عند إغلاق التبويب. وهذا ما يجعلها آمنة لبيانات الصف الحقيقية، على عكس لصق الملف نفسه في روبوت محادثة.</span>
+                            </p>
+                        </div>
+                        <p class="text-gray-700 leading-relaxed mb-5">
+                            <span class="lang-en">New to it? Press <strong>Load Sample Data</strong> to try it on a made-up class. Every section has a <strong>?</strong> that explains it, and there is a user guide.</span>
+                            <span class="lang-ar">جديدون عليها؟ اضغطوا <strong><span class="ltr">Load Sample Data</span></strong> لتجربتها على صف وهمي. في كل قسم علامة <strong>؟</strong> تشرحه، وهناك دليل استخدام أيضًا.</span>
+                        </p>
+                        <div class="flex flex-wrap items-center gap-x-5 gap-y-3">
+                            <a href="https://aisa-ai-web.github.io/map-data-tool/" target="_blank" rel="noopener" data-track="digital-lion:oct30:map-dashboard" class="inline-flex items-center justify-center bg-gradient-to-r from-blue-900 to-cyan-700 text-white px-6 py-2.5 rounded-full font-bold hover:from-blue-950 hover:to-cyan-800 transition-transform hover:scale-105">
+                                <span class="mr-2">📊</span>
+                                <span class="lang-en">Open the MAP Dashboard</span>
+                                <span class="lang-ar">افتحوا لوحة بيانات MAP</span>
+                            </a>
+                            <a href="https://aisa-ai-web.github.io/map-data-tool/teacher-dashboard-guide.pdf" target="_blank" rel="noopener" data-track="digital-lion:oct30:map-guide" class="inline-flex items-center text-sm font-bold text-cyan-800 hover:text-cyan-900">
+                                <span class="mr-2">📄</span>
+                                <span class="lang-en">User guide (PDF)</span>
+                                <span class="lang-ar">دليل الاستخدام (PDF)</span>
+                            </a>
+                            <a href="../Tools%20and%20Resources/tools.html#module-map-all" data-track="digital-lion:oct30:map-hub" class="inline-flex items-center text-sm font-bold text-cyan-800 hover:text-cyan-900">
+                                <span class="mr-2">🧭</span>
+                                <span class="lang-en">All Things MAP on the Hub</span>
+                                <span class="lang-ar">كل ما يخص MAP على المركز</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             <!-- AI Lessons -->
             <section id="ai-lessons" class="bg-white rounded-2xl shadow-lg border-t-8 border-cyan-600 card-hover p-7 md:p-9 mb-8">
                 <div class="flex flex-col md:flex-row md:items-start md:gap-6">
@@ -921,8 +997,12 @@
     (function () {
         var ISSUE_KEY = 'oct30';
 
-        /* What the email says. Kept here rather than scraped from the page
-           so the trailer can be shorter and blunter than the issue itself. */
+        /* What the email says, in English and Arabic: the backend lays the
+           two out side by side in the AISA design (31_email.gs). Kept here
+           rather than scraped from the page so the trailer can be shorter
+           and blunter than the issue itself. Each English line needs its
+           Arabic line in the same place. The Arabic uses Western digits, as
+           Brandon's other bilingual emails do. */
         var ISSUE    = 'Issue No. 6 · October 30';
         var HEADLINE = "New tools, and one place to find them";
         var INTRO    = "Six weeks since the last issue: MagicSchool has gone, Flint is open to every teacher, and the tools we've built this term are on one page.";
@@ -931,9 +1011,28 @@
             'AISA Tools: one page for AI Lessons, the Activity Hub, the Assessment Calendar, the MAP Dashboard and the Data Anonymizer. Bookmark it.',
             'Activity Hub: paste HTML from any AI tool and get a class activity with a link and a QR code.',
             'Data Anonymizer: swap student names for codes before a spreadsheet goes to an AI tool.',
+            'MAP Dashboard: drop in your NWEA MAP export for growth, priority students and table groups. Your file never leaves your computer.',
             'Sustainability at AISA is required for all staff. Not finished? It takes about 20–30 minutes.',
             'The slides and station guides from the October 19–20 PD days are on the Hub.'
         ];
+        var AR = {
+            issue:     'ديجيتال لايون · العدد السادس · 30 أكتوبر',
+            headline:  'أدوات جديدة، ومكان واحد يجمعها',
+            intro:     'مرّت ستة أسابيع على العدد الماضي: انتهى اشتراك MagicSchool، وأصبحت منصة Flint متاحة لكل معلّم، وباتت الأدوات التي بنيناها هذا الفصل في صفحة واحدة.',
+            items: [
+                'Flint: التجربة متاحة لكل معلّم حتى نهاية هذا الفصل. ابدأوا بدليل Flint الشامل على المركز.',
+                'AISA Tools: صفحة واحدة لدروس الذكاء الاصطناعي ومركز الأنشطة وتقويم التقييمات ولوحة بيانات MAP وأداة إخفاء الهوية. احفظوها في المفضلة.',
+                'مركز الأنشطة: الصقوا كود HTML من أي أداة ذكاء اصطناعي، واحصلوا على نشاط صفي برابط ورمز QR.',
+                'أداة إخفاء الهوية: استبدلوا أسماء الطلاب برموز قبل إرسال جدول البيانات إلى أداة ذكاء اصطناعي.',
+                'لوحة بيانات MAP: أفلتوا ملف NWEA MAP لتروا النمو والطلاب ذوي الأولوية ومجموعات الطاولات. ملفكم لا يغادر جهازكم.',
+                'وحدة الاستدامة في AISA إلزامية لجميع الموظفين. لم تكملوها بعد؟ تستغرق نحو 20–30 دقيقة.',
+                'شرائح أيام التطوير المهني في 19–20 أكتوبر وأدلّة المحطات متاحة على المركز.'
+            ],
+            linkLabel: 'اقرأوا النشرة',
+            signoff:   'Brandon\nرئيس قسم الذكاء الاصطناعي والابتكار'
+        };
+        var SUBJECT  = 'The Digital Lion, Issue No. 6: ' + HEADLINE + ' | نشرة ديجيتال لايون، العدد السادس';
+        var SIGNOFF  = 'Brandon\nHead of AI & Innovation';
 
         /* What the bell says on release. The link to this page is what
            marks the issue as released (issue-release.js), so it must stay
@@ -960,6 +1059,10 @@
         var undo    = document.getElementById('nl-undo');
         var cnt     = document.getElementById('nl-count');
         var released = false;
+        /* The real send waits for a test from this page: null until one has
+           gone through, then 'bilingual', or 'english' when the backend has
+           not been redeployed and ignored the Arabic. */
+        var tested = null;
 
         function say(t, tone) {
             msg.textContent = t || '';
@@ -973,13 +1076,19 @@
             rel.hidden = on;
             rel.disabled = false;
             undo.hidden = !on;
-            go.disabled = !on;
-            go.title = on ? '' : 'Release it first, so the link works for everyone';
+            lockEmail(false);
             preview.style.display = on ? 'none' : '';
         }
 
+        function lockEmail(isBusy) {
+            go.disabled = isBusy || !released || !tested;
+            go.title = !released ? 'Release it first, so the link works for everyone'
+                     : !tested   ? 'Send yourself a test first'
+                     : '';
+        }
+
         function busy(on) {
-            go.disabled = on || !released;
+            lockEmail(on);
             test.disabled = on; rel.disabled = on; undo.disabled = on;
         }
 
@@ -1063,7 +1172,7 @@
                 busy(false);
                 setReleased(true);
                 say('Released. Staff will see it in their bell, on the Media Hub and on the home page. '
-                    + 'Send yourself a test email, then Email all staff when you are ready.', 'good');
+                    + 'Send yourself a test email: Email all staff unlocks once one has gone through.', 'good');
             }, function (e) {
                 busy(false);
                 setReleased(false);
@@ -1120,11 +1229,14 @@
             busy(true);
             say(opts.testOnly ? 'Sending you a test…' : 'Sending…');
             window.aisaAuth.sendNewsletter({
-                url: issueUrl(), subject: 'The Digital Lion — ' + HEADLINE,
-                issue: ISSUE, headline: HEADLINE, intro: INTRO, items: ITEMS,
-                linkLabel: 'Read the newsletter',
+                url: issueUrl(), subject: SUBJECT,
+                issue: 'The Digital Lion · ' + ISSUE, headline: HEADLINE, intro: INTRO, items: ITEMS,
+                linkLabel: 'Read the newsletter', signoff: SIGNOFF, ar: AR,
+                // The white AISA seal for the purple header, on this site.
+                logoUrl: new URL('../assets/brand/aisa-seal-white.png', location.href).href,
                 testOnly: !!opts.testOnly, confirm: !opts.testOnly
             }).then(function (r) {
+                if (r && r.ok !== false && !r.error && r.test_only) tested = r.bilingual ? 'bilingual' : 'english';
                 busy(false);
                 if (!r || r.ok === false || r.error) {
                     say(explain(r), 'bad');
@@ -1136,7 +1248,13 @@
                     + (r.reason === 'daily_quota_exhausted'
                         ? ' — today’s Gmail quota is used up, try again tomorrow'
                         : ' — hit the 6-minute limit, click again to send the rest'));
-                say((r.test_only ? 'Test: ' : 'Done: ') + bits.join(', ') + '.',
+                if (!r.bilingual) {
+                    say((r.test_only ? 'Test: ' : 'Done: ') + bits.join(', ') + ', but in the old English-only '
+                        + 'design: the Apps Script backend has not been redeployed with the bilingual email yet. '
+                        + 'Run node auth/apps-script/deploy.mjs, then send another test.', 'bad');
+                    return;
+                }
+                say((r.test_only ? 'Test: ' : 'Done: ') + bits.join(', ') + ', bilingual.',
                     (r.failed || r.skipped) ? 'bad' : 'good');
             }).catch(function (e) {
                 busy(false);
@@ -1146,9 +1264,13 @@
 
         test.addEventListener('click', function () { send({ testOnly: true }); });
         go.addEventListener('click', function () {
-            if (!released) return;
+            if (!released || !tested) return;
+            var english = tested === 'english'
+                ? '\n\nYour test came back in the old English-only design, because the backend has not been '
+                  + 'redeployed. This send will look the same.'
+                : '';
             if (!window.confirm('Email this issue to all AISA staff?\n\nThis sends a real email to '
-                + 'everyone on the roster. Send yourself a test first if you have not.')) return;
+                + 'everyone on the roster.' + english)) return;
             send({ testOnly: false });
         });
 
