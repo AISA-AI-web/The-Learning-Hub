@@ -1,6 +1,6 @@
 # AISA Learning Hub — Apps Script backend
 
-These fifteen `.gs` files are the Hub's backend. They live in the Apps Script
+These sixteen `.gs` files are the Hub's backend. They live in the Apps Script
 project bound to the Hub spreadsheet (open the spreadsheet, then
 Extensions → Apps Script). Until 13 October 2026 they were one file,
 `auth/apps-script.gs`. That is gone; git history keeps it.
@@ -27,6 +27,7 @@ same cells the old code did.
 | `41_surveys.gs` | The goal form, and its list of required questions |
 | `42_performance_reviews.gs` | Line managers and the performance-review round trip |
 | `90_editor_tools.gs` | Everything you run by hand from the editor |
+| `91_bridge.gs` | The move to Supabase: the bridge (the copy, the switch, the emails). Does nothing until the switch – see below |
 
 The numbers only keep the files in a sensible order. Apps Script loads every
 file into one shared space, so the order they sit in the editor makes no
@@ -173,6 +174,31 @@ functions in the menu beside **Run**.
 | `flushHubCache` | After editing the spreadsheet by hand, to make the Hub re-read it now. |
 | `warmHubCache` | Optional, as a time-driven trigger every five minutes. Reads only. |
 | `migrateDwellToPerModule` | Once, and only if the `dwell` tab still has one row per chapter. Keeps a backup tab first. |
+
+## Moving to Supabase: the bridge (`91_bridge.gs`)
+
+The Hub's data and backend are moving to the school's Supabase project, beside AI Lessons, the
+Activity Hub and the Assessment Calendar: a server that answers the Hub's pages exactly as this
+backend does, but in a fraction of a second. Everything about the move is in AISA-AI-web/AI-Lessons,
+`learning-hub/README.md`, and its steps in that repository's `supabase/SETUP-PROMPTS.md` (prompts
+19–21, the copy, the switch). `91_bridge.gs` is the source copied from there
+(`learning-hub/bridge/91_bridge.gs`): change it there first.
+
+**Until the switch nothing changes.** `doPost` and `doGet` ask `bridgeForward_()` first, and it
+answers null until the Script property `MOVED_TO` is set. The bridge uses only services this
+backend already uses (UrlFetchApp, MailApp, LockService) and Script Properties, so deploying it
+needs no new permission and does not interrupt the Hub.
+
+| Function | When |
+|---|---|
+| `bridgeSetup` | Once: makes the bridge's key and logs its SHA-256 for the Supabase secret `LEARNING_HUB_BRIDGE_KEY_SHA256`. |
+| `bridgeCheck` | Checks the server knows the bridge, and shows what it holds. Reads only. |
+| `bridgeCopySheet` | Copies every tab to the new database (session tokens hashed here first). Before the switch, as often as needed; each copy replaces the last. |
+| `bridgeSwitch` | The switch, one evening: holds this backend still ("busy, try again"), copies once more, tells the server, sets `MOVED_TO`. From then on this web app passes every request on to the new server, so pages keep working and everyone stays signed in. |
+| `bridgeRun` | After the switch, as a time-driven trigger every minute (added by hand): sends the emails the new server has queued, with MailApp as before. |
+
+**To undo the switch:** delete `MOVED_TO` in Project Settings → Script properties, and the
+`bridgeRun` trigger. This backend answers from the spreadsheet again.
 
 ## For whoever edits the code
 

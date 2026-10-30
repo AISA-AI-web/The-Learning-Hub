@@ -13,6 +13,9 @@
  */
 
 function doGet(e) {
+  // The hub has moved to Supabase (91_bridge.gs); typeof, so a missing file is still reported by name.
+  const moved = typeof bridgeForward_ === 'function' ? bridgeForward_(e) : null;
+  if (moved) return moved;
   const missing = _missingHubFiles();
   return jsonOut({
     ok: true,
@@ -98,6 +101,11 @@ const ACTIONS = {
 };
 
 function doPost(e) {
+  /* After the switch to Supabase every request is passed on to the new
+   * server, and while the switch runs the answer is busy_try_again
+   * (91_bridge.gs). Before it, this is null and nothing changes. */
+  const moved = typeof bridgeForward_ === 'function' ? bridgeForward_(e) : null;
+  if (moved) return moved;
   try {
     const body = JSON.parse((e && e.postData && e.postData.contents) || '{}');
     const action = body.action;
@@ -182,7 +190,8 @@ function _hubFiles() {
     ['40_module_responses',    typeof endOf_40_module_responses_ === 'function'],
     ['41_surveys',             typeof endOf_41_surveys_ === 'function'],
     ['42_performance_reviews', typeof endOf_42_performance_reviews_ === 'function'],
-    ['90_editor_tools',        typeof endOf_90_editor_tools_ === 'function']
+    ['90_editor_tools',        typeof endOf_90_editor_tools_ === 'function'],
+    ['91_bridge',              typeof endOf_91_bridge_ === 'function']
   ];
 }
 
