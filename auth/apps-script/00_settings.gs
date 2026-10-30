@@ -25,6 +25,7 @@
  *   41_surveys.gs               the goal form, and any survey after it
  *   42_performance_reviews.gs   line managers and the review round trip
  *   90_editor_tools.gs          things you run by hand from the editor
+ *   91_bridge.gs                the move to Supabase: the copy, the switch, the emails
  *
  * How to deploy is in auth/apps-script/README.md in the repo. From a
  * terminal, in the repo: node auth/apps-script/deploy.mjs. In the editor:

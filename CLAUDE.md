@@ -2,6 +2,30 @@
 
 Notes for future sessions on The Learning Hub.
 
+## Moving to Supabase — started 30 October 2026
+
+The Hub's data and backend are moving off the spreadsheet and Apps Script to the school's Supabase
+project. The plan, the server (`learning-hub` edge function), the database (schema `learning_hub`)
+and the step-by-step prompts live in **AISA-AI-web/AI-Lessons**: `learning-hub/README.md` and
+`supabase/SETUP-PROMPTS.md` (prompts 19–21, the copy, the switch). The new server speaks this
+backend's language exactly – same actions, fields and error codes – and a test there runs this
+backend's own code beside it and compares every answer and every email.
+
+- **`auth/apps-script/91_bridge.gs`** is the bridge, copied from AI-Lessons
+  (`learning-hub/bridge/91_bridge.gs`, the source: change it there first). It does nothing until
+  the Script property `MOVED_TO` is set (`bridgeSwitch`); then `doPost`/`doGet` pass every
+  request on to the new server, and `bridgeRun` (every minute) sends the queued emails.
+- **Until the switch, a change to the backend here must also go to the new server**
+  (`supabase/functions/learning-hub/core.mjs` in AI-Lessons, and a fresh copy of the `.gs` files in
+  its `learning-hub/old/`, so its parity test compares the two again). A new survey: its spec in
+  `SURVEY_SPECS` in both.
+- **At the switch** a pull request here points `API_URL` in `auth/gate.js` at
+  `https://kttgudordfvhdrkcancp.supabase.co/functions/v1/learning-hub?forceFunctionRegion=eu-central-1`
+  (the `?v=N` cascade) and makes the pages that report emails sent count `queued` too: the new
+  server queues an email for the bridge rather than sending it while the person waits.
+- **Later**, the pages move to Cloudflare Pages; the 31 MB station-guides zip is over its 25 MB
+  limit per file and has to be split or linked from Drive first.
+
 ## Apps Script backend — fifteen files since 13 October 2026
 
 `auth/apps-script.gs`, one 3,339-line file, is now **`auth/apps-script/`**:
