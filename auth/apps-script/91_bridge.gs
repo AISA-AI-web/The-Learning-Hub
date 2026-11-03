@@ -282,7 +282,12 @@ function bridgeForward_(e) {
   if (p.getProperty('SWITCHING')) return jsonOut({ ok: false, error: 'busy_try_again' });
   if (!p.getProperty('MOVED_TO')) return null;
   var text = (e && e.postData && e.postData.contents) || '';
-  if (!text) return jsonOut({ ok: true, service: 'aisa-learning-hub', moved_to: p.getProperty('MOVED_TO') });
+  if (!text) {
+    // Opening the old address: where the hub has gone, and still whether every file is installed (deploy.mjs checks it).
+    var missing = typeof _missingHubFiles === 'function' ? _missingHubFiles() : [];
+    return jsonOut({ ok: true, service: 'aisa-learning-hub', moved_to: p.getProperty('MOVED_TO'),
+                     files: missing.length ? 'MISSING: ' + missing.join(', ') : 'all ' + _hubFiles().length + ' present' });
+  }
   try {
     return ContentService.createTextOutput(Bridge.forward(text)).setMimeType(ContentService.MimeType.JSON);
   } catch (err) {
