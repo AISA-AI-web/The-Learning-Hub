@@ -2,14 +2,17 @@
  * 91_bridge.gs — the Learning Hub's Google side, after its move to the school's Supabase project.
  *
  * The hub's backend now runs on Supabase (AISA-AI-web/AI-Lessons: learning-hub/ and the `learning-hub` edge
- * function). What only Google can do stays here, in this Apps Script project, run as the account that owns the Hub
- * spreadsheet:
+ * function). What only Google can do stays here, in this Apps Script project, run as the account the hub's web app
+ * runs as – the account its emails have always come from (hodai@aisa.sch.ae, checked 3 Nov 2026):
  *
  *   bridgeRun        every minute (a trigger added by hand after the switch): asks the server for the emails the hub has
  *                    queued (PD reminders, the newsletter, a teacher's copy of their goal), sends them with MailApp
- *                    as before, from this account, and reports back what went and the day's mail quota.
+ *                    as before, and reports back what went and the day's mail quota. A trigger runs as the account
+ *                    that added it, and MailApp sends from that account: add it as the one above, or the hub's emails
+ *                    start coming from someone else.
  *
- * Run these once from the Apps Script editor (choose the function, then Run), as that account:
+ * Run these from the Apps Script editor (choose the function, then Run), as any editor of the project (the key is kept
+ * in the project, not in an account; the copy reads the Hub spreadsheet, which every editor can):
  *
  *   bridgeSetup      makes the bridge's key (kept in Script Properties as BRIDGE_KEY, never shown) and writes its
  *                    SHA-256 in the execution log: paste that into Supabase as the edge function's secret
