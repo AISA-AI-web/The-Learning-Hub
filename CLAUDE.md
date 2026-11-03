@@ -651,11 +651,19 @@ download with MagicSchool and Chalkie leaving Tools & Resources
 2026) to `?v=31`, which also made it 50 pages. Issue No. 6 of the
 Digital Lion made it 51, and its bilingual email (29 October 2026) took
 it to `?v=32`, and the search-result overflow fix (30 October 2026) to
-`?v=33`.
+`?v=33`, and the admin top-bar fit (3 November 2026) to `?v=35`.
+
+**`?v=34` was skipped on purpose.** Two branches still unmerged that day,
+the Supabase switch and Hub Analytics, both use it. Two branches that
+make the same `33` → `34` edit merge without a conflict, so a third
+would have put a different `gate.js` behind a URL that browsers had
+already cached. Before bumping, check open pull requests and recent
+branches for the next number. When a merge conflicts on the pin, resolve
+it to a number that has never been on `main`, not to either side's.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
 their own pins — `certificate.js?v=7`, `search-index.js?v=17`,
-`menu.js?v=21`, `dwell.js?v=2` — so **editing one of those helpers
+`menu.js?v=23`, `dwell.js?v=2` — so **editing one of those helpers
 means bumping its pin inside `gate.js`, which is itself a change to
 `gate.js`, which means bumping `?v=N` on all 51 pages again.** Adding a
 page to the menu or the search index is enough to trigger the whole
@@ -689,6 +697,33 @@ clamp, the same pattern as the bell's `.nb`. Checked at 1280 px and
 Same commit: five `search-index.js` entries had a literal `&amp;`, which
 `menu.js` escapes, so the overlay printed "&amp;". **Write a plain `&` in
 `search-index.js`**; `menu.js` is its only reader and escapes every field.
+
+## Top bar — too wide for admins on a phone, fixed 3 November 2026
+
+With the Admin pill showing, the `menu.js` bar did not fit its row on a
+phone. It held 405px of content at 390px and 361px at 360px, and the
+logo was pushed half off the right edge (the left edge in Arabic).
+Admins overflowed at every width from 381 to 413px. Staff, who have
+no Admin pill, fit.
+
+Now, at 480px and below, **admins lose the logo**. The Home button
+next to it goes to the same page, so nothing is lost. The rule is
+keyed to `.aisa-tb-is-admin` on the bar. `revealAdminIfAllowed()` adds
+that class beside the pill's `.show`, so staff keep their logo, and
+their bar is unchanged to the pixel. The admin bar fits from 480px
+down to 320px, in English and in Arabic.
+
+**A new top-bar button needs room found for it at 390px and 360px.**
+Measure in Chromium: `document.querySelector('.aisa-topbar-inner')`
+must have `scrollWidth <= clientWidth`, for an admin and for staff,
+in both languages. Stub the session and `aisa_is_admin_v1` in
+localStorage. The Hub Analytics branch's purple pill, not merged on
+this date, hides itself at 480px and below for the same reason. There is
+no room for a third admin pill on a phone.
+
+Still open, from before this fix: **staff overflow at 320px** by about
+6px, and the logo touches the edge. iPhone SE with Display Zoom is
+320px wide.
 
 ## Logo — sharpened 26 September 2026
 
