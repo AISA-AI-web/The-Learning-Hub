@@ -35,7 +35,7 @@
 
     /* ------------------------------------------------------------------
      * AISA backend URL. Paste the Apps Script Web App URL here after
-     * deploying auth/apps-script.gs. While this is blank, the gate
+     * deploying auth/apps-script/ (see its README). While this is blank, the gate
      * still works — record/getCompletions just resolve to no-ops so
      * pages don't break.
      * ------------------------------------------------------------------ */
@@ -116,7 +116,7 @@
         if (auxLoaded) return;
         auxLoaded = true;
         if (!GATE_SCRIPT_SRC) return;
-        ['certificate.js?v=7', 'search-index.js?v=17', 'menu.js?v=21', 'dwell.js?v=2'].forEach(function (name) {
+        ['certificate.js?v=7', 'search-index.js?v=18', 'menu.js?v=22', 'dwell.js?v=2'].forEach(function (name) {
             var url = GATE_SCRIPT_SRC.replace(/gate\.js(\?.*)?$/, name);
             if (url === GATE_SCRIPT_SRC) return;  // pattern didn't match — skip safely
             var s = document.createElement('script');
@@ -1130,7 +1130,7 @@
             },
 
             /* Newsletter mail-out. Held to a short server-side allowlist
-             * (NEWSLETTER_SENDERS in apps-script.gs), not to `admins` —
+             * (NEWSLETTER_SENDERS in auth/apps-script/00_settings.gs), not to `admins` —
              * a school-wide blast is a bigger button than posting a bell
              * notification. newsletterStatus() tells the page whether to
              * render its send bar at all and how many people would get

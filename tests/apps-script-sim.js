@@ -575,6 +575,11 @@ function scenario(files, world, opts) {
     if (opts.bundle) {
         call('bundle', as('tokA', 'admin_dashboard', { module_id: RESP_MODULE, survey_id: SURVEY }));
         call('bundle not admin', as('tokT', 'admin_dashboard', { module_id: RESP_MODULE, survey_id: SURVEY }));
+        /* admin-analytics.html's one request. Fresh, because page views and
+         * clicks are kept current by TTL, not by generation (like dwell). */
+        const ANALYTICS = 'overview,dwell,module_responses,survey,notifications,usage';
+        call('analytics', as('tokA', 'admin_dashboard', { parts: ANALYTICS, module_id: RESP_MODULE, survey_id: SURVEY, fresh: '1' }));
+        call('analytics not admin', as('tokT', 'admin_dashboard', { parts: ANALYTICS }));
     }
     return log;
 }
@@ -816,6 +821,7 @@ function emptyScenario(files, world) {
     world.clock.t += 11 * MIN;
     call('overview, no roster tab', as(tok, 'admin_overview'));
     call('bundle, nearly empty', as(tok, 'admin_dashboard', { module_id: RESP_MODULE, survey_id: SURVEY }));
+    call('analytics, nearly empty', as(tok, 'admin_dashboard', { parts: 'usage,notifications', fresh: '1' }));
     call('notif stats, nearly empty', as(tok, 'admin_notification_stats'));
     call('tags, no roster tab', as(tok, 'admin_list_tags'));
     call('goals, no roster tab', as(tok, 'admin_survey_responses', { survey_id: SURVEY, roster_tag: 'secondary' }));
@@ -1135,6 +1141,89 @@ function targeted(src) {
               b.survey.outstanding.some((p) => p.tags.indexOf('secondary') !== -1));
         const parts = post(src, world, as('tokA', 'admin_dashboard', { parts: 'overview,dwell' }));
         check('parts= limits the bundle', parts.overview && parts.dwell && !parts.survey && !parts.module_responses);
+    })();
+
+    /* The analytics page's usage part: what it holds, and what it never does. */
+    (function () {
+        const sd = seed();
+        const IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) Mobile/15E148 Safari/604.1';
+        const IPAD = 'Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) Safari/604.1';
+        const ANDROID_TAB = 'Mozilla/5.0 (Linux; Android 14; SM-X200) Chrome/120.0 Safari/537.36';
+        const MAC = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) Chrome/120.0 Safari/537.36';
+        sd.pageviews = [
+            ['timestamp_iso', 'email', 'name', 'page_path', 'page_title', 'referrer', 'user_agent'],
+            ['2026-09-10T08:00:00Z', 'T.One@aisa.sch.ae', 'Tee One', '/hub/index.html', 'Old title', '', MAC],
+            ['2026-09-10T12:30:00+04:00', 't.one@aisa.sch.ae', '', '/hub/index.html', 'Hub home', 'https://mail.google.com/mail/u/0/#inbox?secret=1', IPHONE],
+            [new Date('2026-09-11T09:00:00Z'), 'n.two@aisa.sch.ae', 'Nia Two', '/hub/Media%20Hub/sep18.html', 'Issue 5', 'HTTPS://Aisa-AI-Web.GitHub.io/hub/index.html?x=1', IPAD],
+            ['2026-09-11T10:00:00Z', 'n.two@aisa.sch.ae', 'Nia Two', '/hub/Media%20Hub/sep18.html', '', 'not a url', ANDROID_TAB],
+            ['', 'n.two@aisa.sch.ae', 'Nia Two', '/hub/no-time.html', 'x', '', MAC],
+            ['2026-09-11T11:00:00Z', '', 'Nobody', '/hub/no-email.html', 'x', '', MAC]
+        ];
+        sd.clicks = [
+            ['timestamp_iso', 'email', 'name', 'label', 'page_path', 'user_agent'],
+            ['2026-09-12T08:00:00Z', 'r.three@aisa.sch.ae', 'Ravi Three', 'flint-guide:copy:x', '/hub/Tools%20and%20Resources/flint-guide.html', MAC]
+        ];
+        const world = makeWorld(sd);
+        const b = post(src, world, as('tokA', 'admin_dashboard', { parts: 'usage' }));
+        const u = b.usage;
+        const name = (i) => u.people[i][0];
+        check('usage: only when asked for, beside nothing else', u && u.ok === true && !b.overview && !b.dwell);
+        const plain = post(src, world, as('tokA', 'admin_dashboard', {}));
+        check('usage and notifications are not in the default bundle', !plain.usage && !plain.notifications);
+        check('usage: emails trimmed and lower-cased, one entry per person',
+              u.people.every((p) => p[0] === p[0].trim().toLowerCase()) &&
+              new Set(u.people.map((p) => p[0])).size === u.people.length);
+        check('usage: a name from the Google account first, then the first one seen',
+              u.people.find((p) => p[0] === 't.one@aisa.sch.ae')[1] === 'Tee One' &&
+              u.people.find((p) => p[0] === 'solo@aisa.sch.ae')[1] === 'Solo Event');
+        check('usage: never a session token', !JSON.stringify(u).match(/tok[ATXSNR2]\b/));
+        check('usage: one sign-in per session row with an address and a time', u.signins.length === 7,
+              JSON.stringify(u.signins));
+        check('usage: every event, started as well as completed, and none without an address',
+              u.events.length === 8 && u.events.some((e) => e[3] === 'started') &&
+              u.events.every((e) => !!name(e[1])), JSON.stringify(u.events));
+        const tOf = (iso) => Math.floor(Date.parse(iso) / 1000);
+        check('usage: times are instants, whether "Z", "+04:00" or a date cell',
+              u.pageviews[0][0] === tOf('2026-09-10T08:00:00Z') &&
+              u.pageviews[1][0] === tOf('2026-09-10T08:30:00Z') &&
+              u.pageviews[2][0] === tOf('2026-09-11T09:00:00Z'), JSON.stringify(u.pageviews));
+        check('usage: page views without a time or an address are left out', u.pageviews.length === 4);
+        check('usage: one entry per page, with its latest title',
+              u.pages.filter((p) => p[0] === '/hub/index.html').length === 1 &&
+              u.pages.find((p) => p[0] === '/hub/index.html')[1] === 'Hub home' &&
+              u.pages.find((p) => p[0] === '/hub/Media%20Hub/sep18.html')[1] === 'Issue 5');
+        check('usage: a referrer is its host only, never its path or query',
+              JSON.stringify(u.refs) === JSON.stringify(['', 'mail.google.com', 'aisa-ai-web.github.io']) &&
+              u.pageviews[1][3] === 1 && u.pageviews[3][3] === 0 && !/secret|inbox/.test(JSON.stringify(u)),
+              JSON.stringify(u.refs));
+        check('usage: devices: laptop 0, phone 1, iPad 2, Android tablet 2',
+              u.pageviews.map((r) => r[4]).join() === '0,1,2,2', u.pageviews.map((r) => r[4]).join());
+        check('usage: clicks keep their label and page',
+              u.clicks.length === 1 && u.labels[u.clicks[0][2]] === 'flint-guide:copy:x' &&
+              u.pages[u.clicks[0][3]][0] === '/hub/Tools%20and%20Resources/flint-guide.html' &&
+              name(u.clicks[0][1]) === 'r.three@aisa.sch.ae');
+        check('usage: the roster rides along, tags and all',
+              u.roster.length === 6 && u.roster.some((r) => r[0] === 't.one@aisa.sch.ae' && r[2].join() === 'secondary,math'));
+        const st = post(src, world, as('tokA', 'admin_notification_stats'));
+        const nb = post(src, world, as('tokA', 'admin_dashboard', { parts: 'notifications' }));
+        check('bundle.notifications = admin_notification_stats',
+              !firstDiff(normalise(nb.notifications), normalise(st)));
+
+        // Cached: a second read touches no sheet; a module event shows at once.
+        const before = sheetReads(world);
+        const again = post(src, world, as('tokA', 'admin_dashboard', { parts: 'usage' }));
+        check('usage: a warm read reads no sheet', sheetReads(world) === before &&
+              JSON.stringify(again.usage.events) === JSON.stringify(u.events), (sheetReads(world) - before) + ' reads');
+        post(src, world, as('tokT', 'record_event', { module_id: 'sustainability', event: 'completed', progress_pct: 100 }));
+        const ev = post(src, world, as('tokA', 'admin_dashboard', { parts: 'usage' })).usage;
+        check('usage: a completion shows on the very next read', ev.events.length === 9 &&
+              ev.events[8][2] === 'sustainability');
+        post(src, world, as('tokT', 'record_pageview', { page_path: '/hub/new.html' }));
+        const lag = post(src, world, as('tokA', 'admin_dashboard', { parts: 'usage' })).usage;
+        const fresh = post(src, world, as('tokA', 'admin_dashboard', { parts: 'usage', fresh: '1' })).usage;
+        check('usage: a page view waits for the TTL, or Refresh', lag.pageviews.length === 4 && fresh.pageviews.length === 5);
+        const t = post(src, world, as('tokT', 'admin_dashboard', { parts: 'usage' }));
+        check('usage: a teacher is refused', t.ok === false && t.error === 'not_admin' && !t.usage);
     })();
 
     /* A warm dashboard load reads no sheet at all. */

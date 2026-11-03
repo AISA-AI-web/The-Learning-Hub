@@ -25,6 +25,104 @@ backend's own code beside it and compares every answer and every email.
   server queues an email for the bridge rather than sending it while the person waits.
 - **Later**, the pages move to Cloudflare Pages; the 31 MB station-guides zip is over its 25 MB
   limit per file and has to be split or linked from Drive first.
+- **Hub Analytics (3 Nov 2026) was mirrored there** on AI-Lessons' branch
+  `claude/focused-cerf-0p87pf`: the `notifications` and `usage` parts in `core.mjs`, the two changed
+  `.gs` files in `learning-hub/old/`, parity-test calls, and one read-only SQL function,
+  `supabase/migrations/20261103120000_learning_hub_usage.sql` (`srv_hub_usage`), which a person
+  applies after the merge (AI-Lessons' CLAUDE.md, *Changing the database*).
+
+## Hub Analytics — added 3 November 2026
+
+Brandon asked for "an analytics button for anyone who is an admin", more
+detailed and visual than a 13-page report he had made by hand from the
+spreadsheet (*AISA Learning Hub Analytics, 3 Nov 2026*: KPI tiles, what is
+working and what is in the way, newsletter readership, Sustainability,
+opened vs finished, weekly activity, busy hours, devices, pain points,
+notices, goals), with filters by date and by teacher.
+
+- **The page:** `admin-analytics.html` (markup and styles),
+  `admin-analytics.js` (the model, the filters, every section) and
+  `admin-analytics-charts.js` (a small SVG/HTML chart kit, no library).
+  AISA purple and gold, DM Sans, like the report. Sections: overview
+  tiles (sparkline, and a change on the period before when the dates
+  are bounded) and insights, engagement, PD modules, a module spotlight
+  (any module, default Sustainability), the newsletter, the bell, AI
+  Literacy readiness, teacher goals, and a staff explorer (sort, search,
+  CSV). Picking one person turns the page into their profile.
+- **The filters** scope every section: dates (presets or custom), group
+  (roster tags; hidden while the spreadsheet has no `roster` tab, which
+  it did not on 3 Nov), people (a searchable picker; a name in the staff
+  table or a "still to finish" list does the same), and "Leave out test
+  accounts" (`bbaki@`, `hodai@`, on by default, as in the report).
+  Nothing is fetched again when a filter changes. The page remembers the
+  date range, group and spotlight on the device (`aisa_analytics_view_v1`),
+  never the people.
+- **The button:** an admin-only purple **Analytics** pill beside the amber
+  Admin pill in `menu.js`'s top bar (shown the same way, `.show`, hidden
+  on the page itself and on screens 480px wide or less, where the bar has
+  no room for it), a drawer entry, the palette and `search-index.js`
+  entries, and the Admin Actions card on the admin dashboard. The admin
+  dashboard's headline cards now deep-link into it. That set off the
+  cascade to `?v=34`.
+- **`admin-charts.html` is a redirect** to it, mapping its old anchors
+  (`#hours`, `#completion`, `#engagement` → `#modules`; `#activity` →
+  `#engagement`). Its four charts are all in the new page, filterable
+  (PD hours is the *PD hours* toggle on *Modules finished over time*).
+
+**The data is one request:** `admin_dashboard` with
+`parts=overview,dwell,module_responses,survey,notifications,usage`.
+`notifications` (= `admin_notification_stats`) and `usage` are new parts,
+sent only when asked for by name, so the admin dashboard's own request
+is unchanged. `usage` (`adminUsage()` in `21_admin_dashboard.gs`) is
+every page view, tagged click, module event and sign-in as compact rows,
+plus the roster with tags. Dictionary-encoded (people, pages, referrer
+hosts, labels) so it stays small: the 3 Nov spreadsheet (7,200 page
+views) is well under a megabyte. **A referrer is sent as its host only**
+(no path, no query), and a session's token is never read. Cached for
+`CACHE_TTL.usage` (10 min); module events and sign-ins bump it, page
+views and clicks wait for the TTL or Refresh, like dwell.
+
+**Checked against the report on the live spreadsheet** (3 Nov, read in a
+session and deleted after; nothing committed): every headline number the
+report gives came out the same: 192 staff, 63% back on 5+ days, 5,903
+page views, 14% on phones or tablets, 881 modules (4.6 each), 65% of
+staff (124 of 192) finished Sustainability, 84 newsletter readers, the
+Sep 18 issue at 57, 108 never/51 once, 11 staff with all 14 modules,
+AI Literacy lowest at 62%, 24 of 92 reminded finished within a day, 498
+alerts from 48 teachers, the peak week of 24 Aug at 151 staff, devices
+117/52/23, and days active 9/22/40/78/43. Keep the definitions that made
+that true (the page's footer states them): a "Hub user" has any page
+view, sign-in or event; "active" is a page view or module event in the
+dates; a "day active" is a day with a page view; a completion is a
+person's first for that module; "opened" is a view of the module's page.
+
+**Keep in step:** `MODULES` in `admin-analytics.js` (with `group` and
+`hours`) alongside the dashboards' arrays; `KNOWN_ISSUES` for each new
+Digital Lion issue (an unlisted `Media Hub/<mon><day>.html` is still found
+and dated from its name); `TEST_ACCOUNTS` if the AI team changes. Pins:
+`admin-analytics.js?v=1`, `admin-analytics-charts.js?v=1` in the page.
+
+**Until the backend is redeployed** the request's `usage` and
+`notifications` parts are simply absent: an amber banner says so, the
+engagement and newsletter sections step aside, and the rest (modules,
+spotlight, readiness, goals, staff) draws from what the backend already
+sends. A backend from before `admin_dashboard` gets the separate
+endpoints. `not_admin` is the only thing that shows "Admin access
+required"; any other failure says what went wrong and offers *Try again*.
+
+**Tests:** `tests/apps-script-sim.js` checks the usage part (only when
+asked, emails lower-cased, never a token, referrer host only, devices,
+times as instants whatever the cell, rows without a time or an address
+left out, cached, a completion visible at once, a page view after the
+TTL or Refresh, a teacher refused). The page's own browser checks are not
+in the repo (they need Chromium and generated data): what they covered is
+no sideways scroll at 390 px, every section drawn without a console
+error, the filters, the person view, and the no-`usage` fallback.
+
+**Personal data:** who viewed what is personal data like the free text.
+The page is admin-only on the server (`admin_dashboard` checks the
+`admins` tab); none of it goes in browser storage; the CSV starts with a
+warning row.
 
 ## Apps Script backend — fifteen files since 13 October 2026
 
@@ -88,9 +186,8 @@ dwell tab. It now goes through `_tsMs`/`_isoOut` like every other reader.
   `warmHubCache`, `migrateDwellToPerModule` — so opening that one file
   gives a clean Run menu.
 
-`auth/gate.js` still says `auth/apps-script.gs` in two comments. Left
-alone on purpose: any edit to `gate.js` means the `?v=N` cascade across
-every page. Fix them the next time `gate.js` changes anyway.
+`auth/gate.js` used to say `auth/apps-script.gs` in two comments. Fixed
+on 3 November 2026, riding the Hub Analytics cascade (`?v=34`).
 
 ### Deploying from a terminal: `node auth/apps-script/deploy.mjs`
 
@@ -323,6 +420,13 @@ endpoints fail silently and the dependent UIs stay empty:
   makes the backend faster; until it is redeployed the admin dashboard
   stays slow, and the client-side work described below only stops it
   *lying* about why.
+
+- **Hub Analytics (3 November 2026).** `admin_dashboard` answers two
+  more parts when asked: `notifications` and `usage` (see *Hub
+  Analytics* above). No new action, sheet or permission, and the admin
+  dashboard's own request is unchanged. Until the redeploy the
+  analytics page shows an amber banner and leaves out its page-view
+  charts; it does not fail.
 
 - **The bilingual newsletter email (29 October 2026).** `send_newsletter`
   now takes optional Arabic copy (`issue_ar`, `headline_ar`, `intro_ar`,
@@ -651,11 +755,14 @@ download with MagicSchool and Chalkie leaving Tools & Resources
 2026) to `?v=31`, which also made it 50 pages. Issue No. 6 of the
 Digital Lion made it 51, and its bilingual email (29 October 2026) took
 it to `?v=32`, and the search-result overflow fix (30 October 2026) to
-`?v=33`.
+`?v=33`, and the Hub Analytics page and its top-bar button (3 November
+2026) to `?v=34`. That added `admin-analytics.html` and turned
+`admin-charts.html` into a redirect with no `gate.js`, so it is still
+51 pages.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
-their own pins — `certificate.js?v=7`, `search-index.js?v=17`,
-`menu.js?v=21`, `dwell.js?v=2` — so **editing one of those helpers
+their own pins — `certificate.js?v=7`, `search-index.js?v=18`,
+`menu.js?v=22`, `dwell.js?v=2` — so **editing one of those helpers
 means bumping its pin inside `gate.js`, which is itself a change to
 `gate.js`, which means bumping `?v=N` on all 51 pages again.** Adding a
 page to the menu or the search index is enough to trigger the whole
@@ -759,7 +866,9 @@ A `module_id` in that list which the dashboard's `MODULES` array does
 not name is **invisible** on the tracker; anything `MODULES` names that
 is missing from the list reads 0% forever. `sustainability` used to be
 knowingly in the first category; it was released on 7 October 2026 and
-is now in all three `MODULES` arrays.
+is now in all three `MODULES` arrays (`admin-dashboard.html`,
+`dashboard.html`, and `admin-analytics.js` since Hub Analytics replaced
+`admin-charts.html`).
 
 Remember that **adding a module to `MODULES` moves the headline
 numbers**: "fully complete" needs every listed module, "required done"
@@ -879,8 +988,10 @@ works now. The copy is `COPY` in the page's last script.
    30 November 2026.
 2. In `pd.html`, remove `data-preview-for` and `style="display:none;"`
    from the card, and drop its amber *Preview* pill.
-3. Add it to `MODULES` in `admin-dashboard.html`, `dashboard.html` and
-   `admin-charts.html`: `required: true`, `hours: 1.25`. No `cohort`
+3. Add it to `MODULES` in `admin-dashboard.html` and `dashboard.html`:
+   `required: true`, `hours: 1.25`; and in `admin-analytics.js`, with
+   `group: 'whole'` and its page file (`admin-analytics.js?v=N` in
+   `admin-analytics.html` then needs bumping). No `cohort`
    means it applies to all staff. This **moves the headline numbers**,
    as Sustainability did.
 4. Add it to `menu.js` and `search-index.js`. That bumps their pins in
@@ -1135,7 +1246,7 @@ member of staff dropped out of "required done" and "fully complete" until
 they finish it, and the PD-hours denominator rose by 0.5 (`hours: 0.5`,
 matching the certificate's `data-cert-hours`). That is expected, not a
 regression. It is in `MODULES` in `admin-dashboard.html`, `dashboard.html`
-and `admin-charts.html`, carries `data-required="true"` on pd.html, and
+and (now) `admin-analytics.js`, carries `data-required="true"` on pd.html, and
 is listed in `menu.js` and `search-index.js` (pins `?v=17` / `?v=11`).
 
 **The launch email** is a mail bar at the bottom of the module page,
@@ -1447,7 +1558,7 @@ triggered the `?v=` cascade to `?v=24`.
 every signed-in member of staff. The admin gate, the `data-admin-only`
 card flag and the `adminOnly` search entry are all gone, and it is
 listed in pd.html, dashboard.html, menu.js, admin-dashboard.html and
-admin-charts.html.
+admin-analytics.js (it was admin-charts.html before Hub Analytics).
 
 Bear in mind the repo is public with Pages enabled, so the HTML is
 readable by anyone with the URL regardless of the sign-in gate. Don't
