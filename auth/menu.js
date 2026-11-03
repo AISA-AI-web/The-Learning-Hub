@@ -20,6 +20,8 @@
  *                whole Hub respects it.
  * - Admin (🛡️): shown only once isAdmin() resolves true; dropdown
  *                shortcuts to Admin Dashboard and Send Notifications.
+ * - Analytics (📊): beside Admin, admins only, the same way: opens
+ *                admin-analytics.html, the Hub's usage and PD charts.
  * - Bell:        unread badge + dropdown of recent notifications →
  *                clicking a notification opens a full-view modal with
  *                rich-text links rendered (window.AisaRichText.render)
@@ -66,7 +68,7 @@
 
         /* Admin (filtered to admins only) */
         { title: 'Admin Dashboard',                    desc: 'Staff completion overview and compliance reports',              href: 'admin-dashboard.html',                                                             icon: '\u{1F6E1}',  tag: 'Admin', adminOnly: true },
-        { title: 'Admin Charts',                       desc: 'Hours trend, completion funnel, engagement quality, heatmap',   href: 'admin-charts.html',                                                                icon: '\u{1F4C8}', tag: 'Admin', adminOnly: true },
+        { title: 'Hub Analytics',                      desc: 'Usage, PD completions, newsletter readers, filter by date or person', href: 'admin-analytics.html',                                                    icon: '\u{1F4CA}', tag: 'Admin', adminOnly: true },
         { title: 'Send Notifications',                 desc: 'Compose and publish notifications to staff',                    href: 'admin-notifications.html',                                                         icon: '\u{1F4E2}',  tag: 'Admin', adminOnly: true },
         { title: 'Personal Goals Tracker',             desc: 'Who has set a 2026\u201327 goal, and who still owes one',         href: 'admin-dashboard.html#goals',                                                       icon: '\u{1F3AF}', tag: 'Admin', adminOnly: true },
 
@@ -251,6 +253,7 @@
         search: icon('<circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>'),
         admin:  icon('<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>'),
         dash:   icon('<path d="M3 13h8V3H3v10zm10 8h8V11h-8v10zM3 21h8v-6H3v6zM13 3v6h8V3h-8z"/>'),
+        chart:  icon('<path d="M3 3v18h18"/><path d="M8 16v-5M12.5 16V7M17 16v-8"/>'),
         globe:  icon('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'),
         close:  icon('<path d="M18 6L6 18M6 6l12 12"/>'),
         signout: icon('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>')
@@ -314,6 +317,23 @@
             '.aisa-tb-admin:focus-visible{outline:2px solid #fff;outline-offset:2px;}',
             '.aisa-tb-admin svg{width:1.05rem;height:1.05rem;stroke-width:2.2;flex-shrink:0;}',
             '.aisa-tb-admin .label{white-space:nowrap;}',
+
+            /* Analytics pill — admins only, like the Admin pill, and shown the
+             * same way (.show). AISA purple so it reads as its own button, not
+             * a second Admin. Hidden on admin-analytics.html itself. */
+            '.aisa-tb-analytics{display:none;align-items:center;gap:.45rem;height:2.4rem;padding:0 .85rem;',
+                'background:linear-gradient(135deg,#21076C,#5B3FD0);color:#fff;text-decoration:none;',
+                'border:none;border-radius:9999px;font:inherit;font-weight:800;font-size:.82rem;',
+                'letter-spacing:.01em;cursor:pointer;',
+                'box-shadow:0 6px 16px -6px rgba(33,7,108,.55),0 0 0 1px rgba(255,255,255,.18) inset;',
+                'transition:transform .15s,box-shadow .15s,filter .15s;-webkit-tap-highlight-color:transparent;}',
+            '.aisa-tb-analytics.show{display:inline-flex;}',
+            '.aisa-tb-analytics.show.hide-self{display:none;}',
+            '.aisa-tb-analytics:hover{transform:translateY(-1px);filter:brightness(1.12);}',
+            '.aisa-tb-analytics:active{transform:translateY(0);}',
+            '.aisa-tb-analytics:focus-visible{outline:2px solid #fff;outline-offset:2px;}',
+            '.aisa-tb-analytics svg{width:1.05rem;height:1.05rem;stroke-width:2.2;flex-shrink:0;}',
+            '.aisa-tb-analytics .label{white-space:nowrap;}',
 
             /* === "My Dashboard" pill — every signed-in user sees it ===
              * Mirrors the admin pill, but indigo→cyan (clearly distinct from
@@ -502,11 +522,16 @@
                  * the amber gradient. */
                 '.aisa-tb-admin.show{padding:0 .6rem;}',
                 '.aisa-tb-admin .label{display:none;}',
+                '.aisa-tb-analytics.show{padding:0 .6rem;}',
+                '.aisa-tb-analytics .label{display:none;}',
                 /* Same icon-only treatment for the Dashboard pill on narrow screens. */
                 '.aisa-tb-dash{padding:0 .6rem;}',
                 '.aisa-tb-dash .label{display:none;}',
             '}',
             '@media (max-width:480px){',
+                /* No room for a third pill on a phone: Analytics stays in
+                 * the drawer and on the admin dashboard. */
+                '.aisa-tb-analytics.show{display:none;}',
                 '.aisa-bell-panel{left:.5rem!important;right:.5rem!important;width:auto;max-width:none;}',
                 '.aisa-notif-card{max-height:90vh;border-radius:1rem;}',
                 '.aisa-search-overlay{padding:1rem 0.5rem 0.5rem;align-items:flex-start;}',
@@ -549,6 +574,9 @@
                     '<a class="aisa-tb-admin" href="' + rootUrl('admin-dashboard.html') + '" aria-label="Admin">' +
                         ICONS.admin + '<span class="label">Admin</span>' +
                     '</a>' +
+                    '<a class="aisa-tb-analytics" href="' + rootUrl('admin-analytics.html') + '" aria-label="Analytics">' +
+                        ICONS.chart + '<span class="label">Analytics</span>' +
+                    '</a>' +
                 '</div>' +
                 '<button class="aisa-tb-searchpill" type="button" aria-label="Search the Learning Hub">' +
                     ICONS.search +
@@ -589,14 +617,19 @@
         }).join('');
 
         /* Admin-only drawer entry. Hidden by default; revealAdminIfAllowed()
-         * unhides it once isAdmin() resolves true. Send Notifications and
+         * unhides it once isAdmin() resolves true. Hub Analytics sits
+         * beside it, as it does in the top bar. Send Notifications and
          * any other admin tools are reached from inside the Admin
          * Dashboard page (the admin hub) rather than duplicated here. */
         var adminHtml =
             '<li class="aisa-menu-admin-item" style="display:none;">' +
                 '<a href="' + rootUrl('admin-dashboard.html') + '">' +
                     '<span class="ico" aria-hidden="true">\u{1F6E1}️</span>' +
-                    '<span>Admin Dashboard</span></a></li>';
+                    '<span>Admin Dashboard</span></a></li>' +
+            '<li class="aisa-menu-admin-item" style="display:none;">' +
+                '<a href="' + rootUrl('admin-analytics.html') + '">' +
+                    '<span class="ico" aria-hidden="true">\u{1F4CA}</span>' +
+                    '<span>Hub Analytics</span></a></li>';
 
         drawer.innerHTML =
             '<div class="aisa-menu-head">' +
@@ -653,6 +686,7 @@
         refs.btnMenu     = bar.querySelector('.aisa-tb-menu');
         refs.btnBell     = bar.querySelector('.aisa-tb-bell');
         refs.btnAdmin    = bar.querySelector('.aisa-tb-admin');
+        refs.btnAnalytics = bar.querySelector('.aisa-tb-analytics');
         refs.btnDash     = bar.querySelector('.aisa-tb-dash');
         refs.btnLang     = bar.querySelector('.aisa-tb-lang');
         refs.btnLangLabel = bar.querySelector('.aisa-tb-lang-label');
@@ -681,6 +715,13 @@
             try {
                 if (/(^|\/)dashboard\.html(\?|#|$)/i.test(window.location.pathname)) {
                     refs.btnDash.classList.add('hide-self');
+                }
+            } catch (_) {}
+        }
+        if (refs.btnAnalytics) {
+            try {
+                if (/(^|\/)admin-analytics\.html(\?|#|$)/i.test(window.location.pathname)) {
+                    refs.btnAnalytics.classList.add('hide-self');
                 }
             } catch (_) {}
         }
@@ -824,6 +865,7 @@
                  * race with the script can never briefly expose it to a
                  * non-admin. .show flips it on. */
                 if (refs.btnAdmin) refs.btnAdmin.classList.add('show');
+                if (refs.btnAnalytics) refs.btnAnalytics.classList.add('show');
                 /* If the search overlay happens to be open right now, re-render
                  * so admin-only destinations appear without re-typing. */
                 if (refs.search && refs.search.classList.contains('open')) {
