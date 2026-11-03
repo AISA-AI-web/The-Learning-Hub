@@ -202,11 +202,13 @@ function listDeployments(dir, scriptId) {
 /* ------------------------------------------------------------------ */
 
 /* The deployment the Hub talks to, from auth/gate.js: the /exec URL is
- * https://script.google.com/macros/s/<deployment id>/exec. */
+ * https://script.google.com/macros/s/<deployment id>/exec. It is
+ * APPS_SCRIPT_URL once the Hub calls its new server on Supabase (API_URL
+ * then names that one), and API_URL until then. */
 function readGate() {
     const src = fs.readFileSync(path.join(REPO, 'auth', 'gate.js'), 'utf8');
-    const m = /var API_URL = '(https:\/\/script\.google\.com\/macros\/s\/([A-Za-z0-9_-]+)\/exec)'/.exec(src);
-    if (!m) stop('Could not find API_URL in auth/gate.js, so there is no deployment to update.');
+    const m = /var (?:APPS_SCRIPT_URL|API_URL) = '(https:\/\/script\.google\.com\/macros\/s\/([A-Za-z0-9_-]+)\/exec)'/.exec(src);
+    if (!m) stop('Could not find the Apps Script address (APPS_SCRIPT_URL or API_URL) in auth/gate.js, so there is no deployment to update.');
     return { url: m[1], deploymentId: m[2] };
 }
 
