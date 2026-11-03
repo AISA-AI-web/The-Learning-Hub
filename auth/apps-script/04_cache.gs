@@ -53,6 +53,7 @@ const CACHE_TTL = {
   surveys:     3600,  // survey_responses: bumped on save
   notifs:      3600,  // notifications: bumped on post and delete
   reads:       1800,  // one person's read receipts: bumped on mark-read
+  usage:        600,  // page views, clicks, events, sign-ins (admin analytics)
   rowhint:    21600   // "this person's row is row N" hints, verified before use
 };
 

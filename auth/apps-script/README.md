@@ -20,7 +20,7 @@ same cells the old code did.
 | `10_sessions.gs` | Signing in: Google ID tokens and session tokens |
 | `11_people.gs` | Admins, newsletter senders, roster tags, who has signed in |
 | `20_tracking.gs` | Module events and completions, page views, clicks, time in modules |
-| `21_admin_dashboard.gs` | What the admin dashboard loads |
+| `21_admin_dashboard.gs` | What the admin dashboard and Hub Analytics load (the analytics page's `usage` part too) |
 | `30_notifications.gs` | The notification bell |
 | `31_email.gs` | Reminder emails and the newsletter mail-out |
 | `40_module_responses.gs` | What teachers type inside modules (AI Literacy readiness) |

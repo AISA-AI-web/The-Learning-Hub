@@ -72,7 +72,10 @@ function adminOverview() {
  * endpoints are unchanged, and the page falls back to them if this one is
  * missing (a backend that hasn't been redeployed yet).
  *
- *   parts      comma list, default all four: overview,dwell,module_responses,survey
+ *   parts      comma list, default these four: overview,dwell,module_responses,survey
+ *              Two more, only when asked for by name (admin-analytics.html):
+ *              usage (adminUsage below) and notifications
+ *              (adminNotificationStats in 30_notifications.gs)
  *   module_id  for module_responses
  *   survey_id  for survey; its `outstanding` is the whole roster with tags,
  *              and the page narrows it by tag itself
@@ -91,7 +94,135 @@ function adminDashboard(body) {
   part('dwell', adminDwell);
   part('module_responses', function () { return adminModuleResponses({ module_id: body.module_id }); });
   part('survey', function () { return adminSurveyResponses({ survey_id: body.survey_id, roster_tag: '' }); });
+  part('notifications', adminNotificationStats);
+  part('usage', adminUsage);
   return out;
+}
+
+/**
+ * What staff did on the Hub, for admin-analytics.html: every page view,
+ * tagged click, module event and sign-in, as compact rows the page filters
+ * and charts itself (by date, by person, by roster tag).
+ *
+ *   people    [[email, name], ...]  everyone the rows below name, emails
+ *             trimmed and lower-cased, name the first non-empty one seen
+ *   pages     [[page_path, page_title], ...]  as recorded; the latest title
+ *   refs      ['', host, ...]  where a page view came from: the referrer's
+ *             host only, never its path or query; '' = no referrer
+ *   labels    [click label, ...]
+ *   pageviews [[t, person, page, ref, device], ...]
+ *   clicks    [[t, person, label, page], ...]
+ *   events    [[t, person, module_id, event], ...]   every event, not only
+ *             the latest completion (that is admin_overview's job)
+ *   signins   [[t, person, device], ...]   one per session created
+ *   roster    [[email, name, [tags]], ...]  the roster tab, row by row, so
+ *             the page can filter by tag and count who has never visited
+ *
+ * t is seconds since 1970 (UTC); people/page/ref/label are indexes into the
+ * lists above; device is 0 laptop or desktop, 1 phone, 2 tablet, from the
+ * user agent (an iPad asking for the desktop site counts as a laptop). Rows
+ * without an address or a readable time are left out. Rows are in sheet
+ * order, each tab on its own.
+ *
+ * Cached for CACHE_TTL.usage. Module events and sign-ins bump it; page views
+ * and clicks arrive with every page anyone opens, so like dwell they are
+ * kept fresh by the TTL and the Refresh button rather than by generation. */
+function adminUsage() {
+  const part = _cachedRead(_dataKey('usage', ['events', 'sessions']), CACHE_TTL.usage,
+                           _readUsage, false);
+  const roster = _rosterPart(false);
+  const out = { ok: true, generated_at: _olderIso(part.at, roster.at) };
+  Object.keys(part).forEach(function (k) { if (k !== 'at') out[k] = part[k]; });
+  out.roster = roster.rows;
+  return out;
+}
+
+function _readUsage() {
+  const people = [], personAt = {};
+  const pages = [], pageAt = {};
+  const refs = [''], refAt = { '': 0 };
+  const labels = [], labelAt = {};
+
+  function person(email, name) {
+    const key = String(email || '').trim().toLowerCase();
+    if (!key) return -1;
+    let i = personAt[key];
+    if (i === undefined) { i = personAt[key] = people.length; people.push([key, '']); }
+    if (name && !people[i][1]) people[i][1] = String(name);
+    return i;
+  }
+  function page(path, title) {
+    const key = String(path || '');
+    let i = pageAt[key];
+    if (i === undefined) { i = pageAt[key] = pages.length; pages.push([key, '']); }
+    if (title) pages[i][1] = String(title);
+    return i;
+  }
+  function ref(url) {
+    const m = /^[a-z][a-z0-9+.\-]*:\/\/([^\/?#:@]+)/i.exec(String(url || '').trim());
+    const host = m ? m[1].toLowerCase() : '';
+    let i = refAt[host];
+    if (i === undefined) { i = refAt[host] = refs.length; refs.push(host); }
+    return i;
+  }
+  function label(text) {
+    const key = String(text || '');
+    let i = labelAt[key];
+    if (i === undefined) { i = labelAt[key] = labels.length; labels.push(key); }
+    return i;
+  }
+  function secs(v) { return Math.floor(_tsMs(v) / 1000); }
+
+  /* Sign-ins first, so a person's name comes from their Google account
+   * where there is one. Columns 2-7: email, name, created, expires,
+   * last_used, user_agent. Never the token. */
+  const signins = [];
+  _dataRows(getSessionsSheet(), 6, 2).forEach(function (r) {
+    const t = secs(r[2]);
+    const p = person(r[0], r[1]);
+    if (t > 0 && p >= 0) signins.push([t, p, _deviceOf(r[5])]);
+  });
+
+  const ev = _colIndex(EVENT_HEADERS);
+  const events = [];
+  _dataRows(getEventsSheet(), ev.event + 1).forEach(function (r) {
+    const t = secs(r[ev.timestamp_iso]);
+    const p = person(r[ev.email], r[ev.name]);
+    if (t > 0 && p >= 0) events.push([t, p, String(r[ev.module_id] || ''), String(r[ev.event] || '')]);
+  });
+
+  const pv = _colIndex(PAGEVIEW_HEADERS);
+  const pageviews = [];
+  _dataRows(getPageviewsSheet(), PAGEVIEW_HEADERS.length).forEach(function (r) {
+    const t = secs(r[pv.timestamp_iso]);
+    const p = person(r[pv.email], r[pv.name]);
+    if (t > 0 && p >= 0) {
+      pageviews.push([t, p, page(r[pv.page_path], r[pv.page_title]), ref(r[pv.referrer]),
+                      _deviceOf(r[pv.user_agent])]);
+    }
+  });
+
+  const ck = _colIndex(CLICK_HEADERS);
+  const clicks = [];
+  _dataRows(getClicksSheet(), ck.page_path + 1).forEach(function (r) {
+    const t = secs(r[ck.timestamp_iso]);
+    const p = person(r[ck.email], r[ck.name]);
+    if (t > 0 && p >= 0) clicks.push([t, p, label(r[ck.label]), page(r[ck.page_path], '')]);
+  });
+
+  return {
+    at: nowIsoLocal(),
+    people: people, pages: pages, refs: refs, labels: labels,
+    pageviews: pageviews, clicks: clicks, events: events, signins: signins
+  };
+}
+
+/* 0 laptop or desktop, 1 phone, 2 tablet. */
+function _deviceOf(ua) {
+  ua = String(ua || '');
+  if (/iPad|Tablet|PlayBook|Kindle|Silk/i.test(ua) || (/Android/i.test(ua) && !/Mobile/i.test(ua))) return 2;
+  if (/Mobi|iPhone|iPod|Android|Windows Phone|BlackBerry|Opera Mini/i.test(ua)) return 1;
+  return 0;
 }
 
 // The end. checkHubInstall() looks for this marker to confirm the whole
