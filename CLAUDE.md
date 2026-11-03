@@ -758,11 +758,20 @@ it to `?v=32`, and the search-result overflow fix (30 October 2026) to
 `?v=33`, and the Hub Analytics page and its top-bar button (3 November
 2026) to `?v=34`. That added `admin-analytics.html` and turned
 `admin-charts.html` into a redirect with no `gate.js`, so it is still
-51 pages.
+51 pages. The admin top-bar fit, the same day, took it to `?v=35`.
+
+**Use each number once.** On 3 November 2026 the Supabase switch
+(still an open pull request) and Hub Analytics had both taken `?v=34`.
+Two branches that make the same `33` → `34` edit merge without a
+conflict, so a different `gate.js` would sit behind a URL that
+browsers had already cached. The top-bar fit took 35 for that reason.
+Before bumping, check open pull requests and recent branches for the
+next free number. When a merge conflicts on the pin, resolve it to a
+number that has never been on `main`, not to either side's.
 
 The same trap sits one level down. `gate.js` pulls its helpers with
 their own pins — `certificate.js?v=7`, `search-index.js?v=18`,
-`menu.js?v=22`, `dwell.js?v=2` — so **editing one of those helpers
+`menu.js?v=23`, `dwell.js?v=2` — so **editing one of those helpers
 means bumping its pin inside `gate.js`, which is itself a change to
 `gate.js`, which means bumping `?v=N` on all 51 pages again.** Adding a
 page to the menu or the search index is enough to trigger the whole
@@ -796,6 +805,48 @@ clamp, the same pattern as the bell's `.nb`. Checked at 1280 px and
 Same commit: five `search-index.js` entries had a literal `&amp;`, which
 `menu.js` escapes, so the overlay printed "&amp;". **Write a plain `&` in
 `search-index.js`**; `menu.js` is its only reader and escapes every field.
+
+## Top bar — too wide for admins, fixed 3 November 2026
+
+The `menu.js` bar did not fit its row for admins at two ranges of
+width. Staff fit at both.
+
+- **Phones, 381 to 413px**, and 360px and below. The Admin pill was
+  one button too many: 405px of content at 390px, 361px at 360px, with
+  the logo half off the right edge (the left edge in Arabic). This was
+  so before Hub Analytics.
+- **641 to about 840px**, iPad portrait included. Above 640px the pills
+  carry their labels, and *My Dashboard*, *Admin* and *Analytics*
+  together needed 836px at 768px. Before Hub Analytics added its pill,
+  this range was 641 to about 730px.
+
+What changed, for admins only:
+
+- **At 480px and below, the logo goes.** The Home button next to it
+  goes to the same page, so nothing is lost.
+- **Below 1024px, the three pills are icons**, as everyone's are at
+  640px and below. The cut is 1024 rather than 840, because just over
+  840px the labels fit only by squeezing the search pill to a 29px
+  stub.
+
+Both rules are keyed to `.aisa-tb-is-admin` on the bar.
+`revealAdminIfAllowed()` adds that class beside the pills' `.show`, so
+staff keep the logo and the labels, and their bar is unchanged to the
+pixel. The admin bar now fits at every width from 1100px down to 320px,
+in English and in Arabic.
+
+**A new top-bar button needs room found for it, at every width.**
+Measure in Chromium: `document.querySelector('.aisa-topbar-inner')`
+must have `scrollWidth <= clientWidth`, for an admin and for staff, in
+both languages, across the whole range rather than at a few phone
+widths. The 641px range was missed at first by checking only phones.
+Stub the session and `aisa_is_admin_v1` in localStorage. The purple
+Analytics pill hides itself at 480px and below. There is no room for a
+third admin pill on a phone.
+
+Still open, from before this fix: **staff overflow at 320px** by about
+6px, and the logo touches the edge. iPhone SE with Display Zoom is
+320px wide.
 
 ## Logo — sharpened 26 September 2026
 

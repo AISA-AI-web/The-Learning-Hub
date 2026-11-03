@@ -25,7 +25,9 @@
  * - Bell:        unread badge + dropdown of recent notifications →
  *                clicking a notification opens a full-view modal with
  *                rich-text links rendered (window.AisaRichText.render)
- * - Brand:       AISA logo + wordmark, links to the Learning Hub home
+ * - Brand:       AISA logo + wordmark, links to the Learning Hub home.
+ *                Wordmark hidden at 640px and below; for admins the logo
+ *                goes too at 480px and below, to fit the Admin pill.
  *
  * Per-page sticky headers (the ones with the duplicated AISA logo)
  * are hidden via CSS so this is the only top navigation visible.
@@ -505,6 +507,21 @@
             '.aisa-rt-link:hover{color:#312e81;}',
 
             /* === Responsive === */
+            /* Admins: with Admin and Analytics beside My Dashboard, the
+             * three labels ran the bar past the edge from 641 to about
+             * 840px (836px of content at 768, iPad portrait). Below
+             * 1024px an admin's pills are icons, as everyone's are at
+             * 640px and below. 1024 rather than 840 because just over
+             * 840 the labels fit only by squeezing the search pill to a
+             * 29px stub. .aisa-tb-is-admin: see revealAdminIfAllowed(). */
+            '@media (max-width:1023px){',
+                '.aisa-topbar.aisa-tb-is-admin .aisa-tb-dash,',
+                '.aisa-topbar.aisa-tb-is-admin .aisa-tb-admin.show,',
+                '.aisa-topbar.aisa-tb-is-admin .aisa-tb-analytics.show{padding:0 .6rem;}',
+                '.aisa-topbar.aisa-tb-is-admin .aisa-tb-dash .label,',
+                '.aisa-topbar.aisa-tb-is-admin .aisa-tb-admin .label,',
+                '.aisa-topbar.aisa-tb-is-admin .aisa-tb-analytics .label{display:none;}',
+            '}',
             '@media (max-width:640px){',
                 '.aisa-topbar-inner{padding:0 .5rem;}',
                 '.aisa-tb-btn{width:2.4rem;height:2.4rem;border-radius:.6rem;}',
@@ -538,6 +555,14 @@
                 /* Search pill collapses to icon-only — placeholder takes too much width. */
                 '.aisa-tb-searchpill{width:2.4rem;max-width:2.4rem;min-width:2.4rem;padding:0;justify-content:center;flex:0 0 auto;margin:0 .35rem;}',
                 '.aisa-tb-searchpill .ph{display:none;}',
+                /* Admins carry one more pill than anyone else, and with it
+                 * the bar ran past the edge of a phone: 405px of content at
+                 * 390, 361 at 360, the logo half off screen. The logo goes
+                 * to index.html, as the Home button does, so it is the one
+                 * thing on the bar that costs nothing to drop. Keyed to
+                 * .aisa-tb-is-admin, which revealAdminIfAllowed() adds
+                 * beside the pill's .show, so staff keep their logo. */
+                '.aisa-topbar.aisa-tb-is-admin .aisa-topbar-brand{display:none;}',
             '}',
             '@media (max-width:380px){',
                 '.aisa-topbar-actions{gap:0;}',
@@ -866,6 +891,8 @@
                  * non-admin. .show flips it on. */
                 if (refs.btnAdmin) refs.btnAdmin.classList.add('show');
                 if (refs.btnAnalytics) refs.btnAnalytics.classList.add('show');
+                /* Makes room for the Admin pill on a phone (see the 480px block). */
+                if (refs.bar) refs.bar.classList.add('aisa-tb-is-admin');
                 /* If the search overlay happens to be open right now, re-render
                  * so admin-only destinations appear without re-typing. */
                 if (refs.search && refs.search.classList.contains('open')) {
