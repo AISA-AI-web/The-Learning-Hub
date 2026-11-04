@@ -31,6 +31,24 @@ backend's own code beside it and compares every answer and every email.
   `supabase/migrations/20261103120000_learning_hub_usage.sql` (`srv_hub_usage`), which a person
   applies after the merge (AI-Lessons' CLAUDE.md, *Changing the database*).
 
+## Roster tab — added 4 November 2026
+
+A fourth tab on `admin-dashboard.html` (**Roster**, `#panel-roster`, script `admin-roster.js?v=2`): the staff list
+(`roster` tab: add, edit name and groups, remove, groups for several people at once, CSV upload with a preview, CSV
+download and template), the admins (`admins` tab; school accounts only, not yourself, never the last), and **Mark a
+module complete** for someone on the roster who cannot sign in (a personal Gmail account cannot: sign-in needs the
+school's Google domain). That writes a `completed` event, version `admin`, `marked by <admin>` in its user agent.
+
+- Backend: `auth/apps-script/12_roster_admin.gs` (seven admin-only actions, in `ACTIONS` and `ADMIN_ONLY` in the
+  simulator), mirrored in AI-Lessons' `supabase/functions/learning-hub/core.mjs` with a migration that a person applies
+  (`learning-hub/README.md` there). The two are compared by its parity test: **change one, change the other.**
+- `gate.js` gained `aisaAuth.adminRoster(action, payload)` (a whitelist) and `admin_roster_list` as an idempotent read:
+  that is the cascade to **`?v=37`** (36 is taken by the switch, #122: whichever merges second resolves the pin to a
+  number never on `main`).
+- The tab loads the first time it is shown, so it never queues behind the dashboard's own request. Names go on the page
+  with `textContent` only and are kept nowhere; the CSV download prefixes cells that start `= + - @`.
+- A CSV's blank name or groups cell keeps what the person has, so groups cannot be cleared by upload: edit the person.
+
 ## Hub Analytics — added 3 November 2026
 
 Brandon asked for "an analytics button for anyone who is an admin", more

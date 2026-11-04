@@ -78,6 +78,15 @@ const ACTIONS = {
   admin_notification_stats:    { admin: true, run: () => adminNotificationStats() },
   admin_list_tags:             { admin: true, run: () => adminListTags() },
 
+  // ----- The Roster tab of the admin pages (12_roster_admin.gs) -----
+  admin_roster_list:   { admin: true, run: () => adminRosterList() },
+  admin_roster_save:   { admin: true, run: (claims, body) => adminRosterSave(body) },
+  admin_roster_remove: { admin: true, run: (claims, body) => adminRosterRemove(body) },
+  admin_roster_import: { admin: true, run: (claims, body) => adminRosterImport(body) },
+  admin_admin_save:    { admin: true, run: (claims, body) => adminAdminSave(body) },
+  admin_admin_remove:  { admin: true, run: (claims, body) => adminAdminRemove(claims, body) },
+  admin_mark_complete: { admin: true, run: (claims, body) => adminMarkComplete(claims, body) },
+
   // ----- Newsletter mail-out (31_email.gs) -----
   newsletter_status: { run: (claims) => newsletterStatus(claims) },
   send_newsletter:   { newsletter: true, run: (claims, body) => sendNewsletter(claims, body) },
@@ -183,6 +192,7 @@ function _hubFiles() {
     ['04_cache',               typeof endOf_04_cache_ === 'function'],
     ['10_sessions',            typeof endOf_10_sessions_ === 'function'],
     ['11_people',              typeof endOf_11_people_ === 'function'],
+    ['12_roster_admin',        typeof endOf_12_roster_admin_ === 'function'],
     ['20_tracking',            typeof endOf_20_tracking_ === 'function'],
     ['21_admin_dashboard',     typeof endOf_21_admin_dashboard_ === 'function'],
     ['30_notifications',       typeof endOf_30_notifications_ === 'function'],

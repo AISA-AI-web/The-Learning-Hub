@@ -40,7 +40,7 @@
         @media (prefers-reduced-motion: reduce) { .dash-tab:hover { transform: none; } }
         .matrix thead .sticky-col { z-index: 2; background:#fff; }
     </style>
-    <script src="auth/gate.js?v=35"></script>
+    <script src="auth/gate.js?v=37"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 
@@ -114,7 +114,7 @@
                  Switching is then instant and re-fetches nothing.
                  ========================================================== -->
             <div class="mb-8">
-                <div role="tablist" aria-label="Dashboard sections" class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div role="tablist" aria-label="Dashboard sections" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     <button type="button" role="tab" id="tab-pd" data-tab="pd"
                             aria-controls="panel-pd" aria-selected="true" tabindex="0"
                             class="dash-tab text-left rounded-2xl border-2 p-4 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400">
@@ -151,6 +151,17 @@
                             <div class="min-w-0">
                                 <span class="dash-tab-title font-heading font-black text-base leading-tight block">Admin Actions</span>
                                 <span class="dash-tab-sub text-xs leading-snug block mt-0.5">Charts, notifications and the staff forms</span>
+                            </div>
+                        </div>
+                    </button>
+                    <button type="button" role="tab" id="tab-roster" data-tab="roster"
+                            aria-controls="panel-roster" aria-selected="false" tabindex="-1"
+                            class="dash-tab text-left rounded-2xl border-2 p-4 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400">
+                        <div class="flex items-center gap-3">
+                            <span class="dash-tab-icon w-12 h-12 rounded-xl border flex items-center justify-center text-2xl flex-shrink-0" aria-hidden="true">&#128101;</span>
+                            <div class="min-w-0">
+                                <span class="dash-tab-title font-heading font-black text-base leading-tight block">Roster</span>
+                                <span class="dash-tab-sub text-xs leading-snug block mt-0.5">Staff list, groups, admins and CSV upload</span>
                             </div>
                         </div>
                     </button>
@@ -534,9 +545,119 @@
                     </a>
                 </div>
             </div><!-- /#panel-actions -->
+
+            <div id="panel-roster" role="tabpanel" aria-labelledby="tab-roster" tabindex="0" class="hidden focus:outline-none">
+                <p class="text-sm text-slate-500 font-medium mb-4">Who the Hub expects on its staff list, the groups they are in, and who can open these admin pages.
+                    Changes show at once on the tracker, the notification audiences and the group filters.</p>
+                <div id="rs-status" role="status" aria-live="polite" class="rs-note hidden"></div>
+
+                <section class="rs-card" aria-labelledby="rs-staff-h">
+                    <h3 id="rs-staff-h">Staff list <span id="rs-count" class="rs-dim"></span></h3>
+                    <p>A <strong>group</strong> (also called a tag) is a label such as <em>secondary</em> or <em>maths</em>. Notifications can be sent to a group, and the tracker and analytics can be filtered by one.
+                        Staff who are on this list but have not signed in yet still show as outstanding on the tracker.</p>
+                    <div class="rs-bar">
+                        <input id="rs-search" type="text" class="grow" placeholder="Search name or email" aria-label="Search the staff list" autocomplete="off">
+                        <select id="rs-tag" aria-label="Show a group"></select>
+                        <button type="button" id="rs-add-open" class="rs-btn rs-primary" data-guard>Add a person</button>
+                        <label class="rs-btn" style="cursor:pointer">Upload CSV<input id="rs-file" type="file" accept=".csv,.tsv,.txt,text/csv,text/plain" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden"></label>
+                        <button type="button" id="rs-export" class="rs-btn">Download CSV</button>
+                        <button type="button" id="rs-template" class="rs-btn">CSV template</button>
+                    </div>
+                    <form id="rs-add" class="rs-form hidden" autocomplete="off">
+                        <label>Email<input id="rs-add-email" type="email" required maxlength="320" placeholder="a.teacher@aisa.sch.ae"></label>
+                        <label>Name<input id="rs-add-name" type="text" maxlength="300" placeholder="A Teacher"></label>
+                        <label>Groups (comma-separated)<input id="rs-add-tags" type="text" placeholder="secondary, maths"></label>
+                        <div class="rs-actions"><button type="submit" class="rs-btn rs-primary" data-guard>Save</button><button type="button" id="rs-add-cancel" class="rs-btn">Cancel</button></div>
+                    </form>
+                    <div id="rs-preview" class="rs-preview hidden"></div>
+                    <div id="rs-skipped" class="hidden"></div>
+                    <div id="rs-bulk" class="rs-bar hidden" style="background:#eef2ff;border-radius:.75rem;padding:.5rem .75rem">
+                        <strong id="rs-bulk-n"></strong>
+                        <input id="rs-bulk-tag" type="text" placeholder="group name" aria-label="Group name" maxlength="40">
+                        <button type="button" id="rs-bulk-add" class="rs-btn" data-guard>Add to group</button>
+                        <button type="button" id="rs-bulk-del" class="rs-btn" data-guard>Take out of group</button>
+                        <button type="button" id="rs-bulk-remove" class="rs-btn rs-danger" data-guard>Remove from list</button>
+                    </div>
+                    <div class="rs-wrap">
+                        <table>
+                            <thead><tr><th style="width:2rem"><input type="checkbox" id="rs-all" aria-label="Select everyone shown"></th><th>Name</th><th>Email</th><th>Groups</th><th></th></tr></thead>
+                            <tbody id="rs-rows"></tbody>
+                        </table>
+                    </div>
+                    <p id="rs-empty" class="rs-dim hidden" style="margin-top:.75rem"></p>
+                </section>
+
+                <section class="rs-card" aria-labelledby="rs-done-h">
+                    <h3 id="rs-done-h">Mark a module complete</h3>
+                    <p>For someone who cannot sign in to the Hub, such as a colleague with a personal Gmail account: they do the training another way (a printed copy, a shared screen, in person) and an admin records it here.
+                        The person must be on the staff list above. It shows on the tracker as completed and says an admin marked it; the person gets no certificate.</p>
+                    <form id="rs-done" class="rs-form" autocomplete="off">
+                        <label>Person<input id="rs-done-email" type="text" list="rs-people" required placeholder="start typing a name or email"></label>
+                        <label>Module<select id="rs-module" required style="width:100%;margin-top:.2rem"><option value="">Choose a module…</option></select></label>
+                        <div class="rs-actions"><button type="submit" class="rs-btn rs-primary" data-guard>Record as complete</button></div>
+                        <datalist id="rs-people"></datalist>
+                    </form>
+                </section>
+
+                <section class="rs-card" aria-labelledby="rs-admins-h">
+                    <h3 id="rs-admins-h">Admins</h3>
+                    <p>People who can open these pages. Admins can read everyone’s training records and what staff wrote in modules and goals, so keep the list short. Only @aisa.sch.ae accounts can be admins.</p>
+                    <div class="rs-wrap">
+                        <table>
+                            <thead><tr><th>Name</th><th>Email</th><th>Role</th><th></th></tr></thead>
+                            <tbody id="rs-admin-rows"></tbody>
+                        </table>
+                    </div>
+                    <form id="rs-admin-add" class="rs-form" autocomplete="off">
+                        <label>Email<input id="rs-admin-email" type="email" required maxlength="320" placeholder="name@aisa.sch.ae"></label>
+                        <label>Name<input id="rs-admin-name" type="text" maxlength="300"></label>
+                        <label>Role<input id="rs-admin-role" type="text" maxlength="100" placeholder="SLT, AI lead…"></label>
+                        <div class="rs-actions"><button type="submit" class="rs-btn rs-primary" data-guard>Add admin</button></div>
+                    </form>
+                </section>
+            </div><!-- /#panel-roster -->
         </div>
     </main>
 
+
+    <style>
+    /* The Roster tab (admin-roster.js). Declared here rather than as Tailwind utilities because the script adds its rows later. */
+    #panel-roster .rs-card { background:#fff; border:1px solid #e2e8f0; border-radius:1rem; padding:1.25rem; margin-bottom:1.5rem; }
+    #panel-roster h3 { font-weight:900; font-size:1.125rem; color:#0f172a; margin:0 0 .25rem; }
+    #panel-roster h4 { font-weight:800; color:#0f172a; margin:0 0 .25rem; }
+    #panel-roster p { color:#475569; font-size:.875rem; line-height:1.45; margin:.25rem 0 .75rem; }
+    #panel-roster .rs-bar { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; margin:.75rem 0; }
+    #panel-roster .rs-bar .grow { flex:1 1 14rem; min-width:0; }
+    #panel-roster input[type=text], #panel-roster input[type=email], #panel-roster select, #panel-roster .rs-in { border:1px solid #cbd5e1; border-radius:.5rem; padding:.45rem .6rem; font-size:.875rem; background:#fff; color:#0f172a; min-width:0; box-sizing:border-box; max-width:100%; }
+    #panel-roster .rs-btn { border:1px solid #cbd5e1; background:#fff; color:#334155; border-radius:.5rem; padding:.4rem .7rem; font-size:.8125rem; font-weight:700; cursor:pointer; white-space:nowrap; }
+    #panel-roster .rs-btn:hover:not(:disabled) { background:#f1f5f9; }
+    #panel-roster .rs-btn:disabled { opacity:.5; cursor:not-allowed; }
+    #panel-roster .rs-primary { background:#4338ca; border-color:#4338ca; color:#fff; }
+    #panel-roster .rs-primary:hover:not(:disabled) { background:#3730a3; }
+    #panel-roster .rs-danger { color:#b91c1c; border-color:#fecaca; }
+    #panel-roster .rs-danger:hover:not(:disabled) { background:#fef2f2; }
+    #panel-roster .rs-form { display:grid; grid-template-columns:repeat(auto-fit, minmax(12rem, 1fr)); gap:.5rem; align-items:end; margin:.75rem 0; padding:.75rem; background:#f8fafc; border-radius:.75rem; }
+    #panel-roster .rs-form label { display:block; font-size:.75rem; font-weight:700; color:#475569; }
+    #panel-roster .rs-form input { width:100%; margin-top:.2rem; }
+    #panel-roster .rs-wrap { overflow-x:auto; border:1px solid #e2e8f0; border-radius:.75rem; }
+    #panel-roster table { width:100%; border-collapse:collapse; font-size:.875rem; }
+    #panel-roster th { text-align:left; background:#f8fafc; color:#475569; font-size:.75rem; text-transform:uppercase; letter-spacing:.04em; padding:.5rem .6rem; }
+    #panel-roster td { padding:.45rem .6rem; border-top:1px solid #e2e8f0; vertical-align:middle; }
+    #panel-roster tr.rs-sel td { background:#eef2ff; }
+    #panel-roster .rs-mono { font-family:ui-monospace, SFMono-Regular, Menlo, monospace; font-size:.8125rem; word-break:break-all; }
+    #panel-roster .rs-chip { display:inline-block; background:#eef2ff; color:#3730a3; border-radius:999px; padding:.05rem .55rem; font-size:.75rem; font-weight:700; margin:.1rem .25rem .1rem 0; }
+    #panel-roster .rs-dim { color:#94a3b8; font-size:.8125rem; }
+    #panel-roster .rs-actions { display:flex; flex-wrap:wrap; gap:.35rem; }
+    #panel-roster td.rs-actions { min-width:14rem; }
+    #panel-roster .rs-note { border-radius:.75rem; padding:.7rem .9rem; font-size:.875rem; font-weight:600; margin-bottom:1rem; }
+    #panel-roster .rs-ok { background:#ecfdf5; color:#065f46; border:1px solid #a7f3d0; }
+    #panel-roster .rs-bad { background:#fef2f2; color:#991b1b; border:1px solid #fecaca; }
+    #panel-roster .rs-preview, #panel-roster #rs-skipped { background:#fffbeb; border:1px solid #fde68a; border-radius:.75rem; padding:.9rem 1rem; margin:.75rem 0; }
+    #panel-roster .rs-check { display:flex; gap:.5rem; align-items:flex-start; font-size:.875rem; color:#334155; margin:.5rem 0 .75rem; }
+    #panel-roster #rs-skipped ul { margin:.25rem 0 0 1.1rem; font-size:.8125rem; color:#78350f; list-style:disc; }
+    #panel-roster .hidden { display:none !important; }
+    </style>
+    <script src="admin-roster.js?v=2"></script>
     <script>
     /* ============================================================
      * Tab controller — PD Data / Survey Data.
@@ -556,7 +677,7 @@
     (function () {
         'use strict';
 
-        var TABS = ['pd', 'survey', 'actions'];
+        var TABS = ['pd', 'survey', 'actions', 'roster'];
         var KEY  = 'aisa_admin_tab';
 
         function panel(name) { return document.getElementById('panel-' + name); }
