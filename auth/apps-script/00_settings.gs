@@ -18,7 +18,7 @@
  *   10_sessions.gs              signing in: Google ID tokens, session tokens
  *   11_people.gs                admins, newsletter senders, roster tags, names
  *   20_tracking.gs              events, completions, page views, clicks, dwell
- *   21_admin_dashboard.gs       the admin dashboard's overview and bundle
+ *   21_admin_dashboard.gs       the admin dashboard's overview and bundle, and analytics usage
  *   30_notifications.gs         the notification bell
  *   31_email.gs                 reminder emails and the newsletter mail-out
  *   40_module_responses.gs      teachers' typed answers inside modules
