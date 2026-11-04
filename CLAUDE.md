@@ -19,10 +19,15 @@ backend's own code beside it and compares every answer and every email.
   (`supabase/functions/learning-hub/core.mjs` in AI-Lessons, and a fresh copy of the `.gs` files in
   its `learning-hub/old/`, so its parity test compares the two again). A new survey: its spec in
   `SURVEY_SPECS` in both.
-- **At the switch** a pull request here points `API_URL` in `auth/gate.js` at
+- **Since the switch `API_URL` in `auth/gate.js` is the new server**,
   `https://kttgudordfvhdrkcancp.supabase.co/functions/v1/learning-hub?forceFunctionRegion=eu-central-1`
-  (the `?v=N` cascade) and makes the pages that report emails sent count `queued` too: the new
-  server queues an email for the bridge rather than sending it while the person waits.
+  (`forceFunctionRegion` keeps it in Frankfurt and adds no CORS pre-check; `?v=36`). The Apps
+  Script web app's address is `APPS_SCRIPT_URL` beside it: nothing calls it, but it is the
+  bridge's home and the deployment `deploy.mjs` updates, and it still passes on any request that
+  reaches it. The new server queues an email for the bridge rather than sending it while the
+  person waits, and answers `queued: n`; `countQueuedAsSent()` in `gate.js` counts those as sent,
+  so the pages' "n sent" and "on its way" read as before. A failure after that shows in
+  `bridgeCheck` (`mail_failed`), not on the page.
 - **Later**, the pages move to Cloudflare Pages; the 31 MB station-guides zip is over its 25 MB
   limit per file and has to be split or linked from Drive first.
 - **Hub Analytics (3 Nov 2026) was mirrored there** on AI-Lessons' branch
@@ -758,7 +763,8 @@ it to `?v=32`, and the search-result overflow fix (30 October 2026) to
 `?v=33`, and the Hub Analytics page and its top-bar button (3 November
 2026) to `?v=34`. That added `admin-analytics.html` and turned
 `admin-charts.html` into a redirect with no `gate.js`, so it is still
-51 pages. The admin top-bar fit, the same day, took it to `?v=35`.
+51 pages. The admin top-bar fit, the same day, took it to `?v=35`, and the switch
+to the new server on Supabase to `?v=36`.
 
 **Use each number once.** On 3 November 2026 the Supabase switch
 (still an open pull request) and Hub Analytics had both taken `?v=34`.

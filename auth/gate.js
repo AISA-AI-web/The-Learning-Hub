@@ -34,12 +34,21 @@
     var STORAGE_KEY = 'aisa_auth_v2';
 
     /* ------------------------------------------------------------------
-     * AISA backend URL. Paste the Apps Script Web App URL here after
-     * deploying auth/apps-script/ (see its README). While this is blank, the gate
-     * still works — record/getCompletions just resolve to no-ops so
-     * pages don't break.
+     * AISA backend URL: the Learning Hub's server on the school's Supabase
+     * project (since the move off Apps Script: AISA-AI-web/AI-Lessons,
+     * learning-hub/README.md). It answers exactly as the Apps Script web
+     * app did. forceFunctionRegion keeps it in Frankfurt, next to the
+     * database, and as a query parameter it adds no CORS pre-check. The
+     * old Apps Script address still works: after the switch it passes
+     * every request on to this one (auth/apps-script/91_bridge.gs).
+     * While this is blank, the gate still works — record/getCompletions
+     * just resolve to no-ops so pages don't break.
      * ------------------------------------------------------------------ */
-    var API_URL = 'https://script.google.com/macros/s/AKfycbwVifM6VRrov0jR5p0sQ27WcMd4-uZvUDdMkf4j7sieJmo88BMj7xMLx4R3Tpk9iuTa/exec';
+    var API_URL = 'https://kttgudordfvhdrkcancp.supabase.co/functions/v1/learning-hub?forceFunctionRegion=eu-central-1';
+    /* The Apps Script web app the Hub called until then. Nothing here calls
+     * it now; it is still the bridge's home, and the deployment that
+     * auth/apps-script/deploy.mjs updates. */
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwVifM6VRrov0jR5p0sQ27WcMd4-uZvUDdMkf4j7sieJmo88BMj7xMLx4R3Tpk9iuTa/exec';
 
     function readSession() {
         try {
@@ -351,6 +360,16 @@
                 throw e;
             });
         }, background);
+    }
+
+    /* The new server queues each email and the Apps Script bridge sends it
+     * within a minute or two, so it answers { queued: n } where the Apps
+     * Script backend answered { sent: n } after sending. The pages say
+     * "sent" and "on its way"; an email queued is on its way, so it counts. */
+    function countQueuedAsSent(r) {
+        if (r && typeof r.queued === 'number') r.sent = (r.sent || 0) + r.queued;
+        if (r && r.email && typeof r.email.queued === 'number') r.email.sent = (r.email.sent || 0) + r.email.queued;
+        return r;
     }
 
     function apiCall(action, extra, _attempt) {
@@ -975,7 +994,7 @@
                     submit:     !!opts.submit,
                     email_copy: opts.emailCopy !== false,
                     user_agent: (typeof navigator !== 'undefined' && navigator.userAgent) || ''
-                }).catch(function (err) {
+                }).then(countQueuedAsSent).catch(function (err) {
                     var friendly = describeCaptureError(err);
                     friendly.missing = (err && err.missing) || [];
                     friendly.invalid = (err && err.invalid) || [];
@@ -1119,7 +1138,7 @@
                     if (o.emailLinkLabel) payload.email_link_label = o.emailLinkLabel;
                 }
                 clearNotifsCache();
-                return apiCall('post_notification', payload);
+                return apiCall('post_notification', payload).then(countQueuedAsSent);
             },
             deleteNotification: function (id) {
                 clearNotifsCache();
@@ -1174,7 +1193,7 @@
                 if (o.logoUrl) body.logo_url = o.logoUrl;
                 if (o.testOnly) body.test_only = '1';
                 if (o.confirm)  body.confirm   = '1';
-                return apiCall('send_newsletter', body);
+                return apiCall('send_newsletter', body).then(countQueuedAsSent);
             },
             adminListTags: function () {
                 return apiCall('admin_list_tags');
