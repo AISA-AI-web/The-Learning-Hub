@@ -17,7 +17,6 @@
  *   04_cache.gs                 the read cache in front of the spreadsheet
  *   10_sessions.gs              signing in: Google ID tokens, session tokens
  *   11_people.gs                admins, newsletter senders, roster tags, names
- *   12_roster_admin.gs          the admin pages' Roster tab: roster, admins, CSV import
  *   20_tracking.gs              events, completions, page views, clicks, dwell
  *   21_admin_dashboard.gs       the admin dashboard's overview and bundle, and analytics usage
  *   30_notifications.gs         the notification bell

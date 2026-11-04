@@ -467,9 +467,7 @@ const SURVEY = 'secondary-teacher-goal-2026-27';
 const ADMIN_ONLY = [
     'admin_overview', 'admin_dwell', 'admin_dashboard', 'admin_module_responses',
     'admin_survey_responses', 'admin_notification_stats', 'admin_list_tags',
-    'post_notification', 'delete_notification',
-    'admin_roster_list', 'admin_roster_save', 'admin_roster_remove', 'admin_roster_import',
-    'admin_admin_save', 'admin_admin_remove', 'admin_mark_complete'
+    'post_notification', 'delete_notification'
 ];
 
 function scenario(files, world, opts) {

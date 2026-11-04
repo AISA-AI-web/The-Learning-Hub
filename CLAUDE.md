@@ -19,10 +19,15 @@ backend's own code beside it and compares every answer and every email.
   (`supabase/functions/learning-hub/core.mjs` in AI-Lessons, and a fresh copy of the `.gs` files in
   its `learning-hub/old/`, so its parity test compares the two again). A new survey: its spec in
   `SURVEY_SPECS` in both.
-- **At the switch** a pull request here points `API_URL` in `auth/gate.js` at
+- **Since the switch `API_URL` in `auth/gate.js` is the new server**,
   `https://kttgudordfvhdrkcancp.supabase.co/functions/v1/learning-hub?forceFunctionRegion=eu-central-1`
-  (the `?v=N` cascade) and makes the pages that report emails sent count `queued` too: the new
-  server queues an email for the bridge rather than sending it while the person waits.
+  (`forceFunctionRegion` keeps it in Frankfurt and adds no CORS pre-check; `?v=36`). The Apps
+  Script web app's address is `APPS_SCRIPT_URL` beside it: nothing calls it, but it is the
+  bridge's home and the deployment `deploy.mjs` updates, and it still passes on any request that
+  reaches it. The new server queues an email for the bridge rather than sending it while the
+  person waits, and answers `queued: n`; `countQueuedAsSent()` in `gate.js` counts those as sent,
+  so the pages' "n sent" and "on its way" read as before. A failure after that shows in
+  `bridgeCheck` (`mail_failed`), not on the page.
 - **Later**, the pages move to Cloudflare Pages; the 31 MB station-guides zip is over its 25 MB
   limit per file and has to be split or linked from Drive first.
 - **Hub Analytics (3 Nov 2026) was mirrored there** on AI-Lessons' branch
@@ -33,18 +38,18 @@ backend's own code beside it and compares every answer and every email.
 
 ## Roster tab — added 4 November 2026
 
-A fourth tab on `admin-dashboard.html` (**Roster**, `#panel-roster`, script `admin-roster.js?v=2`): the staff list
+A fourth tab on `admin-dashboard.html` (**Roster**, `#panel-roster`, script `admin-roster.js?v=1`): the staff list
 (`roster` tab: add, edit name and groups, remove, groups for several people at once, CSV upload with a preview, CSV
 download and template), the admins (`admins` tab; school accounts only, not yourself, never the last), and **Mark a
 module complete** for someone on the roster who cannot sign in (a personal Gmail account cannot: sign-in needs the
 school's Google domain). That writes a `completed` event, version `admin`, `marked by <admin>` in its user agent.
 
-- Backend: `auth/apps-script/12_roster_admin.gs` (seven admin-only actions, in `ACTIONS` and `ADMIN_ONLY` in the
-  simulator), mirrored in AI-Lessons' `supabase/functions/learning-hub/core.mjs` with a migration that a person applies
-  (`learning-hub/README.md` there). The two are compared by its parity test: **change one, change the other.**
+- Backend: the Supabase `learning-hub` function only (AI-Lessons' `supabase/functions/learning-hub/core.mjs`, seven
+  admin-only actions, and a migration a person applies: `learning-hub/README.md` there). The Hub went live on it on
+  4 Nov 2026, so the Apps Script project is just the bridge and has no copy of these actions. Until that function is
+  deployed and the migration applied, the tab shows "server_error".
 - `gate.js` gained `aisaAuth.adminRoster(action, payload)` (a whitelist) and `admin_roster_list` as an idempotent read:
-  that is the cascade to **`?v=37`** (36 is taken by the switch, #122: whichever merges second resolves the pin to a
-  number never on `main`).
+  that is the cascade to **`?v=37`** (36 was the switch, #122).
 - The tab loads the first time it is shown, so it never queues behind the dashboard's own request. Names go on the page
   with `textContent` only and are kept nowhere; the CSV download prefixes cells that start `= + - @`.
 - A CSV's blank name or groups cell keeps what the person has, so groups cannot be cleared by upload: edit the person.
@@ -776,7 +781,8 @@ it to `?v=32`, and the search-result overflow fix (30 October 2026) to
 `?v=33`, and the Hub Analytics page and its top-bar button (3 November
 2026) to `?v=34`. That added `admin-analytics.html` and turned
 `admin-charts.html` into a redirect with no `gate.js`, so it is still
-51 pages. The admin top-bar fit, the same day, took it to `?v=35`.
+51 pages. The admin top-bar fit, the same day, took it to `?v=35`, and the switch
+to the new server on Supabase to `?v=36`.
 
 **Use each number once.** On 3 November 2026 the Supabase switch
 (still an open pull request) and Hub Analytics had both taken `?v=34`.
