@@ -36,6 +36,27 @@ backend's own code beside it and compares every answer and every email.
   `supabase/migrations/20261103120000_learning_hub_usage.sql` (`srv_hub_usage`), which a person
   applies after the merge (AI-Lessons' CLAUDE.md, *Changing the database*).
 
+## Readiness module: "is this required for me?" pop-up — added 5 November 2026
+
+Brandon: as soon as a teacher opens the AI Literacy: Teacher Readiness module, a pop-up says whether the training is
+required of them, so the staff who are not in the cohort do not spend an hour on it (5 teachers were still to finish).
+
+- `PD Modules/readiness-notice.js?v=1`, loaded at the end of `ai-curriculum-readiness-module.html`. Self-contained: it
+  does **not** touch `gate.js`, so there is no `?v=N` cascade. Same check as the newsletter's *Do you have to do the
+  training?* card: the signed-in address, lower-cased and hashed, against the cohort's truncated SHA-256 hashes.
+- Four answers: **Required** (in the cohort, not finished: "Start the training"), **Already complete** (in the cohort and
+  `get_completions` has the module: "nothing more to do"), **Not required** (everyone else: "Back to the AI Literacy Hub" or
+  "Look through it anyway"), **Couldn't check** (no address, or no `crypto.subtle`). If the completions list is slow (2.5 s)
+  it says Required, which is still true.
+- Shown once per tab session (`sessionStorage`, so a reload mid-module does not bring it back), closes with Escape, keeps
+  Tab inside, English and Arabic (both in the markup, CSS shows the one that matches `body.lang-ar`; the page's dictionary
+  translator never sees it). Nothing is stored or sent. It decides what a card says; it is **not a permission gate**: the
+  module stays open to everyone.
+- **The cohort now lives in three places**: `AI_LITERACY_COHORT` in `admin-dashboard.html` (the truth), and the hashes in
+  `Media Hub/sep18.html` and `readiness-notice.js`. `node tests/readiness-notice-test.js` fails when they differ, and
+  drives the real module page in Chromium (if Playwright is installed). Change the cohort, regenerate both lists (the
+  recipe is in each file's comment), and bump `readiness-notice.js?v=` in the module page.
+
 ## Roster tab — added 4 November 2026
 
 A fourth tab on `admin-dashboard.html` (**Roster**, `#panel-roster`, script `admin-roster.js?v=1`): the staff list
