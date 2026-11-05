@@ -238,6 +238,9 @@
      * every returning visitor it was undefined — the completions cache has
      * been living under the localStorage key "undefined" ever since. */
     var COMPLETIONS_CACHE_KEY = 'aisa_completions_v2';
+    /* Completions not yet confirmed by the server; see "Pending completions". */
+    var PENDING_KEY           = 'aisa_pending_completions_v1';
+    var flushingPending       = false;
     var ADMIN_CACHE_KEY       = 'aisa_is_admin_v1';
     /* How long "yes, you're an admin" is trusted before asking again. It
      * only decides whether the menu shows the Admin link — every admin
@@ -861,6 +864,62 @@
         } catch (e) {}
     }
 
+    /* ------------------------------------------------------------------
+     * Pending completions. A completion whose POST fails (offline, a
+     * school network blocking the call, the tab closed too soon) used to
+     * be lost unless the person reopened that same module on that same
+     * device. Now every completion is written down here before it is
+     * sent, and taken off the list only once the server has it. Any page
+     * of any module sends what is still on the list the next time it
+     * loads, and again whenever the connection comes back.
+     * ------------------------------------------------------------------ */
+    function readPending() {
+        var list = storeGet('localStorage', PENDING_KEY);
+        return Array.isArray(list) ? list : [];
+    }
+    function addPending(moduleId, version) {
+        var session = readSession();
+        if (!session || !session.email) return;
+        var list = readPending();
+        var has = list.some(function (p) { return p.email === session.email && p.module_id === moduleId; });
+        if (!has) {
+            list.push({ email: session.email, module_id: moduleId, version: version || 'v1', at: new Date().toISOString() });
+            storeSet('localStorage', PENDING_KEY, list);
+        }
+    }
+    function removePending(moduleId) {
+        var session = readSession();
+        if (!session) return;
+        var list = readPending().filter(function (p) { return !(p.email === session.email && p.module_id === moduleId); });
+        if (list.length) storeSet('localStorage', PENDING_KEY, list);
+        else storeDel('localStorage', PENDING_KEY);
+    }
+
+    function flushPending() {
+        var session = readSession();
+        /* Never opens the sign-in gate by itself: only sends for someone
+         * who is already signed in. */
+        if (flushingPending || !API_URL || !session || !session.sessionToken) return;
+        var mine = readPending().filter(function (p) { return p.email === session.email; });
+        if (!mine.length) return;
+        flushingPending = true;
+        mine.reduce(function (chain, p) {
+            return chain.then(function () {
+                return apiCall('record_event', {
+                    module_id:    p.module_id,
+                    event:        'completed',
+                    progress_pct: 100,
+                    version:      p.version || 'v1',
+                    user_agent:   (typeof navigator !== 'undefined' && navigator.userAgent) || ''
+                }).then(function () {
+                    removePending(p.module_id);
+                    addCompletionToCache(p.module_id, p.version);
+                }).catch(function () { /* stays on the list for next time */ });
+            });
+        }, Promise.resolve()).then(function () { flushingPending = false; },
+                                    function () { flushingPending = false; });
+    }
+
     function buildPublicApi() {
         return {
             signOut: function () {
@@ -901,6 +960,7 @@
              * free-form string — common values are 'started', 'progress',
              * and 'completed'. progressPct is optional (defaults to 0). */
             recordEvent: function (moduleId, event, progressPct, version) {
+                if (event === 'completed') addPending(moduleId, version);
                 return apiCall('record_event', {
                     module_id:    moduleId,
                     event:        event || 'progress',
@@ -911,7 +971,10 @@
                     /* Mirror the new completion into the local cache so
                      * the next page load reflects it immediately, without
                      * waiting on the server roundtrip. */
-                    if (event === 'completed') addCompletionToCache(moduleId, version);
+                    if (event === 'completed') {
+                        removePending(moduleId);
+                        addCompletionToCache(moduleId, version);
+                    }
                     return r;
                 });
             },
@@ -1534,6 +1597,10 @@
     function start() {
         buildGate();
         loadGsi();
+        /* Send any completion an earlier page could not (see "Pending
+         * completions" above), shortly after load and when back online. */
+        setTimeout(flushPending, 3000);
+        window.addEventListener('online', function () { setTimeout(flushPending, 1000); });
     }
 
     if (document.readyState === 'loading') {
