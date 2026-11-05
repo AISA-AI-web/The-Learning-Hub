@@ -2398,3 +2398,12 @@ precisely because it did.
 `Committees/committees.html` still has its own older `.filter-chip`
 styling and was left alone. If the browse bar is rolled out further,
 that page and the Library / Media / Orientation hubs are the candidates.
+
+## Pending completions — added 5 November 2026 (`gate.js?v=39`)
+
+A completion whose POST failed (offline, a blocking network, the tab closed too soon) was only retried if the person
+reopened that same module on that same device. `gate.js` now writes every completion to `localStorage`
+(`aisa_pending_completions_v1`, per email) before sending it and removes it once the server has it; any page of any
+module sends what is left about 3 seconds after load and whenever the browser comes back online
+(`flushPending`). It never opens the sign-in gate. Applies to every module that uses `wireModule`/`recordEvent`.
+The cascade is `?v=39`.
