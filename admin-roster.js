@@ -530,8 +530,8 @@
         note('Checking ' + label + '…', 'ok');
         call('admin_staff_check', { rows: rows }).then(function (r) {
             if (r && r.ok === false) throw new Error(r.error);
-            check = { rows: rows, res: r, label: label, remove: {}, invite: r.mail && r.mail.ready };
-            r.flagged.forEach(function (f) { check.remove[f.email] = true; });
+            check = { rows: rows, res: r, label: label, remove: {}, merge: {}, invite: r.mail && r.mail.ready };
+            r.flagged.forEach(function (f) { if (f.suggest) check.merge[f.email] = f.suggest.email; else check.remove[f.email] = true; });
             note('', 'ok');
             renderCheck();
         }).catch(function (err) { check = null; $('rs-sc-result').classList.add('hidden'); note(say(err), 'bad'); })
@@ -603,17 +603,29 @@
         var rm = [h('p', {}, [h('span', { class: 'rs-big', id: 'rs-sc-rm-n', text: '' }), h('span', { id: 'rs-sc-rm-t', text: '' })])];
         if (r.flagged.length) {
             rm.push(h('p', { class: 'rs-dim', text: 'These people are on the Hub but not on the school’s list. Untick anyone who still works here. Removing someone keeps everything they did, and if they sign in again they are back.' }));
+            if (r.invite.length) rm.push(h('p', { class: 'rs-dim', text: 'If someone is on the list under a different address (a longer name, another spelling), choose “Same person as” on their row. Their modules and progress then move to the new address instead of starting again.' }));
             rm.push(h('div', { class: 'rs-actions', style: 'margin-bottom:.5rem' }, [
-                h('button', { type: 'button', class: 'rs-btn', text: 'Select all', onclick: function () { r.flagged.forEach(function (f) { c.remove[f.email] = true; }); renderCheck(); } }),
+                h('button', { type: 'button', class: 'rs-btn', text: 'Select all', onclick: function () { r.flagged.forEach(function (f) { if (!c.merge[f.email]) c.remove[f.email] = true; }); renderCheck(); } }),
                 h('button', { type: 'button', class: 'rs-btn', text: 'Select none', onclick: function () { c.remove = {}; renderCheck(); } })]));
             var body = h('tbody', {});
             r.flagged.forEach(function (f) {
                 var x = h('input', { type: 'checkbox', 'aria-label': 'Remove ' + (f.name || f.email), onchange: function (e) { if (e.target.checked) c.remove[f.email] = true; else delete c.remove[f.email]; renderApply(); } });
-                x.checked = !!c.remove[f.email];
-                body.appendChild(h('tr', {}, [h('td', {}, [x]), h('td', { text: f.name || '—' }), h('td', { class: 'rs-mono', text: f.email }),
-                    h('td', { text: f.signed_in ? 'last seen ' + when(f.last_seen) : 'never signed in' })]));
+                x.checked = !!c.remove[f.email] && !c.merge[f.email];
+                x.disabled = !!c.merge[f.email];
+                var sel = h('select', { 'aria-label': 'Same person as', class: 'rs-in', onchange: function (e) {
+                    var to = e.target.value;
+                    Object.keys(c.merge).forEach(function (k) { if (to && c.merge[k] === to && k !== f.email) delete c.merge[k]; });
+                    if (to) { c.merge[f.email] = to; delete c.remove[f.email]; } else { delete c.merge[f.email]; c.remove[f.email] = true; }
+                    renderCheck();
+                } });
+                sel.appendChild(h('option', { value: '', text: r.invite.length ? '— a different person —' : '— no one to match —' }));
+                r.invite.forEach(function (p) { sel.appendChild(h('option', { value: p.email, text: (p.name ? p.name + ' · ' : '') + p.email })); });
+                sel.value = c.merge[f.email] || '';
+                sel.disabled = !r.invite.length;
+                body.appendChild(h('tr', { class: c.merge[f.email] ? 'rs-sel' : '' }, [h('td', {}, [x]), h('td', { text: f.name || '—' }), h('td', { class: 'rs-mono', text: f.email }),
+                    h('td', { text: f.signed_in ? 'last seen ' + when(f.last_seen) : 'never signed in' }), h('td', {}, [sel])]));
             });
-            rm.push(h('div', { class: 'rs-wrap' }, [h('table', {}, [h('thead', {}, [h('tr', {}, [h('th', { style: 'width:2rem' }), h('th', { text: 'Name' }), h('th', { text: 'Email' }), h('th', { text: 'On the Hub' })])]), body])]));
+            rm.push(h('div', { class: 'rs-wrap' }, [h('table', {}, [h('thead', {}, [h('tr', {}, [h('th', { style: 'width:2rem' }), h('th', { text: 'Name' }), h('th', { text: 'Email' }), h('th', { text: 'On the Hub' }), h('th', { text: 'Same person as' })])]), body])]));
         }
         box.appendChild(block('To remove', rm));
 
@@ -634,17 +646,19 @@
         box.scrollIntoView({ block: 'nearest' });
     }
 
-    function chosen() { return Object.keys(check.remove); }
+    function chosen() { return Object.keys(check.remove).filter(function (e) { return !check.merge[e]; }); }
+    function merges() { return Object.keys(check.merge).map(function (f) { return { from: f, to: check.merge[f] }; }); }
     function renderApply() {
         var r = check.res, nr = chosen().length, ni = check.invite && r.invite.length ? r.invite.length : 0;
         var rn = $('rs-sc-rm-n'), rt = $('rs-sc-rm-t'), btn = $('rs-sc-apply');
         if (rn) { rn.textContent = String(nr); rt.textContent = nr === 1 ? 'person will be removed from the staff list.' : 'people will be removed from the staff list.'; }
-        var parts = [];
+        var nm = merges().length, parts = [];
         if (ni) parts.push('invite ' + ni);
+        if (nm) parts.push('move ' + nm + (nm === 1 ? ' person’s' : ' people’s') + ' records');
         if (nr) parts.push('remove ' + nr);
         if (r.add_count && !parts.length) parts.push('add ' + r.add_count + ' to the staff list');
-        btn.textContent = parts.length ? 'Apply: ' + parts.join(' and ') : 'Apply';
-        btn.disabled = busy || !(r.add_count || r.restore.length || nr);
+        btn.textContent = parts.length ? 'Apply: ' + (parts.length > 1 ? parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1] : parts[0]) : 'Apply';
+        btn.disabled = busy || !(r.add_count || r.restore.length || nr || nm);
     }
 
     function applyCheck() {
@@ -653,14 +667,16 @@
         if (invite) lines.push('• Email an invitation to ' + plural(r.invite.length, 'person', 'people') + '.');
         if (r.add_count) lines.push('• Put ' + plural(r.add_count, 'person', 'people') + ' on the staff list.');
         if (r.restore.length) lines.push('• Bring back ' + plural(r.restore.length, 'person', 'people') + ' who were removed.');
+        if (merges().length) lines.push('• Move the modules and progress of ' + plural(merges().length, 'person', 'people') + ' to the new address HR has for them (they sign in with it).');
         if (remove.length) lines.push('• Remove ' + plural(remove.length, 'person', 'people') + ' from the staff list and sign them out. Their records are kept, and they are back if they sign in again.');
         if (!window.confirm('Apply this?\n\n' + lines.join('\n') + (invite ? '\n\nEmails cannot be taken back once they are sent.' : ''))) return;
         setBusy(true);
-        call('admin_staff_sync', { rows: check.rows, invite: invite, remove: remove }).then(function (x) {
+        call('admin_staff_sync', { rows: check.rows, invite: invite, remove: remove, merge: merges() }).then(function (x) {
             if (x && x.ok === false) throw new Error(x.error);
             var bits = [];
             if (x.invited) bits.push(plural(x.invited, 'invitation', 'invitations') + ' on the way');
             if (x.added) bits.push(plural(x.added, 'person', 'people') + ' added to the staff list');
+            if (x.merged) bits.push(plural(x.merged, 'person’s records', 'people’s records') + ' moved to their new address');
             if (x.restored) bits.push(x.restored + ' brought back');
             if (x.removed) bits.push(x.removed + ' removed');
             check = null; $('rs-sc-result').classList.add('hidden'); $('rs-sc-result').textContent = '';
