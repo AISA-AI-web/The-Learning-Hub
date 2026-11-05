@@ -299,6 +299,12 @@
      * the backend saying it never took the lock and therefore wrote
      * nothing — the one failure we know did not land. That distinction
      * matters most for `post_notification`, which sends real email. */
+    var ROSTER_ACTIONS = {
+        admin_roster_list: 1, admin_roster_save: 1, admin_roster_remove: 1,
+        admin_roster_import: 1, admin_admin_save: 1, admin_admin_remove: 1,
+        admin_mark_complete: 1
+    };
+
     var IDEMPOTENT_ACTIONS = {
         whoami: 1, get_completions: 1, admin_overview: 1, admin_dwell: 1,
         admin_dashboard: 1,
@@ -306,6 +312,7 @@
         get_module_response: 1, admin_module_responses: 1,
         get_survey_response: 1, admin_survey_responses: 1,
         get_notifications: 1, admin_notification_stats: 1, admin_list_tags: 1,
+        admin_roster_list: 1,
         newsletter_status: 1
     };
 
@@ -1197,6 +1204,16 @@
             },
             adminListTags: function () {
                 return apiCall('admin_list_tags');
+            },
+
+            /* The Roster tab of the admin dashboard. `action` is one of
+             * ROSTER_ACTIONS (admin only on the server, whatever is asked
+             * here); anything else is refused without a request. */
+            adminRoster: function (action, payload) {
+                if (!Object.prototype.hasOwnProperty.call(ROSTER_ACTIONS, action)) {
+                    return Promise.reject(new Error('unknown_action'));
+                }
+                return apiCall(action, payload || {});
             },
 
             /* Resolve to true/false for whether the current user is an
