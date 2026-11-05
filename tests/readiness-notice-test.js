@@ -1,5 +1,5 @@
 /* node tests/readiness-notice-test.js
- * 1. The cohort hashes in PD Modules/readiness-notice.js, in Media Hub/sep18.html and
+ * 1. The cohort hashes in PD Modules/ai-literacy-cohort.js, in Media Hub/sep18.html and
  *    AI_LITERACY_COHORT in admin-dashboard.html are the same 62 people.
  * 2. In Chromium (if Playwright is installed), the module page shows the right pop-up
  *    for a required teacher, one who has finished, someone not on the list, no address,
@@ -18,9 +18,11 @@ const truth = [...block.matchAll(/email:\s*"([^"]+)"/g)].map(m => hash(m[1])).so
 const hashesIn = f => [...read(f).matchAll(/'([0-9a-f]{16})'/g)].map(m => m[1]).sort();
 const same = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
 ok(truth.length > 0, 'cohort read from admin-dashboard.html (' + truth.length + ')');
-ok(same(truth, hashesIn('PD Modules/readiness-notice.js')), 'readiness-notice.js has the same cohort');
+ok(same(truth, hashesIn('PD Modules/ai-literacy-cohort.js')), 'ai-literacy-cohort.js (used by the pop-up and the analytics) has the same cohort');
 ok(same(truth, hashesIn('Media Hub/sep18.html')), 'sep18.html has the same cohort');
-ok(/readiness-notice\.js\?v=1/.test(read('PD Modules/ai-curriculum-readiness-module.html')), 'module page loads the notice');
+const mod = read('PD Modules/ai-curriculum-readiness-module.html');
+ok(/readiness-notice\.js\?v=2/.test(mod) && mod.indexOf('ai-literacy-cohort.js') < mod.indexOf('readiness-notice.js'), 'module page loads the cohort, then the notice');
+ok(/ai-literacy-cohort\.js/.test(read('admin-analytics.html')), 'analytics page loads the cohort');
 
 (async () => {
   let chromium; try { ({ chromium } = require('playwright')); } catch (e) { console.log('skip browser part (no playwright)'); return; }

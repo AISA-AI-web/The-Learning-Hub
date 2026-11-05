@@ -41,7 +41,7 @@ backend's own code beside it and compares every answer and every email.
 Brandon: as soon as a teacher opens the AI Literacy: Teacher Readiness module, a pop-up says whether the training is
 required of them, so the staff who are not in the cohort do not spend an hour on it (5 teachers were still to finish).
 
-- `PD Modules/readiness-notice.js?v=1`, loaded at the end of `ai-curriculum-readiness-module.html`. Self-contained: it
+- `PD Modules/readiness-notice.js?v=2`, loaded at the end of `ai-curriculum-readiness-module.html`. Self-contained: it
   does **not** touch `gate.js`, so there is no `?v=N` cascade. Same check as the newsletter's *Do you have to do the
   training?* card: the signed-in address, lower-cased and hashed, against the cohort's truncated SHA-256 hashes.
 - Four answers: **Required** (in the cohort, not finished: "Start the training"), **Already complete** (in the cohort and
@@ -53,9 +53,29 @@ required of them, so the staff who are not in the cohort do not spend an hour on
   translator never sees it). Nothing is stored or sent. It decides what a card says; it is **not a permission gate**: the
   module stays open to everyone.
 - **The cohort now lives in three places**: `AI_LITERACY_COHORT` in `admin-dashboard.html` (the truth), and the hashes in
-  `Media Hub/sep18.html` and `readiness-notice.js`. `node tests/readiness-notice-test.js` fails when they differ, and
-  drives the real module page in Chromium (if Playwright is installed). Change the cohort, regenerate both lists (the
-  recipe is in each file's comment), and bump `readiness-notice.js?v=` in the module page.
+  `Media Hub/sep18.html` and `PD Modules/ai-literacy-cohort.js` (shared by the pop-up and the analytics page, loaded before
+  them). `node tests/readiness-notice-test.js` fails when they differ, and drives the real module page in Chromium (if
+  Playwright is installed). Change the cohort, regenerate both lists (the recipe is in each file's comment), and bump the
+  `ai-literacy-cohort.js?v=` pins in the module page and `admin-analytics.html`.
+- If the cohort list did not load, the pop-up says *Couldn't check*, never *Not required*.
+
+## Analytics: AI Literacy readiness counts the 62, not everyone — 5 November 2026
+
+The analytics page said "118 staff (61%) still have not finished AI Literacy: Teacher Readiness" and "0% of the staff who open it",
+because it counted every Hub user. The module is required only of the 62 on the ADEK Implementation Form. In
+`admin-analytics.js` a module with `cohort: true` in `MODULES` (only readiness) is counted against that list:
+
+- `findCohort()` hashes the people the Hub knows (SHA-256, first 16 hex) and matches `ai-literacy-cohort.js` -> `M.cohort`;
+  `M.cohortUnseen` is how many of the 62 the Hub has never heard of (not on the roster, never signed in). They count as
+  not finished, but can only be named on the admin tracker; with a group or person filter on, they are left out.
+- `spotStats()` (complete %, the tile, the header, the headline insight, the spotlight donut and *still to finish* list),
+  `moduleFunnel()` (opened/finished, so the "lowest finish rate" and the dumbbell chart), and `readinessRows()` (the
+  readiness answers) all use `counts(email, moduleId)`. A person outside the list sees "not required of them" on their
+  profile. If the list or `crypto.subtle` is missing, `M.cohort` stays null and everything counts as before.
+- `node tests/analytics-cohort-test.js` drives the page with synthetic data (5 of the 62 finished, 15 other staff too:
+  must read 5 of 62).
+- A new cohort module: add `cohort: true` and give it its own list; today there is one list, for readiness.
+
 
 ## Roster tab — added 4 November 2026
 

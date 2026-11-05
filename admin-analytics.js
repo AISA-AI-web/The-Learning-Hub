@@ -45,7 +45,7 @@
         { id: 'sustainability', hours: 0.5, title: 'Sustainability at AISA', short: 'Sustainability', group: 'whole', file: 'sustainability-module.html' },
         { id: 'ai-ethics', hours: 1, title: 'AI Vision & Ethical Framework', short: 'AI Ethics', group: 'whole', file: 'ai-ethics-module.html' },
         { id: 'return-to-school', hours: 2, title: 'Return to School: Emergency Protocol', short: 'Return to School', group: 'whole', file: 'return-to-school.html' },
-        { id: 'ai-curriculum-readiness', hours: 1, title: 'AI Literacy: Teacher Readiness', short: 'AI Literacy Readiness', group: 'whole', file: 'ai-curriculum-readiness-module.html' },
+        { id: 'ai-curriculum-readiness', hours: 1, title: 'AI Literacy: Teacher Readiness', short: 'AI Literacy Readiness', group: 'whole', file: 'ai-curriculum-readiness-module.html', cohort: true },
         { id: 'campus-safety', hours: 1, title: 'Campus Layout, Safety & Security', short: 'Campus Safety', group: 'onboard', file: 'campus-safety-module.html' },
         { id: 'visa-emirates-id', hours: 1, title: 'Employment Visa & Emirates ID', short: 'Visa & Emirates ID', group: 'onboard', file: 'visa-emirates-id-module.html' },
         { id: 'payroll-prf', hours: 1, title: 'Payroll & Purchase Requisitions', short: 'Payroll & PRF', group: 'onboard', file: 'payroll-prf-module.html' },
@@ -56,6 +56,13 @@
         { id: 'sharepoint-workflows', hours: 1, title: 'SharePoint Workflows', short: 'SharePoint', group: 'tools', file: 'sharepoint-workflows-module.html' },
         { id: 'notebooklm', hours: 1, title: 'NotebookLM Masterclass', short: 'NotebookLM', group: 'tools', file: 'notebooklm-module.html' }
     ];
+    /* A module with `cohort: true` is required only of the teachers named on the ADEK
+     * Implementation Form (62), not of every Hub user: its completion counts, its
+     * "still to finish" list, its finish rate and its readiness answers all use that
+     * list. The list is hashes (ai-literacy-cohort.js, loaded before this file); the
+     * truth is AI_LITERACY_COHORT in admin-dashboard.html. If the list did not load,
+     * M.cohort stays null and the module is counted like the others, as before. */
+    var COHORT_HASHES = window.AISA_AI_LITERACY_COHORT || [];
     var MOD = {};
     MODULES.forEach(function (m) { MOD[m.id] = m; });
 
@@ -513,7 +520,45 @@
         lastWidth = document.documentElement.clientWidth;
     }
 
+    /* Does this module apply only to a list, and is that list known? */
+    function cohortOn(id) { return !!(MOD[id] && MOD[id].cohort && M.cohort); }
+    /* Is this person counted for the module: everyone, or only the list. */
+    function counts(e, id) { return !cohortOn(id) || !!M.cohort[e]; }
+
+    function sha16(text) {
+        return window.crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function (buf) {
+            return Array.prototype.map.call(new Uint8Array(buf), function (x) { return ('0' + x.toString(16)).slice(-2); }).join('').slice(0, 16);
+        });
+    }
+    /* Which of the people the Hub knows are on the list; and how many on the list the
+     * Hub has never heard of (not on the roster, never signed in). */
+    function findCohort(m) {
+        m.cohort = null; m.cohortSize = COHORT_HASHES.length; m.cohortUnseen = 0;
+        if (!COHORT_HASHES.length || !(window.crypto && window.crypto.subtle && window.TextEncoder)) return Promise.resolve();
+        var emails = Object.keys(m.people);
+        return Promise.all(emails.map(sha16)).then(function (hs) {
+            var on = {}, found = 0;
+            hs.forEach(function (x, i) { if (COHORT_HASHES.indexOf(x) !== -1) { on[emails[i]] = true; found++; } });
+            m.cohort = on;
+            m.cohortUnseen = Math.max(0, COHORT_HASHES.length - found);
+        }, function () { m.cohort = null; });
+    }
+
     function spotStats(Q, id) {
+        if (cohortOn(id)) {
+            /* the teachers on the list, whether or not they have opened the Hub yet */
+            var cd = 0, ct = [], co = 0;
+            var mine = Object.keys(Q.S).filter(function (e) { return M.cohort[e]; });
+            mine.forEach(function (e) {
+                if (Q.doneBy[e] && Q.doneBy[e][id]) { cd++; return; }
+                ct.push(e);
+                var o2 = M.opened[e + '|' + id];
+                if (o2 && o2 < Q.R.tb) co++;
+            });
+            /* people on the list the Hub has never seen can only be counted when nothing narrows the selection */
+            var unseen = (F.tag || F.staff.length) ? 0 : M.cohortUnseen;
+            return { done: cd, total: mine.length + unseen, todo: ct, openedOnly: co, unseen: unseen, cohort: true };
+        }
         var done = 0, todo = [], openedOnly = 0;
         Q.users.forEach(function (e) {
             if (Q.doneBy[e] && Q.doneBy[e][id]) { done++; return; }
@@ -543,7 +588,7 @@
             parts.push(b(Q.users.length), ' staff are known to the Hub. ');
         }
         if (sp.total) {
-            parts.push(spot.title + ' is ', b(pct(sp.done, sp.total) + '%'), ' complete with ', b(sp.total - sp.done), ' staff still to finish');
+            parts.push(spot.title + ' is ', b(pct(sp.done, sp.total) + '%'), ' complete' + (sp.cohort ? ' for the ' + fmt(sp.total) + ' teachers it is required of' : '') + ' with ', b(sp.total - sp.done), ' still to finish');
             var best = M.hasUsage ? issueReach(Q) : null;
             if (best && best.n && Q.activeList.length) {
                 parts.push(', and the best-read newsletter issue reached ', b(pct(best.n, Q.activeList.length) + '%'), ' of them.');
@@ -613,7 +658,7 @@
               sub: active ? (Math.round(Q.doneIn.length / active * 10) / 10) + ' per active member of staff' : '',
               spark: series(B, Q.doneIn), d: prev && delta(Q.doneIn.length, prev.finished, R) },
             { gold: true, label: spot.short + ' complete', value: sp.total ? pct(sp.done, sp.total) + '%' : '—',
-              sub: fmt(sp.done) + ' of ' + fmt(sp.total) + ' Hub users' },
+              sub: fmt(sp.done) + ' of ' + fmt(sp.total) + (sp.cohort ? ' required teachers' : ' Hub users') },
             { label: 'Newsletter readers', value: M.hasUsage ? fmt(readers) : '—',
               sub: M.hasUsage ? (active ? pct(readers, active) + '% of active staff opened an issue' : '') : 'needs the backend update',
               spark: M.hasUsage ? distinctSeries(B, Q.pv.filter(function (r) { return r.issue; })) : null,
@@ -705,6 +750,7 @@
             var cls = dt ? 'is-done' : (op && op < Q.R.tb ? 'is-open' : 'is-none');
             var mark = dt ? '✓' : (cls === 'is-open' ? '◐' : '·');
             var note = dt ? 'finished ' + tLabel(dt) : (cls === 'is-open' ? 'opened ' + tLabel(op) + ', not finished' : 'not opened');
+            if (!dt && !counts(e, mm.id)) note = 'not required of them' + (cls === 'is-open' ? ' (opened ' + tLabel(op) + ')' : '');
             grid.appendChild(h('div', { 'class': 'an-mod ' + cls }, [h('i', { text: mark, 'aria-hidden': 'true' }),
                 h('span', null, [mm.title + ' ', h('small', { text: note })])]));
         });
@@ -741,9 +787,9 @@
         /* within the dates: who opened (or finished) each module, who finished */
         var out = {};
         MODULES.forEach(function (mm) { out[mm.id] = { opened: {}, finished: {} }; });
-        Q.pv.forEach(function (r) { if (r.mod) out[r.mod].opened[r.p] = 1; });
-        Q.ev.forEach(function (r) { if (out[r.mod]) out[r.mod].opened[r.p] = 1; });
-        Q.doneIn.forEach(function (d) { out[d.mod].finished[d.p] = 1; out[d.mod].opened[d.p] = 1; });
+        Q.pv.forEach(function (r) { if (r.mod && counts(r.p, r.mod)) out[r.mod].opened[r.p] = 1; });
+        Q.ev.forEach(function (r) { if (out[r.mod] && counts(r.p, r.mod)) out[r.mod].opened[r.p] = 1; });
+        Q.doneIn.forEach(function (d) { if (!counts(d.p, d.mod)) return; out[d.mod].finished[d.p] = 1; out[d.mod].opened[d.p] = 1; });
         Object.keys(out).forEach(function (id) {
             out[id].a = Object.keys(out[id].opened).length;
             out[id].b = Object.keys(out[id].finished).length;
@@ -811,7 +857,9 @@
         if (topMod && good.length < 4) good.push([b(topMod.n), ' staff finished ' + topMod.m.title + ' ' + rangeText(Q.R) + ', more than any other module.']);
 
         var spot = MOD[VIEW.spot], sp = spotStats(Q, VIEW.spot);
-        if (sp.total && sp.done < sp.total) bad.push([b(sp.total - sp.done), ' staff (', b(pct(sp.total - sp.done, sp.total) + '%'), ') still have not finished ' + spot.title + '.']);
+        if (sp.total && sp.done < sp.total) bad.push(sp.cohort
+            ? [b(sp.total - sp.done), ' of the ', b(sp.total), ' teachers it is required of (', b(pct(sp.total - sp.done, sp.total) + '%'), ') still have not finished ' + spot.title + '.']
+            : [b(sp.total - sp.done), ' staff (', b(pct(sp.total - sp.done, sp.total) + '%'), ') still have not finished ' + spot.title + '.']);
         if (M.hasUsage && Q.users.length) {
             var none = 0, one = 0;
             Q.users.forEach(function (e) {
@@ -1108,18 +1156,18 @@
         });
         var quick = speeds.filter(function (x) { return x < 300; }).length;
         var medMin = speeds.length ? Math.round(median(speeds) / 60) : null;
-        var lede = [b(sp.done), ' of the ', b(sp.total), ' Hub users in this selection have finished ' + mm.title];
+        var lede = [b(sp.done), ' of the ', b(sp.total), (sp.cohort ? ' teachers it is required of' : ' Hub users') + ' in this selection have finished ' + mm.title];
         lede.push(sp.total ? [' (', b(pct(sp.done, sp.total) + '%'), ').'] : '.');
         if (mine.length && F.range !== 'all') lede.push([' ', b(mine.length), ' of them finished ' + rangeText(Q.R) + '.']);
         if (medMin !== null && speeds.length >= 5) lede.push([' Half of finishers took ', b(medMin <= 1 ? 'a minute' : medMin + ' minutes'), ' or less from opening the course to finishing it',
             quick / speeds.length > 0.3 ? ', so check it can’t be clicked through without reading.' : '.']);
         rich($('spot-lede'), lede.reduce(flat, []));
 
-        $('spot-donut-sub').textContent = sp.openedOnly ? fmt(sp.openedOnly) + ' opened it but have not finished.' : 'Of every Hub user in the selection.';
+        $('spot-donut-sub').textContent = sp.openedOnly ? fmt(sp.openedOnly) + ' opened it but have not finished.' : (sp.cohort ? 'Of the teachers on the ADEK Implementation Form.' : 'Of every Hub user in the selection.');
         K.donut($('c-spot-donut'), {
             label: mm.title + ' completion', size: 230,
             parts: [{ name: 'Finished', value: sp.done, color: C.purple }, { name: 'Still to finish', value: sp.total - sp.done, color: C.gold }],
-            center: sp.total ? pct(sp.done, sp.total) + '%' : '—', centerSub: fmt(sp.done) + ' of ' + fmt(sp.total) + ' staff'
+            center: sp.total ? pct(sp.done, sp.total) + '%' : '—', centerSub: fmt(sp.done) + ' of ' + fmt(sp.total) + (sp.cohort ? ' required' : ' staff')
         });
 
         /* by day, with the running total underneath */
@@ -1176,7 +1224,7 @@
 
         /* still to finish */
         var todo = sp.todo.slice().sort(function (x, y) { return (M.people[y].last || 0) - (M.people[x].last || 0); });
-        $('spot-todo-sub').textContent = todo.length ? fmt(todo.length) + ' Hub ' + plural(todo.length, 'user') + ' in the selection, most recently active first.' : 'Everyone in the selection has finished it.';
+        $('spot-todo-sub').textContent = todo.length ? (sp.cohort ? fmt(todo.length + sp.unseen) + ' of the ' + fmt(sp.total) + ' teachers it is required of' + (sp.unseen ? ' (' + fmt(sp.unseen) + ' not known to the Hub yet, so not listed below)' : '') + ', most recently active first.' : fmt(todo.length) + ' Hub ' + plural(todo.length, 'user') + ' in the selection, most recently active first.') : 'Everyone in the selection has finished it.';
         var list = h('ul', { 'class': 'an-list' });
         todo.forEach(function (e) {
             var o = M.opened[e + '|' + id];
@@ -1406,7 +1454,7 @@
     function readinessRows(Q) {
         return (M.ready || []).filter(function (r) {
             var e = lower(r.email), t = isoSec(r.first_saved);
-            return Q.S[e] && (!t || (t >= Q.R.ta && t < Q.R.tb));
+            return Q.S[e] && counts(e, READINESS_ID) && (!t || (t >= Q.R.ta && t < Q.R.tb));
         });
     }
     function seg(r, s2, k) { var x = r.data && r.data[s2]; return x ? String(x[k] == null || x[k] === false ? '' : x[k]).trim() : ''; }
@@ -1780,11 +1828,14 @@
         }
         RAW = raw;
         LOADED_AT = Date.now();
-        M = build(raw);
-        $('banner-stale').hidden = true;
-        show('state-ready');
-        fillTagSelect();
-        render();
+        var built = build(raw);
+        return findCohort(built).then(function () {
+            M = built;
+            $('banner-stale').hidden = true;
+            show('state-ready');
+            fillTagSelect();
+            render();
+        });
     }
 
     /* A backend from before admin_dashboard: the separate admin reads. */
