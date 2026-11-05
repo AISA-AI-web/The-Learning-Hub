@@ -72,6 +72,11 @@ they did**, and for any admin to be able to do it, so it never depends on one pe
 - **Removal is soft:** the person goes into `learning_hub.removed`, comes off the staff list and their sign-ins end. Nothing
   else is deleted. They are left out of the tracker, audiences and newsletter; signing in again, or **Restore** in the
   *Removed from the staff list* card, brings them back.
+- **Same person (5 Nov 2026, `admin-roster.js?v=3`):** HR's address can differ from the Hub's for the same person (a middle
+  name added: Jacolien du Ployy / Jacolien Francis du Ployy). Matching is by address, so each flagged row has a *Same person
+  as* dropdown of the newcomers, pre-filled when the names fit; choosing one moves the old address's records to the new
+  address (`merge: [{from, to}]` in `admin_staff_sync`) instead of removing and inviting. Never guess silently: the admin
+  confirms in the review.
 - Backend: AI-Lessons' `learning-hub/README.md` (*Checking the staff list*) and migration `20261105120000_learning_hub_staff_check.sql`
   (a person applies it before deploying). Until then the card shows "server_error" or "unknown_action"; the rest of the tab works.
 
