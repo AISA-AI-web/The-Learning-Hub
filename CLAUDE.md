@@ -54,6 +54,27 @@ school's Google domain). That writes a `completed` event, version `admin`, `mark
   with `textContent` only and are kept nowhere; the CSV download prefixes cells that start `= + - @`.
 - A CSV's blank name or groups cell keeps what the person has, so groups cannot be cleared by upload: edit the person.
 
+## Roster tab: check against the school's staff list — added 5 November 2026
+
+Brandon was given HR's current staff list (an .xlsx: Employee Number, Employee Name, Email; 229 school addresses) and asked
+for anyone not on the Hub to be invited, and anyone on the Hub who is not on the list to be removed, **without deleting what
+they did**, and for any admin to be able to do it, so it never depends on one person. A card at the top of the Roster tab
+(`admin-roster.js?v=2`, `gate.js?v=38`):
+
+- **Input:** the HR file as it arrives (`.xlsx` is read in the browser: `fromXlsx` unzips with `DecompressionStream`, no
+  library), a CSV, or pasted columns. `mapColumns` knows "Employee Name".
+- **Check** (`admin_staff_check`, read-only): who to invite (on the list, not on the staff list, never signed in), who is
+  added to the staff list, who was removed before and is on the list again (restored), and who is **flagged** (on the Hub,
+  not on the list). Admins and non-school addresses are never flagged; a list under 20 addresses is refused.
+- **Apply** (`admin_staff_sync`): one button, after a confirm that says what will happen. Each flagged person has a
+  tick-box (all ticked); the server only removes people the check flags. Invitations are emails queued for the bridge, so
+  "Send the invitation email" is greyed out while the bridge cannot send; the rest still works.
+- **Removal is soft:** the person goes into `learning_hub.removed`, comes off the staff list and their sign-ins end. Nothing
+  else is deleted. They are left out of the tracker, audiences and newsletter; signing in again, or **Restore** in the
+  *Removed from the staff list* card, brings them back.
+- Backend: AI-Lessons' `learning-hub/README.md` (*Checking the staff list*) and migration `20261105120000_learning_hub_staff_check.sql`
+  (a person applies it before deploying). Until then the card shows "server_error" or "unknown_action"; the rest of the tab works.
+
 ## Hub Analytics — added 3 November 2026
 
 Brandon asked for "an analytics button for anyone who is an admin", more

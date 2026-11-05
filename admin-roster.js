@@ -2,7 +2,8 @@
  *
  * Staff list (add, edit name and groups, remove, bulk groups, CSV upload and download), the admins, and "mark a module
  * complete" for someone who cannot sign in. Every rule is enforced by the backend (12_roster_admin.gs, and the same
- * rules in the Supabase function); this file only asks and shows the answer. Names and addresses are put on the page
+ * rules in the Supabase function); this file only asks and shows the answer. "Check against the school's staff list"
+ * (5 Nov 2026) reads HR's list (.xlsx, .csv or pasted), shows who to invite and who to remove, and applies it. Names and addresses are put on the page
  * with textContent only, and kept nowhere: not in browser storage, not in the URL. */
 (function () {
     'use strict';
@@ -12,7 +13,7 @@
     if (!root) return;
 
     var auth = null, me = '';
-    var roster = [], admins = [], selected = {}, editing = '', pending = null;
+    var roster = [], admins = [], removed = [], selected = {}, editing = '', pending = null, check = null;
     var busy = false;
 
     var MESSAGES = {
@@ -30,9 +31,16 @@
         busy_try_again: 'The Hub was busy. Try again in a moment.',
         not_admin: 'Only admins can do this.',
         unknown_action: 'The Hub’s backend has not been updated for the Roster tab yet.',
-        request_timeout: 'The Hub took too long to answer. Check the list before trying again.'
+        request_timeout: 'The Hub took too long to answer. Check the list before trying again.',
+        list_too_short: 'That list has fewer than 20 usable email addresses, so it cannot be the whole staff list. Check that you chose the right file.',
+        not_flagged: 'The Hub’s view of who is on the list changed while you were reviewing. Check the list again.',
+        mail_not_ready: 'The Hub cannot send email yet. Untick “Send the invitation email” to carry on without it.',
+        mail_not_authorized: 'The Hub cannot send email right now. Untick “Send the invitation email” to carry on without it, and invite them later.',
+        quota_low: 'There are not enough emails left in today’s sending allowance for all the invitations. Try again tomorrow, or untick “Send the invitation email”.',
+        not_xlsx: 'I could not read that Excel file. Save it as CSV (File, Save as) and choose that, or paste the columns instead.'
     };
     var SKIP = { invalid_email: 'not a valid email', duplicate_in_file: 'the address is in the file twice (the first row is used)',
+        not_school_email: 'not an @aisa.sch.ae address, so it is ignored',
         invalid_tags: 'a group name is longer than 40 characters' };
     function say(err) { var c = (err && err.message) || String(err || ''); return MESSAGES[c] || ('Something went wrong (' + c + ').'); }
 
@@ -75,6 +83,9 @@
             roster.forEach(function (p) { if (selected[p.email]) still[p.email] = true; });
             selected = still;
             render();
+            /* Its own request: an older server does not have it, and the rest of the tab must work without it. */
+            return call('admin_removed_list').then(function (x) { removed = (x && x.ok !== false && x.removed) || []; }, function () { removed = null; })
+                .then(renderRemoved);
         });
     }
 
@@ -260,7 +271,7 @@
     function mapColumns(rows) {
         var head = rows[0].map(function (x) { return x.trim().toLowerCase().replace(/[_\s]+/g, ' '); });
         var find = function (re) { for (var i = 0; i < head.length; i++) if (re.test(head[i])) return i; return -1; };
-        var cols = { email: find(/^(e-?mail( address)?|mail|address|staff email|work email)$/), name: find(/^(name|full name|staff name|staff|display name|teacher)$/),
+        var cols = { email: find(/^(e-?mail( address)?|mail|address|staff email|work email)$/), name: find(/^(name|full name|staff name|employee name|employee|staff|display name|teacher)$/),
             first: find(/^(first name|given name|firstname|forename)$/), last: find(/^(last name|family name|surname|lastname)$/),
             tags: find(/^(tags?|groups?|teams?|cohorts?)$/) };
         if (cols.email !== -1) return { cols: cols, start: 1, header: true };
@@ -268,8 +279,9 @@
         return null;
     }
 
-    function fromCsv(text) {
-        var rows = parseCsv(text);
+    function fromCsv(text) { return fromRows(parseCsv(text)); }
+
+    function fromRows(rows) {
         if (!rows.length) return { error: 'The file is empty.' };
         var m = mapColumns(rows);
         if (!m) return { error: 'I could not find an email column. The first row should say Email, Name, Groups.' };
@@ -447,6 +459,234 @@
             return r.already ? (p.name || p.email) + ' already had “' + title + '” recorded.' : 'Recorded “' + title + '” as finished for ' + (p.name || p.email) + '.';
         }, function () { $('rs-done').reset(); });
     });
+
+    /* ---------- check against the school's staff list ---------- */
+
+    function u16(d, o) { return d[o] | d[o + 1] << 8; }
+    function u32(d, o) { return (d[o] | d[o + 1] << 8 | d[o + 2] << 16 | d[o + 3] << 24) >>> 0; }
+
+    /* An .xlsx is a zip of XML files. Read the first sheet's cells as rows of text, with the browser's own inflate: no library. */
+    function inflateRaw(bytes) {
+        var ds = new DecompressionStream('deflate-raw'), w = ds.writable.getWriter();
+        w.write(bytes); w.close();
+        return new Response(ds.readable).arrayBuffer().then(function (b) { return new Uint8Array(b); });
+    }
+    function unzip(buf) {
+        var d = new Uint8Array(buf), eocd = -1, i;
+        for (i = d.length - 22; i >= Math.max(0, d.length - 65557); i--) if (u32(d, i) === 0x06054b50) { eocd = i; break; }
+        if (eocd < 0) throw new Error('not_xlsx');
+        var count = u16(d, eocd + 10), off = u32(d, eocd + 16), files = {}, dec = new TextDecoder();
+        for (var k = 0; k < count; k++) {
+            if (off + 46 > d.length || u32(d, off) !== 0x02014b50) throw new Error('not_xlsx');
+            var nlen = u16(d, off + 28), elen = u16(d, off + 30), clen = u16(d, off + 32);
+            files[dec.decode(d.subarray(off + 46, off + 46 + nlen))] = { method: u16(d, off + 10), csize: u32(d, off + 20), usize: u32(d, off + 24), lho: u32(d, off + 42) };
+            off += 46 + nlen + elen + clen;
+        }
+        return { names: Object.keys(files), read: function (name) {
+            var f = files[name];
+            if (!f) return Promise.resolve(null);
+            if (f.usize > 20 * 1024 * 1024) return Promise.reject(new Error('not_xlsx'));
+            var start = f.lho + 30 + u16(d, f.lho + 26) + u16(d, f.lho + 28), raw = d.subarray(start, start + f.csize);
+            if (f.method === 0) return Promise.resolve(raw);
+            if (f.method === 8) return inflateRaw(raw);
+            return Promise.reject(new Error('not_xlsx'));
+        } };
+    }
+    function xmlOf(bytes) { return new DOMParser().parseFromString(new TextDecoder().decode(bytes), 'application/xml'); }
+    function tags(node, name) { return Array.prototype.slice.call(node.getElementsByTagNameNS('*', name)); }
+    function fromXlsx(buf) {
+        var z;
+        try { z = unzip(buf); } catch (e) { return Promise.reject(e); }
+        var sheets = z.names.filter(function (n) { return /^xl\/worksheets\/sheet\d+\.xml$/.test(n); })
+            .sort(function (a, b) { return parseInt(a.replace(/\D+/g, ''), 10) - parseInt(b.replace(/\D+/g, ''), 10); });
+        if (!sheets.length) return Promise.reject(new Error('not_xlsx'));
+        return z.read('xl/sharedStrings.xml').then(function (ss) {
+            var shared = ss ? tags(xmlOf(ss), 'si').map(function (si) { return tags(si, 't').map(function (t) { return t.textContent; }).join(''); }) : [];
+            return z.read(sheets[0]).then(function (sheet) {
+                var rows = [];
+                tags(xmlOf(sheet), 'row').forEach(function (r) {
+                    var cells = [];
+                    tags(r, 'c').forEach(function (c) {
+                        var m = /^([A-Z]+)/.exec(c.getAttribute('r') || ''), col = cells.length, t = c.getAttribute('t'), v = tags(c, 'v')[0], val = '';
+                        if (m) { col = 0; for (var i = 0; i < m[1].length; i++) col = col * 26 + m[1].charCodeAt(i) - 64; col -= 1; }
+                        if (t === 's') val = v ? (shared[parseInt(v.textContent, 10)] || '') : '';
+                        else if (t === 'inlineStr') val = tags(c, 't').map(function (x) { return x.textContent; }).join('');
+                        else if (v) val = v.textContent;
+                        cells[col] = String(val).trim();
+                    });
+                    for (var i = 0; i < cells.length; i++) if (cells[i] == null) cells[i] = '';
+                    if (cells.some(function (x) { return x !== ''; })) rows.push(cells);
+                });
+                return rows;
+            });
+        });
+    }
+
+    function startCheck(parsed, label) {
+        if (parsed.error) { note(parsed.error, 'bad'); return; }
+        var rows = parsed.rows.map(function (r) { return { email: r.email, name: r.name }; });
+        if (rows.length > 3000) { note('The file has ' + rows.length + ' rows; the limit is 3,000.', 'bad'); return; }
+        setBusy(true);
+        note('Checking ' + label + '…', 'ok');
+        call('admin_staff_check', { rows: rows }).then(function (r) {
+            if (r && r.ok === false) throw new Error(r.error);
+            check = { rows: rows, res: r, label: label, remove: {}, invite: r.mail && r.mail.ready };
+            r.flagged.forEach(function (f) { check.remove[f.email] = true; });
+            note('', 'ok');
+            renderCheck();
+        }).catch(function (err) { check = null; $('rs-sc-result').classList.add('hidden'); note(say(err), 'bad'); })
+          .then(function () { setBusy(false); });
+    }
+
+    $('rs-sc-file').addEventListener('change', function (e) {
+        var f = e.target.files && e.target.files[0];
+        e.target.value = '';
+        if (!f) return;
+        if (f.size > 2 * 1024 * 1024) { note('That file is over 2 MB. A staff list should be much smaller: is it the right file?', 'bad'); return; }
+        var rd = new FileReader();
+        rd.onerror = function () { note('I could not read that file.', 'bad'); };
+        if (/\.xlsx$/i.test(f.name)) {
+            rd.onload = function () {
+                if (typeof DecompressionStream === 'undefined') { note('This browser cannot open Excel files. Save the list as CSV, or paste the columns.', 'bad'); return; }
+                fromXlsx(rd.result).then(function (rows) { startCheck(fromRows(rows), f.name); }, function (err) { note(say(err), 'bad'); });
+            };
+            rd.readAsArrayBuffer(f);
+        } else {
+            rd.onload = function () { startCheck(fromCsv(String(rd.result || '')), f.name); };
+            rd.readAsText(f);
+        }
+    });
+    $('rs-sc-paste-open').addEventListener('click', function () { $('rs-sc-paste').classList.toggle('hidden'); if (!$('rs-sc-paste').classList.contains('hidden')) $('rs-sc-text').focus(); });
+    $('rs-sc-paste-go').addEventListener('click', function () {
+        var text = $('rs-sc-text').value;
+        if (!text.trim()) { note('Paste the columns first.', 'bad'); return; }
+        /* A pasted list may have no header (an email, then a name, in either order): find the email in each line. */
+        var rows = parseCsv(text), first = rows[0] || [];
+        if (rows.length && !mapColumns(rows) && first.length) {
+            rows = rows.map(function (r) { var at = -1; r.forEach(function (c, i) { if (at < 0 && /@/.test(c)) at = i; }); return [r[at] || '', r.filter(function (c, i) { return i !== at; }).join(' ')]; });
+            rows.unshift(['Email', 'Name']);
+        }
+        startCheck(fromRows(rows), 'the pasted list');
+    });
+
+    function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+    function when(iso) { return iso ? String(iso).slice(0, 10) : 'never'; }
+    function nameList(list) {
+        return h('ul', { class: 'rs-list' }, list.slice(0, 300).map(function (p) { return h('li', { text: (p.name ? p.name + ' · ' : '') + p.email }); })
+            .concat(list.length > 300 ? [h('li', { text: '…and ' + (list.length - 300) + ' more.' })] : []));
+    }
+    function block(title, kids) { return h('div', { class: 'rs-block' }, [h('h4', { text: title })].concat(kids)); }
+
+    function renderCheck() {
+        var box = $('rs-sc-result'), c = check, r = c.res;
+        box.textContent = '';
+        box.classList.remove('hidden');
+        box.appendChild(h('p', { text: 'Checked ' + c.label + ': ' + plural(r.list_size, 'person', 'people') + ' on the list; ' + r.already + ' of them are on the Hub already.' }));
+
+        /* who is invited */
+        var added = r.add_count - r.invite.length;
+        var inv = [h('p', {}, [h('span', { class: 'rs-big', text: String(r.invite.length) }), r.invite.length === 1 ? 'person is on the list but not on the Hub yet.' : 'people are on the list but not on the Hub yet.'])];
+        if (r.invite.length) inv.push(h('details', {}, [h('summary', { text: 'Show who' }), nameList(r.invite)]));
+        var cb = h('input', { type: 'checkbox', id: 'rs-sc-invite', onchange: function (e) { c.invite = e.target.checked; renderApply(); } });
+        cb.checked = !!c.invite && !!r.invite.length; cb.disabled = !(r.mail && r.mail.ready) || !r.invite.length;
+        if (r.invite.length) {
+            inv.push(h('label', { class: 'rs-check' }, [cb, ' Send each of them the invitation email (from the Hub, with your address as the reply-to), asking them to sign in with their school Google account']));
+            if (!(r.mail && r.mail.ready)) inv.push(h('p', { class: 'rs-dim', text: 'Emails cannot be sent right now (' + ((r.mail && r.mail.message) || 'the mail service is not ready') + '). They will still be added to the staff list.' }));
+        }
+        var more = [];
+        if (added > 0) more.push(plural(added, 'person', 'people') + ' on the list ' + (added === 1 ? 'has' : 'have') + ' signed in or been listed but ' + (added === 1 ? 'is' : 'are') + ' not on the staff list: ' + (added === 1 ? 'they are' : 'they will be') + ' added to it');
+        if (r.restore.length) more.push(plural(r.restore.length, 'person', 'people') + ' removed earlier ' + (r.restore.length === 1 ? 'is' : 'are') + ' on this list and will be brought back');
+        if (more.length) inv.push(h('p', { class: 'rs-dim', text: more.join('. ') + '.' }));
+        box.appendChild(block('To invite', inv));
+
+        /* who is removed */
+        var rm = [h('p', {}, [h('span', { class: 'rs-big', id: 'rs-sc-rm-n', text: '' }), h('span', { id: 'rs-sc-rm-t', text: '' })])];
+        if (r.flagged.length) {
+            rm.push(h('p', { class: 'rs-dim', text: 'These people are on the Hub but not on the school’s list. Untick anyone who still works here. Removing someone keeps everything they did, and if they sign in again they are back.' }));
+            rm.push(h('div', { class: 'rs-actions', style: 'margin-bottom:.5rem' }, [
+                h('button', { type: 'button', class: 'rs-btn', text: 'Select all', onclick: function () { r.flagged.forEach(function (f) { c.remove[f.email] = true; }); renderCheck(); } }),
+                h('button', { type: 'button', class: 'rs-btn', text: 'Select none', onclick: function () { c.remove = {}; renderCheck(); } })]));
+            var body = h('tbody', {});
+            r.flagged.forEach(function (f) {
+                var x = h('input', { type: 'checkbox', 'aria-label': 'Remove ' + (f.name || f.email), onchange: function (e) { if (e.target.checked) c.remove[f.email] = true; else delete c.remove[f.email]; renderApply(); } });
+                x.checked = !!c.remove[f.email];
+                body.appendChild(h('tr', {}, [h('td', {}, [x]), h('td', { text: f.name || '—' }), h('td', { class: 'rs-mono', text: f.email }),
+                    h('td', { text: f.signed_in ? 'last seen ' + when(f.last_seen) : 'never signed in' })]));
+            });
+            rm.push(h('div', { class: 'rs-wrap' }, [h('table', {}, [h('thead', {}, [h('tr', {}, [h('th', { style: 'width:2rem' }), h('th', { text: 'Name' }), h('th', { text: 'Email' }), h('th', { text: 'On the Hub' })])]), body])]));
+        }
+        box.appendChild(block('To remove', rm));
+
+        /* kept, and skipped */
+        if (r.keep_admins.length) box.appendChild(block('Admins not on the list (never removed here)', [h('p', { class: 'rs-dim', text: 'Take someone off the admins in the Admins section below if they have left.' }), nameList(r.keep_admins)]));
+        if (r.keep_other.length) box.appendChild(block('On the staff list with a non-school address (left alone)', [h('p', { class: 'rs-dim', text: 'A list of school addresses says nothing about these, so check them by hand.' }), nameList(r.keep_other)]));
+        if (r.skipped.length) {
+            var ul = h('ul', { class: 'rs-list' });
+            r.skipped.slice(0, 50).forEach(function (s) { ul.appendChild(h('li', { text: 'Row ' + s.line + (s.email ? ' (' + s.email + ')' : '') + ': ' + (SKIP[s.reason] || s.reason) })); });
+            if (r.skipped.length > 50) ul.appendChild(h('li', { text: '…and ' + (r.skipped.length - 50) + ' more.' }));
+            box.appendChild(block('Rows in the file that were not used', [ul]));
+        }
+
+        box.appendChild(h('div', { class: 'rs-actions', style: 'margin-top:.75rem' }, [
+            h('button', { type: 'button', id: 'rs-sc-apply', class: 'rs-btn rs-primary', 'data-guard': '', onclick: applyCheck }),
+            h('button', { type: 'button', class: 'rs-btn', text: 'Cancel', onclick: function () { check = null; box.classList.add('hidden'); box.textContent = ''; } })]));
+        renderApply();
+        box.scrollIntoView({ block: 'nearest' });
+    }
+
+    function chosen() { return Object.keys(check.remove); }
+    function renderApply() {
+        var r = check.res, nr = chosen().length, ni = check.invite && r.invite.length ? r.invite.length : 0;
+        var rn = $('rs-sc-rm-n'), rt = $('rs-sc-rm-t'), btn = $('rs-sc-apply');
+        if (rn) { rn.textContent = String(nr); rt.textContent = nr === 1 ? 'person will be removed from the staff list.' : 'people will be removed from the staff list.'; }
+        var parts = [];
+        if (ni) parts.push('invite ' + ni);
+        if (nr) parts.push('remove ' + nr);
+        if (r.add_count && !parts.length) parts.push('add ' + r.add_count + ' to the staff list');
+        btn.textContent = parts.length ? 'Apply: ' + parts.join(' and ') : 'Apply';
+        btn.disabled = busy || !(r.add_count || r.restore.length || nr);
+    }
+
+    function applyCheck() {
+        var r = check.res, remove = chosen(), invite = !!check.invite && r.invite.length > 0;
+        var lines = [];
+        if (invite) lines.push('• Email an invitation to ' + plural(r.invite.length, 'person', 'people') + '.');
+        if (r.add_count) lines.push('• Put ' + plural(r.add_count, 'person', 'people') + ' on the staff list.');
+        if (r.restore.length) lines.push('• Bring back ' + plural(r.restore.length, 'person', 'people') + ' who were removed.');
+        if (remove.length) lines.push('• Remove ' + plural(remove.length, 'person', 'people') + ' from the staff list and sign them out. Their records are kept, and they are back if they sign in again.');
+        if (!window.confirm('Apply this?\n\n' + lines.join('\n') + (invite ? '\n\nEmails cannot be taken back once they are sent.' : ''))) return;
+        setBusy(true);
+        call('admin_staff_sync', { rows: check.rows, invite: invite, remove: remove }).then(function (x) {
+            if (x && x.ok === false) throw new Error(x.error);
+            var bits = [];
+            if (x.invited) bits.push(plural(x.invited, 'invitation', 'invitations') + ' on the way');
+            if (x.added) bits.push(plural(x.added, 'person', 'people') + ' added to the staff list');
+            if (x.restored) bits.push(x.restored + ' brought back');
+            if (x.removed) bits.push(x.removed + ' removed');
+            check = null; $('rs-sc-result').classList.add('hidden'); $('rs-sc-result').textContent = '';
+            note('Done: ' + (bits.join(', ') || 'nothing needed changing') + '.', 'ok');
+            return load();
+        }).catch(function (err) { note(say(err), 'bad'); })
+          .then(function () { setBusy(false); });
+    }
+
+    /* ---------- removed from the staff list ---------- */
+
+    function renderRemoved() {
+        var sec = $('rs-rm-h').closest('section'), body = $('rs-rm-rows');
+        body.textContent = '';
+        sec.classList.toggle('hidden', removed === null);
+        if (removed === null) return;
+        $('rs-rm-count').textContent = removed.length ? '(' + removed.length + ')' : '';
+        $('rs-rm-empty').classList.toggle('hidden', removed.length > 0);
+        removed.forEach(function (p) {
+            body.appendChild(h('tr', {}, [h('td', { text: p.name || '—' }), h('td', { class: 'rs-mono', text: p.email }),
+                h('td', { text: when(p.removed_at) + (p.removed_by ? ' by ' + p.removed_by : '') }),
+                h('td', { class: 'rs-actions' }, [h('button', { type: 'button', class: 'rs-btn', 'data-guard': '', text: 'Restore', onclick: function () {
+                    act(call('admin_staff_restore', { email: p.email }), 'Restored ' + (p.name || p.email) + ' to the staff list.');
+                } })])]));
+        });
+    }
 
     /* ---------- start ---------- */
 

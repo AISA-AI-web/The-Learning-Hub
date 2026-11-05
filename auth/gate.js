@@ -302,7 +302,8 @@
     var ROSTER_ACTIONS = {
         admin_roster_list: 1, admin_roster_save: 1, admin_roster_remove: 1,
         admin_roster_import: 1, admin_admin_save: 1, admin_admin_remove: 1,
-        admin_mark_complete: 1
+        admin_mark_complete: 1,
+        admin_staff_check: 1, admin_staff_sync: 1, admin_removed_list: 1, admin_staff_restore: 1
     };
 
     var IDEMPOTENT_ACTIONS = {
@@ -312,7 +313,7 @@
         get_module_response: 1, admin_module_responses: 1,
         get_survey_response: 1, admin_survey_responses: 1,
         get_notifications: 1, admin_notification_stats: 1, admin_list_tags: 1,
-        admin_roster_list: 1,
+        admin_roster_list: 1, admin_staff_check: 1, admin_removed_list: 1,
         newsletter_status: 1
     };
 
