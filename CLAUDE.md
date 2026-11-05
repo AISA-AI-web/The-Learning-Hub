@@ -98,6 +98,14 @@ they did**, and for any admin to be able to do it, so it never depends on one pe
   as* dropdown of the newcomers, pre-filled when the names fit; choosing one moves the old address's records to the new
   address (`merge: [{from, to}]` in `admin_staff_sync`) instead of removing and inviting. Never guess silently: the admin
   confirms in the review.
+- **Designation, department, division and a fuller merge (5 Nov 2026, `admin-roster.js?v=4`):** HR's file's *Designation* and
+  *Department* columns are read (`mapColumns`) and kept on the staff list (shown, editable, and a Division filter on the
+  Roster tab). The admin tracker (`admin-dashboard.html`) gets **Division / Department / Designation** selects (hidden until
+  anyone on the list has a department): `inGroup()` narrows the table, the summary cards, the per-module bars, "Remind
+  outstanding" and the CSV together; *Elementary* is Early Years + Primary. Divisions come from the server
+  (`_divisionOf`): Early Years / Primary / Secondary, else the department itself. Groups (tags) are deliberately left alone.
+  *Same person as* now lists **everyone on HR's list** (pre-chosen when a name fits, typos allowed), and merging into an
+  address that already has records **combines** them instead of refusing.
 - Backend: AI-Lessons' `learning-hub/README.md` (*Checking the staff list*) and migration `20261105120000_learning_hub_staff_check.sql`
   (a person applies it before deploying). Until then the card shows "server_error" or "unknown_action"; the rest of the tab works.
 

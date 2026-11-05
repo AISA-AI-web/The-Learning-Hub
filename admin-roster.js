@@ -94,11 +94,14 @@
     function tagsText(p) { return (p.tags || []).join(', '); }
 
     function visible() {
-        var q = $('rs-search').value.trim().toLowerCase(), t = $('rs-tag').value;
+        var q = $('rs-search').value.trim().toLowerCase(), t = $('rs-tag').value, dv = $('rs-div').value;
         return roster.filter(function (p) {
+            if (dv === '__none') { if (p.division) return false; }
+            else if (dv === '__elem') { if (p.division !== 'Early Years' && p.division !== 'Primary') return false; }
+            else if (dv && p.division !== dv) return false;
             if (t === '__none') { if (p.tags.length) return false; }
             else if (t && p.tags.indexOf(t) === -1) return false;
-            return !q || p.email.indexOf(q) !== -1 || p.name.toLowerCase().indexOf(q) !== -1;
+            return !q || p.email.indexOf(q) !== -1 || p.name.toLowerCase().indexOf(q) !== -1 || (p.department || '').toLowerCase().indexOf(q) !== -1 || (p.designation || '').toLowerCase().indexOf(q) !== -1;
         });
     }
 
@@ -109,6 +112,18 @@
         sel.appendChild(h('option', { value: '', text: 'All groups' }));
         sel.appendChild(h('option', { value: '__none', text: 'No group' }));
         Object.keys(tags).sort().forEach(function (t) { sel.appendChild(h('option', { value: t, text: t + ' (' + tags[t] + ')' })); });
+        sel.value = Array.prototype.some.call(sel.options, function (o) { return o.value === cur; }) ? cur : '';
+    }
+
+    function renderDivFilter() {
+        var sel = $('rs-div'), cur = sel.value, c = {};
+        roster.forEach(function (p) { if (p.division) c[p.division] = (c[p.division] || 0) + 1; });
+        sel.textContent = '';
+        sel.appendChild(h('option', { value: '', text: 'All divisions' }));
+        if (c['Early Years'] && c['Primary']) sel.appendChild(h('option', { value: '__elem', text: 'Elementary: Early Years + Primary (' + (c['Early Years'] + c['Primary']) + ')' }));
+        Object.keys(c).sort().forEach(function (k) { sel.appendChild(h('option', { value: k, text: k + ' (' + c[k] + ')' })); });
+        if (Object.keys(c).length) sel.appendChild(h('option', { value: '__none', text: 'No division' }));
+        sel.classList.toggle('hidden', !Object.keys(c).length);
         sel.value = Array.prototype.some.call(sel.options, function (o) { return o.value === cur; }) ? cur : '';
     }
 
@@ -129,18 +144,24 @@
             if (editing === p.email) {
                 var nm = h('input', { type: 'text', value: p.name, maxlength: '300', 'aria-label': 'Name', class: 'rs-in' });
                 var tg = h('input', { type: 'text', value: tagsText(p), 'aria-label': 'Groups', placeholder: 'secondary, maths', class: 'rs-in' });
+                var dp = h('input', { type: 'text', value: p.department || '', maxlength: '200', 'aria-label': 'Department', placeholder: 'Primary - Grade 4', class: 'rs-in' });
+                var ds = h('input', { type: 'text', value: p.designation || '', maxlength: '200', 'aria-label': 'Designation', placeholder: 'Homeroom Teacher', class: 'rs-in' });
                 tr.appendChild(h('td', {}, [nm]));
                 tr.appendChild(h('td', { class: 'rs-mono', text: p.email }));
+                tr.appendChild(h('td', {}, [dp]));
+                tr.appendChild(h('td', {}, [ds]));
                 tr.appendChild(h('td', {}, [tg]));
                 tr.appendChild(h('td', { class: 'rs-actions' }, [
                     h('button', { type: 'button', class: 'rs-btn rs-primary', 'data-guard': '', text: 'Save', onclick: function () {
-                        act(call('admin_roster_save', { email: p.email, name: nm.value, tags: tg.value }), 'Saved ' + (nm.value || p.email) + '.', function () { editing = ''; });
+                        act(call('admin_roster_save', { email: p.email, name: nm.value, tags: tg.value, department: dp.value, designation: ds.value }), 'Saved ' + (nm.value || p.email) + '.', function () { editing = ''; });
                     } }),
                     h('button', { type: 'button', class: 'rs-btn', text: 'Cancel', onclick: function () { editing = ''; renderStaff(); } })
                 ]));
             } else {
                 tr.appendChild(h('td', { text: p.name || '—' }));
                 tr.appendChild(h('td', { class: 'rs-mono', text: p.email }));
+                tr.appendChild(h('td', { text: p.department || '—' }));
+                tr.appendChild(h('td', { text: p.designation || '—' }));
                 var cell = h('td', {});
                 if (!p.tags.length) cell.appendChild(h('span', { class: 'rs-dim', text: 'no group' }));
                 p.tags.forEach(function (t) { cell.appendChild(h('span', { class: 'rs-chip', text: t })); });
@@ -167,7 +188,7 @@
         $('rs-bulk-n').textContent = n + ' selected';
     }
 
-    function render() { renderTagFilter(); renderStaff(); renderAdmins(); renderCompleteOptions(); }
+    function render() { renderTagFilter(); renderDivFilter(); renderStaff(); renderAdmins(); renderCompleteOptions(); }
 
     /* Runs a request, then reloads the lists; shows the message or the reason it failed. */
     function act(promise, okMsg, before) {
@@ -188,12 +209,12 @@
     $('rs-add').addEventListener('submit', function (e) {
         e.preventDefault();
         var email = $('rs-add-email').value, name = $('rs-add-name').value, tags = $('rs-add-tags').value;
-        act(call('admin_roster_save', { email: email, name: name, tags: tags }), function (r) {
+        act(call('admin_roster_save', { email: email, name: name, tags: tags, department: $('rs-add-dept').value, designation: $('rs-add-desig').value }), function (r) {
             return (r.created ? 'Added ' : 'Updated ') + (name.trim() || email.trim().toLowerCase()) + '.';
         }, function () { $('rs-add').reset(); $('rs-add-email').focus(); });
     });
 
-    ['rs-search', 'rs-tag'].forEach(function (id) { $(id).addEventListener('input', renderStaff); });
+    ['rs-search', 'rs-tag', 'rs-div'].forEach(function (id) { $(id).addEventListener('input', renderStaff); });
     $('rs-all').addEventListener('change', function (e) {
         visible().forEach(function (p) { if (e.target.checked) selected[p.email] = true; else delete selected[p.email]; });
         renderStaff();
@@ -273,9 +294,10 @@
         var find = function (re) { for (var i = 0; i < head.length; i++) if (re.test(head[i])) return i; return -1; };
         var cols = { email: find(/^(e-?mail( address)?|mail|address|staff email|work email)$/), name: find(/^(name|full name|staff name|employee name|employee|staff|display name|teacher)$/),
             first: find(/^(first name|given name|firstname|forename)$/), last: find(/^(last name|family name|surname|lastname)$/),
-            tags: find(/^(tags?|groups?|teams?|cohorts?)$/) };
+            tags: find(/^(tags?|groups?|teams?|cohorts?)$/),
+            designation: find(/^(designation|job title|position|post|role|title)$/), department: find(/^(department|dept|section)$/) };
         if (cols.email !== -1) return { cols: cols, start: 1, header: true };
-        if (/@/.test(rows[0][0] || '')) return { cols: { email: 0, name: rows[0].length > 1 ? 1 : -1, first: -1, last: -1, tags: rows[0].length > 2 ? 2 : -1 }, start: 0, header: false };
+        if (/@/.test(rows[0][0] || '')) return { cols: { email: 0, name: rows[0].length > 1 ? 1 : -1, first: -1, last: -1, tags: rows[0].length > 2 ? 2 : -1, designation: -1, department: -1 }, start: 0, header: false };
         return null;
     }
 
@@ -289,7 +311,7 @@
         for (var i = m.start; i < rows.length; i++) {
             var r = rows[i], c = m.cols, get = function (k) { return k >= 0 && r[k] != null ? String(r[k]).trim() : ''; };
             var name = get(c.name) || [get(c.first), get(c.last)].filter(Boolean).join(' ');
-            out.push({ email: get(c.email), name: name, tags: get(c.tags).replace(/[;|]/g, ',') });
+            out.push({ email: get(c.email), name: name, tags: get(c.tags).replace(/[;|]/g, ','), designation: get(c.designation), department: get(c.department) });
         }
         return { rows: out, header: m.header, groupsColumn: m.cols.tags !== -1 };
     }
@@ -396,7 +418,7 @@
         setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
     }
     $('rs-export').addEventListener('click', function () {
-        download('aisa-hub-staff-list.csv', [['Email', 'Name', 'Groups']].concat(roster.map(function (p) { return [p.email, p.name, p.tags.join(', ')]; })));
+        download('aisa-hub-staff-list.csv', [['Email', 'Name', 'Designation', 'Department', 'Groups']].concat(roster.map(function (p) { return [p.email, p.name, p.designation || '', p.department || '', p.tags.join(', ')]; })));
     });
     $('rs-template').addEventListener('click', function () {
         download('aisa-hub-staff-list-template.csv', [['Email', 'Name', 'Groups'], ['a.teacher@aisa.sch.ae', 'A Teacher', 'secondary, maths'], ['guest@gmail.com', 'A Guest', 'secondary']]);
@@ -524,7 +546,7 @@
 
     function startCheck(parsed, label) {
         if (parsed.error) { note(parsed.error, 'bad'); return; }
-        var rows = parsed.rows.map(function (r) { return { email: r.email, name: r.name }; });
+        var rows = parsed.rows.map(function (r) { return { email: r.email, name: r.name, designation: r.designation || '', department: r.department || '' }; });
         if (rows.length > 3000) { note('The file has ' + rows.length + ' rows; the limit is 3,000.', 'bad'); return; }
         setBusy(true);
         note('Checking ' + label + '…', 'ok');
@@ -603,7 +625,7 @@
         var rm = [h('p', {}, [h('span', { class: 'rs-big', id: 'rs-sc-rm-n', text: '' }), h('span', { id: 'rs-sc-rm-t', text: '' })])];
         if (r.flagged.length) {
             rm.push(h('p', { class: 'rs-dim', text: 'These people are on the Hub but not on the school’s list. Untick anyone who still works here. Removing someone keeps everything they did, and if they sign in again they are back.' }));
-            if (r.invite.length) rm.push(h('p', { class: 'rs-dim', text: 'If someone is on the list under a different address (a longer name, another spelling), choose “Same person as” on their row. Their modules and progress then move to the new address instead of starting again.' }));
+            rm.push(h('p', { class: 'rs-dim', text: 'If someone is on the list under a different address (a longer name, another spelling), choose “Same person as” on their row. Their modules, answers and progress are then moved to, or combined with, that address instead of starting again. If both addresses have records, they are merged and nothing is lost.' }));
             rm.push(h('div', { class: 'rs-actions', style: 'margin-bottom:.5rem' }, [
                 h('button', { type: 'button', class: 'rs-btn', text: 'Select all', onclick: function () { r.flagged.forEach(function (f) { if (!c.merge[f.email]) c.remove[f.email] = true; }); renderCheck(); } }),
                 h('button', { type: 'button', class: 'rs-btn', text: 'Select none', onclick: function () { c.remove = {}; renderCheck(); } })]));
@@ -618,10 +640,13 @@
                     if (to) { c.merge[f.email] = to; delete c.remove[f.email]; } else { delete c.merge[f.email]; c.remove[f.email] = true; }
                     renderCheck();
                 } });
-                sel.appendChild(h('option', { value: '', text: r.invite.length ? '— a different person —' : '— no one to match —' }));
-                r.invite.forEach(function (p) { sel.appendChild(h('option', { value: p.email, text: (p.name ? p.name + ' · ' : '') + p.email })); });
+                sel.appendChild(h('option', { value: '', text: '— a different person —' }));
+                /* Everyone on the school's list: a suggestion is pre-chosen, and anyone can be picked by hand (type to jump). */
+                (r.list_people || []).forEach(function (p) {
+                    sel.appendChild(h('option', { value: p.email, text: (p.name ? p.name + ' · ' : '') + p.email + (p.on_hub ? ' (already on the Hub)' : ' (new)') }));
+                });
                 sel.value = c.merge[f.email] || '';
-                sel.disabled = !r.invite.length;
+                sel.disabled = !(r.list_people || []).length;
                 body.appendChild(h('tr', { class: c.merge[f.email] ? 'rs-sel' : '' }, [h('td', {}, [x]), h('td', { text: f.name || '—' }), h('td', { class: 'rs-mono', text: f.email }),
                     h('td', { text: f.signed_in ? 'last seen ' + when(f.last_seen) : 'never signed in' }), h('td', {}, [sel])]));
             });
@@ -654,7 +679,7 @@
         if (rn) { rn.textContent = String(nr); rt.textContent = nr === 1 ? 'person will be removed from the staff list.' : 'people will be removed from the staff list.'; }
         var nm = merges().length, parts = [];
         if (ni) parts.push('invite ' + ni);
-        if (nm) parts.push('move ' + nm + (nm === 1 ? ' person’s' : ' people’s') + ' records');
+        if (nm) parts.push('merge ' + nm + (nm === 1 ? ' person’s' : ' people’s') + ' records');
         if (nr) parts.push('remove ' + nr);
         if (r.add_count && !parts.length) parts.push('add ' + r.add_count + ' to the staff list');
         btn.textContent = parts.length ? 'Apply: ' + (parts.length > 1 ? parts.slice(0, -1).join(', ') + ' and ' + parts[parts.length - 1] : parts[0]) : 'Apply';
@@ -667,7 +692,7 @@
         if (invite) lines.push('• Email an invitation to ' + plural(r.invite.length, 'person', 'people') + '.');
         if (r.add_count) lines.push('• Put ' + plural(r.add_count, 'person', 'people') + ' on the staff list.');
         if (r.restore.length) lines.push('• Bring back ' + plural(r.restore.length, 'person', 'people') + ' who were removed.');
-        if (merges().length) lines.push('• Move the modules and progress of ' + plural(merges().length, 'person', 'people') + ' to the new address HR has for them (they sign in with it).');
+        if (merges().length) lines.push('• Merge the records of ' + plural(merges().length, 'person', 'people') + ' into the address HR lists for them: their modules, progress and answers move or are combined, and they sign in with that address. Nothing is deleted.');
         if (remove.length) lines.push('• Remove ' + plural(remove.length, 'person', 'people') + ' from the staff list and sign them out. Their records are kept, and they are back if they sign in again.');
         if (!window.confirm('Apply this?\n\n' + lines.join('\n') + (invite ? '\n\nEmails cannot be taken back once they are sent.' : ''))) return;
         setBusy(true);
@@ -676,7 +701,7 @@
             var bits = [];
             if (x.invited) bits.push(plural(x.invited, 'invitation', 'invitations') + ' on the way');
             if (x.added) bits.push(plural(x.added, 'person', 'people') + ' added to the staff list');
-            if (x.merged) bits.push(plural(x.merged, 'person’s records', 'people’s records') + ' moved to their new address');
+            if (x.merged) bits.push(plural(x.merged, 'person’s records', 'people’s records') + ' merged into the right address');
             if (x.restored) bits.push(x.restored + ' brought back');
             if (x.removed) bits.push(x.removed + ' removed');
             check = null; $('rs-sc-result').classList.add('hidden'); $('rs-sc-result').textContent = '';

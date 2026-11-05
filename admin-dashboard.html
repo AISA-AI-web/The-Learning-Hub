@@ -256,6 +256,22 @@
                             <option value="pending">Not completed</option>
                         </select>
                     </div>
+                    <!-- From the staff list (Roster tab): shown once anyone on it has a department. A principal picks their own
+                         division here and everything below -- the summary, the bars, the table, the reminder and the CSV -- follows. -->
+                    <div id="group-filters" class="hidden flex flex-wrap items-end gap-3">
+                        <div class="min-w-[150px]">
+                            <label for="tracker-division" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">Division</label>
+                            <select id="tracker-division" class="w-full text-sm font-semibold border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300"></select>
+                        </div>
+                        <div class="min-w-[170px]">
+                            <label for="tracker-department" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">Department</label>
+                            <select id="tracker-department" class="w-full text-sm font-semibold border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300"></select>
+                        </div>
+                        <div class="min-w-[170px]">
+                            <label for="tracker-designation" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">Designation</label>
+                            <select id="tracker-designation" class="w-full text-sm font-semibold border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300"></select>
+                        </div>
+                    </div>
                     <div class="flex-1 min-w-[200px]">
                         <label for="filter-text" class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-1">Search</label>
                         <input id="filter-text" type="search" placeholder="Name or email…"
@@ -553,7 +569,7 @@
 
                 <section class="rs-card" aria-labelledby="rs-sc-h">
                     <h3 id="rs-sc-h">Check against the school’s staff list</h3>
-                    <p>Upload the current staff list from HR (an Excel or CSV file with an <strong>Email</strong> column and, ideally, a <strong>Name</strong> column).
+                    <p>Upload the current staff list from HR (an Excel or CSV file with an <strong>Email</strong> column and, ideally, <strong>Name</strong>, <strong>Designation</strong> and <strong>Department</strong>: they become the tracker's filters).
                         The Hub shows you who is on the list but not on the Hub yet, to invite, and who is on the Hub but not on the list, to remove.
                         Nothing happens until you press the button at the bottom.</p>
                     <div class="rs-bar">
@@ -575,6 +591,7 @@
                     <div class="rs-bar">
                         <input id="rs-search" type="text" class="grow" placeholder="Search name or email" aria-label="Search the staff list" autocomplete="off">
                         <select id="rs-tag" aria-label="Show a group"></select>
+                        <select id="rs-div" aria-label="Show a division" class="hidden"></select>
                         <button type="button" id="rs-add-open" class="rs-btn rs-primary" data-guard>Add a person</button>
                         <label class="rs-btn" style="cursor:pointer">Upload CSV<input id="rs-file" type="file" accept=".csv,.tsv,.txt,text/csv,text/plain" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden"></label>
                         <button type="button" id="rs-export" class="rs-btn">Download CSV</button>
@@ -583,6 +600,8 @@
                     <form id="rs-add" class="rs-form hidden" autocomplete="off">
                         <label>Email<input id="rs-add-email" type="email" required maxlength="320" placeholder="a.teacher@aisa.sch.ae"></label>
                         <label>Name<input id="rs-add-name" type="text" maxlength="300" placeholder="A Teacher"></label>
+                        <label>Department<input id="rs-add-dept" type="text" maxlength="200" placeholder="Primary - Grade 4"></label>
+                        <label>Designation<input id="rs-add-desig" type="text" maxlength="200" placeholder="Primary Homeroom Teacher"></label>
                         <label>Groups (comma-separated)<input id="rs-add-tags" type="text" placeholder="secondary, maths"></label>
                         <div class="rs-actions"><button type="submit" class="rs-btn rs-primary" data-guard>Save</button><button type="button" id="rs-add-cancel" class="rs-btn">Cancel</button></div>
                     </form>
@@ -597,7 +616,7 @@
                     </div>
                     <div class="rs-wrap">
                         <table>
-                            <thead><tr><th style="width:2rem"><input type="checkbox" id="rs-all" aria-label="Select everyone shown"></th><th>Name</th><th>Email</th><th>Groups</th><th></th></tr></thead>
+                            <thead><tr><th style="width:2rem"><input type="checkbox" id="rs-all" aria-label="Select everyone shown"></th><th>Name</th><th>Email</th><th>Department</th><th>Designation</th><th>Groups</th><th></th></tr></thead>
                             <tbody id="rs-rows"></tbody>
                         </table>
                     </div>
@@ -692,7 +711,7 @@
     #panel-roster .rs-big { font-size:1.5rem; font-weight:900; color:#0f172a; margin-right:.35rem; }
     #panel-roster .hidden { display:none !important; }
     </style>
-    <script src="admin-roster.js?v=3"></script>
+    <script src="admin-roster.js?v=4"></script>
     <script>
     /* ============================================================
      * Tab controller — PD Data / Survey Data.
@@ -1007,7 +1026,8 @@
         function buildIndex(payload) {
             const byEmail = {};
             (payload.people || []).forEach(p => {
-                byEmail[p.email] = { email: p.email, name: p.name || '', last_seen: p.last_seen || '', done: {} };
+                byEmail[p.email] = { email: p.email, name: p.name || '', last_seen: p.last_seen || '', done: {},
+                    division: p.division || '', department: p.department || '', designation: p.designation || '' };
             });
             (payload.completions || []).forEach(c => {
                 if (!byEmail[c.email]) byEmail[c.email] = { email: c.email, name: '', last_seen: '', done: {} };
@@ -1142,6 +1162,43 @@
             return mods.every(m => !moduleApplies(m, p.email) || !!p.done[m.id]);
         }
 
+        /* The Division / Department / Designation filters (from the staff list). "Elementary" is Early Years and Primary together,
+         * for a principal who has both. Someone with no value for a filter that is set is left out. */
+        function groupValue(id) { const el = document.getElementById(id); return el ? el.value : ''; }
+        function inGroup(p) {
+            const div = groupValue('tracker-division'), dep = groupValue('tracker-department'), des = groupValue('tracker-designation');
+            if (div) {
+                const d = p.division || '';
+                if (div === '__elem' ? (d !== 'Early Years' && d !== 'Primary') : d !== div) return false;
+            }
+            if (dep && (p.department || '') !== dep) return false;
+            if (des && (p.designation || '') !== des) return false;
+            return true;
+        }
+        function groupList() { return DATA.list.filter(inGroup); }
+
+        /* Fills the three selects from who is on the list (with counts); keeps a choice that is still there. Hidden until anyone
+         * has a department, so a Hub whose staff list has none looks as it always did. */
+        function fillGroupFilters() {
+            const any = DATA.list.some(p => p.division || p.department || p.designation);
+            document.getElementById('group-filters').classList.toggle('hidden', !any);
+            if (!any) return;
+            const count = key => { const c = {}; DATA.list.forEach(p => { if (p[key]) c[p[key]] = (c[p[key]] || 0) + 1; }); return c; };
+            function fill(id, all, counts, extra) {
+                const el = document.getElementById(id), cur = el.value;
+                el.textContent = '';
+                const add = (v, t) => { const o = document.createElement('option'); o.value = v; o.textContent = t; el.appendChild(o); };
+                add('', all);
+                (extra || []).forEach(e => add(e[0], e[1]));
+                Object.keys(counts).sort((a, b) => a.localeCompare(b)).forEach(k => add(k, k + ' (' + counts[k] + ')'));
+                el.value = Array.prototype.some.call(el.options, o => o.value === cur) ? cur : '';
+            }
+            const dv = count('division'), elem = (dv['Early Years'] || 0) + (dv['Primary'] || 0);
+            fill('tracker-division', 'All divisions', dv, (dv['Early Years'] && dv['Primary']) ? [['__elem', 'Elementary: Early Years + Primary (' + elem + ')']] : []);
+            fill('tracker-department', 'All departments', count('department'));
+            fill('tracker-designation', 'All designations', count('designation'));
+        }
+
         function filteredPeople(mods) {
             const q = (document.getElementById('filter-text').value || '').toLowerCase().trim();
             const status = document.getElementById('tracker-status').value || '';
@@ -1150,6 +1207,7 @@
              * real staff list so the other modules are unaffected. */
             const source = (mods.length === 1 && mods[0].cohort) ? cohortRows(mods[0]) : DATA.list;
             return source.filter(p => {
+                if (!inGroup(p)) return false;
                 if (q && ((p.name || '') + ' ' + p.email).toLowerCase().indexOf(q) === -1) return false;
                 if (status) {
                     const done = isCompleteFor(p, mods);
@@ -1430,12 +1488,12 @@
         function exportCsv() {
             const mods = scopeModules();
             const people = sortPeople(filteredPeople(mods), mods);
-            const header = ['Name', 'Email', 'Last seen']
+            const header = ['Name', 'Email', 'Division', 'Department', 'Designation', 'Last seen']
                 .concat(mods.map(c => c.short)).concat(['Completed']);
             const lines = [header.map(csvCell).join(',')];
             people.forEach(p => {
                 const n = mods.filter(m => p.done[m.id]).length;
-                const row = [p.name || '', p.email, fmtDate(p.last_seen)]
+                const row = [p.name || '', p.email, p.division || '', p.department || '', p.designation || '', fmtDate(p.last_seen)]
                     .concat(mods.map(c => p.done[c.id] ? 'Yes' : 'No'))
                     .concat([n + '/' + mods.length]);
                 lines.push(row.map(csvCell).join(','));
@@ -1457,8 +1515,9 @@
         function render(payload) {
             const byEmail = buildIndex(payload);
             DATA = { byEmail: byEmail, list: Object.keys(byEmail).map(k => byEmail[k]) };
-            renderSummary(DATA.list);
-            renderModuleBars(DATA.list);
+            fillGroupFilters();
+            renderSummary(groupList());
+            renderModuleBars(groupList());
             buildTrackerOptions();
             renderMatrix();
             /* Export CSV sits in the tracker's filter bar; reveal it once
@@ -1472,6 +1531,14 @@
         /* ---------- Tracker wiring ---------- */
 
         function refresh() { if (rendered) renderMatrix(); }
+        /* A division, department or designation changes who the summary and the bars count, as well as the table. */
+        function refreshGroup() {
+            if (!rendered) return;
+            renderSummary(groupList());
+            renderModuleBars(groupList());
+            renderMatrix();
+        }
+        ['tracker-division', 'tracker-department', 'tracker-designation'].forEach(id => document.getElementById(id).addEventListener('change', refreshGroup));
 
         document.getElementById('filter-text').addEventListener('input', refresh);
         document.getElementById('tracker-status').addEventListener('change', refresh);
@@ -1489,9 +1556,10 @@
             document.getElementById('tracker-module').value = ALL_SCOPE;
             document.getElementById('tracker-status').value = '';
             document.getElementById('filter-text').value = '';
+            ['tracker-division', 'tracker-department', 'tracker-designation'].forEach(id => { document.getElementById(id).value = ''; });
             sortKey = 'name';
             sortDir = 'asc';
-            refresh();
+            refreshGroup();
         });
 
         /* Click any heading to sort; click again to flip direction.
