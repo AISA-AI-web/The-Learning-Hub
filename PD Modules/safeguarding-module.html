@@ -696,8 +696,77 @@
                 </div>
             </div>
 
-            <!-- 14 · Complete the mandatory training -->
-            <div class="relative pl-12 mb-16" data-chapter="14" data-chapter-title="Complete Your Training">
+            <!-- 14 · Drug prevention in the school environment (added 6 Nov 2026).
+                 Its chapter id is fixed ("drug-prevention") and the last chapter keeps its old id ("ch14"):
+                 the wizard's saved progress is keyed by id, so nobody who had already finished loses it. -->
+            <div class="relative pl-12 mb-16" data-chapter="14" data-chapter-id="drug-prevention" data-chapter-title="Drug Prevention in Schools">
+                <label class="absolute left-0 top-0 cursor-pointer z-10">
+                    <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
+                    <div class="w-10 h-10 rounded-full border-2 border-violet-400 bg-white flex items-center justify-center transition-all shadow-sm">
+                        <svg class="w-5 h-5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                </label>
+                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="bg-gradient-to-r from-violet-700 to-indigo-700 p-6 text-white">
+                        <span class="text-xs font-bold uppercase tracking-widest text-violet-200">Section 11</span>
+                        <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Drug Prevention in the School Environment</h3>
+                    </div>
+                    <div class="p-6 lg:p-8 space-y-6">
+                        <p class="text-gray-700 leading-relaxed">Drug use is a safeguarding and student-welfare issue too. The UAE national guide below, written for school staff, explains the signs to look for, what teachers are expected to do and where students can get help. This page is a quick summary, <strong class="text-violet-800">not a replacement for the guide.</strong></p>
+
+                        <div class="bg-gradient-to-r from-violet-50 to-indigo-50 border border-violet-200 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+                            <div class="text-4xl flex-shrink-0">📘</div>
+                            <div class="flex-1">
+                                <h4 class="font-bold text-violet-900">Guide to Drugs Prevention at School Environment</h4>
+                                <p class="text-sm text-violet-800 leading-relaxed mt-1">UAE Ministry of Interior (SIRAJ national drug prevention programme) in cooperation with the Ministry of Education · First Edition 2021 · English and Arabic · 56 pages · PDF, 4.7 MB</p>
+                                <p class="text-sm text-violet-900 font-semibold mt-1">We encourage you to download it and keep a copy to refer to.</p>
+                            </div>
+                            <a href="assets/Guide-to-Drugs-Prevention-in-School-Environment.pdf" download="Guide-to-Drugs-Prevention-in-School-Environment.pdf" class="inline-flex items-center justify-center gap-2 bg-violet-700 hover:bg-violet-800 text-white font-bold py-3 px-6 rounded-xl transition-colors flex-shrink-0">
+                                ⬇ Download the guide
+                            </a>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-5">
+                                <h4 class="font-bold text-emerald-900 mb-3 flex items-center gap-2"><span class="text-lg">✅</span> What to do</h4>
+                                <ul class="text-sm text-emerald-900 space-y-2">
+                                    <li class="flex items-start gap-2"><span class="text-emerald-600">•</span> Learn the warning signs: a sudden change of friends, a drop in grades, lying, mood swings, red eyes or dilated pupils, weight loss, constant tiredness, slurred speech, money or valuables going missing.</li>
+                                    <li class="flex items-start gap-2"><span class="text-emerald-600">•</span> Be a positive role model, and make your classroom a place where students feel safe to ask questions and talk.</li>
+                                    <li class="flex items-start gap-2"><span class="text-emerald-600">•</span> Listen without interrupting, and make time to give guidance.</li>
+                                    <li class="flex items-start gap-2"><span class="text-emerald-600">•</span> Build life skills in your lessons: decision-making, resisting peer pressure, coping with stress, choosing good friends. Use interactive methods.</li>
+                                    <li class="flex items-start gap-2"><span class="text-emerald-600">•</span> Look out for students with risk factors, such as falling grades, frequent absence, anxiety or a negative peer group, and ask the counsellor to follow up early.</li>
+                                    <li class="flex items-start gap-2"><span class="text-emerald-600">•</span> Report any suspicion or disclosure straight away to your Safeguarding Lead (DSL) and the counsellor. Treat a student who is using drugs as a student who needs support.</li>
+                                </ul>
+                            </div>
+                            <div class="bg-rose-50 border border-rose-200 rounded-xl p-5">
+                                <h4 class="font-bold text-rose-900 mb-3 flex items-center gap-2"><span class="text-lg">🚫</span> What not to do</h4>
+                                <ul class="text-sm text-rose-900 space-y-2">
+                                    <li class="flex items-start gap-2"><span class="text-rose-600">•</span> Don't use fear tactics or scare stories, least of all when a student is telling you what they think or believe about drugs.</li>
+                                    <li class="flex items-start gap-2"><span class="text-rose-600">•</span> Don't label, shame or stigmatise a student, and don't write them off. Dismissing a student involved with drugs usually makes things worse.</li>
+                                    <li class="flex items-start gap-2"><span class="text-rose-600">•</span> Don't jump to conclusions. Signs are indicators, not proof, so pass on what you have noticed and let the specialists assess.</li>
+                                    <li class="flex items-start gap-2"><span class="text-rose-600">•</span> Don't investigate on your own, and don't wait until you are certain. Tell the DSL.</li>
+                                    <li class="flex items-start gap-2"><span class="text-rose-600">•</span> Don't repeat the myths: cannabis does cause addiction, sedatives are not "safe", a person can become addicted after a first experience, and "I can stop any time" is not true.</li>
+                                    <li class="flex items-start gap-2"><span class="text-rose-600">•</span> Don't promise a student secrecy.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="bg-indigo-50 border border-indigo-200 rounded-xl p-5">
+                            <h4 class="font-bold text-indigo-900 mb-2 flex items-center gap-2"><span class="text-lg">☎️</span> Where to get help</h4>
+                            <p class="text-sm text-indigo-900 leading-relaxed">Your Safeguarding Lead and the school counsellors (see the previous chapter). Treatment in the UAE is confidential, and the law does not bring a criminal case against a person who asks for treatment voluntarily. The national <strong>Mukafih</strong> service is on <strong>80044</strong>, and the guide lists the treatment centres.</p>
+                        </div>
+
+                        <label class="flex items-start gap-3 bg-emerald-50 border-2 border-emerald-300 rounded-xl p-5 cursor-pointer">
+                            <input type="checkbox" id="drug-guide-read" data-required class="mt-1 w-5 h-5 accent-emerald-600 flex-shrink-0">
+                            <span class="font-semibold text-emerald-900">I have read the Guide to Drugs Prevention at School Environment.</span>
+                        </label>
+                        <p id="drug-guide-covered" class="hidden text-sm text-emerald-900 bg-emerald-50 border border-emerald-200 rounded-xl p-4">You finished this training before this chapter was added, so your training stays complete and the guide is already counted as covered for you. You are still welcome to download and read it.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 15 · Complete the mandatory training (its chapter id stays "ch14": see above) -->
+            <div class="relative pl-12 mb-16" data-chapter="15" data-chapter-id="ch14" data-chapter-title="Complete Your Training">
                 <label class="absolute left-0 top-0 cursor-pointer z-10">
                     <input type="checkbox" class="sr-only checkbox-custom module-checkbox" onchange="updateProgress()">
                     <div class="w-10 h-10 rounded-full border-2 border-violet-400 bg-white flex items-center justify-center transition-all shadow-sm">
@@ -706,7 +775,7 @@
                 </label>
                 <div class="bg-white rounded-2xl shadow-lg border-2 border-emerald-200 overflow-hidden">
                     <div class="bg-gradient-to-r from-emerald-700 to-violet-700 p-6 text-white">
-                        <span class="text-xs font-bold uppercase tracking-widest text-emerald-100">Section 11 · Mandatory</span>
+                        <span class="text-xs font-bold uppercase tracking-widest text-emerald-100">Section 12 · Mandatory</span>
                         <h3 class="text-xl lg:text-2xl font-heading font-bold mt-1">Complete Your Mandatory Acknowledgment</h3>
                     </div>
                     <div class="p-6 lg:p-8">
@@ -773,10 +842,84 @@
             }
         }
 
+        // --- Drug-prevention chapter (added 6 Nov 2026) -------------------------------------------------
+        // Nobody who had already finished this training is affected by it: a completion is a permanent record
+        // on the server, and this chapter adds no new completion rule for them. Three things keep it so:
+        //  1. Saved progress on this device from before the chapter existed is brought up to date here, before
+        //     the wizard reads it (a finished training counts the new chapter as done; a part-way one has to
+        //     pass it before the last chapter).
+        //  2. Anyone the server already has as complete sees the "I have read" box ticked, and nothing new is
+        //     recorded for them from the page. (They are recorded once, as "covered", by the one-off back-fill
+        //     migration 20261106120000 in AISA-AI-web/AI-Lessons, dated when they completed.)
+        //  3. Whoever ticks the box now has it recorded as a `drug_guide_read` event (version v2) on this
+        //     module; it is not a `completed` event, so no completion count, certificate or PD hour changes.
+        (function () {
+            try {
+                var raw = localStorage.getItem('aisa_training_safeguarding');
+                var st = raw ? JSON.parse(raw) : null;
+                if (st && Array.isArray(st.completed) && st.completed.indexOf('drug-prevention') === -1) {
+                    if (st.completed.indexOf('ch14') !== -1) {
+                        st.completed.push('drug-prevention');
+                        if (st.currentIndex === 13) st.currentIndex = 14;       // was on the last chapter, which is now one later
+                    } else if (Array.isArray(st.unlocked) && st.unlocked.indexOf('ch14') !== -1) {
+                        st.unlocked = st.unlocked.filter(function (id) { return id !== 'ch14'; });
+                        st.unlocked.push('drug-prevention');
+                    }
+                    localStorage.setItem('aisa_training_safeguarding', JSON.stringify(st));
+                }
+            } catch (e) {}
+        })();
+
+        function wireDrugGuide(auth) {
+            var box = document.getElementById('drug-guide-read');
+            if (!box) return;
+            var user = auth.getUser && auth.getUser();
+            var flag = 'aisa_drug_guide_pending_' + String((user && user.email) || '').toLowerCase();
+            var sending = false, programmatic = false;
+
+            function pending() { try { return !!localStorage.getItem(flag); } catch (e) { return false; } }
+            function setPending(on) { try { if (on) localStorage.setItem(flag, '1'); else localStorage.removeItem(flag); } catch (e) {} }
+
+            function send() {
+                if (sending || !(box.checked || pending()) || !auth.isConfigured()) return;
+                sending = true;
+                setPending(true);                                               // kept until the server has it, so a closed tab can retry
+                auth.recordEvent('safeguarding', 'drug_guide_read', 100, 'v2').then(function () {
+                    setPending(false);
+                }).catch(function () {
+                    sending = false;                                            // retried at the next tick or the next visit
+                });
+            }
+
+            function markCovered() {
+                if (box.checked) return;
+                programmatic = true;
+                box.checked = true;
+                box.dispatchEvent(new Event('change', { bubbles: true }));      // lets the wizard open Next
+                programmatic = false;
+                var note = document.getElementById('drug-guide-covered');
+                if (note) note.classList.remove('hidden');
+            }
+
+            box.addEventListener('change', function () { if (!programmatic && box.checked) send(); });
+            document.addEventListener('aisa:module-completed', function () { if (pending()) send(); });
+
+            var done = function (items) {
+                return (items || []).some(function (c) { return c.module_id === 'safeguarding'; });
+            };
+            var cached = auth.getCompletionsCached && auth.getCompletionsCached();
+            if (done(cached)) markCovered();
+            auth.getCompletions().then(function (items) {
+                if (done(items)) { markCovered(); setPending(false); }
+                else if (pending()) send();                                     // a tick that never reached the server
+            }).catch(function () {});
+        }
+
         // --- AISA backend: record completion + rehydrate on revisit ---
         if (window.aisaReady) {
             window.aisaReady(function (auth) {
-                auth.wireModule({ moduleId: 'safeguarding', checkboxSelector: '.module-checkbox', refreshUI: updateProgress });
+                auth.wireModule({ moduleId: 'safeguarding', checkboxSelector: '.module-checkbox', refreshUI: updateProgress, version: 'v2' });
+                wireDrugGuide(auth);
             });
         }
 
@@ -789,7 +932,7 @@
     </script>
 
     <!-- English ↔ Arabic translation -->
-    <script src="safeguarding-ar.js?v=2"></script>
+    <script src="safeguarding-ar.js?v=3"></script>
     <script src="onboarding-i18n.js?v=2"></script>
     <script src="orientation-nav.js?v=2"></script>
 </body>
