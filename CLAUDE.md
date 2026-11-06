@@ -2407,3 +2407,32 @@ reopened that same module on that same device. `gate.js` now writes every comple
 module sends what is left about 3 seconds after load and whenever the browser comes back online
 (`flushPending`). It never opens the sign-in gate. Applies to every module that uses `wireModule`/`recordEvent`.
 The cascade is `?v=39`.
+
+## Drug prevention guide in the Safeguarding training — added 6 November 2026
+
+`PD Modules/safeguarding-module.html` has a chapter, **Drug Prevention in Schools** (chapter 14; the acknowledgment
+chapter is now the 15th), on the UAE Ministry of Interior's *Guide to Drugs Prevention at School Environment*
+(First Edition 2021, with the Ministry of Education; a public government publication, so it is in the repo:
+`PD Modules/assets/Guide-to-Drugs-Prevention-in-School-Environment.pdf`, 4.7 MB). It has a download button, a short
+do / don't summary and a required tick box, *I have read the Guide to Drugs Prevention at School Environment*
+(`#drug-guide-read`, `data-required`, so Next is blocked until it is ticked).
+
+**It must never change anything for people who had already completed the training.** How that holds:
+
+- The module id (`safeguarding`) and its `completed` event are unchanged, so every completion, certificate, PD hour
+  and tracker number stays as it was. The tick is a **separate event**, `drug_guide_read` (version `v2`), on the same
+  module; new completions are recorded as version `v2` too (`wireModule({ version: 'v2' })`).
+- The wizard keeps its saved progress by chapter id. The new chapter has the fixed id `drug-prevention`
+  (`data-chapter-id`) and the last chapter keeps `ch14` although it is now the 15th: **do not renumber or rename these
+  ids**. A small script in the page brings a device's older saved progress up to date before the wizard reads it
+  (finished → the new chapter counts as done; part-way → the last chapter is locked until the new one is passed).
+- Anyone the server has as complete (`get_completions`) sees the box ticked and a "you're already covered" note, and the
+  page sends nothing for them. They are recorded once, in the database, as `drug_guide_read` version `covered`, dated
+  when they completed, by AISA-AI-web/AI-Lessons `supabase/migrations/20261106120000_learning_hub_drug_guide_covered.sql`
+  (**applied by Claude with the Supabase connector after this is merged**; see `learning-hub/README.md` there).
+- A tick that could not reach the server is kept (`aisa_drug_guide_pending_<email>` in localStorage) and retried.
+- `auth/gate.js`, `auth/training.js` and the server are untouched, so no `gate.js?v=N` cascade. The Arabic is in
+  `safeguarding-ar.js` (`?v=3`).
+
+To list who has read it: events with `module_id = 'safeguarding'` and `event = 'drug_guide_read'`. To make the guide
+part of next year's run, the module needs a new id like any other annual re-run (see *Repeated annually* above).
