@@ -2436,3 +2436,12 @@ do / don't summary and a required tick box, *I have read the Guide to Drugs Prev
 
 To list who has read it: events with `module_id = 'safeguarding'` and `event = 'drug_guide_read'`. To make the guide
 part of next year's run, the module needs a new id like any other annual re-run (see *Repeated annually* above).
+
+## Safeguarding training renamed — 9 November 2026
+
+The training's name is now **Child Protection, Safeguarding, and Drug Prevention** (was *Child Safeguarding &
+Protection*), with the Arabic حماية الطفل ورعايته والوقاية من المخدرات: on the dashboard, the PD and Orientation
+pages, the module page, its certificate (new downloads), the admin tracker, Hub Analytics, the menu and search.
+The module id stays `safeguarding` and its short label stays *Safeguarding* (tracker columns, CSV headers, charts),
+so no completion, certificate record or number moves. Pins: `safeguarding-ar.js?v=4`, `orientation-nav.js?v=3`,
+`admin-analytics.js?v=2`, `search-index.js?v=19` in `gate.js`, and so `gate.js?v=40` on all 51 pages.
