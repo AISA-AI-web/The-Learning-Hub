@@ -66,7 +66,7 @@ without him auditing the site for improvements.
   where modules are listed, or the conventions, change. Setting a status and a note tells the person in their bell (unless
   unticked) and shows on their request page. `#r<id>` opens one request, whatever its status (the email links there).
 - **The server** (AI-Lessons, `learning-hub/README.md`, *Requests from staff*): `submit_request`, `my_requests`, `admin_requests`,
-  `admin_request_update`, table `learning_hub.requests`, migration `20261109150000_learning_hub_requests.sql`. A new request puts
+  `admin_request_update`, table `learning_hub.requests`, migration `20261109160000_learning_hub_requests.sql`. A new request puts
   a bell notification, and an email when the bridge can send, to `LEARNING_HUB_REQUEST_NOTIFY` (default bbaki@). At most 10 a
   person and 400 in all a day. Until the function is deployed and the migration applied the form says "the Hub's server is not
   ready for requests yet" and keeps the draft, and the inbox says so.
