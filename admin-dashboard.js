@@ -688,13 +688,83 @@
         return mods.length === REQUIRED.length && mods.every(function (m) { return m.required; }) ? 'all required modules' : 'all modules';
     }
 
+    /* ---- The Department select, grouped (9 Nov 2026) ----
+     * HR's departments are "Phase - detail" ("Primary - Grade 3", "Secondary - PE") or a support office. The select lists
+     * them under Early Years & Primary and Secondary (each with an "all" option and the grades or subjects by their short
+     * name), then the support offices merged as in DIVISION_GROUPS, then any department left over, so a new one still
+     * appears. Values: `__dep_elem` / `__dep_sec` for a whole phase, a DIVISION_GROUPS key, or the department itself. */
+    function deptPhase(dep) {
+        var d = divKey(dep);
+        if (/^(early years|primary|kg)\b/.test(d)) return 'elem';
+        if (/^secondary\b/.test(d)) return 'sec';
+        return '';
+    }
+    function inDepartment(p, v) {
+        if (!v) return true;
+        if (v === '__dep_elem') return deptPhase(p.department) === 'elem';
+        if (v === '__dep_sec') return deptPhase(p.department) === 'sec';
+        if (DIVISION_GROUPS[v]) return GROUPED[divKey(p.department)] === v;
+        return divKey(p.department) === divKey(v);
+    }
+    /* "Primary - Grade 3" → "Grade 3"; "Early Years - KG1" → "KG1"; "Primary Arabic" → "Arabic"; "Primary" → "Primary, no grade given". */
+    function deptShort(dep) {
+        var t = String(dep).trim(), m = t.match(/^(early years|primary|secondary)\s*[-–:]\s*(.+)$/i);
+        if (m) return m[2].trim();
+        m = t.match(/^(early years|primary|secondary)\s+(.+)$/i);
+        if (m) return m[2].trim();
+        return t + (deptPhase(t) === 'sec' ? ', no subject given' : ', no grade given');
+    }
+    function deptOrder(label) {
+        var m = label.match(/^kg\s*(\d)/i);
+        if (m) return [0, Number(m[1]), label];
+        m = label.match(/^grade\s*(\d+)/i);
+        if (m) return [1, Number(m[1]), label];
+        return [/, no (grade|subject) given$/.test(label) ? 3 : 2, 0, label];
+    }
+    function fillDepartmentSelect() {
+        var sel = $('tracker-department'), cur = sel.value;
+        sel.textContent = '';
+        function count(v) { var n = 0; DATA.list.forEach(function (p) { if (inDepartment(p, v)) n++; }); return n; }
+        function add(parent, v, t) {
+            var n = count(v);
+            if (!n) return 0;
+            var o = document.createElement('option'); o.value = v; o.textContent = t + ' (' + n + ')'; parent.appendChild(o);
+            return n;
+        }
+        function group(label, items) {
+            var g = document.createElement('optgroup'); g.label = label;
+            items.forEach(function (it) { add(g, it[0], it[1]); });
+            if (g.children.length) sel.appendChild(g);
+        }
+        var o = document.createElement('option'); o.value = ''; o.textContent = 'All departments'; sel.appendChild(o);
+        var raw = {};
+        DATA.list.forEach(function (p) { var k = divKey(p.department); if (k && !raw[k]) raw[k] = String(p.department).trim(); });
+        var names = Object.keys(raw).map(function (k) { return raw[k]; });
+        function phaseItems(phase, allValue, allLabel) {
+            var list = names.filter(function (n) { return deptPhase(n) === phase; })
+                .map(function (n) { return [n, deptShort(n)]; })
+                .sort(function (a, b) {
+                    var x = deptOrder(a[1]), y = deptOrder(b[1]);
+                    return (x[0] - y[0]) || (x[1] - y[1]) || x[2].localeCompare(y[2]);
+                });
+            return [[allValue, allLabel]].concat(list);
+        }
+        group('Early Years & Primary', phaseItems('elem', '__dep_elem', 'All Early Years & Primary'));
+        group('Secondary', phaseItems('sec', '__dep_sec', 'All Secondary'));
+        var support = Object.keys(DIVISION_GROUPS).map(function (k) { return [k, DIVISION_GROUPS[k].label]; });
+        var rest = names.filter(function (n) { return !deptPhase(n) && !GROUPED[divKey(n)]; })
+            .sort(function (a, b) { return a.localeCompare(b); }).map(function (n) { return [n, n]; });
+        group('Support & other departments', support.concat(rest));
+        sel.value = Array.prototype.some.call(sel.options, function (x) { return x.value === cur; }) ? cur : '';
+    }
+
     /* Division, team, department and designation: "More filters". */
     var GROUP_FILTERS = ['tracker-division', 'tracker-team', 'tracker-department', 'tracker-designation'];
     function inGroup(p) {
         var div = $('tracker-division').value, dep = $('tracker-department').value, des = $('tracker-designation').value;
         if (!inDivision(p, div)) return false;
         if (!inTeam(p, $('tracker-team').value)) return false;
-        if (dep && (p.department || '') !== dep) return false;
+        if (!inDepartment(p, dep)) return false;
         if (des && (p.designation || '') !== des) return false;
         return true;
     }
@@ -714,7 +784,7 @@
             Object.keys(counts).sort(function (a, b) { return a.localeCompare(b); }).forEach(function (k) { add(k, k + ' (' + counts[k] + ')'); });
             el.value = Array.prototype.some.call(el.options, function (o) { return o.value === cur; }) ? cur : '';
         }
-        fill('tracker-department', 'All departments', count('department'));
+        fillDepartmentSelect();
         fill('tracker-designation', 'All designations', count('designation'));
         fillTeamSelect();
         var hasOv = fillDivisionSelect($('ov-division'), 'All staff');
