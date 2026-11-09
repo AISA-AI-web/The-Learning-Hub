@@ -2445,3 +2445,17 @@ pages, the module page, its certificate (new downloads), the admin tracker, Hub 
 The module id stays `safeguarding` and its short label stays *Safeguarding* (tracker columns, CSV headers, charts),
 so no completion, certificate record or number moves. Pins: `safeguarding-ar.js?v=4`, `orientation-nav.js?v=3`,
 `admin-analytics.js?v=2`, `search-index.js?v=19` in `gate.js`, and so `gate.js?v=40` on all 51 pages.
+
+## Safeguarding training as a PDF, for ADEK evidence — added 9 November 2026
+
+`PD Modules/print/safeguarding-training.pdf` (19 pages, A4) is the whole *Child Protection, Safeguarding, and Drug
+Prevention* training on paper: all 15 chapters in order, the knowledge checks with the right answer ticked and its
+explanation, the briefing video as its link, every button's link written out, and a contents list and a provenance
+line under the title. Built from the real page by `PD Modules/print/build-safeguarding-pdf.mjs`
+(`NODE_PATH=$(npm root -g) node "PD Modules/print/build-safeguarding-pdf.mjs"`; `--png` adds a
+layout proof). **Edit the module, then run it again**; nothing in the script holds the training's words.
+
+- It loads the page without `training.js`, `gate.js` or the translator, so every chapter is on the page, no one's
+  progress or answers are read, quiz options keep their authored order (no shuffle) and tick boxes print empty.
+- Tailwind is built locally from the page's own classes and its `tailwind.config` (`npx tailwindcss@3.4.17`), because the CDN script cannot be reached from a build; the PDF looks like the page.
+- English only. An Arabic copy would load `safeguarding-ar.js` and `onboarding-i18n.js` with `body.lang-ar`.
