@@ -732,22 +732,22 @@
     <script>
     (function () {
         /* Who has to do the readiness module: the 62 teachers on AISA's ADEK
-           Implementation Form, the same list as AI_LITERACY_COHORT in
-           admin-dashboard.html. Stored as truncated SHA-256 of the lower-cased
+           Implementation Form, the same list as
+           ai-literacy-cohort.js. Stored as truncated SHA-256 of the lower-cased
            address rather than the addresses themselves — this is the most
            forwardable page on the Hub and it should not carry a copy-pasteable
            directory of who is on that form. Treat it as tidiness, not security:
            the addresses follow first-initial-plus-surname, so anyone determined
            could hash their way through them. Nothing here is a permission gate.
 
-           Keep in step with admin-dashboard.html: change the cohort there and
+           Keep in step with ai-literacy-cohort.js: change the cohort there and
            these hashes have to be regenerated, or the newsletter tells people
            something the tracker contradicts. To regenerate, from the repo root:
 
              python3 -c "
              import io,re,hashlib
-             s=io.open('admin-dashboard.html',encoding='utf-8').read()
-             m=re.search(r'const AI_LITERACY_COHORT = \[(.*?)\n        \];', s, re.S)
+             s=io.open('ai-literacy-cohort.js',encoding='utf-8').read()
+             m=re.search(r'AISA_AI_LITERACY_COHORT = \[(.*?)\n\];', s, re.S)
              for h in sorted(hashlib.sha256(e.strip().lower().encode()).hexdigest()[:16]
                              for e in re.findall(r'email:\s*\"([^\"]+)\"', m.group(1))):
                  print(h)"

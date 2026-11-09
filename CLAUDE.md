@@ -52,7 +52,8 @@ required of them, so the staff who are not in the cohort do not spend an hour on
   Tab inside, English and Arabic (both in the markup, CSS shows the one that matches `body.lang-ar`; the page's dictionary
   translator never sees it). Nothing is stored or sent. It decides what a card says; it is **not a permission gate**: the
   module stays open to everyone.
-- **The cohort now lives in three places**: `AI_LITERACY_COHORT` in `admin-dashboard.html` (the truth), and the hashes in
+- **The cohort now lives in three places**: `ai-literacy-cohort.js` (the truth since 9 Nov 2026, loaded by the admin
+  dashboard, as `AI_LITERACY_COHORT`, and by Hub Analytics), and the hashes in
   `Media Hub/sep18.html` and `readiness-notice.js`. `node tests/readiness-notice-test.js` fails when they differ, and
   drives the real module page in Chromium (if Playwright is installed). Change the cohort, regenerate both lists (the
   recipe is in each file's comment), and bump `readiness-notice.js?v=` in the module page.
@@ -1096,6 +1097,17 @@ filters* is now:
   departments in its `depts`), then any HR grade or subject department no team takes, marked "(HR department)".
 
 Department and Designation are gone as filters; the CSV still has both columns, and both are edited on People › Staff list.
+
+## AI Literacy cohort shared with Hub Analytics — 9 November 2026
+
+Hub Analytics measured AI Literacy: Teacher Readiness against every Hub user ("36% complete, 147 still to finish") while it is
+required of the 62 in the cohort only, all of whom had finished. The cohort moved out of `admin-dashboard.html` into
+**`ai-literacy-cohort.js`** (`window.AISA_AI_LITERACY_COHORT`, `?v=1`), loaded by both pages, so there is one list.
+`admin-analytics.js?v=3` gives the module its `cohort`: the tile, the headline, the spotlight (its donut, "still to finish",
+with cohort teachers never seen on the Hub listed as "never opened the Hub"), the "in the way" item and the opened-vs-finished
+rate count those 62 only, and "finished every module" means every module that applies to the person. With a person or group
+filter on, only the cohort members it picks count. `tests/readiness-notice-test.js` reads the cohort from the new file and
+checks both pages load it; the regeneration recipes in `readiness-notice.js` and `sep18.html` read it too.
 
 ## Anti-Bullying Policy: Teacher Awareness — PREVIEW, built 7 October 2026
 

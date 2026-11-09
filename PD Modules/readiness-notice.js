@@ -2,7 +2,7 @@
  * that tells whoever opens it whether the training is required of them.
  *
  * Why: the module is required only of the teachers on AISA's ADEK
- * Implementation Form (AI_LITERACY_COHORT in admin-dashboard.html). Everyone
+ * Implementation Form (ai-literacy-cohort.js). Everyone
  * else on the Hub can open it, so without a clear answer on arrival people
  * spend an hour on training nobody is chasing them for.
  *
@@ -17,14 +17,14 @@
  * carry on), and nothing is stored or sent anywhere.
  *
  * KEEP IN STEP: COHORT below is the same list as the hashes in
- * Media Hub/sep18.html and AI_LITERACY_COHORT in admin-dashboard.html.
+ * Media Hub/sep18.html and ai-literacy-cohort.js.
  * `node tests/readiness-notice-test.js` fails when any of them drifts.
  * To regenerate, from the repo root:
  *
  *   python3 -c "
  *   import io,re,hashlib
- *   s=io.open('admin-dashboard.html',encoding='utf-8').read()
- *   m=re.search(r'const AI_LITERACY_COHORT = \[(.*?)\n        \];', s, re.S)
+ *   s=io.open('ai-literacy-cohort.js',encoding='utf-8').read()
+ *   m=re.search(r'AISA_AI_LITERACY_COHORT = \[(.*?)\n\];', s, re.S)
  *   for h in sorted(hashlib.sha256(e.strip().lower().encode()).hexdigest()[:16]
  *                   for e in re.findall(r'email:\s*\"([^\"]+)\"', m.group(1))):
  *       print(h)"
