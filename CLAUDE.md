@@ -1010,7 +1010,7 @@ exactly that, which looks like a regression and is not one.
 
 Brandon's plan (an overhaul in three phases, all done in one pull request): a slim header ("Data as of 9 Nov, 12:02 ·
 Refresh" and a **Tools ▾** menu), then five plain tabs, each with its own address. The page is `admin-dashboard.html`
-(markup, styles, and still `MODULES`, `EXTRA` and `AI_LITERACY_COHORT`), `admin-dashboard.js?v=2` (everything but the
+(markup, styles, and still `MODULES`, `EXTRA` and `AI_LITERACY_COHORT`), `admin-dashboard.js?v=3` (everything but the
 People tab) and `admin-roster.js?v=5` (the People tab). No Tailwind any more: the page has its own style sheet on the
 brand (DM Sans, purple `#21076C`, gold `#D8B664`, tokens on `:root`), like Hub Analytics.
 
@@ -1078,6 +1078,12 @@ the repo (the AI Literacy cohort, and staff named elsewhere); the rest are match
 surname or a near spelling, plus the first name, its first letters or a shortened form; a surname alone only when it is
 distinctive, unique and the initial agrees). Names that match no one are listed under the filter: add an email for them in
 `admin-teams.js`. The Roster tab's own Division filter is unchanged.
+
+**The Department select is grouped too** (9 Nov 2026, `fillDepartmentSelect()` / `inDepartment()`): HR's departments are
+"Phase - detail", so it lists **Early Years & Primary** (an "All" option, then KG1, KG2, Grade 1 … in order, Arabic, and
+"no grade given" for a bare *Primary*), **Secondary** (All, then each subject), then **Support & other departments**: the
+support offices merged by the same `DIVISION_GROUPS`, then any department left over (Athletics, IT, Leadership …), so a new
+one still shows. Unlike the Division groups it does not leave the SLT out: a department is what HR wrote.
 
 ## Anti-Bullying Policy: Teacher Awareness — PREVIEW, built 7 October 2026
 

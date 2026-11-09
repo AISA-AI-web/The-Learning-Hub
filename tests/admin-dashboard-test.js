@@ -48,6 +48,10 @@ const extras = [
     ['x17@school.example', 'Kate Samename', 'Primary Homeroom Teacher', 'Primary'],
     ['x18@school.example', 'Juan Samename', 'Primary Homeroom Teacher', 'Primary']
 ].map(([email, name, designation, division]) => ({ email, name, designation, division, department: division, last_seen: '2026-11-02T08:00:00Z' }));
+/* Departments shaped like HR's ("Phase - detail"), for the grouped Department select. */
+const DEPTS = { 'x15@school.example': 'Primary - Grade 4', 'x16@school.example': 'Early Years - KG1', 'x17@school.example': 'Primary Arabic',
+                'x18@school.example': 'Secondary - PE', 'x12@school.example': 'Secondary', 'x13@school.example': 'Primary - Grade 10' };
+extras.forEach(p => { if (DEPTS[p.email]) p.department = DEPTS[p.email]; });
 const everyone = people.concat(extras);
 /* Stands in for admin-teams.js: a nickname, a near spelling, two people with one surname, someone not on the Hub, and
  * members given by address. */
@@ -309,6 +313,16 @@ function serve() {
         ok(JSON.stringify(await shownNames()) === JSON.stringify(['Juan Pierre Fakename', 'Kate Samename', 'Natasha Testa']), 'the Team filter narrows the table to Grade 4');
         ok((await page.textContent('#more-filters-n')).trim() === '1', 'More filters counts the team filter');
         await page.selectOption('#tracker-team', '');
+        const deptGroups = await page.$$eval('#tracker-department optgroup', els => els.map(g => [g.label, Array.from(g.children).map(o => o.textContent)]));
+        ok(deptGroups.map(g => g[0]).join('|') === 'Early Years & Primary|Secondary|Support & other departments', 'departments under three headings');
+        ok(JSON.stringify(deptGroups[0][1]) === JSON.stringify(['All Early Years & Primary (5)', 'KG1 (1)', 'Grade 4 (1)', 'Grade 10 (1)', 'Arabic (1)', 'Early Years, no grade given (1)']),
+            'Early Years & Primary: all, then KG, grades in order, Arabic, and the ones with no grade (' + deptGroups[0][1].join(', ') + ')');
+        ok(JSON.stringify(deptGroups[1][1]) === JSON.stringify(['All Secondary (2)', 'PE (1)', 'Secondary, no subject given (1)']), 'Secondary: all, then each subject');
+        ok(deptGroups[2][1][0] === 'Administration & finance (4)' && deptGroups[2][1].includes('Hallway & bus monitors (2)') && !deptGroups[2][1].some(t => /^(Administrator|HR Office|Transport) \(/.test(t)),
+            'support offices merged as in the Division groups');
+        await page.selectOption('#tracker-department', '__dep_elem');
+        ok((await shownNames()).length === 5, 'All Early Years & Primary narrows the table to those 5');
+        await page.selectOption('#tracker-department', '');
         await page.keyboard.press('Escape');
         await page.click('#tab-overview');
         await page.selectOption('#ov-division', '__teach_sec');
