@@ -360,52 +360,79 @@
         return '';
     }
 
+    /* Leadership: the SLT, and the LLT, everyone else in HR's Leadership division, plus LLT_EMAILS (people who sit on both,
+     * decided by Brandon, 9 Nov 2026). Together they are "all leadership", each person counted once. */
+    var LEADERSHIP_DIVISIONS = ['leadership'];
+    var LLT_EMAILS = ['aturabi@aisa.sch.ae'];
+    function isLLT(p) {
+        return LLT_EMAILS.indexOf(divKey(p.email)) !== -1 || (!isSLT(p) && LEADERSHIP_DIVISIONS.indexOf(divKey(p.division)) !== -1);
+    }
+    function isLeader(p) { return isSLT(p) || isLLT(p); }
+    /* Which phase a department belongs to: "Early Years - KG1", "Primary - Grade 3", "Primary Arabic" → elem; "Secondary - PE" → sec. */
+    function deptPhase(dep) {
+        var d = divKey(dep);
+        if (/^(early years|primary|kg)\b/.test(d)) return 'elem';
+        if (/^secondary\b/.test(d)) return 'sec';
+        return '';
+    }
+    /* "Primary - Grade 3" → "Grade 3"; "Early Years - KG1" → "KG1"; "Primary Arabic" → "Arabic"; a bare "Primary" → "". */
+    function deptShort(dep) {
+        var t = String(dep || '').trim(), m = t.match(/^(early years|primary|secondary)\s*[-–:]?\s*(.*)$/i);
+        return m ? m[2].trim() : t;
+    }
+
+    /* The Staff group filter (the tracker's, and the Overview's "Showing"): who someone is. Leadership is a group of its
+     * own and is left out of the phase, support and other groups; the teaching options go by job title, so a teacher who
+     * is also a leader counts there too. */
     function inDivision(p, div) {
         if (!div) return true;
+        if (div === '__lead') return isLeader(p);
         if (div === '__slt') return isSLT(p);
+        if (div === '__llt') return isLLT(p);
+        if (div === '__leads') return !!(teamIndex && teamIndex.leads[p.email]);
         if (div === '__teach') return isTeacher(p);
         if (div === '__teach_elem') return isTeacher(p) && phaseOf(p) === 'elem';
         if (div === '__teach_sec') return isTeacher(p) && phaseOf(p) === 'sec';
-        if (isSLT(p)) return false;   // the SLT are a group of their own, left out of every other group and division
+        if (isLeader(p)) return false;
         var d = divKey(p.division);
-        if (div === '__elem') return d === 'early years' || d === 'primary';
-        if (DIVISION_GROUPS[div]) return GROUPED[d] === div;
+        if (div === '__elem') return d === 'early years' || d === 'primary' || deptPhase(p.department) === 'elem';
+        if (div === '__sec') return d === 'secondary' || deptPhase(p.department) === 'sec';
+        if (DIVISION_GROUPS[div]) return GROUPED[d] === div || GROUPED[divKey(p.department)] === div;
         return d === divKey(div);
     }
     function ovList() { var div = ovDivision(); return DATA.list.filter(function (p) { return inDivision(p, div); }); }
 
-    /* The Division select (Overview's "Showing" and the tracker's): teaching staff, groups, then the divisions no group
-     * takes, each with how many people it holds (counted with inDivision, so a count is what the filter shows). An empty
-     * one is left out; a division that appears later in HR's data and is in no group still shows up at the bottom. */
+    /* Divisions a group already covers, so they are not listed again under "Other". */
+    function absorbed(k) {
+        return !!GROUPED[k] || LEADERSHIP_DIVISIONS.indexOf(k) !== -1 || k === 'early years' || k === 'primary' || k === 'secondary';
+    }
+
+    /* Teaching staff, leadership, everyone in a phase, support staff, then any division no group takes (so a new one in
+     * HR's data still shows). Each option says how many people it holds, counted with inDivision; empty ones are left out. */
     function fillDivisionSelect(sel, allLabel) {
         var cur = sel.value;
         function count(v) { var n = 0; DATA.list.forEach(function (p) { if (inDivision(p, v)) n++; }); return n; }
         sel.textContent = '';
-        function opt(parent, v, t) {
-            var n = count(v);
-            if (!n) return 0;
-            var o = document.createElement('option'); o.value = v; o.textContent = t + ' (' + n + ')'; parent.appendChild(o);
-            return n;
-        }
         function group(label, items) {
             var g = document.createElement('optgroup'); g.label = label;
-            var any = 0;
-            items.forEach(function (it) { any += opt(g, it[0], it[1]); });
-            if (any) sel.appendChild(g);
-            return any;
+            items.forEach(function (it) {
+                var n = count(it[0]);
+                if (!n) return;
+                var o = document.createElement('option'); o.value = it[0]; o.textContent = it[1] + ' (' + n + ')'; g.appendChild(o);
+            });
+            if (g.children.length) sel.appendChild(g);
         }
         var o = document.createElement('option'); o.value = ''; o.textContent = allLabel; sel.appendChild(o);
-        var hasDivisions = DATA.list.some(function (p) { return p.division; });
-        if (!hasDivisions) { sel.value = ''; return false; }
+        var hasData = DATA.list.some(function (p) { return p.division || p.designation; });
+        if (!hasData) { sel.value = ''; return false; }
         group('Teaching staff', [['__teach', 'All teaching staff'], ['__teach_elem', 'KG & Primary teaching staff'], ['__teach_sec', 'Secondary teaching staff']]);
-        group('Groups', [['__slt', 'Senior Leadership Team (SLT)'], ['__elem', 'Elementary: Early Years + Primary']]
-            .concat(Object.keys(DIVISION_GROUPS).map(function (k) { return [k, DIVISION_GROUPS[k].label]; })));
+        group('Leadership', [['__lead', 'All leadership (SLT + LLT)'], ['__slt', 'Senior Leadership Team (SLT)'], ['__llt', 'LLT'],
+                             ['__leads', 'Team leaders (GLLs, HODs)']]);
+        group('Everyone in a phase', [['__elem', 'Early Years & Primary'], ['__sec', 'Secondary']]);
+        group('Support staff', Object.keys(DIVISION_GROUPS).map(function (k) { return [k, DIVISION_GROUPS[k].label]; }));
         var raw = {};
-        DATA.list.forEach(function (p) {
-            var k = divKey(p.division);
-            if (k && !GROUPED[k] && !raw[k]) raw[k] = String(p.division).trim();
-        });
-        group('Divisions', Object.keys(raw).map(function (k) { return raw[k]; }).sort(function (a, b) { return a.localeCompare(b); })
+        DATA.list.forEach(function (p) { var k = divKey(p.division); if (k && !absorbed(k) && !raw[k]) raw[k] = String(p.division).trim(); });
+        group('Other', Object.keys(raw).map(function (k) { return raw[k]; }).sort(function (a, b) { return a.localeCompare(b); })
             .map(function (name) { return [name, name]; }));
         sel.value = Array.prototype.some.call(sel.options, function (x) { return x.value === cur; }) ? cur : '';
         return true;
@@ -481,38 +508,61 @@
         });
         teamIndex = { byTeam: byTeam, leads: leads, unmatched: unmatched };
     }
+    /* A team also takes in whoever HR files under its department: a homeroom team by its grade ("Primary - Grade 3" is
+     * Grade 3, teacher assistants included), any other team by the departments named in its `depts`. */
+    function teamDeptMatch(t, dep) {
+        if (!dep) return false;
+        if (t.depts) return t.depts.some(function (x) { return divKey(x) === divKey(dep); });
+        return !!t.homeroom && deptPhase(dep) === 'elem' && divKey(deptShort(dep)) === divKey(t.label);
+    }
+    function inTeamById(p, t) { return !!(teamIndex && teamIndex.byTeam[t.id][p.email]) || teamDeptMatch(t, p.department); }
     function inTeam(p, v) {
         if (!v) return true;
-        if (!teamIndex) return false;
-        if (v === '__leads') return !!teamIndex.leads[p.email];
         if (v.indexOf('area:') === 0) {
             var a = v.slice(5), area = TEAM_AREAS.filter(function (x) { return x.id === a; })[0];
-            return TEAMS.some(function (t) { return t.area === a && (!area || !area.homeroomOnly || t.homeroom) && teamIndex.byTeam[t.id][p.email]; });
+            return TEAMS.some(function (t) { return t.area === a && (!area || !area.homeroomOnly || t.homeroom) && inTeamById(p, t); });
         }
-        var set = teamIndex.byTeam[v.slice(5)];
-        return !!(set && set[p.email]);
+        if (v.indexOf('dept:') === 0) return divKey(p.department) === divKey(v.slice(5));
+        var t = TEAMS.filter(function (x) { return x.id === v.slice(5); })[0];
+        return !!(t && inTeamById(p, t));
     }
+    function gradeOrder(label) {
+        var m = label.match(/^kg\s*(\d)/i);
+        if (m) return Number(m[1]);
+        m = label.match(/^grade\s*(\d+)/i);
+        return m ? 10 + Number(m[1]) : 100;
+    }
+    /* Grade or team: the faculty list's teams (each with its HR department), by area, then any grade or subject
+     * department in HR's data that no team takes, so nobody filed under one disappears. */
     function fillTeamSelect() {
         var sel = $('tracker-team'), cur = sel.value;
         sel.textContent = '';
-        if (!TEAMS.length) { $('tracker-team').closest('label').classList.add('hidden'); return; }
-        matchTeams();
         function count(v) { var n = 0; DATA.list.forEach(function (p) { if (inTeam(p, v)) n++; }); return n; }
         function add(parent, v, t) {
             var n = count(v);
             if (!n) return;
             var o = document.createElement('option'); o.value = v; o.textContent = t + ' (' + n + ')'; parent.appendChild(o);
         }
-        var o = document.createElement('option'); o.value = ''; o.textContent = 'Every team'; sel.appendChild(o);
-        add(sel, '__leads', 'Team leaders (GLLs, HODs)');
+        var o = document.createElement('option'); o.value = ''; o.textContent = 'Every grade and team'; sel.appendChild(o);
+        var raw = {};
+        DATA.list.forEach(function (p) {
+            var k = divKey(p.department);
+            if (k && deptPhase(k) && deptShort(p.department) && !raw[k] && !TEAMS.some(function (t) { return teamDeptMatch(t, p.department); })) raw[k] = String(p.department).trim();
+        });
+        var leftover = Object.keys(raw).map(function (k) { return raw[k]; })
+            .sort(function (a, b) { return (gradeOrder(deptShort(a)) - gradeOrder(deptShort(b))) || a.localeCompare(b); });
+        var phaseOfArea = { elem: 'elem', sec: 'sec' };
         TEAM_AREAS.forEach(function (a) {
             var g = document.createElement('optgroup'); g.label = a.label;
             if (a.all) add(g, 'area:' + a.id, a.all);
             TEAMS.filter(function (t) { return t.area === a.id; }).forEach(function (t) { add(g, 'team:' + t.id, t.label); });
+            leftover.filter(function (n) { return phaseOfArea[a.id] === deptPhase(n); })
+                .forEach(function (n) { add(g, 'dept:' + n, deptShort(n) + ' (HR department)'); });
             if (g.children.length) sel.appendChild(g);
         });
         sel.value = Array.prototype.some.call(sel.options, function (x) { return x.value === cur; }) ? cur : '';
-        var un = teamIndex.unmatched, box = $('team-unmatched');
+        $('tracker-team').closest('label').classList.toggle('hidden', sel.options.length < 2);
+        var un = teamIndex ? teamIndex.unmatched : [], box = $('team-unmatched');
         box.classList.toggle('hidden', !un.length);
         if (un.length) {
             box.querySelector('summary').textContent = plural(un.length, 'name') + ' on the faculty list not found on the staff list';
@@ -688,105 +738,17 @@
         return mods.length === REQUIRED.length && mods.every(function (m) { return m.required; }) ? 'all required modules' : 'all modules';
     }
 
-    /* ---- The Department select, grouped (9 Nov 2026) ----
-     * HR's departments are "Phase - detail" ("Primary - Grade 3", "Secondary - PE") or a support office. The select lists
-     * them under Early Years & Primary and Secondary (each with an "all" option and the grades or subjects by their short
-     * name), then the support offices merged as in DIVISION_GROUPS, then any department left over, so a new one still
-     * appears. Values: `__dep_elem` / `__dep_sec` for a whole phase, a DIVISION_GROUPS key, or the department itself. */
-    function deptPhase(dep) {
-        var d = divKey(dep);
-        if (/^(early years|primary|kg)\b/.test(d)) return 'elem';
-        if (/^secondary\b/.test(d)) return 'sec';
-        return '';
-    }
-    function inDepartment(p, v) {
-        if (!v) return true;
-        if (v === '__dep_elem') return deptPhase(p.department) === 'elem';
-        if (v === '__dep_sec') return deptPhase(p.department) === 'sec';
-        if (DIVISION_GROUPS[v]) return GROUPED[divKey(p.department)] === v;
-        return divKey(p.department) === divKey(v);
-    }
-    /* "Primary - Grade 3" → "Grade 3"; "Early Years - KG1" → "KG1"; "Primary Arabic" → "Arabic"; "Primary" → "Primary, no grade given". */
-    function deptShort(dep) {
-        var t = String(dep).trim(), m = t.match(/^(early years|primary|secondary)\s*[-–:]\s*(.+)$/i);
-        if (m) return m[2].trim();
-        m = t.match(/^(early years|primary|secondary)\s+(.+)$/i);
-        if (m) return m[2].trim();
-        return t + (deptPhase(t) === 'sec' ? ', no subject given' : ', no grade given');
-    }
-    function deptOrder(label) {
-        var m = label.match(/^kg\s*(\d)/i);
-        if (m) return [0, Number(m[1]), label];
-        m = label.match(/^grade\s*(\d+)/i);
-        if (m) return [1, Number(m[1]), label];
-        return [/, no (grade|subject) given$/.test(label) ? 3 : 2, 0, label];
-    }
-    function fillDepartmentSelect() {
-        var sel = $('tracker-department'), cur = sel.value;
-        sel.textContent = '';
-        function count(v) { var n = 0; DATA.list.forEach(function (p) { if (inDepartment(p, v)) n++; }); return n; }
-        function add(parent, v, t) {
-            var n = count(v);
-            if (!n) return 0;
-            var o = document.createElement('option'); o.value = v; o.textContent = t + ' (' + n + ')'; parent.appendChild(o);
-            return n;
-        }
-        function group(label, items) {
-            var g = document.createElement('optgroup'); g.label = label;
-            items.forEach(function (it) { add(g, it[0], it[1]); });
-            if (g.children.length) sel.appendChild(g);
-        }
-        var o = document.createElement('option'); o.value = ''; o.textContent = 'All departments'; sel.appendChild(o);
-        var raw = {};
-        DATA.list.forEach(function (p) { var k = divKey(p.department); if (k && !raw[k]) raw[k] = String(p.department).trim(); });
-        var names = Object.keys(raw).map(function (k) { return raw[k]; });
-        function phaseItems(phase, allValue, allLabel) {
-            var list = names.filter(function (n) { return deptPhase(n) === phase; })
-                .map(function (n) { return [n, deptShort(n)]; })
-                .sort(function (a, b) {
-                    var x = deptOrder(a[1]), y = deptOrder(b[1]);
-                    return (x[0] - y[0]) || (x[1] - y[1]) || x[2].localeCompare(y[2]);
-                });
-            return [[allValue, allLabel]].concat(list);
-        }
-        group('Early Years & Primary', phaseItems('elem', '__dep_elem', 'All Early Years & Primary'));
-        group('Secondary', phaseItems('sec', '__dep_sec', 'All Secondary'));
-        var support = Object.keys(DIVISION_GROUPS).map(function (k) { return [k, DIVISION_GROUPS[k].label]; });
-        var rest = names.filter(function (n) { return !deptPhase(n) && !GROUPED[divKey(n)]; })
-            .sort(function (a, b) { return a.localeCompare(b); }).map(function (n) { return [n, n]; });
-        group('Support & other departments', support.concat(rest));
-        sel.value = Array.prototype.some.call(sel.options, function (x) { return x.value === cur; }) ? cur : '';
-    }
-
-    /* Division, team, department and designation: "More filters". */
-    var GROUP_FILTERS = ['tracker-division', 'tracker-team', 'tracker-department', 'tracker-designation'];
+    /* "More filters": Staff group and Grade or team (Department and Designation were folded into them, 9 Nov 2026). */
+    var GROUP_FILTERS = ['tracker-division', 'tracker-team'];
     function inGroup(p) {
-        var div = $('tracker-division').value, dep = $('tracker-department').value, des = $('tracker-designation').value;
-        if (!inDivision(p, div)) return false;
-        if (!inTeam(p, $('tracker-team').value)) return false;
-        if (!inDepartment(p, dep)) return false;
-        if (des && (p.designation || '') !== des) return false;
-        return true;
+        return inDivision(p, $('tracker-division').value) && inTeam(p, $('tracker-team').value);
     }
     function fillGroupFilters() {
-        var any = DATA.list.some(function (p) { return p.division || p.department || p.designation; });
-        $('more-filters-empty').classList.toggle('hidden', any);
-        ['tracker-division', 'tracker-department', 'tracker-designation'].forEach(function (id) {
-            $(id).closest('label').classList.toggle('hidden', !any);
-        });
-        fillDivisionSelect($('tracker-division'), 'All divisions');
-        function count(key) { var c = {}; DATA.list.forEach(function (p) { if (p[key]) c[p[key]] = (c[p[key]] || 0) + 1; }); return c; }
-        function fill(id, all, counts) {
-            var el = $(id), cur = el.value;
-            el.textContent = '';
-            function add(v, t) { var o = document.createElement('option'); o.value = v; o.textContent = t; el.appendChild(o); }
-            add('', all);
-            Object.keys(counts).sort(function (a, b) { return a.localeCompare(b); }).forEach(function (k) { add(k, k + ' (' + counts[k] + ')'); });
-            el.value = Array.prototype.some.call(el.options, function (o) { return o.value === cur; }) ? cur : '';
-        }
-        fillDepartmentSelect();
-        fill('tracker-designation', 'All designations', count('designation'));
+        if (TEAMS.length) matchTeams(); else teamIndex = { byTeam: {}, leads: {}, unmatched: [] };
+        var any = fillDivisionSelect($('tracker-division'), 'Everyone');
+        $('tracker-division').closest('label').classList.toggle('hidden', !any);
         fillTeamSelect();
+        $('more-filters-empty').classList.toggle('hidden', any || !$('tracker-team').closest('label').classList.contains('hidden'));
         var hasOv = fillDivisionSelect($('ov-division'), 'All staff');
         $('ov-division').closest('label').classList.toggle('hidden', !hasOv);
     }
@@ -952,7 +914,7 @@
         if (o.module && moduleById(o.module)) $('tracker-module').value = o.module;
         if (o.status != null) $('tracker-status').value = o.status;
         $('filter-text').value = '';
-        ['tracker-team', 'tracker-department', 'tracker-designation'].forEach(function (id) { $(id).value = ''; });
+        $('tracker-team').value = '';
         $('tracker-division').value = o.division || '';
         renderTracker();
         go('training');

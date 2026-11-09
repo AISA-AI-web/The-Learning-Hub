@@ -58,11 +58,13 @@ const everyone = people.concat(extras);
 const TEAMS_STUB = `window.AISA_TEAMS = [
   { id: 'g4', label: 'Grade 4', area: 'elem', homeroom: true, members: [['JP Fakename', '', 'GLL'], ['Natashia Testa'], ['Kate Samename'], ['Ghost Person']] },
   { id: 'elem-x', label: 'Elementary specialists', area: 'elem', members: [['Juan Samename']] },
-  { id: 'hs-math', label: 'HS Math', area: 'hs', members: [['Teacher 004', 't004@school.example', 'HOD'], ['Teacher 005', 't005@school.example']] }
+  { id: 'hs-math', label: 'HS Math', area: 'hs', members: [['Teacher 004', 't004@school.example', 'HOD'], ['Teacher 005', 't005@school.example']] },
+  { id: 'pe', label: 'MS/HS PE', area: 'sec', depts: ['Secondary - PE'], members: [] }
 ];
 window.AISA_TEAM_AREAS = [
   { id: 'elem', label: 'KG & Elementary', all: 'All KG–Grade 5 homeroom teams', homeroomOnly: true },
-  { id: 'hs', label: 'High School', all: 'All High School departments' }
+  { id: 'hs', label: 'High School', all: 'All High School departments' },
+  { id: 'sec', label: 'Secondary (MS & HS)', all: '' }
 ];`;
 
 const completions = [];
@@ -217,10 +219,11 @@ function serve() {
         await page.click('#notify-cancel');
         await page.click('#tracker-bulk-clear');
         ok(await page.isHidden('#tracker-bulk'), 'clear selection hides the bulk bar');
-        ok(await page.isHidden('#tracker-division') || !(await visible(page, '#more-filters')), 'designation and the rest are inside More filters');
+        ok(!(await visible(page, '#more-filters')), 'Staff group and Grade or team are inside More filters');
         await page.click('#more-filters-btn');
-        ok(await visible(page, '#tracker-designation'), 'More filters opens with Designation');
-        await page.selectOption('#tracker-division', 'Secondary');
+        ok(await visible(page, '#tracker-division') && await visible(page, '#tracker-team'), 'More filters opens with Staff group and Grade or team');
+        ok(await page.$('#tracker-department') === null && await page.$('#tracker-designation') === null, 'Department and Designation are gone');
+        await page.selectOption('#tracker-division', '__sec');
         await page.keyboard.press('Escape');
         ok((await page.textContent('#more-filters-n')).trim() === '1', 'More filters shows how many are set');
         await page.click('#view-training');
@@ -276,7 +279,7 @@ function serve() {
         await page.click('#pp-tab-sync');
         ok(await visible(page, '#rs-sc-h') && !(await visible(page, '#rs-rows')), 'Sync with HR sub-tab');
 
-        /* ---------- Division groups and teams ---------- */
+        /* ---------- Staff group and Grade or team ---------- */
         await page.click('#tab-training');
         await page.click('#view-person');
         await page.selectOption('#tracker-status', '');
@@ -285,44 +288,45 @@ function serve() {
         ok(n('__teach') === 36 && n('__teach_elem') === 25 && n('__teach_sec') === 11,
             'teaching staff: all 36, KG & Primary 25, Secondary 11 (assistants out, Learning Support in)');
         ok(n('__slt') === 4, 'SLT: a Principal, an Assistant Principal and the two named addresses (' + n('__slt') + ')');
-        ok(n('__admin') === 2 && n('__facilities') === 2 && n('__monitors') === 2, 'admin & finance, facilities and monitors groups have 2 each');
-        ok(n('Leadership') === 1 && n('Learning Support') === 2, 'Leadership leaves out the SLT; Learning Support stays a division');
+        ok(n('__llt') === 2, 'LLT: the rest of Leadership, plus aturabi@ who is on both (' + n('__llt') + ')');
+        ok(n('__lead') === 5, 'All leadership: SLT and LLT, each person once (' + n('__lead') + ')');
+        ok(n('__leads') === 2, 'team leaders: the GLL and the HOD from the faculty list');
+        ok(n('__elem') === 46 && n('__sec') === 22, 'everyone in a phase, by division or department, leadership left out (' + n('__elem') + ', ' + n('__sec') + ')');
+        ok(n('__admin') === 2 && n('__facilities') === 2 && n('__monitors') === 2, 'support groups: 2 each (leaders left out)');
+        ok(n('Learning Support') === 2 && !('Leadership' in divOpts) && !('Secondary' in divOpts) && !('Early Years' in divOpts),
+            'Other lists only what no group takes');
         ok(['Administrator', 'HR Office', 'Transport', 'Support Staff', 'Hallway Monitor', ' hallway monitor', 'Hallway / Bus Monitor'].every(v => !(v in divOpts)),
             'divisions taken into a group are not listed on their own');
         const groupLabels = await page.$$eval('#tracker-division optgroup', els => els.map(g => g.label));
-        ok(groupLabels.join('|') === 'Teaching staff|Groups|Divisions', 'three headings: teaching staff, groups, divisions');
+        ok(groupLabels.join('|') === 'Teaching staff|Leadership|Everyone in a phase|Support staff|Other', 'headings: ' + groupLabels.join(', '));
         async function shownNames() {
             return page.$$eval('#matrix-body td.main b', els => els.map(e => e.textContent).sort());
         }
         await page.click('#more-filters-btn');
         await page.selectOption('#tracker-division', '__admin');
         ok(JSON.stringify(await shownNames()) === JSON.stringify(['Fin Manager', 'Hr Person']), 'Administration & finance narrows the table to exactly those two');
-        await page.selectOption('#tracker-division', '__slt');
-        ok((await shownNames()).length === 4, 'SLT narrows the table to the four');
+        await page.selectOption('#tracker-division', '__llt');
+        ok(JSON.stringify(await shownNames()) === JSON.stringify(['Lee Leader', 'Made-up Curriculum']), 'LLT narrows the table to its two');
         await page.selectOption('#tracker-division', '__teach_elem');
         ok(!(await shownNames()).some(x => /Helper|Teacher 002\b/.test(x)), 'KG & Primary teaching staff leaves out Teacher Assistants');
         await page.selectOption('#tracker-division', '');
         const teamOpts = await page.$$eval('#tracker-team option', els => Object.fromEntries(els.map(o => [o.value, o.textContent])));
         const tn = v => Number(((teamOpts[v] || '').match(/\((\d+)\)$/) || [])[1]);
-        ok(tn('team:g4') === 3, 'Grade 4 matches a nickname (JP), a near spelling and the right one of two Samenames (' + tn('team:g4') + ')');
+        ok(tn('team:g4') === 3, 'Grade 4 matches a nickname (JP), a near spelling and the right one of two Samenames, and its HR department (' + tn('team:g4') + ')');
         ok(tn('team:elem-x') === 1 && tn('team:hs-math') === 2 && tn('area:hs') === 2, 'teams by name and by address');
         ok(tn('area:elem') === 3, 'All homeroom teams counts the homeroom teams only');
-        ok(tn('__leads') === 2, 'team leaders: the GLL and the HOD');
+        ok(tn('team:pe') === 1, 'a team takes in its HR department (Secondary - PE)');
+        const elemOpts = await page.$$eval('#tracker-team optgroup', els => els.filter(g => g.label === 'KG & Elementary').map(g => Array.from(g.children).map(o => o.textContent))[0]);
+        ok(JSON.stringify(elemOpts) === JSON.stringify(['All KG–Grade 5 homeroom teams (3)', 'Grade 4 (3)', 'Elementary specialists (1)', 'KG1 (HR department) (1)', 'Grade 10 (HR department) (1)', 'Arabic (HR department) (1)']),
+            'HR grades no team takes are listed too, in grade order (' + elemOpts.join(', ') + ')');
+        ok(!('__leads' in teamOpts), 'team leaders moved to Staff group');
         ok((await page.textContent('#team-unmatched')).includes('Ghost Person (Grade 4)'), 'a name not on the staff list is listed under the filter');
         await page.selectOption('#tracker-team', 'team:g4');
-        ok(JSON.stringify(await shownNames()) === JSON.stringify(['Juan Pierre Fakename', 'Kate Samename', 'Natasha Testa']), 'the Team filter narrows the table to Grade 4');
-        ok((await page.textContent('#more-filters-n')).trim() === '1', 'More filters counts the team filter');
+        ok(JSON.stringify(await shownNames()) === JSON.stringify(['Juan Pierre Fakename', 'Kate Samename', 'Natasha Testa']), 'Grade or team narrows the table to Grade 4');
+        ok((await page.textContent('#more-filters-n')).trim() === '1', 'More filters counts it');
+        await page.selectOption('#tracker-team', 'dept:Primary - Grade 10');
+        ok(JSON.stringify(await shownNames()) === JSON.stringify(['Pia Support']), 'an HR grade narrows the table to its people');
         await page.selectOption('#tracker-team', '');
-        const deptGroups = await page.$$eval('#tracker-department optgroup', els => els.map(g => [g.label, Array.from(g.children).map(o => o.textContent)]));
-        ok(deptGroups.map(g => g[0]).join('|') === 'Early Years & Primary|Secondary|Support & other departments', 'departments under three headings');
-        ok(JSON.stringify(deptGroups[0][1]) === JSON.stringify(['All Early Years & Primary (5)', 'KG1 (1)', 'Grade 4 (1)', 'Grade 10 (1)', 'Arabic (1)', 'Early Years, no grade given (1)']),
-            'Early Years & Primary: all, then KG, grades in order, Arabic, and the ones with no grade (' + deptGroups[0][1].join(', ') + ')');
-        ok(JSON.stringify(deptGroups[1][1]) === JSON.stringify(['All Secondary (2)', 'PE (1)', 'Secondary, no subject given (1)']), 'Secondary: all, then each subject');
-        ok(deptGroups[2][1][0] === 'Administration & finance (4)' && deptGroups[2][1].includes('Hallway & bus monitors (2)') && !deptGroups[2][1].some(t => /^(Administrator|HR Office|Transport) \(/.test(t)),
-            'support offices merged as in the Division groups');
-        await page.selectOption('#tracker-department', '__dep_elem');
-        ok((await shownNames()).length === 5, 'All Early Years & Primary narrows the table to those 5');
-        await page.selectOption('#tracker-department', '');
         await page.keyboard.press('Escape');
         await page.click('#tab-overview');
         await page.selectOption('#ov-division', '__teach_sec');

@@ -1079,11 +1079,21 @@ surname or a near spelling, plus the first name, its first letters or a shortene
 distinctive, unique and the initial agrees). Names that match no one are listed under the filter: add an email for them in
 `admin-teams.js`. The Roster tab's own Division filter is unchanged.
 
-**The Department select is grouped too** (9 Nov 2026, `fillDepartmentSelect()` / `inDepartment()`): HR's departments are
-"Phase - detail", so it lists **Early Years & Primary** (an "All" option, then KG1, KG2, Grade 1 … in order, Arabic, and
-"no grade given" for a bare *Primary*), **Secondary** (All, then each subject), then **Support & other departments**: the
-support offices merged by the same `DIVISION_GROUPS`, then any department left over (Athletics, IT, Leadership …), so a new
-one still shows. Unlike the Division groups it does not leave the SLT out: a department is what HR wrote.
+**Two filters, not four (9 Nov 2026, `admin-dashboard.js?v=4`, `admin-teams.js?v=2`).** Division, Team, Department and
+Designation overlapped (a division is made from the department; the support groups were the same in two lists), so *More
+filters* is now:
+
+- **Staff group** (`tracker-division`, and the Overview's *Showing*, `inDivision()`): Teaching staff (all / KG & Primary /
+  Secondary); **Leadership**: All leadership (SLT + LLT), SLT, LLT, Team leaders (GLLs, HODs, from `admin-teams.js`);
+  Everyone in a phase (Early Years & Primary, Secondary: by division or department); Support staff (`DIVISION_GROUPS`, by
+  division or department); Other (any division no group takes). **SLT** is `isSLT` (designation "principal", plus
+  `SLT_EMAILS`); **LLT** is everyone else in HR's *Leadership* division, plus `LLT_EMAILS` (aturabi@ is on both, decided by
+  Brandon). Leadership is left out of the phase, support and other groups; the teaching options go by job title.
+- **Grade or team** (`tracker-team`, `inTeam()`): the faculty list's teams by area, **each also taking in HR's department
+  for it** (a homeroom team its grade, so "Primary - Grade 3" is Grade 3 with its teacher assistants; any other team the
+  departments in its `depts`), then any HR grade or subject department no team takes, marked "(HR department)".
+
+Department and Designation are gone as filters; the CSV still has both columns, and both are edited on People › Staff list.
 
 ## Anti-Bullying Policy: Teacher Awareness — PREVIEW, built 7 October 2026
 

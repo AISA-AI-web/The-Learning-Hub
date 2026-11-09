@@ -8,7 +8,8 @@
  * in the browser (matchTeams() in admin-dashboard.js), and anyone who cannot be matched is listed under the filter, so a
  * name can be corrected here. Add an email to make a match certain.
  *
- * `area` decides the heading the team is listed under. A change here needs admin-teams.js?v=N bumped in admin-dashboard.html.
+ * `area` decides the heading the team is listed under. A team also takes in whoever HR files under its department: a homeroom
+ * team by its grade ("Primary - Grade 3" is Grade 3), any other team by the departments in its `depts`. A change here needs admin-teams.js?v=N bumped in admin-dashboard.html.
  */
 window.AISA_TEAMS = [
     { id: 'kg1', label: 'KG1', area: 'elem', homeroom: true, members: [
@@ -34,7 +35,7 @@ window.AISA_TEAMS = [
         ['Ryan Myles', 'rmyles@aisa.sch.ae'], ['Francois Botha', 'fbotha@aisa.sch.ae']] },
     { id: 'elem-specialists', label: 'Elementary specialists', area: 'elem', members: [
         ['Brooke Hoiseth', '', 'Specialist GLL'], ['Christine Canalas'], ['Dmytro Verbenski'], ['Kimberly Masters']] },
-    { id: 'elem-arabic', label: 'Elementary Arabic, Islamic & UAE SS', area: 'elem', members: [
+    { id: 'elem-arabic', label: 'Elementary Arabic, Islamic & UAE SS', area: 'elem', depts: ['Primary Arabic'], members: [
         ['Rafif Al Husari', '', 'Arabic GLL'], ['Nancy Ibrahim'], ['Ishraq Jumeian'], ['Doaa Alawneh'], ['Dima Abdullah'], ['May Moustaffa'],
         ['Rasha Elsayed'], ['Ibtissam Al Bayouk'], ['Nour Rabah'], ['Alaa Al Moghrabe'], ['Soheel Ghanem'], ['Khaled Essam']] },
 
@@ -64,14 +65,14 @@ window.AISA_TEAMS = [
         ['Veronica Player', 'vplayer@aisa.sch.ae', 'HOD'], ['Paulo Vitor', 'pvitor@aisa.sch.ae'], ['Jennifer Matar', 'jmatar@aisa.sch.ae'],
         ['Jenel Sanchez', 'jsanchez@aisa.sch.ae']] },
 
-    { id: 'sec-arabic', label: 'Secondary Arabic, Islamic & UAE SS', area: 'sec', members: [
+    { id: 'sec-arabic', label: 'Secondary Arabic, Islamic & UAE SS', area: 'sec', depts: ['Secondary - Arabic'], members: [
         ['Ahmed El Sawaf', 'aelsawaf@aisa.sch.ae', 'HOD'], ['Abdelfattah Zalama', 'azalama@aisa.sch.ae'], ['Fairouz Babikir', 'fbabikir@aisa.sch.ae'],
         ['Belal Tantawe', 'btantawi@aisa.sch.ae'], ['Naglaa Mattar', 'nmater@aisa.sch.ae'], ['Ashraf Mohamed'], ['Hiam Maoued', 'hmaoued@aisa.sch.ae'],
         ['Amro Alazab'], ['Hossam Mahanna', 'hmahanna@aisa.sch.ae'], ['Jamila Albakour', 'jalbakour@aisa.sch.ae'], ['Abdelrahman Youssef'],
         ['Abdel Moamen Alroz', 'amalroz@aisa.sch.ae']] },
     { id: 'vapa', label: 'Visual & performing arts (VAPA)', area: 'sec', members: [
         ['Nataliia Verbenska', '', 'HOD'], ['Ellen Grobler'], ['Matthew Minnies']] },
-    { id: 'pe', label: 'MS/HS PE', area: 'sec', members: [
+    { id: 'pe', label: 'MS/HS PE', area: 'sec', depts: ['Secondary - PE'], members: [
         ['Darrell Traylor', '', 'HOD'], ['Cherry Spencer'], ['Danielle Masters'], ['Lelan Washington']] },
 
     { id: 'student-services', label: 'K–12 Student Services', area: 'k12', members: [
