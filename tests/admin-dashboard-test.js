@@ -26,6 +26,41 @@ function person(i) {
              division: i % 3 === 0 ? 'Secondary' : (i % 3 === 1 ? 'Primary' : 'Early Years'), department: 'Dept ' + (i % 4), designation: i % 2 ? 'Teacher' : 'Assistant' };
 }
 const people = Array.from({ length: 60 }, (_, i) => person(i + 1));
+/* Staff outside the 60 teachers, for the division groups and the teams (9 Nov 2026). The two @aisa.sch.ae addresses are
+ * the SLT's named members in admin-dashboard.js (SLT_EMAILS); everything else about them here is made up. */
+const extras = [
+    ['x01@school.example', 'Pat Principal', 'Secondary Principal', 'Administrator'],
+    ['x02@school.example', 'Ann Deputy', 'Primary Assistant Principal', 'Administrator'],
+    ['x03@school.example', 'Fin Manager', 'Finance Manager', 'Administrator'],
+    ['atorris@aisa.sch.ae', 'Made-up Director', 'School Director', 'Leadership'],
+    ['aturabi@aisa.sch.ae', 'Made-up Curriculum', 'Curriculum Coordinator', 'Leadership'],
+    ['x06@school.example', 'Lee Leader', 'Head of Inclusion', 'Leadership'],
+    ['x07@school.example', 'Hr Person', 'PRO', 'HR Office'],
+    ['x08@school.example', 'Dee Driver', 'Driver', 'Transport'],
+    ['x09@school.example', 'Sam Support', 'Lifeguard', 'Support Staff'],
+    ['x10@school.example', 'Mo Monitor', 'Hallway / Bus Monitor', 'Hallway / Bus Monitor'],
+    ['x11@school.example', 'Ta Monitor', 'Teacher Assistant', ' hallway monitor'],
+    ['x12@school.example', 'Les Support', 'Secondary Learning Support Teacher', 'Learning Support'],
+    ['x13@school.example', 'Pia Support', 'Primary Learning Support', 'Learning Support'],
+    ['x14@school.example', 'Kim Helper', 'KG Teacher Assistant', 'Early Years'],
+    ['x15@school.example', 'Juan Pierre Fakename', 'Primary Homeroom Teacher', 'Primary'],
+    ['x16@school.example', 'Natasha Testa', 'Primary Homeroom Teacher', 'Primary'],
+    ['x17@school.example', 'Kate Samename', 'Primary Homeroom Teacher', 'Primary'],
+    ['x18@school.example', 'Juan Samename', 'Primary Homeroom Teacher', 'Primary']
+].map(([email, name, designation, division]) => ({ email, name, designation, division, department: division, last_seen: '2026-11-02T08:00:00Z' }));
+const everyone = people.concat(extras);
+/* Stands in for admin-teams.js: a nickname, a near spelling, two people with one surname, someone not on the Hub, and
+ * members given by address. */
+const TEAMS_STUB = `window.AISA_TEAMS = [
+  { id: 'g4', label: 'Grade 4', area: 'elem', homeroom: true, members: [['JP Fakename', '', 'GLL'], ['Natashia Testa'], ['Kate Samename'], ['Ghost Person']] },
+  { id: 'elem-x', label: 'Elementary specialists', area: 'elem', members: [['Juan Samename']] },
+  { id: 'hs-math', label: 'HS Math', area: 'hs', members: [['Teacher 004', 't004@school.example', 'HOD'], ['Teacher 005', 't005@school.example']] }
+];
+window.AISA_TEAM_AREAS = [
+  { id: 'elem', label: 'KG & Elementary', all: 'All KG–Grade 5 homeroom teams', homeroomOnly: true },
+  { id: 'hs', label: 'High School', all: 'All High School departments' }
+];`;
+
 const completions = [];
 people.forEach((p, i) => {
     // ai-ethics ~95%, return-to-school ~75%, safeguarding ~50%, sustainability ~92%: one of each colour
@@ -36,6 +71,7 @@ people.forEach((p, i) => {
     if (i % 3 === 0) completions.push({ email: p.email, module_id: REC[i % 3], completed_at: '2026-10-05T09:00:00Z' });
     if (i % 5 === 0) completions.push({ email: p.email, module_id: 'survey', completed_at: '2026-10-05T09:00:00Z' });
 });
+extras.forEach(p => ['ai-ethics', 'sustainability', 'return-to-school'].forEach(m => completions.push({ email: p.email, module_id: m, completed_at: '2026-10-06T09:00:00Z' })));
 const dwell = [];
 people.slice(0, 30).forEach((p, i) => {
     dwell.push({ email: p.email, name: p.name, module_id: 'safeguarding', total_seconds: 900 + i * 10, chapters_seen: 6, avg_secs_per_chapter: i < 3 ? 8 : 150 + i });
@@ -48,7 +84,7 @@ const goals = people.filter((_, i) => i % 3 === 0).slice(0, 8).map((p, i) => ({
 const outstanding = people.filter((_, i) => i % 3 === 0).slice(6, 16).map(p => ({ email: p.email, name: p.name, tags: ['secondary'] }));
 const bundle = {
     ok: true,
-    overview: { ok: true, generated_at: '2026-11-09T08:02:00Z', people, completions },
+    overview: { ok: true, generated_at: '2026-11-09T08:02:00Z', people: everyone, completions },
     dwell: { ok: true, rows: dwell },
     module_responses: { ok: true, module_id: 'ai-curriculum-readiness', responses: [
         { email: 'x1@school.example', name: 'Outside Cohort', updated_at: '2026-09-15T10:00:00Z', data: { lesson: { needs_before: 'Help please' } } }] },
@@ -85,6 +121,7 @@ function serve() {
         const srv = http.createServer((req, res) => {
             const u = decodeURIComponent(req.url.split('?')[0]);
             if (u === '/auth/gate.js') { res.writeHead(200, { 'content-type': 'text/javascript' }); res.end(stub()); return; }
+            if (u === '/admin-teams.js') { res.writeHead(200, { 'content-type': 'text/javascript' }); res.end(TEAMS_STUB); return; }
             const f = path.join(ROOT, u);
             if (!f.startsWith(ROOT) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { res.writeHead(404); res.end(); return; }
             res.writeHead(200, { 'content-type': types[path.extname(f)] || 'application/octet-stream' });
@@ -213,7 +250,7 @@ function serve() {
         ok(await page.$eval('#resp-details', d => !d.open), 'readiness responses are collapsed');
         ok((await page.textContent('#resp-stats')).includes('0 / 62'), 'readiness counts the cohort only (someone outside it is not "started")');
         await page.click('#sv-tab-innovation');
-        ok((await page.textContent('#innov-title-count')).includes('of 60'), 'AI & Innovation Survey shows done of staff');
+        ok((await page.textContent('#innov-title-count')).includes('of ' + everyone.length), 'AI & Innovation Survey shows done of staff');
 
         /* ---------- People ---------- */
         await page.click('#tab-people');
@@ -234,6 +271,51 @@ function serve() {
         ok((await page.textContent('#rs-rm-rows')).includes('Gone Person'), 'Removed sub-tab lists the removed');
         await page.click('#pp-tab-sync');
         ok(await visible(page, '#rs-sc-h') && !(await visible(page, '#rs-rows')), 'Sync with HR sub-tab');
+
+        /* ---------- Division groups and teams ---------- */
+        await page.click('#tab-training');
+        await page.click('#view-person');
+        await page.selectOption('#tracker-status', '');
+        const divOpts = await page.$$eval('#tracker-division option', els => Object.fromEntries(els.map(o => [o.value, o.textContent])));
+        const n = v => Number(((divOpts[v] || '').match(/\((\d+)\)$/) || [])[1]);
+        ok(n('__teach') === 36 && n('__teach_elem') === 25 && n('__teach_sec') === 11,
+            'teaching staff: all 36, KG & Primary 25, Secondary 11 (assistants out, Learning Support in)');
+        ok(n('__slt') === 4, 'SLT: a Principal, an Assistant Principal and the two named addresses (' + n('__slt') + ')');
+        ok(n('__admin') === 2 && n('__facilities') === 2 && n('__monitors') === 2, 'admin & finance, facilities and monitors groups have 2 each');
+        ok(n('Leadership') === 1 && n('Learning Support') === 2, 'Leadership leaves out the SLT; Learning Support stays a division');
+        ok(['Administrator', 'HR Office', 'Transport', 'Support Staff', 'Hallway Monitor', ' hallway monitor', 'Hallway / Bus Monitor'].every(v => !(v in divOpts)),
+            'divisions taken into a group are not listed on their own');
+        const groupLabels = await page.$$eval('#tracker-division optgroup', els => els.map(g => g.label));
+        ok(groupLabels.join('|') === 'Teaching staff|Groups|Divisions', 'three headings: teaching staff, groups, divisions');
+        async function shownNames() {
+            return page.$$eval('#matrix-body td.main b', els => els.map(e => e.textContent).sort());
+        }
+        await page.click('#more-filters-btn');
+        await page.selectOption('#tracker-division', '__admin');
+        ok(JSON.stringify(await shownNames()) === JSON.stringify(['Fin Manager', 'Hr Person']), 'Administration & finance narrows the table to exactly those two');
+        await page.selectOption('#tracker-division', '__slt');
+        ok((await shownNames()).length === 4, 'SLT narrows the table to the four');
+        await page.selectOption('#tracker-division', '__teach_elem');
+        ok(!(await shownNames()).some(x => /Helper|Teacher 002\b/.test(x)), 'KG & Primary teaching staff leaves out Teacher Assistants');
+        await page.selectOption('#tracker-division', '');
+        const teamOpts = await page.$$eval('#tracker-team option', els => Object.fromEntries(els.map(o => [o.value, o.textContent])));
+        const tn = v => Number(((teamOpts[v] || '').match(/\((\d+)\)$/) || [])[1]);
+        ok(tn('team:g4') === 3, 'Grade 4 matches a nickname (JP), a near spelling and the right one of two Samenames (' + tn('team:g4') + ')');
+        ok(tn('team:elem-x') === 1 && tn('team:hs-math') === 2 && tn('area:hs') === 2, 'teams by name and by address');
+        ok(tn('area:elem') === 3, 'All homeroom teams counts the homeroom teams only');
+        ok(tn('__leads') === 2, 'team leaders: the GLL and the HOD');
+        ok((await page.textContent('#team-unmatched')).includes('Ghost Person (Grade 4)'), 'a name not on the staff list is listed under the filter');
+        await page.selectOption('#tracker-team', 'team:g4');
+        ok(JSON.stringify(await shownNames()) === JSON.stringify(['Juan Pierre Fakename', 'Kate Samename', 'Natasha Testa']), 'the Team filter narrows the table to Grade 4');
+        ok((await page.textContent('#more-filters-n')).trim() === '1', 'More filters counts the team filter');
+        await page.selectOption('#tracker-team', '');
+        await page.keyboard.press('Escape');
+        await page.click('#tab-overview');
+        await page.selectOption('#ov-division', '__teach_sec');
+        await page.click('#required-bars [data-goto-module]');
+        ok(await page.inputValue('#tracker-division') === '__teach_sec', 'Overview → tracker keeps a group (Secondary teaching staff)');
+        await page.click('#tab-overview');
+        await page.selectOption('#ov-division', '');
 
         /* ---------- Tools ---------- */
         await page.click('#tools-btn');

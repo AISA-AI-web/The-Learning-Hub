@@ -326,23 +326,198 @@
     /* ================================================================ Overview */
 
     function ovDivision() { return $('ov-division').value; }
+
+    /* ---- Division groups (9 Nov 2026) ----
+     * A person's division is HR's: Early Years / Primary / Secondary, otherwise their HR department, so the same group of
+     * people can be split across several spellings. The Division filter lists these groups instead, then the divisions no
+     * group takes. Edit the groups here; option values start "__" so they never clash with a real division's name. */
+    var DIVISION_GROUPS = {
+        __admin:      { label: 'Administration & finance', divisions: ['Accounts Office', 'Administration', 'Administrator', 'Finance', 'HR Office', 'Purchasing', 'Registration'] },
+        __facilities: { label: 'Maintenance, cleaning & transport', divisions: ['Maintenance Department', 'Transport', 'Support Staff'] },
+        __monitors:   { label: 'Hallway & bus monitors', divisions: ['Hallway / Bus Monitor', 'Hallway Monitor'] }
+    };
+    /* The Senior Leadership Team: anyone whose designation says "principal" (so a new one joins by themselves), plus these. */
+    var SLT_EMAILS = ['atorris@aisa.sch.ae', 'aturabi@aisa.sch.ae'];
+    function divKey(s) { return String(s || '').trim().toLowerCase(); }
+    var GROUPED = {};
+    Object.keys(DIVISION_GROUPS).forEach(function (g) { DIVISION_GROUPS[g].divisions.forEach(function (d) { GROUPED[divKey(d)] = g; }); });
+
+    function isSLT(p) { return /principal/i.test(p.designation || '') || SLT_EMAILS.indexOf(divKey(p.email)) !== -1; }
+    /* Teaching staff: a designation with "teacher" and not "assistant", or Primary Learning Support. Teacher Assistants,
+     * counsellors, librarians and coordinators are not. */
+    function isTeacher(p) {
+        var d = p.designation || '';
+        return (/teacher/i.test(d) && !/assistant/i.test(d)) || /primary learning support/i.test(d);
+    }
+    /* KG & Primary or Secondary: from the division, else from how the designation starts ("Primary …", "Secondary …"). */
+    function phaseOf(p) {
+        var d = divKey(p.division);
+        if (d === 'early years' || d === 'primary') return 'elem';
+        if (d === 'secondary') return 'sec';
+        var g = divKey(p.designation);
+        if (/^(early years|primary|elementary|kg)\b/.test(g)) return 'elem';
+        if (/^secondary\b/.test(g)) return 'sec';
+        return '';
+    }
+
     function inDivision(p, div) {
         if (!div) return true;
-        var d = p.division || '';
-        return div === '__elem' ? (d === 'Early Years' || d === 'Primary') : d === div;
+        if (div === '__slt') return isSLT(p);
+        if (div === '__teach') return isTeacher(p);
+        if (div === '__teach_elem') return isTeacher(p) && phaseOf(p) === 'elem';
+        if (div === '__teach_sec') return isTeacher(p) && phaseOf(p) === 'sec';
+        if (isSLT(p)) return false;   // the SLT are a group of their own, left out of every other group and division
+        var d = divKey(p.division);
+        if (div === '__elem') return d === 'early years' || d === 'primary';
+        if (DIVISION_GROUPS[div]) return GROUPED[d] === div;
+        return d === divKey(div);
     }
     function ovList() { var div = ovDivision(); return DATA.list.filter(function (p) { return inDivision(p, div); }); }
 
+    /* The Division select (Overview's "Showing" and the tracker's): teaching staff, groups, then the divisions no group
+     * takes, each with how many people it holds (counted with inDivision, so a count is what the filter shows). An empty
+     * one is left out; a division that appears later in HR's data and is in no group still shows up at the bottom. */
     function fillDivisionSelect(sel, allLabel) {
-        var cur = sel.value, c = {};
-        DATA.list.forEach(function (p) { if (p.division) c[p.division] = (c[p.division] || 0) + 1; });
+        var cur = sel.value;
+        function count(v) { var n = 0; DATA.list.forEach(function (p) { if (inDivision(p, v)) n++; }); return n; }
         sel.textContent = '';
-        function add(v, t) { var o = document.createElement('option'); o.value = v; o.textContent = t; sel.appendChild(o); }
-        add('', allLabel);
-        if (c['Early Years'] && c['Primary']) add('__elem', 'Elementary: Early Years + Primary (' + (c['Early Years'] + c['Primary']) + ')');
-        Object.keys(c).sort().forEach(function (k) { add(k, k + ' (' + c[k] + ')'); });
-        sel.value = Array.prototype.some.call(sel.options, function (o) { return o.value === cur; }) ? cur : '';
-        return Object.keys(c).length > 0;
+        function opt(parent, v, t) {
+            var n = count(v);
+            if (!n) return 0;
+            var o = document.createElement('option'); o.value = v; o.textContent = t + ' (' + n + ')'; parent.appendChild(o);
+            return n;
+        }
+        function group(label, items) {
+            var g = document.createElement('optgroup'); g.label = label;
+            var any = 0;
+            items.forEach(function (it) { any += opt(g, it[0], it[1]); });
+            if (any) sel.appendChild(g);
+            return any;
+        }
+        var o = document.createElement('option'); o.value = ''; o.textContent = allLabel; sel.appendChild(o);
+        var hasDivisions = DATA.list.some(function (p) { return p.division; });
+        if (!hasDivisions) { sel.value = ''; return false; }
+        group('Teaching staff', [['__teach', 'All teaching staff'], ['__teach_elem', 'KG & Primary teaching staff'], ['__teach_sec', 'Secondary teaching staff']]);
+        group('Groups', [['__slt', 'Senior Leadership Team (SLT)'], ['__elem', 'Elementary: Early Years + Primary']]
+            .concat(Object.keys(DIVISION_GROUPS).map(function (k) { return [k, DIVISION_GROUPS[k].label]; })));
+        var raw = {};
+        DATA.list.forEach(function (p) {
+            var k = divKey(p.division);
+            if (k && !GROUPED[k] && !raw[k]) raw[k] = String(p.division).trim();
+        });
+        group('Divisions', Object.keys(raw).map(function (k) { return raw[k]; }).sort(function (a, b) { return a.localeCompare(b); })
+            .map(function (name) { return [name, name]; }));
+        sel.value = Array.prototype.some.call(sel.options, function (x) { return x.value === cur; }) ? cur : '';
+        return true;
+    }
+
+    /* ---- Teams and grade levels (admin-teams.js) ----
+     * The faculty list names people; the staff list has addresses. A member with an address is that person; the rest are
+     * matched by name: the surname (or a near spelling of it) and the first name, a nickname's first letters ("JP" for Juan
+     * Pierre) or a shortened first name. Only a single clear match counts. Who could not be matched is listed under the
+     * filter, to correct in admin-teams.js. */
+    var TEAMS = window.AISA_TEAMS || [], TEAM_AREAS = window.AISA_TEAM_AREAS || [];
+    var teamIndex = null;   // { byTeam: {id: {email: true}}, leads: {email: true}, unmatched: [names] }
+
+    function nameTokens(s) {
+        return String(s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+            .replace(/\(.*?\)/g, ' ').replace(/[^a-z]+/g, ' ').trim().split(/\s+/).filter(Boolean);
+    }
+    function lev(a, b) {
+        if (Math.abs(a.length - b.length) > 2) return 3;
+        var prev = [], i, j;
+        for (j = 0; j <= b.length; j++) prev[j] = j;
+        for (i = 1; i <= a.length; i++) {
+            var cur = [i];
+            for (j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+            prev = cur;
+        }
+        return prev[b.length];
+    }
+    function prefixLen(a, b) { var i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; return i; }
+    function nameScore(listName, staffName) {
+        var tm = nameTokens(listName), tp = nameTokens(staffName);
+        if (tm.length < 2 || !tp.length) return 0;
+        var last = tm[tm.length - 1], surname = tm.slice(1).join(''), joined = tp.join('');
+        var surnameOk = joined.indexOf(surname) !== -1 ||
+            tp.some(function (t) { return t === last || (last.length >= 5 && lev(t, last) <= 1); });
+        if (!surnameOk) return 0;
+        var f = tm[0];
+        var firstOk = tp.some(function (t) { return t === f || prefixLen(t, f) >= 4; }) ||
+            (tp.length > 1 && lev(f, tp[0] + tp[1]) <= 1);
+        if (!firstOk && f.length <= 3) {   // initials: "JP" is Juan Pierre
+            for (var i = 0; i + f.length <= tp.length; i++) {
+                if (tp.slice(i, i + f.length).map(function (t) { return t[0]; }).join('') === f) { firstOk = true; break; }
+            }
+        }
+        if (firstOk) return 2;
+        /* Surname only: still the same first initial (a nickname like "Sissy" for Angelique needs an address instead). */
+        return tp.some(function (t) { return t[0] === f[0]; }) ? 1 : 0;
+    }
+    function matchTeams() {
+        var byTeam = {}, leads = {}, unmatched = [], cache = {};
+        TEAMS.forEach(function (t) {
+            byTeam[t.id] = {};
+            t.members.forEach(function (m) {
+                var name = m[0], email = divKey(m[1]), found = '';
+                if (email) found = email;
+                else if (cache[name] !== undefined) found = cache[name];
+                else {
+                    var best = [], good = [];
+                    DATA.list.forEach(function (p) {
+                        var s = nameScore(name, p.name);
+                        if (s === 2) best.push(p.email); else if (s === 1) good.push(p.email);
+                    });
+                    /* A surname alone is enough only when it is distinctive and nobody else has it. */
+                    found = best.length === 1 ? best[0]
+                          : (!best.length && good.length === 1 && nameTokens(name).slice(1).join('').length >= 5 ? good[0] : '');
+                    cache[name] = found;
+                }
+                if (found && DATA.byEmail[found]) {
+                    byTeam[t.id][found] = true;
+                    if (m[2]) leads[found] = true;
+                } else unmatched.push(name + ' (' + t.label + ')');
+            });
+        });
+        teamIndex = { byTeam: byTeam, leads: leads, unmatched: unmatched };
+    }
+    function inTeam(p, v) {
+        if (!v) return true;
+        if (!teamIndex) return false;
+        if (v === '__leads') return !!teamIndex.leads[p.email];
+        if (v.indexOf('area:') === 0) {
+            var a = v.slice(5), area = TEAM_AREAS.filter(function (x) { return x.id === a; })[0];
+            return TEAMS.some(function (t) { return t.area === a && (!area || !area.homeroomOnly || t.homeroom) && teamIndex.byTeam[t.id][p.email]; });
+        }
+        var set = teamIndex.byTeam[v.slice(5)];
+        return !!(set && set[p.email]);
+    }
+    function fillTeamSelect() {
+        var sel = $('tracker-team'), cur = sel.value;
+        sel.textContent = '';
+        if (!TEAMS.length) { $('tracker-team').closest('label').classList.add('hidden'); return; }
+        matchTeams();
+        function count(v) { var n = 0; DATA.list.forEach(function (p) { if (inTeam(p, v)) n++; }); return n; }
+        function add(parent, v, t) {
+            var n = count(v);
+            if (!n) return;
+            var o = document.createElement('option'); o.value = v; o.textContent = t + ' (' + n + ')'; parent.appendChild(o);
+        }
+        var o = document.createElement('option'); o.value = ''; o.textContent = 'Every team'; sel.appendChild(o);
+        add(sel, '__leads', 'Team leaders (GLLs, HODs)');
+        TEAM_AREAS.forEach(function (a) {
+            var g = document.createElement('optgroup'); g.label = a.label;
+            if (a.all) add(g, 'area:' + a.id, a.all);
+            TEAMS.filter(function (t) { return t.area === a.id; }).forEach(function (t) { add(g, 'team:' + t.id, t.label); });
+            if (g.children.length) sel.appendChild(g);
+        });
+        sel.value = Array.prototype.some.call(sel.options, function (x) { return x.value === cur; }) ? cur : '';
+        var un = teamIndex.unmatched, box = $('team-unmatched');
+        box.classList.toggle('hidden', !un.length);
+        if (un.length) {
+            box.querySelector('summary').textContent = plural(un.length, 'name') + ' on the faculty list not found on the staff list';
+            box.querySelector('p').textContent = un.join(', ') + '. Not signed in yet, or spelled differently: give them an email in admin-teams.js.';
+        }
     }
 
     function moduleStatus(m, list, narrowed) {
@@ -513,10 +688,12 @@
         return mods.length === REQUIRED.length && mods.every(function (m) { return m.required; }) ? 'all required modules' : 'all modules';
     }
 
-    /* Division, department and designation (from the staff list): "More filters". */
+    /* Division, team, department and designation: "More filters". */
+    var GROUP_FILTERS = ['tracker-division', 'tracker-team', 'tracker-department', 'tracker-designation'];
     function inGroup(p) {
         var div = $('tracker-division').value, dep = $('tracker-department').value, des = $('tracker-designation').value;
         if (!inDivision(p, div)) return false;
+        if (!inTeam(p, $('tracker-team').value)) return false;
         if (dep && (p.department || '') !== dep) return false;
         if (des && (p.designation || '') !== des) return false;
         return true;
@@ -539,11 +716,12 @@
         }
         fill('tracker-department', 'All departments', count('department'));
         fill('tracker-designation', 'All designations', count('designation'));
+        fillTeamSelect();
         var hasOv = fillDivisionSelect($('ov-division'), 'All staff');
         $('ov-division').closest('label').classList.toggle('hidden', !hasOv);
     }
     function groupFilterCount() {
-        return ['tracker-division', 'tracker-department', 'tracker-designation'].filter(function (id) { return $(id).value; }).length;
+        return GROUP_FILTERS.filter(function (id) { return $(id).value; }).length;
     }
 
     function buildTrackerOptions() {
@@ -704,7 +882,7 @@
         if (o.module && moduleById(o.module)) $('tracker-module').value = o.module;
         if (o.status != null) $('tracker-status').value = o.status;
         $('filter-text').value = '';
-        ['tracker-department', 'tracker-designation'].forEach(function (id) { $(id).value = ''; });
+        ['tracker-team', 'tracker-department', 'tracker-designation'].forEach(function (id) { $(id).value = ''; });
         $('tracker-division').value = o.division || '';
         renderTracker();
         go('training');
@@ -717,12 +895,12 @@
     $('tracker-module').addEventListener('change', function () { T.sortKey = 'name'; T.sortDir = 'asc'; T.selected = {}; refreshTracker(); });
     $('tracker-status').addEventListener('change', refreshTracker);
     $('filter-text').addEventListener('input', refreshTracker);
-    ['tracker-division', 'tracker-department', 'tracker-designation'].forEach(function (id) { $(id).addEventListener('change', refreshTracker); });
+    GROUP_FILTERS.forEach(function (id) { $(id).addEventListener('change', refreshTracker); });
     $('tracker-reset').addEventListener('click', function () {
         $('tracker-cols').value = 'required';
         $('tracker-status').value = 'pending';
         $('filter-text').value = '';
-        ['tracker-division', 'tracker-department', 'tracker-designation'].forEach(function (id) { $(id).value = ''; });
+        GROUP_FILTERS.forEach(function (id) { $(id).value = ''; });
         setView(T.view);
         renderTracker();
     });
