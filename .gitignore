@@ -23,3 +23,6 @@ AI Literacy Hub/*.png
 # The Apps Script project ID that auth/apps-script/deploy.mjs remembers on
 # each computer. Not a secret, but there is no reason to publish it.
 auth/apps-script/.deploy.json
+
+# The safeguarding PDF build's layout proof
+PD Modules/print/*.png
