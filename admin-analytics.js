@@ -41,7 +41,7 @@
         { id: 'tools', name: 'Tools & practice', color: CAT[2] }
     ];
     var MODULES = [
-        { id: 'safeguarding', hours: 2, title: 'Child Safeguarding & Protection', short: 'Safeguarding', group: 'whole', file: 'safeguarding-module.html' },
+        { id: 'safeguarding', hours: 2, title: 'Child Protection, Safeguarding, and Drug Prevention', short: 'Safeguarding', group: 'whole', file: 'safeguarding-module.html' },
         { id: 'sustainability', hours: 0.5, title: 'Sustainability at AISA', short: 'Sustainability', group: 'whole', file: 'sustainability-module.html' },
         { id: 'ai-ethics', hours: 1, title: 'AI Vision & Ethical Framework', short: 'AI Ethics', group: 'whole', file: 'ai-ethics-module.html' },
         { id: 'return-to-school', hours: 2, title: 'Return to School: Emergency Protocol', short: 'Return to School', group: 'whole', file: 'return-to-school.html' },

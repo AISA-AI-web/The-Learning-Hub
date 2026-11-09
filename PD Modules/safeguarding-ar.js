@@ -1,11 +1,11 @@
 /* =========================================================================
-   Child Safeguarding & Protection — Annual Staff Training
+   Child Protection, Safeguarding, and Drug Prevention — Annual Staff Training
    English ↔ Arabic translation dictionary (page content).
    Consumed by onboarding-i18n.js via window.AR_DICT. Hand-reviewed.
    ========================================================================= */
 window.AR_DICT = {
     "AISA · Required Safeguarding Training": "AISA · تدريب حماية الطفل الإلزامي",
-    "Child Safeguarding & Protection": "حماية الطفل ورعايته",
+    "Child Protection, Safeguarding, and Drug Prevention": "حماية الطفل ورعايته والوقاية من المخدرات",
     "Safeguarding is everyone's responsibility. Learn to recognise concerns, respond well, and report them — the welfare of the child is always paramount.": "حماية الطفل مسؤولية الجميع. تعلّم كيف تتعرّف على المخاوف، وتتجاوب معها بشكل سليم، وتبلّغ عنها — فمصلحة الطفل هي الأولوية القصوى دائمًا.",
     "⏱ ~30 min": "⏱ ≈ 30 دقيقة",
     "📚 12 chapters": "📚 12 فصلًا",
@@ -288,14 +288,14 @@ window.AR_DICT = {
     "Thank you for protecting our students. If you haven't yet, complete the mandatory acknowledgment form — and remember: when in doubt, report to your DSL. Safeguarding is everyone's responsibility.": "شكرًا لك على حماية طلابنا. إن لم تكن قد فعلت بعد، فأكمل نموذج الإقرار الإلزامي — وتذكّر: عند الشكّ، أبلِغ مسؤول حماية الطفل المعتمد (DSL) لديك. فحماية الطفل مسؤولية الجميع.",
     "Return to Modules": "العودة إلى الوحدات",
     "AISA — American International School in Abu Dhabi": "AISA — المدرسة الأمريكية الدولية في أبوظبي",
-    "Required Training | Child Safeguarding & Protection · Safeguarding Committee": "تدريب إلزامي | حماية الطفل ورعايته · لجنة حماية الطفل",
+    "Required Training | Child Protection, Safeguarding, and Drug Prevention · Safeguarding Committee": "تدريب إلزامي | حماية الطفل ورعايته والوقاية من المخدرات · لجنة حماية الطفل",
     "If a child is in immediate danger, call 999. Report all safeguarding concerns to your DSL within 24 hours.": "إذا كان طفل في خطر مباشر، فاتصل بالرقم 999. وأبلِغ بجميع مخاوف حماية الطفل لمسؤول حماية الطفل المعتمد (DSL) لديك خلال 24 ساعة.",
     "QR code linking to the AISA safeguarding training acknowledgment Google Form": "رمز استجابة سريعة يربط بنموذج Google لإقرار تدريب حماية الطفل في AISA",
     "Watch: Safeguarding Briefing": "شاهد: الإحاطة التعريفية بحماية الطفل",
     "Responding: the 5 R's": "التجاوب: خطوات الاستجابة الخمس",
     "Your Team & Counsellors": "فريقك والمرشدون الطلابيون",
     "Complete Your Training": "أكمل تدريبك",
-    "Child Safeguarding & Protection — Annual Staff Training": "حماية الطفل ورعايته — التدريب السنوي للموظفين",
+    "Child Protection, Safeguarding, and Drug Prevention — Annual Staff Training": "حماية الطفل ورعايته والوقاية من المخدرات — التدريب السنوي للموظفين",
     "As you watch:": "أثناء المشاهدة:",
     "Video not loading? Make sure you're signed in with your AISA Google account, then": "الفيديو لا يظهر؟ تأكّد من تسجيل دخولك بحساب AISA على Google، ثم",
     "open it directly in Google Drive": "افتحه مباشرةً في Google Drive",
