@@ -556,14 +556,12 @@
                     <button type="button" id="more-filters-btn" class="ad-btn" aria-haspopup="true" aria-expanded="false" aria-controls="more-filters">
                         <svg class="ad-ico" aria-hidden="true"><use href="#i-filter"/></svg> More filters <span id="more-filters-n" class="ad-badge hidden"></span>
                     </button>
-                    <!-- From the staff list (People tab): division, department and designation. -->
+                    <!-- Staff group (from HR's divisions and job titles) and Grade or team (the faculty list in admin-teams.js, plus HR's departments). -->
                     <div id="more-filters" class="ad-pop ad-more-pop hidden" role="group" aria-label="More filters">
-                        <label class="ad-field"><span>Division or group</span><select id="tracker-division"></select></label>
-                        <label class="ad-field"><span>Team or grade level</span><select id="tracker-team"></select></label>
+                        <label class="ad-field"><span>Staff group</span><select id="tracker-division"></select></label>
+                        <label class="ad-field"><span>Grade or team</span><select id="tracker-team"></select></label>
                         <details id="team-unmatched" class="ad-disclose hidden"><summary></summary><p class="ad-sub"></p></details>
-                        <label class="ad-field"><span>Department</span><select id="tracker-department"></select></label>
-                        <label class="ad-field"><span>Designation</span><select id="tracker-designation"></select></label>
-                        <p id="more-filters-empty" class="ad-sub hidden">No one on the staff list has a division or department yet: upload HR’s list on People › Sync with HR. Teams come from the faculty list and work without it.</p>
+                        <p id="more-filters-empty" class="ad-sub hidden">No one on the staff list has a division or job title yet: upload HR’s list on People › Sync with HR.</p>
                     </div>
                 </div>
                 <button id="tracker-reset" type="button" class="ad-btn ghost">Reset</button>
@@ -978,8 +976,8 @@
         const COLUMNS = MODULES.concat(EXTRA);
         const REQUIRED = MODULES.filter(m => m.required);
 </script>
-<script src="admin-teams.js?v=1"></script>
-<script src="admin-dashboard.js?v=3"></script>
+<script src="admin-teams.js?v=2"></script>
+<script src="admin-dashboard.js?v=4"></script>
 <script src="admin-roster.js?v=5"></script>
 
 </body>
