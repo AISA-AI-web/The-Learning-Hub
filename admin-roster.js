@@ -1,4 +1,5 @@
-/* admin-roster.js — the Roster tab of the admin dashboard (4 Nov 2026).
+/* admin-roster.js — the People tab of the admin dashboard (the Roster tab, 4 Nov 2026; People since 9 Nov 2026: sub-tabs Staff list |
+ * Admins | Sync with HR | Removed, compact rows with a ⋯ menu, 50 to a page).
  *
  * Staff list (add, edit name and groups, remove, bulk groups, CSV upload and download), the admins, and "mark a module
  * complete" for someone who cannot sign in. Every rule is enforced by the backend (12_roster_admin.gs, and the same
@@ -9,12 +10,12 @@
     'use strict';
 
     var $ = function (id) { return document.getElementById(id); };
-    var root = $('panel-roster');
+    var root = $('panel-people');
     if (!root) return;
 
     var auth = null, me = '';
     var roster = [], admins = [], removed = [], selected = {}, editing = '', pending = null, check = null;
-    var busy = false;
+    var busy = false, page = 0, PER_PAGE = 50;
 
     var MESSAGES = {
         invalid_email: 'That is not a valid email address.',
@@ -127,27 +128,80 @@
         sel.value = Array.prototype.some.call(sel.options, function (o) { return o.value === cur; }) ? cur : '';
     }
 
+    function person(p, suffix) {
+        return h('div', { class: 'rs-person' }, [h('b', { text: (p.name || p.email) + (suffix || '') }), p.name ? h('span', { text: p.email }) : null]);
+    }
+
+    /* The "⋯" menu on a row: one panel, moved to whichever row asked for it. */
+    var menu = null;
+    function closeMenu(back) {
+        if (!menu) return;
+        menu.el.remove();
+        menu.btn.setAttribute('aria-expanded', 'false');
+        if (back) menu.btn.focus();
+        menu = null;
+    }
+    function rowMenu(label, items) {
+        var btn = h('button', { type: 'button', class: 'rs-btn rs-more', 'aria-label': 'Actions for ' + label, 'aria-haspopup': 'true', 'aria-expanded': 'false' });
+        btn.innerHTML = '<svg aria-hidden="true"><use href="#i-more"/></svg>';
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var was = menu && menu.btn === btn;
+            closeMenu(false);
+            if (was) return;
+            var el = h('div', { class: 'ad-pop', role: 'menu', 'aria-label': 'Actions for ' + label });
+            items.forEach(function (it) {
+                el.appendChild(h('button', { type: 'button', role: 'menuitem', class: 'ad-mi' + (it.danger ? ' danger' : ''), text: it.text, disabled: busy && it.guard,
+                    onclick: function () { closeMenu(false); it.run(); } }));
+            });
+            el.addEventListener('click', function (ev) { ev.stopPropagation(); });
+            el.addEventListener('keydown', function (ev) {
+                var list = Array.prototype.slice.call(el.querySelectorAll('[role="menuitem"]:not(:disabled)'));
+                var i = list.indexOf(document.activeElement);
+                if (ev.key === 'ArrowDown') { ev.preventDefault(); list[(i + 1) % list.length].focus(); }
+                else if (ev.key === 'ArrowUp') { ev.preventDefault(); list[(i - 1 + list.length) % list.length].focus(); }
+                else if (ev.key === 'Escape') { ev.preventDefault(); ev.stopPropagation(); closeMenu(true); }
+            });
+            btn.parentNode.style.position = 'relative';
+            btn.parentNode.appendChild(el);
+            btn.setAttribute('aria-expanded', 'true');
+            menu = { el: el, btn: btn };
+            var first = el.querySelector('[role="menuitem"]:not(:disabled)');
+            if (first) first.focus();
+        });
+        return btn;
+    }
+    document.addEventListener('click', function () { closeMenu(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(true); });
+
+    function removePerson(p) {
+        if (!window.confirm('Remove ' + (p.name || p.email) + ' from the staff list?\n\nTheir training records are kept; they just stop being counted as expected staff.')) return;
+        act(call('admin_roster_remove', { email: p.email }), 'Removed ' + (p.name || p.email) + '.');
+    }
+
     function renderStaff() {
         var rows = visible(), body = $('rs-rows');
+        closeMenu(false);
         body.textContent = '';
         $('rs-count').textContent = rows.length === roster.length ? '(' + roster.length + ')' : '(' + rows.length + ' of ' + roster.length + ')';
         $('rs-empty').classList.toggle('hidden', rows.length > 0);
         $('rs-empty').textContent = roster.length ? 'No one matches.' : 'No one is on the staff list yet. Add a person, or upload a CSV.';
-        rows.forEach(function (p) {
+        page = Math.max(0, Math.min(page, Math.ceil(rows.length / PER_PAGE) - 1));
+        rows.slice(page * PER_PAGE, (page + 1) * PER_PAGE).forEach(function (p) {
             var tr = h('tr', { class: selected[p.email] ? 'rs-sel' : '' });
             var cb = h('input', { type: 'checkbox', 'aria-label': 'Select ' + (p.name || p.email), onchange: function (e) {
                 if (e.target.checked) selected[p.email] = true; else delete selected[p.email];
                 renderBulk(); tr.className = selected[p.email] ? 'rs-sel' : '';
+                syncAll(rows);
             } });
             cb.checked = !!selected[p.email];
-            tr.appendChild(h('td', {}, [cb]));
+            tr.appendChild(h('td', { class: 'rs-cb' }, [cb]));
             if (editing === p.email) {
                 var nm = h('input', { type: 'text', value: p.name, maxlength: '300', 'aria-label': 'Name', class: 'rs-in' });
                 var tg = h('input', { type: 'text', value: tagsText(p), 'aria-label': 'Groups', placeholder: 'secondary, maths', class: 'rs-in' });
                 var dp = h('input', { type: 'text', value: p.department || '', maxlength: '200', 'aria-label': 'Department', placeholder: 'Primary - Grade 4', class: 'rs-in' });
                 var ds = h('input', { type: 'text', value: p.designation || '', maxlength: '200', 'aria-label': 'Designation', placeholder: 'Homeroom Teacher', class: 'rs-in' });
-                tr.appendChild(h('td', {}, [nm]));
-                tr.appendChild(h('td', { class: 'rs-mono', text: p.email }));
+                tr.appendChild(h('td', {}, [nm, h('span', { class: 'rs-dim', style: 'display:block', text: p.email })]));
                 tr.appendChild(h('td', {}, [dp]));
                 tr.appendChild(h('td', {}, [ds]));
                 tr.appendChild(h('td', {}, [tg]));
@@ -157,29 +211,49 @@
                     } }),
                     h('button', { type: 'button', class: 'rs-btn', text: 'Cancel', onclick: function () { editing = ''; renderStaff(); } })
                 ]));
+                setTimeout(function () { nm.focus(); }, 0);
             } else {
-                tr.appendChild(h('td', { text: p.name || '—' }));
-                tr.appendChild(h('td', { class: 'rs-mono', text: p.email }));
-                tr.appendChild(h('td', { text: p.department || '—' }));
-                tr.appendChild(h('td', { text: p.designation || '—' }));
-                var cell = h('td', {});
+                tr.appendChild(h('td', {}, [person(p)]));
+                tr.appendChild(h('td', { 'data-label': 'Department', text: p.department || '—' }));
+                tr.appendChild(h('td', { 'data-label': 'Designation', text: p.designation || '—' }));
+                var cell = h('td', { 'data-label': 'Groups' });
                 if (!p.tags.length) cell.appendChild(h('span', { class: 'rs-dim', text: 'no group' }));
                 p.tags.forEach(function (t) { cell.appendChild(h('span', { class: 'rs-chip', text: t })); });
                 tr.appendChild(cell);
-                tr.appendChild(h('td', { class: 'rs-actions' }, [
-                    h('button', { type: 'button', class: 'rs-btn', text: 'Edit', onclick: function () { editing = p.email; renderStaff(); } }),
-                    h('button', { type: 'button', class: 'rs-btn', text: 'Mark complete…', onclick: function () { prefillComplete(p.email); } }),
-                    h('button', { type: 'button', class: 'rs-btn rs-danger', 'data-guard': '', text: 'Remove', onclick: function () {
-                        if (!window.confirm('Remove ' + (p.name || p.email) + ' from the staff list?\n\nTheir training records are kept; they just stop being counted as expected staff.')) return;
-                        act(call('admin_roster_remove', { email: p.email }), 'Removed ' + (p.name || p.email) + '.');
-                    } })
-                ]));
+                tr.appendChild(h('td', { class: 'rs-menu-cell' }, [rowMenu(p.name || p.email, [
+                    { text: 'Edit', run: function () { editing = p.email; renderStaff(); } },
+                    { text: 'Mark a module complete…', run: function () { prefillComplete(p.email); } },
+                    { text: 'Remove from the staff list', danger: true, guard: true, run: function () { removePerson(p); } }
+                ])]));
             }
             body.appendChild(tr);
         });
-        var all = $('rs-all');
-        all.checked = rows.length > 0 && rows.every(function (p) { return selected[p.email]; });
+        syncAll(rows);
+        renderPager(rows.length);
         renderBulk();
+        var n = $('pp-staff-n');
+        if (n) { n.textContent = roster.length; n.classList.toggle('hidden', !roster.length); }
+    }
+
+    function syncAll(rows) {
+        var all = $('rs-all'), sel = rows.filter(function (p) { return selected[p.email]; }).length;
+        all.checked = rows.length > 0 && sel === rows.length;
+        all.indeterminate = sel > 0 && sel < rows.length;
+    }
+
+    function renderPager(total) {
+        var el = $('rs-pager');
+        if (!el) return;
+        el.textContent = '';
+        if (total <= PER_PAGE) return;
+        var pages = Math.ceil(total / PER_PAGE);
+        var info = h('span', { class: 'ad-num', text: (page * PER_PAGE + 1) + '–' + Math.min(total, (page + 1) * PER_PAGE) + ' of ' + total });
+        function btn(label, to, off) {
+            return h('button', { type: 'button', class: 'ad-btn sm', text: label, disabled: off, onclick: function () { page = to; renderStaff(); $('rs-staff-h').scrollIntoView({ block: 'start' }); } });
+        }
+        el.appendChild(info);
+        el.appendChild(h('span', { class: 'ad-pager-btns' }, [btn('Previous', page - 1, page === 0),
+            h('span', { class: 'ad-num', style: 'align-self:center', text: 'Page ' + (page + 1) + ' of ' + pages }), btn('Next', page + 1, page >= pages - 1)]));
     }
 
     function renderBulk() {
@@ -214,7 +288,8 @@
         }, function () { $('rs-add').reset(); $('rs-add-email').focus(); });
     });
 
-    ['rs-search', 'rs-tag', 'rs-div'].forEach(function (id) { $(id).addEventListener('input', renderStaff); });
+    ['rs-search', 'rs-tag', 'rs-div'].forEach(function (id) { $(id).addEventListener('input', function () { page = 0; renderStaff(); }); });
+    $('rs-bulk-clear').addEventListener('click', function () { selected = {}; renderStaff(); });
     $('rs-all').addEventListener('change', function (e) {
         visible().forEach(function (p) { if (e.target.checked) selected[p.email] = true; else delete selected[p.email]; });
         renderStaff();
@@ -429,12 +504,13 @@
     function renderAdmins() {
         var body = $('rs-admin-rows');
         body.textContent = '';
+        var n = $('pp-admins-n');
+        if (n) { n.textContent = admins.length; n.classList.toggle('hidden', !admins.length); }
         admins.forEach(function (a) {
             var self = a.email === me;
             body.appendChild(h('tr', {}, [
-                h('td', { text: (a.name || '—') + (self ? '  (you)' : '') }),
-                h('td', { class: 'rs-mono', text: a.email }),
-                h('td', { text: a.role || '—' }),
+                h('td', {}, [person(a, self ? ' (you)' : '')]),
+                h('td', { 'data-label': 'Role', text: a.role || '—' }),
                 h('td', { class: 'rs-actions' }, [
                     h('button', { type: 'button', class: 'rs-btn rs-danger', 'data-guard': '', disabled: self || admins.length < 2, title: self ? 'You cannot remove yourself' : '', text: 'Remove', onclick: function () {
                         if (!window.confirm('Remove ' + (a.name || a.email) + ' as an admin? They will no longer be able to open the admin pages.')) return;
@@ -466,6 +542,7 @@
     }
     function prefillComplete(email) {
         $('rs-done-email').value = email;
+        $('rs-done-wrap').open = true;
         $('rs-done').scrollIntoView({ block: 'center' });
         $('rs-module').focus();
     }
@@ -719,10 +796,12 @@
         sec.classList.toggle('hidden', removed === null);
         if (removed === null) return;
         $('rs-rm-count').textContent = removed.length ? '(' + removed.length + ')' : '';
+        var n = $('pp-removed-n');
+        if (n) { n.textContent = removed.length; n.classList.toggle('hidden', !removed.length); }
         $('rs-rm-empty').classList.toggle('hidden', removed.length > 0);
         removed.forEach(function (p) {
-            body.appendChild(h('tr', {}, [h('td', { text: p.name || '—' }), h('td', { class: 'rs-mono', text: p.email }),
-                h('td', { text: when(p.removed_at) + (p.removed_by ? ' by ' + p.removed_by : '') }),
+            body.appendChild(h('tr', {}, [h('td', {}, [person(p)]),
+                h('td', { 'data-label': 'Removed', text: when(p.removed_at) + (p.removed_by ? ' by ' + p.removed_by : '') }),
                 h('td', { class: 'rs-actions' }, [h('button', { type: 'button', class: 'rs-btn', 'data-guard': '', text: 'Restore', onclick: function () {
                     act(call('admin_staff_restore', { email: p.email }), 'Restored ' + (p.name || p.email) + ' to the staff list.');
                 } })])]));
