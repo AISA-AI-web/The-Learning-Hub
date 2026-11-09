@@ -1,6 +1,6 @@
 /* node tests/readiness-notice-test.js
  * 1. The cohort hashes in PD Modules/readiness-notice.js, in Media Hub/sep18.html and
- *    AI_LITERACY_COHORT in admin-dashboard.html are the same 62 people.
+ *    ai-literacy-cohort.js are the same 62 people (the dashboard and Hub Analytics load it).
  * 2. In Chromium (if Playwright is installed), the module page shows the right pop-up
  *    for a required teacher, one who has finished, someone not on the list, no address,
  *    in English and Arabic, once per tab session, and closes with Escape.
@@ -12,15 +12,15 @@ let failed = 0;
 const ok = (c, m) => { if (!c) { failed++; console.error('FAIL', m); } else console.log('ok  ', m); };
 
 const hash = e => crypto.createHash('sha256').update(e.trim().toLowerCase()).digest('hex').slice(0, 16);
-const dash = read('admin-dashboard.html');
-const block = dash.match(/const AI_LITERACY_COHORT = \[([\s\S]*?)\n        \];/)[1];
+const block = read('ai-literacy-cohort.js').match(/AISA_AI_LITERACY_COHORT = \[([\s\S]*?)\n\];/)[1];
 const truth = [...block.matchAll(/email:\s*"([^"]+)"/g)].map(m => hash(m[1])).sort();
 const hashesIn = f => [...read(f).matchAll(/'([0-9a-f]{16})'/g)].map(m => m[1]).sort();
 const same = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
-ok(truth.length > 0, 'cohort read from admin-dashboard.html (' + truth.length + ')');
+ok(truth.length > 0, 'cohort read from ai-literacy-cohort.js (' + truth.length + ')');
 ok(same(truth, hashesIn('PD Modules/readiness-notice.js')), 'readiness-notice.js has the same cohort');
 ok(same(truth, hashesIn('Media Hub/sep18.html')), 'sep18.html has the same cohort');
 ok(/readiness-notice\.js\?v=1/.test(read('PD Modules/ai-curriculum-readiness-module.html')), 'module page loads the notice');
+ok(['admin-dashboard.html', 'admin-analytics.html'].every(f => /ai-literacy-cohort\.js\?v=\d+/.test(read(f))), 'the dashboard and Hub Analytics load the cohort');
 
 (async () => {
   let chromium; try { ({ chromium } = require('playwright')); } catch (e) { console.log('skip browser part (no playwright)'); return; }
