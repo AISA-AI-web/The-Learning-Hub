@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Request or report</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+    <!--
+        Request or report — for every member of staff (9 November 2026).
+        Ask the Hub team for a training, report a problem, or share an idea.
+        The questions are in request-spec.js (shared with the admin inbox,
+        admin-requests.html, which turns each request into a prompt for an
+        AI assistant); the page is request.js. The server keeps the request
+        (submit_request) and tells the Hub team; the person sees their own
+        requests and their status at the bottom of this page, and gets a
+        bell notification when an admin moves one on.
+
+        What the page adds by itself, shown before sending: the page the
+        person came from (?from=, which menu.js's link fills in), the
+        browser, screen size and language, and — for a problem, if they
+        leave the box ticked — the errors gate.js noted on this tab.
+        A draft is kept on this device until it is sent.
+    -->
+    <style>
+        :root {
+            --rq-ink: #17132b; --rq-ink-2: #4d4866; --rq-muted: #6f6a86;
+            --rq-line: #e6e2f0; --rq-page: #f7f6fb; --rq-card: #ffffff;
+            --rq-purple: #21076C; --rq-purple-2: #3b2596; --rq-gold: #D8B664; --rq-gold-ink: #7a5d10; --rq-gold-bg: #fbf6e9;
+            --rq-lav: #d9d3ef; --rq-lav-3: #f3f0fb;
+            --rq-crit: #b42318; --rq-crit-bg: #fef3f2; --rq-good: #146c43; --rq-good-bg: #ecf8f1; --rq-warn-bg: #fff8e6;
+            --rq-radius: 14px;
+        }
+        body { background: var(--rq-page); color: var(--rq-ink); margin: 0;
+               font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif; }
+        [hidden] { display: none !important; }
+        .rq-main { max-width: 820px; margin: 0 auto; padding: 1.75rem 16px 5rem; box-sizing: border-box; }
+        .rq-main *, .rq-main *::before, .rq-main *::after { box-sizing: border-box; }
+        .rq-main h1, .rq-main h2, .rq-main h3, .rq-main p { margin: 0; }
+        :where(.rq-main) button, :where(.rq-main) select, :where(.rq-main) input, :where(.rq-main) textarea { font: inherit; color: inherit; }
+
+        .rq-eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--rq-gold-ink); }
+        .rq-head h1 { font-size: clamp(1.6rem, 4vw, 2.1rem); line-height: 1.15; color: var(--rq-purple); margin: .35rem 0 .6rem; letter-spacing: -.01em; }
+        .rq-head p { color: var(--rq-ink-2); line-height: 1.55; max-width: 62ch; }
+
+        /* ---------- the three kinds ---------- */
+        .rq-kinds { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin: 1.5rem 0 1.25rem; border: 0; padding: 0; }
+        .rq-kinds legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+        .rq-kind { position: relative; display: flex; flex-direction: column; gap: .35rem; padding: 1rem 1rem 1.05rem;
+                   background: var(--rq-card); border: 1.5px solid var(--rq-line); border-radius: var(--rq-radius); cursor: pointer;
+                   transition: border-color .15s, box-shadow .15s, background .15s; }
+        .rq-kind:hover { border-color: var(--rq-lav); box-shadow: 0 2px 10px rgba(33,7,108,.06); }
+        .rq-kind input { position: absolute; opacity: 0; pointer-events: none; }
+        .rq-kind .ic { font-size: 1.4rem; line-height: 1; }
+        .rq-kind .t { font-weight: 800; color: var(--rq-purple); }
+        .rq-kind .d { font-size: .82rem; color: var(--rq-muted); line-height: 1.4; }
+        .rq-kind:has(input:checked) { border-color: var(--rq-purple); background: var(--rq-lav-3); box-shadow: 0 0 0 3px rgba(33,7,108,.12); }
+        .rq-kind:has(input:focus-visible) { outline: 3px solid var(--rq-gold); outline-offset: 2px; }
+        @media (max-width: 640px) { .rq-kinds { grid-template-columns: 1fr; } .rq-kind { flex-direction: row; align-items: flex-start; gap: .75rem; } }
+
+        /* ---------- the form ---------- */
+        .rq-card { background: var(--rq-card); border: 1px solid var(--rq-line); border-radius: var(--rq-radius); padding: 1.4rem 1.25rem; }
+        .rq-note { display: flex; gap: .6rem; padding: .75rem .9rem; border-radius: 10px; background: var(--rq-gold-bg);
+                   border: 1px solid #efe0b6; color: #5c4a14; font-size: .85rem; line-height: 1.45; margin-bottom: 1.25rem; }
+        .rq-sec { font-size: .78rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--rq-purple-2);
+                  margin: 1.6rem 0 .2rem; padding-top: 1.1rem; border-top: 1px solid var(--rq-line); }
+        .rq-sec:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+        .rq-q { margin-top: 1.05rem; border: 0; padding: 0; min-width: 0; }
+        .rq-q > label, .rq-q > legend { display: block; font-weight: 700; font-size: .95rem; margin-bottom: .2rem; padding: 0; }
+        .rq-req { color: var(--rq-crit); font-weight: 800; margin-left: .15rem; }
+        .rq-hint { font-size: .8rem; color: var(--rq-muted); line-height: 1.4; margin-bottom: .4rem; }
+        .rq-q input[type=text], .rq-q input[type=date], .rq-q input[type=url], .rq-q select, .rq-q textarea {
+            width: 100%; margin-top: .3rem; padding: .62rem .75rem; border: 1px solid #cfc9e0; border-radius: 10px; background: #fff; }
+        .rq-q textarea { min-height: 96px; resize: vertical; line-height: 1.45; }
+        .rq-q input:focus, .rq-q select:focus, .rq-q textarea:focus { outline: 0; border-color: var(--rq-purple); box-shadow: 0 0 0 3px rgba(33,7,108,.14); }
+        .rq-q [aria-invalid=true] { border-color: var(--rq-crit) !important; }
+        .rq-q.bad > label, .rq-q.bad > legend { color: var(--rq-crit); }
+        .rq-q .rq-err { display: none; font-size: .8rem; color: var(--rq-crit); font-weight: 600; margin-top: .3rem; }
+        .rq-q.bad .rq-err { display: block; }
+        .rq-opts { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .35rem; }
+        .rq-opt { display: inline-flex; align-items: center; gap: .45rem; padding: .45rem .75rem; border: 1px solid #cfc9e0; border-radius: 999px;
+                  background: #fff; font-size: .86rem; cursor: pointer; line-height: 1.25; }
+        .rq-opt input { accent-color: var(--rq-purple); margin: 0; }
+        .rq-opt:has(input:checked) { border-color: var(--rq-purple); background: var(--rq-lav-3); color: var(--rq-purple); font-weight: 700; }
+        .rq-opt:has(input:focus-visible) { outline: 3px solid var(--rq-gold); outline-offset: 1px; }
+        .rq-other { margin-top: .45rem; }
+        .rq-check { display: flex; gap: .6rem; align-items: flex-start; font-weight: 600; cursor: pointer; }
+        .rq-check input { accent-color: var(--rq-purple); width: 18px; height: 18px; margin-top: .1rem; flex-shrink: 0; }
+
+        .rq-about { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+        @media (max-width: 640px) { .rq-about { grid-template-columns: 1fr; } }
+
+        details.rq-ctx { margin-top: 1.4rem; border: 1px solid var(--rq-line); border-radius: 10px; background: var(--rq-lav-3); }
+        details.rq-ctx summary { cursor: pointer; padding: .7rem .9rem; font-weight: 700; font-size: .88rem; color: var(--rq-purple); }
+        .rq-ctx dl { margin: 0; padding: 0 .9rem .8rem; display: grid; grid-template-columns: max-content 1fr; gap: .3rem .9rem; font-size: .82rem; }
+        .rq-ctx dt { color: var(--rq-muted); }
+        .rq-ctx dd { margin: 0; overflow-wrap: anywhere; }
+        .rq-ctx .rq-check { padding: 0 .9rem .8rem; font-size: .85rem; }
+        .rq-errs { margin: .2rem 0 0; padding-left: 1.1rem; }
+
+        .rq-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-top: 1.5rem; }
+        .rq-btn { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; padding: .72rem 1.25rem; border-radius: 999px;
+                  border: 1px solid transparent; font-weight: 700; cursor: pointer; text-decoration: none; }
+        .rq-btn.primary { background: var(--rq-purple); color: #fff; }
+        .rq-btn.primary:hover { background: var(--rq-purple-2); }
+        .rq-btn.primary[disabled] { opacity: .6; cursor: progress; }
+        .rq-btn.ghost { background: #fff; border-color: #cfc9e0; color: var(--rq-ink-2); }
+        .rq-btn.ghost:hover { border-color: var(--rq-purple); color: var(--rq-purple); }
+        .rq-saved { font-size: .8rem; color: var(--rq-muted); }
+        .rq-banner { padding: .8rem 1rem; border-radius: 10px; font-size: .88rem; line-height: 1.45; margin-top: 1rem; }
+        .rq-banner.bad { background: var(--rq-crit-bg); border: 1px solid #f4c7c3; color: var(--rq-crit); }
+        .rq-banner.good { background: var(--rq-good-bg); border: 1px solid #bfe5cf; color: var(--rq-good); }
+
+        .rq-done { text-align: center; padding: 2.25rem 1.25rem; }
+        .rq-done .big { font-size: 2.2rem; }
+        .rq-done h2 { color: var(--rq-purple); margin: .6rem 0 .5rem; font-size: 1.35rem; }
+        .rq-done p { color: var(--rq-ink-2); line-height: 1.55; max-width: 52ch; margin: 0 auto; }
+        .rq-done .rq-actions { justify-content: center; }
+
+        /* ---------- your requests ---------- */
+        .rq-mine { margin-top: 2.5rem; }
+        .rq-mine h2 { font-size: 1.15rem; color: var(--rq-ink); margin-bottom: .75rem; }
+        .rq-item { background: var(--rq-card); border: 1px solid var(--rq-line); border-radius: 12px; padding: .85rem 1rem; margin-bottom: .6rem; }
+        .rq-item .top { display: flex; flex-wrap: wrap; gap: .4rem .6rem; align-items: center; }
+        .rq-item .ttl { font-weight: 700; flex: 1 1 260px; min-width: 0; overflow-wrap: anywhere; }
+        .rq-item .meta { font-size: .78rem; color: var(--rq-muted); margin-top: .25rem; }
+        .rq-item .reply { margin-top: .55rem; padding: .55rem .7rem; border-left: 3px solid var(--rq-gold); background: var(--rq-gold-bg);
+                          border-radius: 0 8px 8px 0; font-size: .85rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .rq-chip { display: inline-block; font-size: .72rem; font-weight: 700; padding: .18rem .55rem; border-radius: 999px; white-space: nowrap; }
+        .rq-chip.kind { background: var(--rq-lav-3); color: var(--rq-purple); }
+        .rq-chip.s-new { background: #eef2ff; color: #3730a3; }
+        .rq-chip.s-planned { background: var(--rq-gold-bg); color: var(--rq-gold-ink); }
+        .rq-chip.s-in_progress { background: var(--rq-warn-bg); color: #8a5a00; }
+        .rq-chip.s-done { background: var(--rq-good-bg); color: var(--rq-good); }
+        .rq-chip.s-declined { background: #f2f2f5; color: #55536a; }
+        .rq-empty { color: var(--rq-muted); font-size: .9rem; }
+    </style>
+    <script src="auth/gate.js?v=41"></script>
+</head>
+<body>
+<main class="rq-main">
+    <header class="rq-head">
+        <div class="rq-eyebrow">Help shape the Learning Hub</div>
+        <h1>Request a training, report a problem, or share an idea</h1>
+        <p>Your answers go straight to the Hub team. The more you tell us, the faster we can build it or fix it: every question
+            beyond the first few is optional, but each one saves a follow-up email.</p>
+    </header>
+
+    <section id="rq-form-wrap">
+        <fieldset class="rq-kinds" id="rq-kinds">
+            <legend>What would you like to do?</legend>
+        </fieldset>
+
+        <form id="rq-form" class="rq-card" novalidate hidden>
+            <div class="rq-note" role="note"><span aria-hidden="true">&#128274;</span>
+                <span>Please do not include student names or other students’ details. Your name and email are added for you,
+                    so the Hub team can reply.</span></div>
+            <div id="rq-fields"></div>
+            <div class="rq-sec">About you</div>
+            <div class="rq-about" id="rq-about"></div>
+            <details class="rq-ctx" id="rq-ctx">
+                <summary>What else is sent with it</summary>
+                <dl id="rq-ctx-list"></dl>
+                <div id="rq-errs-wrap" hidden>
+                    <label class="rq-check"><input type="checkbox" id="rq-errs-ok" checked>
+                        <span>Include the errors the Hub noticed on this tab <span class="rq-hint" style="display:block;font-weight:400">
+                            They help find the cause. Messages and file names only, nothing you typed.</span>
+                            <ul class="rq-errs rq-hint" id="rq-errs"></ul></span></label>
+                </div>
+            </details>
+            <div id="rq-problem" class="rq-banner bad" role="alert" hidden></div>
+            <div class="rq-actions">
+                <button type="submit" class="rq-btn primary" id="rq-send">Send to the Hub team</button>
+                <button type="button" class="rq-btn ghost" id="rq-clear">Clear the form</button>
+                <span class="rq-saved" id="rq-saved" aria-live="polite"></span>
+            </div>
+        </form>
+    </section>
+
+    <section id="rq-done" class="rq-card rq-done" hidden aria-live="polite">
+        <div class="big" aria-hidden="true">&#10024;</div>
+        <h2>Thank you, it’s with the Hub team</h2>
+        <p id="rq-done-text"></p>
+        <div class="rq-actions">
+            <button type="button" class="rq-btn primary" id="rq-again">Send another</button>
+            <a class="rq-btn ghost" href="index.html">Back to the Hub</a>
+        </div>
+    </section>
+
+    <section class="rq-mine" aria-labelledby="rq-mine-h">
+        <h2 id="rq-mine-h">Your requests</h2>
+        <div id="rq-mine"><p class="rq-empty">Loading…</p></div>
+    </section>
+</main>
+<script src="request-spec.js?v=1"></script>
+<script src="request.js?v=1"></script>
+</body>
+</html>

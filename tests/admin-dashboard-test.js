@@ -347,7 +347,7 @@ function serve() {
         /* ---------- Tools ---------- */
         await page.click('#tools-btn');
         const tools = await page.$$eval('#tools-menu a', els => els.map(e => e.getAttribute('href')));
-        ok(tools.includes('admin-notifications.html') && tools.includes('admin-analytics.html') && tools.length === 6, 'Tools menu has the admin links');
+        ok(tools.includes('admin-notifications.html') && tools.includes('admin-analytics.html') && tools.includes('admin-requests.html') && tools.length === 7, 'Tools menu has the admin links');
         await page.close();
 
         /* SHOTS=<folder>: a picture of each tab on a laptop screen, to look at. */

@@ -25,6 +25,8 @@
 
     window.AISA_HUB_INDEX = [
         // === Top-level pages ===
+        { title: "Request a training or report a problem", desc: "Ask the Hub team for a training, tell them what isn't working, or share an idea for the Hub.", url: "request.html", type: "Page", icon: "\u{1F4AC}", keywords: "request training ask suggest suggestion idea improvement feedback report problem bug broken not working error issue help support contact hub team wish more" },
+        { title: "Requests inbox", desc: "Training requests, problem reports and ideas from staff, with a ready-made AI prompt for each.", url: "admin-requests.html", type: "Admin", icon: "\u{1F4E5}", keywords: "requests inbox feedback bugs ideas training requests staff suggestions prompt ai admin", adminOnly: true },
         { title: "PD Modules", desc: "Self-paced masterclasses and required training.", url: "PD%20Modules/pd.html", type: "Page", icon: "🎓", keywords: "professional development training masterclass pd" },
         { title: "Tools & Resources", desc: "AI tools, assessment guides, and daily instruction resources.", url: "Tools%20and%20Resources/tools.html", type: "Page", icon: "🛠️", keywords: "tools resources ai assessment teaching" },
         { title: "Media Hub", desc: "Podcasts, newsletters, and community updates.", url: "Media%20Hub/media.html", type: "Page", icon: "🎙️", keywords: "media podcast newsletter updates video" },
