@@ -109,9 +109,13 @@ function stub() {
     adminDashboard: function(o){ calls.push(['admin_dashboard', o]); return Promise.resolve(JSON.parse(JSON.stringify(bundle))); },
     readAdminSnapshot: function(){ return null; }, saveAdminSnapshot: function(){}, clearAdminSnapshot: function(){},
     postNotification: function(t, b, tags, emails, opts){ calls.push(['post_notification', emails.length]); return Promise.resolve({ ok: true, email: { sent: emails.length } }); },
-    adminRoster: function(action){
-      calls.push([action]);
-      if (action === 'admin_roster_list') return Promise.resolve({ ok: true, roster: roster, admins: [{ email: 'admin@school.example', name: 'Admin', role: 'SLT' }, { email: 'a2@school.example', name: 'Second', role: 'AI lead' }] });
+    adminRoster: function(action, p){
+      calls.push([action, p]);
+      var split = function (t) { return String(t || '').split(',').map(function (x) { return x.trim().toLowerCase(); }).filter(Boolean); };
+      var find = function (e) { return roster.filter(function (r) { return r.email === String(e).toLowerCase(); })[0]; };
+      if (action === 'admin_roster_import') { var n = 0; p.rows.forEach(function (r) { var q = find(r.email); if (q && r.tags) { q.tags = split(r.tags); n++; } }); return Promise.resolve({ ok: true, added: 0, updated: n, skipped: [] }); }
+      if (action === 'admin_roster_save') { var q = find(p.email); if (q && p.tags != null) q.tags = split(p.tags); return Promise.resolve({ ok: true }); }
+      if (action === 'admin_roster_list') return Promise.resolve({ ok: true, roster: JSON.parse(JSON.stringify(roster)), admins: [{ email: 'admin@school.example', name: 'Admin', role: 'SLT' }, { email: 'a2@school.example', name: 'Second', role: 'AI lead' }] });
       if (action === 'admin_removed_list') return Promise.resolve({ ok: true, removed: [{ email: 'gone@school.example', name: 'Gone Person', removed_at: '2026-11-05' }] });
       return Promise.resolve({ ok: true });
     }
@@ -343,6 +347,61 @@ function serve() {
         ok(await page.inputValue('#tracker-division') === '__teach_sec', 'Overview → tracker keeps a group (Secondary teaching staff)');
         await page.click('#tab-overview');
         await page.selectOption('#ov-division', '');
+
+        /* ---------- Teams and roles: moved to the staff list, then edited there ---------- */
+        page.on('dialog', d => d.accept());
+        await page.click('#tab-people');
+        await page.click('#pp-tab-staff');
+        await page.fill('#rs-search', 'Pat Principal');
+        await page.click('#rs-rows tr:has-text("Pat Principal") .rs-more');
+        await page.click('#rs-rows [role="menuitem"]:has-text("Edit")');
+        ok(await page.$eval('#rs-rows .rs-roles select', el => el.disabled), 'before the move, the role controls are locked (the faculty list decides)');
+        await page.click('#rs-rows .rs-btn:has-text("Cancel")');
+        await page.click('#pp-tab-sync');
+        const before = await page.textContent('#rs-roles-status');
+        ok(/come from the faculty list/.test(before) && await visible(page, '#rs-roles-move'), 'Sync with HR offers to move roles to the staff list');
+        ok(/\b4 SLT\b/.test(before) && /\b2 LLT\b/.test(before), 'with what it will write (' + before.match(/\(([^)]*)\)/)[1] + ')');
+        ok((await page.textContent('#rs-roles-detail')).includes('Ghost Person'), 'and who on the faculty list was not found');
+        await page.click('#rs-roles-move');
+        await page.waitForFunction(() => /kept on the staff list/.test(document.getElementById('rs-roles-status').textContent));
+        const imp = await page.evaluate(() => window.__calls.filter(c => c[0] === 'admin_roster_import').pop()[1].rows);
+        ok(imp.some(r => r.email === 'aturabi@aisa.sch.ae' && /slt/.test(r.tags) && /llt/.test(r.tags)), 'one request writes the roles as groups (aturabi@ on both SLT and LLT)');
+        ok(imp.some(r => r.email === 'x15@school.example' && /team:g4/.test(r.tags) && /gll/.test(r.tags)), 'with teams and leads from the faculty list');
+        await page.click('#tab-training');
+        await page.click('#more-filters-btn');
+        let opts = await page.$$eval('#tracker-division option', els => Object.fromEntries(els.map(o => [o.value, o.textContent])));
+        const cnt = (o, v) => Number(((o[v] || '').match(/\((\d+)\)$/) || [])[1]);
+        ok(cnt(opts, '__slt') === 4 && cnt(opts, '__llt') === 2 && cnt(opts, '__leads') === 2, 'after the move the groups give the same SLT, LLT and team leaders');
+        let topts = await page.$$eval('#tracker-team option', els => Object.fromEntries(els.map(o => [o.value, o.textContent])));
+        ok(cnt(topts, 'team:g4') === 3, 'and the same Grade 4');
+        await page.keyboard.press('Escape');
+        /* an admin changes roles: Pat is no longer SLT; Teacher 001 joins Grade 4 */
+        await page.click('#tab-people');
+        await page.click('#pp-tab-staff');
+        await page.fill('#rs-search', 'Pat Principal');
+        await page.click('#rs-rows tr .rs-more');
+        await page.click('#rs-rows [role="menuitem"]:has-text("Edit")');
+        ok(!(await page.$eval('#rs-rows .rs-roles select', el => el.disabled)), 'after the move, any admin can change roles');
+        await page.uncheck('#rs-rows input[data-role="slt"]');
+        await page.click('#rs-rows .rs-btn.rs-primary:has-text("Save")');
+        await page.waitForFunction(() => window.__calls.some(c => c[0] === 'admin_roster_save' && c[1].email === 'x01@school.example'));
+        await page.fill('#rs-search', 'Teacher 001');
+        await page.waitForSelector('#rs-rows tr .rs-more');
+        await page.click('#rs-rows tr .rs-more');
+        await page.click('#rs-rows [role="menuitem"]:has-text("Edit")');
+        await page.selectOption('#rs-rows .rs-roles select', 'team:g4');
+        await page.click('#rs-rows .rs-btn.rs-primary:has-text("Save")');
+        await page.waitForFunction(() => window.__calls.some(c => c[0] === 'admin_roster_save' && c[1].email === 't001@school.example'));
+        await page.waitForFunction(() => /Grade 4/.test(document.querySelector('#rs-rows').textContent));
+        ok((await page.textContent('#rs-rows')).includes('Grade 4'), 'the new team shows as a chip on the person');
+        await page.fill('#rs-search', '');
+        await page.click('#tab-training');
+        await page.click('#more-filters-btn');
+        opts = await page.$$eval('#tracker-division option', els => Object.fromEntries(els.map(o => [o.value, o.textContent])));
+        topts = await page.$$eval('#tracker-team option', els => Object.fromEntries(els.map(o => [o.value, o.textContent])));
+        ok(cnt(opts, '__slt') === 3, 'the tracker follows at once: SLT is now 3');
+        ok(cnt(topts, 'team:g4') === 4, 'and Grade 4 is now 4');
+        await page.keyboard.press('Escape');
 
         /* ---------- Tools ---------- */
         await page.click('#tools-btn');
