@@ -1006,50 +1006,52 @@ needs every `required: true` one, and the avg-modules denominator and PD
 hours both change. Releasing AI Literacy as required on 16 Sept 2026 did
 exactly that, which looks like a regression and is not one.
 
-## Admin dashboard — three tabs
+## Admin dashboard — redesigned 9 November 2026
 
-`admin-dashboard.html` splits into **PD Data**, **Survey Data** and
-**Admin Actions**.
+Brandon's plan (an overhaul in three phases, all done in one pull request): a slim header ("Data as of 9 Nov, 12:02 ·
+Refresh" and a **Tools ▾** menu), then five plain tabs, each with its own address. The page is `admin-dashboard.html`
+(markup, styles, and still `MODULES`, `EXTRA` and `AI_LITERACY_COHORT`), `admin-dashboard.js?v=1` (everything but the
+People tab) and `admin-roster.js?v=5` (the People tab). No Tailwind any more: the page has its own style sheet on the
+brand (DM Sans, purple `#21076C`, gold `#D8B664`, tokens on `:root`), like Hub Analytics.
 
-- **PD Data** — the compliance tracker, per-module bars, engagement, and
-  the AI Literacy readiness free-text. That last one is a PD module's own
-  capture, so it sits with the training data rather than with the surveys.
-- **Survey Data** — the standalone forms staff fill in. Right now just
-  the personal goals.
-- **Admin Actions** — every other admin destination: charts,
-  notifications, the three performance-review forms, and the goal form as
-  staff see it. This replaced a card grid that used to sit above the
-  tabs and pushed the actual data below the fold.
+- **Overview** (`#overview`, the landing tab): *Needs attention* (each item with its one button: Remind on a required
+  module under 90%, "n required modules under 60%", people on the staff list who never signed in → People › Sync with HR,
+  goals outstanding → the goal reminder, skimmers → Engagement), the required-training headline (% of staff with every
+  required module, then the five bars) and the recommended modules as one small neutral list. A *Showing* picker narrows
+  the tab to a division. The tab's badge is the number of items.
+- **Training** (`#training`): *By person* (staff × required modules, ✓ / ✗ / – for not assigned; "All modules" is an
+  option) and *By training* (one module, with the date). Defaults to required modules, **not completed**. 25 to a page,
+  sticky header, a tick-box per row and select-all (every page) → *Remind selected*; Division, Department and Designation
+  are under *More filters*. Export CSV exports the view, every page.
+- **Engagement** (`#engagement`): a row per module (people, median time, median per chapter, **its own skim threshold**,
+  % skimmed), then *By person*, flagged only by default. The default threshold is a third of the module's median seconds
+  per chapter, between 10 and 120 (30 with fewer than 5 people); an admin can change one, remembered on that device only
+  (`aisa_admin_skim_v1`).
+- **Surveys & forms** (`#surveys/goals`, `/innovation`, `/readiness`): a list on the left. Personal goals (focus chart at
+  the top, each goal one line that opens), the AI & Innovation Survey (a completion, module id `survey`; "see who hasn't"
+  opens the tracker) and AI Literacy readiness, **archived** (deadline 21 Sept 2026: the numbers, the answers behind a click;
+  "Started" counts the 62 in the cohort only, as the bar does).
+- **People** (`#people/staff`, `/admins`, `/sync`, `/removed`; was Roster): rows of about 48px, actions in a ⋯ menu, a
+  bulk bar when rows are ticked, 50 to a page. "Mark a module complete" is a fold under the staff list (the ⋯ menu opens it).
 
-**Export CSV lives in the PD tracker's filter bar, not on Admin
-Actions.** It exports the tracker exactly as filtered, so it has to be
-next to the filters — from another tab you could not see what you were
-exporting.
+**Old addresses still work**: `#goals`, `#responses`, and the old tab names `#pd`, `#survey`, `#actions` and `#roster`
+(and the last tab remembered on the device, `aisa_admin_tab`). Any element's id in the address opens its tab, so a new
+section needs no wiring. The four Admin Actions cards are the Tools menu: adding a destination is a link there plus an
+entry in `search-index.js` with `adminOnly: true`.
 
-Adding a section: drop the markup inside the right panel. Nothing else
-needs wiring — the tab controller resolves a `#hash` to whichever panel
-contains that id, so deep links like `admin-dashboard.html#goals` from
-`menu.js` and `search-index.js` open the right tab on their own. Adding
-an Admin Actions destination also wants an entry in `search-index.js`
-with `adminOnly: true`.
+**Rules the design keeps:** green, amber and red mean a status and nothing else (bars: green 90%+, amber 60–89%, red
+under 60%, `statusOf()`); line icons (an SVG sprite at the top of the page), no emoji; section titles 18px with a count;
+numbers right-aligned; `scrollbar-gutter: stable` so the page does not jump; on a phone the stat cards go two to a row
+and every table becomes a card list (`.ad-table.cards` and `td[data-label]`).
 
-**Don't nest anchors in the action cards.** The Performance Review card
-has three destinations, so it is a `<div>` with three sibling `<a>`s. It
-used to be one `<a>` wrapping the card with two more `<a>`s inside;
-nested anchors are invalid, the browser closed the outer one early, and
-the card rendered split with its icon floating next to an empty box.
+**Still one request** (`admin_dashboard`, shared through `window.aisaAdminData`), and every panel stays in the DOM, so
+switching tabs costs nothing; no section may measure layout during setup (a hidden panel has no size). The People tab
+loads its own data the first time it is shown, as before.
 
-Both panels stay in the DOM and every section's data arrives on page load
-whichever tab is open — all of it in one `admin_dashboard` request, which
-the sections share through `window.aisaAdminData`. That is deliberate:
-nothing is lazy, so nothing can be left half-initialised, and switching
-tabs costs no requests. It also means **no section may measure layout** (offsetWidth,
-getBoundingClientRect) during setup — a closed panel has no dimensions.
-Nothing on the page does this today.
-
-The Survey Data tab carries an amber badge with the number of people
-who still owe a goal. The goals section fires an `aisa:goal-counts`
-CustomEvent on every render and the tab controller listens for it.
+**Test:** `node tests/admin-dashboard-test.js` serves the repository, stands in for `gate.js` with made-up staff
+(@school.example) and checks the tabs and addresses, the overview's items and colours, the tracker (defaults, pages,
+select-all → remind, both views), the thresholds, the surveys list, the People sub-tabs and ⋯ menu, no sideways scroll at
+390px, and no console errors. `SHOTS=<folder>` saves a picture of each tab. It skips without Playwright.
 
 ## Anti-Bullying Policy: Teacher Awareness — PREVIEW, built 7 October 2026
 
