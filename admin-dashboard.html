@@ -314,6 +314,9 @@
             .ad-toolbar > .ad-seg, .ad-toolbar > .grow, .ad-toolbar > .ad-btn.primary, .ad-toolbar > .ad-spacer { flex-basis: 100%; }
             .ad-toolbar > .ad-spacer { display: none; }
             .ad-toolbar .ad-pop-wrap > .ad-btn { width: 100%; justify-content: center; }
+            .ad-toolbar { position: relative; }
+            .ad-toolbar .ad-pop-wrap { position: static; }
+            .ad-toolbar .ad-more-pop { left: .5rem; right: .5rem; min-width: 0; }
             .ad-toolbar > .ad-btn { justify-content: center; }
             .ad-toolbar .ad-seg { justify-content: stretch; } .ad-toolbar .ad-seg button { flex: 1; }
             .ad-head h1 { font-size: 1.15rem; }
@@ -555,10 +558,12 @@
                     </button>
                     <!-- From the staff list (People tab): division, department and designation. -->
                     <div id="more-filters" class="ad-pop ad-more-pop hidden" role="group" aria-label="More filters">
-                        <label class="ad-field"><span>Division</span><select id="tracker-division"></select></label>
+                        <label class="ad-field"><span>Division or group</span><select id="tracker-division"></select></label>
+                        <label class="ad-field"><span>Team or grade level</span><select id="tracker-team"></select></label>
+                        <details id="team-unmatched" class="ad-disclose hidden"><summary></summary><p class="ad-sub"></p></details>
                         <label class="ad-field"><span>Department</span><select id="tracker-department"></select></label>
                         <label class="ad-field"><span>Designation</span><select id="tracker-designation"></select></label>
-                        <p id="more-filters-empty" class="ad-sub hidden">No one on the staff list has a division or department yet: upload HR’s list on People › Sync with HR.</p>
+                        <p id="more-filters-empty" class="ad-sub hidden">No one on the staff list has a division or department yet: upload HR’s list on People › Sync with HR. Teams come from the faculty list and work without it.</p>
                     </div>
                 </div>
                 <button id="tracker-reset" type="button" class="ad-btn ghost">Reset</button>
@@ -973,7 +978,8 @@
         const COLUMNS = MODULES.concat(EXTRA);
         const REQUIRED = MODULES.filter(m => m.required);
 </script>
-<script src="admin-dashboard.js?v=1"></script>
+<script src="admin-teams.js?v=1"></script>
+<script src="admin-dashboard.js?v=2"></script>
 <script src="admin-roster.js?v=5"></script>
 
 </body>

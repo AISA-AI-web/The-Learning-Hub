@@ -1010,7 +1010,7 @@ exactly that, which looks like a regression and is not one.
 
 Brandon's plan (an overhaul in three phases, all done in one pull request): a slim header ("Data as of 9 Nov, 12:02 ·
 Refresh" and a **Tools ▾** menu), then five plain tabs, each with its own address. The page is `admin-dashboard.html`
-(markup, styles, and still `MODULES`, `EXTRA` and `AI_LITERACY_COHORT`), `admin-dashboard.js?v=1` (everything but the
+(markup, styles, and still `MODULES`, `EXTRA` and `AI_LITERACY_COHORT`), `admin-dashboard.js?v=2` (everything but the
 People tab) and `admin-roster.js?v=5` (the People tab). No Tailwind any more: the page has its own style sheet on the
 brand (DM Sans, purple `#21076C`, gold `#D8B664`, tokens on `:root`), like Hub Analytics.
 
@@ -1052,6 +1052,32 @@ loads its own data the first time it is shown, as before.
 (@school.example) and checks the tabs and addresses, the overview's items and colours, the tracker (defaults, pages,
 select-all → remind, both views), the thresholds, the surveys list, the People sub-tabs and ⋯ menu, no sideways scroll at
 390px, and no console errors. `SHOTS=<folder>` saves a picture of each tab. It skips without Playwright.
+
+## Division groups and teams — added 9 November 2026
+
+The admin dashboard's Division filter (Overview's *Showing* and the tracker's *More filters*) listed 19 raw divisions:
+`_divisionOf` gives Early Years / Primary / Secondary, else the HR department, so one group of people was split across
+HR's spellings. It now lists three headings (`fillDivisionSelect()` and `inDivision()` in `admin-dashboard.js`):
+
+- **Teaching staff:** all, KG & Primary, Secondary. A teacher is a designation with "teacher" and not "assistant", or
+  Primary Learning Support (`isTeacher`); Teacher Assistants, counsellors, librarians and coordinators are not. The phase is
+  the division, else how the designation starts (`phaseOf`), which puts Learning Support teachers in the right one.
+- **Groups:** the **SLT** (designation contains "principal", plus `SLT_EMAILS`: atorris@ and aturabi@, decided by Brandon),
+  Elementary (Early Years + Primary), and `DIVISION_GROUPS`: Administration & finance, Maintenance, cleaning & transport,
+  Hallway & bus monitors. **Edit the groups in `DIVISION_GROUPS`**, one place. The SLT are left out of every other group and
+  division (not the teaching options), so Leadership shows the rest.
+- **Divisions:** every division no group takes, so a new one in HR's data still appears. Names match trimmed and
+  case-insensitively; option values for groups start `__`; empty options are left out; a count is the filter's own predicate.
+
+**Team or grade level** (a second select under *More filters*, the tracker only): KG1–Grade 5, the elementary specialists and
+Arabic team, the MS and HS departments, VAPA, PE, Secondary Arabic, Student Services, Library, Curriculum and the permanent
+subs, an "all homeroom teams" / "all MS" / "all HS" option, and *Team leaders* (GLLs, HODs, the Head of Inclusion). The data is
+**`admin-teams.js`** (`?v=1` in the page), from the 2026–27 faculty list Brandon gave on 9 Nov 2026: **names, teams and leads
+only**, no rooms, extensions or courses, because this repo is public. A member's email is given only where it was already in
+the repo (the AI Literacy cohort, and staff named elsewhere); the rest are matched by name in the browser (`matchTeams()`:
+surname or a near spelling, plus the first name, its first letters or a shortened form; a surname alone only when it is
+distinctive, unique and the initial agrees). Names that match no one are listed under the filter: add an email for them in
+`admin-teams.js`. The Roster tab's own Division filter is unchanged.
 
 ## Anti-Bullying Policy: Teacher Awareness — PREVIEW, built 7 October 2026
 
