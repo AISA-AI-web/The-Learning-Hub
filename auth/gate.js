@@ -125,7 +125,7 @@
         if (auxLoaded) return;
         auxLoaded = true;
         if (!GATE_SCRIPT_SRC) return;
-        ['certificate.js?v=7', 'search-index.js?v=19', 'menu.js?v=23', 'dwell.js?v=2'].forEach(function (name) {
+        ['certificate.js?v=7', 'search-index.js?v=20', 'menu.js?v=24', 'dwell.js?v=2'].forEach(function (name) {
             var url = GATE_SCRIPT_SRC.replace(/gate\.js(\?.*)?$/, name);
             if (url === GATE_SCRIPT_SRC) return;  // pattern didn't match — skip safely
             var s = document.createElement('script');
@@ -257,6 +257,36 @@
      * stay on the server. Cleared on sign-out. */
     var ADMIN_SNAPSHOT_KEY    = 'aisa_admin_snapshot_v1';
     var ADMIN_SNAPSHOT_MAX_MS = 7 * 24 * 60 * 60 * 1000;
+    /* The last few things that went wrong on this tab (a script error, a
+     * request the server refused or never answered), per tab
+     * (sessionStorage), so the "Request or report" page (request.html)
+     * can offer them with a problem report: what the person saw is often
+     * not what broke. Messages and file names only, never a token, an
+     * answer or anything the person typed. Opt-in on that page. */
+    var RECENT_ERRORS_KEY     = 'aisa_recent_errors_v1';
+    function rememberError(msg, src, line) {
+        try {
+            var list = JSON.parse(sessionStorage.getItem(RECENT_ERRORS_KEY) || '[]');
+            if (!Array.isArray(list)) list = [];
+            var file = String(src || '').replace(/^[a-z]+:\/\/[^\/]+/i, '').replace(/[?#].*$/, '').slice(-150);
+            list.push({
+                t: new Date().toISOString(),
+                page: String(location.pathname || '').slice(-200),
+                msg: String(msg || '').replace(/session_token\S*/gi, '').slice(0, 300),
+                src: file ? file + (line ? ':' + line : '') : ''
+            });
+            sessionStorage.setItem(RECENT_ERRORS_KEY, JSON.stringify(list.slice(-8)));
+        } catch (e) {}
+    }
+    try {
+        window.addEventListener('error', function (e) {
+            if (e && e.message) rememberError(e.message, e.filename, e.lineno);
+        });
+        window.addEventListener('unhandledrejection', function (e) {
+            var r = e && e.reason;
+            rememberError('Unhandled: ' + ((r && r.message) || String(r)), '', 0);
+        });
+    } catch (e) {}
 
     /* Resolvers waiting for a successful (re-)sign-in. Also declared up
      * here: triggerReAuth() pushes onto it for returning visitors too, and
@@ -319,7 +349,8 @@
         get_survey_response: 1, admin_survey_responses: 1,
         get_notifications: 1, admin_notification_stats: 1, admin_list_tags: 1,
         admin_roster_list: 1, admin_staff_check: 1, admin_removed_list: 1, admin_notes_list: 1,
-        newsletter_status: 1
+        newsletter_status: 1,
+        my_requests: 1, admin_requests: 1
     };
 
     function isRetryable(err, action) {
@@ -447,6 +478,7 @@
                     return sendApiCall(action, extra, attempt + 1);
                 });
             }
+            rememberError('Server call ' + action + ' failed: ' + ((err && err.message) || err), '', 0);
             throw err;
         });
     }
@@ -1280,6 +1312,30 @@
                     return Promise.reject(new Error('unknown_action'));
                 }
                 return apiCall(action, payload || {});
+            },
+
+            /* Requests from staff (request.html, admin-requests.html):
+             * a training, a problem or an idea.
+             *   payload: { kind: 'training'|'bug'|'idea', title,
+             *              details: {...answers}, context: {...page} }
+             * Never retried on a lost answer: it would file it twice. */
+            submitRequest: function (payload) {
+                return apiCall('submit_request', payload || {});
+            },
+            myRequests: function () {
+                return apiCall('my_requests', {});
+            },
+            adminRequests: function () {
+                return apiCall('admin_requests', {});
+            },
+            /* payload: { id, status, note, notify } (admins only, on the server) */
+            adminRequestUpdate: function (payload) {
+                return apiCall('admin_request_update', payload || {});
+            },
+            /* What went wrong on this tab lately (see RECENT_ERRORS_KEY). */
+            recentErrors: function () {
+                var list = storeGet('sessionStorage', RECENT_ERRORS_KEY);
+                return Array.isArray(list) ? list : [];
             },
 
             /* Resolve to true/false for whether the current user is an

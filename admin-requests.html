@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AISA | Requests inbox</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
+    <!--
+        Requests inbox — admins only (9 November 2026). Every training
+        request, problem report and idea staff send from request.html,
+        newest first: who sent it (their job and department from the staff
+        list), every answer, and what their browser sent with it.
+
+        For each request, "Copy AI prompt" writes it up for an AI assistant
+        (Claude Code, with the Learning Hub's repository): what the Hub is,
+        where its code and server live, the rules that matter (the public
+        repository, CLAUDE.md, a branch and a pull request), the request in
+        full, and what to do with that kind of request. Tick several and
+        "Copy one prompt for the selected" does them together.
+
+        Set the status (new, planned, in progress, done, not going ahead)
+        and a note; the person is told in their bell unless "Tell them" is
+        unticked, and sees the status and note on request.html.
+
+        Personal data (a named member of staff writing about their work):
+        admin-only on the server (admin_requests); nothing is kept in the
+        browser but the filters.
+    -->
+    <style>
+        :root {
+            --rq-ink: #17132b; --rq-ink-2: #4d4866; --rq-muted: #6f6a86;
+            --rq-line: #e6e2f0; --rq-page: #f7f6fb; --rq-card: #ffffff;
+            --rq-purple: #21076C; --rq-purple-2: #3b2596; --rq-gold: #D8B664; --rq-gold-ink: #7a5d10; --rq-gold-bg: #fbf6e9;
+            --rq-lav: #d9d3ef; --rq-lav-3: #f3f0fb;
+            --rq-crit: #b42318; --rq-crit-bg: #fef3f2; --rq-good: #146c43; --rq-good-bg: #ecf8f1; --rq-warn-bg: #fff8e6;
+            --rq-radius: 14px;
+        }
+        body { background: var(--rq-page); color: var(--rq-ink); margin: 0;
+               font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif; }
+        [hidden] { display: none !important; }
+        .ri-main { max-width: 1080px; margin: 0 auto; padding: 1.75rem 16px 5rem; box-sizing: border-box; }
+        .ri-main *, .ri-main *::before, .ri-main *::after { box-sizing: border-box; }
+        .ri-main h1, .ri-main h2, .ri-main h3, .ri-main p { margin: 0; }
+        :where(.ri-main) button, :where(.ri-main) select, :where(.ri-main) input, :where(.ri-main) textarea { font: inherit; color: inherit; }
+
+        .ri-state { text-align: center; padding: 5rem 1rem; color: var(--rq-muted); }
+        .ri-state h2 { color: var(--rq-ink); font-size: 1.25rem; margin: .75rem 0 .5rem; }
+        .ri-spin { display: inline-block; width: 32px; height: 32px; border-radius: 50%; border: 3px solid var(--rq-lav);
+                   border-top-color: var(--rq-purple); animation: ri-spin .9s linear infinite; }
+        @keyframes ri-spin { to { transform: rotate(360deg); } }
+
+        .ri-eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--rq-gold-ink); }
+        .ri-head { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; justify-content: space-between; }
+        .ri-head h1 { font-size: 1.85rem; color: var(--rq-purple); margin-top: .3rem; }
+        .ri-head p { color: var(--rq-ink-2); margin-top: .35rem; max-width: 62ch; line-height: 1.5; }
+        .ri-asof { font-size: .8rem; color: var(--rq-muted); }
+
+        .ri-btn { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; padding: .55rem 1rem; border-radius: 999px;
+                  border: 1px solid #cfc9e0; background: #fff; font-weight: 700; font-size: .86rem; cursor: pointer; color: var(--rq-ink-2); text-decoration: none; }
+        .ri-btn:hover { border-color: var(--rq-purple); color: var(--rq-purple); }
+        .ri-btn.primary { background: var(--rq-purple); border-color: var(--rq-purple); color: #fff; }
+        .ri-btn.primary:hover { background: var(--rq-purple-2); color: #fff; }
+        .ri-btn.gold { background: var(--rq-gold-bg); border-color: var(--rq-gold); color: var(--rq-purple); }
+        .ri-btn[disabled] { opacity: .55; cursor: default; }
+        .ri-btn.sm { padding: .4rem .8rem; font-size: .8rem; }
+
+        .ri-bar { display: flex; flex-wrap: wrap; gap: .6rem; align-items: center; margin: 1.4rem 0 1rem; }
+        .ri-pills { display: flex; flex-wrap: wrap; gap: .4rem; }
+        .ri-pill { padding: .42rem .8rem; border-radius: 999px; border: 1px solid #cfc9e0; background: #fff; font-size: .82rem; font-weight: 700;
+                   cursor: pointer; color: var(--rq-ink-2); }
+        .ri-pill[aria-pressed=true] { background: var(--rq-purple); border-color: var(--rq-purple); color: #fff; }
+        .ri-pill .n { font-weight: 500; opacity: .8; margin-left: .25rem; }
+        .ri-bar select, .ri-bar input[type=search] { padding: .5rem .7rem; border: 1px solid #cfc9e0; border-radius: 10px; background: #fff; min-width: 0; }
+        .ri-bar input[type=search] { flex: 1 1 200px; }
+        .ri-sel { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; padding: .65rem .9rem; margin-bottom: .8rem; border-radius: 12px;
+                  background: var(--rq-lav-3); border: 1px solid var(--rq-lav); font-size: .88rem; }
+        .ri-sel .grow { flex: 1; }
+
+        .ri-req { background: var(--rq-card); border: 1px solid var(--rq-line); border-radius: var(--rq-radius); margin-bottom: .75rem; overflow: hidden; }
+        .ri-req:target { box-shadow: 0 0 0 3px var(--rq-gold); }
+        .ri-req-top { display: grid; grid-template-columns: auto 1fr auto; gap: .75rem; align-items: start; padding: .9rem 1rem; }
+        .ri-req-top input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--rq-purple); margin-top: .2rem; }
+        .ri-ttl { font-weight: 800; font-size: 1rem; overflow-wrap: anywhere; }
+        .ri-who { font-size: .82rem; color: var(--rq-muted); margin-top: .2rem; overflow-wrap: anywhere; }
+        .ri-chips { display: flex; flex-wrap: wrap; gap: .35rem; margin-bottom: .35rem; }
+        .ri-chip { display: inline-block; font-size: .72rem; font-weight: 700; padding: .18rem .55rem; border-radius: 999px; white-space: nowrap; }
+        .ri-chip.kind { background: var(--rq-lav-3); color: var(--rq-purple); }
+        .ri-chip.urgent { background: var(--rq-crit-bg); color: var(--rq-crit); }
+        .ri-chip.s-new { background: #eef2ff; color: #3730a3; }
+        .ri-chip.s-planned { background: var(--rq-gold-bg); color: var(--rq-gold-ink); }
+        .ri-chip.s-in_progress { background: var(--rq-warn-bg); color: #8a5a00; }
+        .ri-chip.s-done { background: var(--rq-good-bg); color: var(--rq-good); }
+        .ri-chip.s-declined { background: #f2f2f5; color: #55536a; }
+        .ri-top-actions { display: flex; flex-wrap: wrap; gap: .4rem; justify-content: flex-end; }
+
+        .ri-body { border-top: 1px solid var(--rq-line); padding: 1rem; display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 1.25rem; }
+        .ri-answers dl { margin: 0; }
+        .ri-answers dt { font-size: .78rem; font-weight: 700; color: var(--rq-muted); margin-top: .7rem; }
+        .ri-answers dt:first-child { margin-top: 0; }
+        .ri-answers dd { margin: .15rem 0 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.45; font-size: .92rem; }
+        .ri-answers h3, .ri-side h3 { font-size: .74rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--rq-purple-2); margin: 1.1rem 0 .3rem; }
+        .ri-answers h3:first-child, .ri-side h3:first-child { margin-top: 0; }
+        .ri-side { background: var(--rq-lav-3); border-radius: 12px; padding: .9rem; align-self: start; }
+        .ri-side label { display: block; font-size: .8rem; font-weight: 700; margin: .6rem 0 .2rem; }
+        .ri-side select, .ri-side textarea { width: 100%; padding: .5rem .6rem; border: 1px solid #cfc9e0; border-radius: 10px; background: #fff; }
+        .ri-side textarea { min-height: 84px; resize: vertical; }
+        .ri-side .row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-top: .6rem; }
+        .ri-side .tell { display: flex; gap: .4rem; align-items: center; font-size: .82rem; font-weight: 600; margin: 0; }
+        .ri-side .tell input { accent-color: var(--rq-purple); }
+        .ri-side .msg { font-size: .8rem; }
+        .ri-side .msg.bad { color: var(--rq-crit); }
+        .ri-side .msg.good { color: var(--rq-good); }
+        .ri-ctx { font-size: .78rem; color: var(--rq-ink-2); margin: 0; }
+        .ri-ctx dt { font-weight: 700; color: var(--rq-muted); margin-top: .35rem; }
+        .ri-ctx dd { margin: 0; overflow-wrap: anywhere; }
+        .ri-empty { text-align: center; padding: 3rem 1rem; color: var(--rq-muted); background: var(--rq-card); border: 1px dashed var(--rq-lav); border-radius: var(--rq-radius); }
+        .ri-toast { position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%); background: var(--rq-ink); color: #fff; padding: .7rem 1.1rem;
+                    border-radius: 999px; font-size: .88rem; font-weight: 600; box-shadow: 0 6px 24px rgba(0,0,0,.2); z-index: 2147483001; max-width: calc(100% - 32px); }
+        .ri-banner { padding: .8rem 1rem; border-radius: 10px; font-size: .88rem; line-height: 1.45; margin-top: 1rem; background: var(--rq-crit-bg); border: 1px solid #f4c7c3; color: var(--rq-crit); }
+
+        @media (max-width: 760px) {
+            .ri-body { grid-template-columns: 1fr; }
+            .ri-req-top { grid-template-columns: auto 1fr; }
+            .ri-top-actions { grid-column: 1 / -1; justify-content: flex-start; }
+        }
+    </style>
+    <script src="auth/gate.js?v=42"></script>
+</head>
+<body>
+<main class="ri-main">
+    <div id="state-loading" class="ri-state"><div class="ri-spin" aria-hidden="true"></div><p style="margin-top:1rem">Loading the requests…</p></div>
+    <div id="state-denied" class="ri-state" hidden><h2>Admin access required</h2><p>The requests inbox is for the Hub’s admins.</p></div>
+    <div id="state-error" class="ri-state" hidden>
+        <h2>The requests could not be loaded</h2>
+        <p id="state-error-text"></p>
+        <p style="margin-top:1rem"><button type="button" class="ri-btn" id="retry">Try again</button></p>
+    </div>
+
+    <div id="ri-app" hidden>
+        <header class="ri-head">
+            <div>
+                <div class="ri-eyebrow">Admin · Learning Hub</div>
+                <h1>Requests inbox</h1>
+                <p>Trainings, problems and ideas from staff. “Copy AI prompt” writes a request up for an AI assistant, ready to paste.
+                    Staff send them from <a href="request.html">Request or report</a> (in everyone’s menu).</p>
+            </div>
+            <div>
+                <span class="ri-asof" id="ri-asof"></span>
+                <button type="button" class="ri-btn sm" id="ri-refresh">Refresh</button>
+            </div>
+        </header>
+
+        <div class="ri-bar">
+            <div class="ri-pills" id="ri-status" role="group" aria-label="Status"></div>
+            <select id="ri-kind" aria-label="Kind">
+                <option value="">All kinds</option>
+                <option value="training">Training requests</option>
+                <option value="bug">Problem reports</option>
+                <option value="idea">Ideas</option>
+            </select>
+            <input type="search" id="ri-q" placeholder="Search titles, answers, names…" aria-label="Search">
+        </div>
+
+        <div class="ri-sel" id="ri-sel">
+            <span class="grow" id="ri-sel-text">Tick requests to copy them as one prompt.</span>
+            <button type="button" class="ri-btn sm" id="ri-sel-all">Select all shown</button>
+            <button type="button" class="ri-btn sm gold" id="ri-sel-copy" disabled>Copy one prompt for the selected</button>
+        </div>
+
+        <div id="ri-list"></div>
+    </div>
+</main>
+<div class="ri-toast" id="ri-toast" role="status" aria-live="polite" hidden></div>
+<script src="request-spec.js?v=1"></script>
+<script src="admin-requests.js?v=1"></script>
+</body>
+</html>

@@ -36,6 +36,49 @@ backend's own code beside it and compares every answer and every email.
   `supabase/migrations/20261103120000_learning_hub_usage.sql` (`srv_hub_usage`), which a person
   applies after the merge (AI-Lessons' CLAUDE.md, *Changing the database*).
 
+## Request or report: trainings, problems and ideas from staff — added 9 November 2026
+
+Brandon: staff and admins should be able to **request a training**, and report **bugs and things they'd like more of**, through a
+form that gathers as much context as possible, so a request can be handed straight to an AI assistant to build or fix,
+without him auditing the site for improvements.
+
+- **`request.html`** (+ `request.js?v=1`), for everyone: choose *Request a training*, *Report a problem* or *Share an idea*; each
+  has its own questions (`?type=training|bug|idea` opens one). The questions are in **`request-spec.js?v=1`**, shared with the
+  inbox, which labels the answers and writes the prompt from them. *Required* there must match `REQUEST_KINDS` in AI-Lessons'
+  `supabase/functions/learning-hub/core.mjs` (training: title, why, audience, outcomes; problem: title, what happened, and
+  where on the page only; idea: title, problem). A draft is kept on the device (`aisa_request_draft_v1`, per person and kind)
+  until it is sent. Below the form, *Your requests* (`my_requests`) shows each one's status and the team's note.
+- **What goes with it** (shown in *What else is sent with it* before sending): the page they came from (`?from=`, which the menu
+  link fills in, or the referrer), browser, system, screen, language, Hub language and time zone; and for a problem, if the box
+  stays ticked, **the errors `gate.js` noticed on that tab** (`aisaAuth.recentErrors()`: script errors, unhandled rejections and
+  server calls that failed for good, at most eight, in `sessionStorage` `aisa_recent_errors_v1`; messages, file names and pages
+  only, never a token or anything typed).
+- **The way in:** a gold *Request a training or report a problem* button at the foot of the menu drawer (above *Sign out*,
+  `menu.js`), carrying the current page; search entries; the admin drawer's *Requests inbox*; the admin dashboard's Tools menu.
+- **`admin-requests.html`** (+ `admin-requests.js?v=1`), admins only (`admin_requests` checks the `admins` table): every request,
+  newest first, opening on the open ones (new, planned, in progress), with the person's job, department and division from the
+  staff list, an *Urgent* chip (urgent, cannot finish, really needed), filters by status and kind, and a search through every
+  answer. **Copy AI prompt** writes a request up for an AI assistant (`promptFor()`): what the Hub is, where the pages and the
+  server are, the rules (this repository is public, so no names; CLAUDE.md; branch and pull request; the `?v=N` cascade; the
+  brand; [TO CONFIRM] rather than inventing), the request in full, what was sent with it, and what to do with that kind
+  (a training: a module like the others, listed everywhere modules are listed; a problem: reproduce, fix the cause, test; an
+  idea: the smallest useful version, or a plan). Tick several for one prompt. **Keep `promptFor()` in step with the Hub** when
+  where modules are listed, or the conventions, change. Setting a status and a note tells the person in their bell (unless
+  unticked) and shows on their request page. `#r<id>` opens one request, whatever its status (the email links there).
+- **The server** (AI-Lessons, `learning-hub/README.md`, *Requests from staff*): `submit_request`, `my_requests`, `admin_requests`,
+  `admin_request_update`, table `learning_hub.requests`, migration `20261109160000_learning_hub_requests.sql`. A new request puts
+  a bell notification, and an email when the bridge can send, to `LEARNING_HUB_REQUEST_NOTIFY` (default bbaki@). At most 10 a
+  person and 400 in all a day. Until the function is deployed and the migration applied the form says "the Hub's server is not
+  ready for requests yet" and keeps the draft, and the inbox says so.
+- **`gate.js?v=42`** on all 53 pages (`request.html` and `admin-requests.html` are the 52nd and 53rd): `aisaAuth.submitRequest`,
+  `myRequests`, `adminRequests`, `adminRequestUpdate`, `recentErrors`; `menu.js?v=24`, `search-index.js?v=20`.
+- **Personal data:** a request is a named member of staff writing about their work: read by admins only on the server, never put
+  in this repository (the prompt says so twice). The form asks for no student details and says so.
+- **Test:** `node tests/requests-test.js` runs the real `gate.js` and `menu.js` in Chromium, signed in as a made-up person, with
+  the server answered at the network: the menu link, the errors remembered (never the token), required answers, a draft surviving
+  a reload, what is sent (lists, "Other", ticks, role, page, errors in or out), *Your requests*, the inbox (filters, search,
+  the prompt's rules and answers, several at once, saving a status), a teacher refused, 390px, no console errors.
+
 ## Readiness module: "is this required for me?" pop-up — added 5 November 2026
 
 Brandon: as soon as a teacher opens the AI Literacy: Teacher Readiness module, a pop-up says whether the training is
@@ -838,7 +881,7 @@ it to `?v=32`, and the search-result overflow fix (30 October 2026) to
 2026) to `?v=34`. That added `admin-analytics.html` and turned
 `admin-charts.html` into a redirect with no `gate.js`, so it is still
 51 pages. The admin top-bar fit, the same day, took it to `?v=35`, and the switch
-to the new server on Supabase to `?v=36`. The admin notes (9 November 2026) took it to `?v=41`.
+to the new server on Supabase to `?v=36`. The admin notes (9 November 2026) took it to `?v=41`, and Request or report, merged after it, to `?v=42` (both branches had taken 41).
 
 **Use each number once.** On 3 November 2026 the Supabase switch
 (still an open pull request) and Hub Analytics had both taken `?v=34`.
@@ -2528,4 +2571,4 @@ Protection*), with the Arabic حماية الطفل ورعايته والوقا�
 pages, the module page, its certificate (new downloads), the admin tracker, Hub Analytics, the menu and search.
 The module id stays `safeguarding` and its short label stays *Safeguarding* (tracker columns, CSV headers, charts),
 so no completion, certificate record or number moves. Pins: `safeguarding-ar.js?v=4`, `orientation-nav.js?v=3`,
-`admin-analytics.js?v=2`, `search-index.js?v=19` in `gate.js`, and so `gate.js?v=40` on all 51 pages.
+`admin-analytics.js?v=2`, `search-index.js?v=19` in `gate.js`, and so `gate.js?v=40` on all 51 pages. Request or report (9 Nov 2026) took it to `?v=42` on 53 pages.

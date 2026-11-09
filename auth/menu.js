@@ -71,6 +71,8 @@
         /* Admin (filtered to admins only) */
         { title: 'Admin Dashboard',                    desc: 'Staff completion overview and compliance reports',              href: 'admin-dashboard.html',                                                             icon: '\u{1F6E1}',  tag: 'Admin', adminOnly: true },
         { title: 'Hub Analytics',                      desc: 'Usage, PD completions, newsletter readers, filter by date or person', href: 'admin-analytics.html',                                                    icon: '\u{1F4CA}', tag: 'Admin', adminOnly: true },
+        { title: 'Requests inbox',                     desc: 'Training requests, problem reports and ideas from staff',       href: 'admin-requests.html',                                                              icon: '\u{1F4E5}', tag: 'Admin', adminOnly: true },
+        { title: 'Request or report',                  desc: 'Ask for a training, report a problem, or share an idea',        href: 'request.html',                                                                     icon: '\u{1F4AC}', tag: 'Personal' },
         { title: 'Send Notifications',                 desc: 'Compose and publish notifications to staff',                    href: 'admin-notifications.html',                                                         icon: '\u{1F4E2}',  tag: 'Admin', adminOnly: true },
         { title: 'Personal Goals Tracker',             desc: 'Who has set a 2026\u201327 goal, and who still owes one',         href: 'admin-dashboard.html#goals',                                                       icon: '\u{1F3AF}', tag: 'Admin', adminOnly: true },
 
@@ -426,6 +428,14 @@
                 'font:inherit;font-weight:700;cursor:pointer;transition:background .15s;}',
             '.aisa-menu-signout:hover{background:#fee2e2;}',
             '.aisa-menu-signout svg{width:16px;height:16px;}',
+            /* "Request or report": everyone's way to ask the Hub team for a
+             * training, report a problem or share an idea (request.html). */
+            '.aisa-menu-request{display:flex;align-items:center;gap:.65rem;margin-bottom:.6rem;padding:.7rem .85rem;',
+                'border-radius:.6rem;border:1px solid #D8B664;background:#fbf6e9;color:#21076C;text-decoration:none;',
+                'font-weight:700;font-size:.88rem;line-height:1.25;transition:background .15s;}',
+            '.aisa-menu-request:hover{background:#f5ecd2;}',
+            '.aisa-menu-request .ico{font-size:1.05rem;flex-shrink:0;}',
+            '.aisa-menu-request small{display:block;font-weight:500;font-size:.74rem;color:#5b5480;}',
 
             /* === Bell dropdown panel === */
             '.aisa-bell-panel{position:fixed;top:calc(' + BAR_HEIGHT + ' + .25rem);z-index:2147483005;width:380px;max-width:calc(100vw - 1.2rem);',
@@ -654,7 +664,17 @@
             '<li class="aisa-menu-admin-item" style="display:none;">' +
                 '<a href="' + rootUrl('admin-analytics.html') + '">' +
                     '<span class="ico" aria-hidden="true">\u{1F4CA}</span>' +
-                    '<span>Hub Analytics</span></a></li>';
+                    '<span>Hub Analytics</span></a></li>' +
+            '<li class="aisa-menu-admin-item" style="display:none;">' +
+                '<a href="' + rootUrl('admin-requests.html') + '">' +
+                    '<span class="ico" aria-hidden="true">\u{1F4E5}</span>' +
+                    '<span>Requests inbox</span></a></li>';
+
+        /* The page the person is on goes with them, so a problem report
+         * starts with "which page?" already answered. */
+        var requestHref = rootUrl('request.html') +
+            (/\/request\.html$/.test(location.pathname) ? '' :
+                '?from=' + encodeURIComponent(location.pathname + location.hash));
 
         drawer.innerHTML =
             '<div class="aisa-menu-head">' +
@@ -667,6 +687,10 @@
             '</div>' +
             '<ul class="aisa-menu-list">' + linksHtml + adminHtml + '</ul>' +
             '<div class="aisa-menu-foot">' +
+                '<a class="aisa-menu-request" href="' + requestHref + '">' +
+                    '<span class="ico" aria-hidden="true">\u{1F4AC}</span>' +
+                    '<span>Request a training or report a problem' +
+                    '<small>Ideas welcome too: tell the Hub team</small></span></a>' +
                 '<button type="button" class="aisa-menu-signout">' + ICONS.signout + 'Sign out</button>' +
             '</div>';
 
