@@ -336,7 +336,9 @@
         admin_roster_list: 1, admin_roster_save: 1, admin_roster_remove: 1,
         admin_roster_import: 1, admin_admin_save: 1, admin_admin_remove: 1,
         admin_mark_complete: 1,
-        admin_staff_check: 1, admin_staff_sync: 1, admin_removed_list: 1, admin_staff_restore: 1
+        admin_staff_check: 1, admin_staff_sync: 1, admin_removed_list: 1, admin_staff_restore: 1,
+        /* Admin notes (9 Nov 2026): typed on the admin pages, read by every admin, and by Claude on "check notes". */
+        admin_notes_list: 1, admin_note_save: 1, admin_note_status: 1, admin_note_delete: 1
     };
 
     var IDEMPOTENT_ACTIONS = {
@@ -346,7 +348,7 @@
         get_module_response: 1, admin_module_responses: 1,
         get_survey_response: 1, admin_survey_responses: 1,
         get_notifications: 1, admin_notification_stats: 1, admin_list_tags: 1,
-        admin_roster_list: 1, admin_staff_check: 1, admin_removed_list: 1,
+        admin_roster_list: 1, admin_staff_check: 1, admin_removed_list: 1, admin_notes_list: 1,
         newsletter_status: 1,
         my_requests: 1, admin_requests: 1
     };

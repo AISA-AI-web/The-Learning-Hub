@@ -70,7 +70,7 @@ without him auditing the site for improvements.
   a bell notification, and an email when the bridge can send, to `LEARNING_HUB_REQUEST_NOTIFY` (default bbaki@). At most 10 a
   person and 400 in all a day. Until the function is deployed and the migration applied the form says "the Hub's server is not
   ready for requests yet" and keeps the draft, and the inbox says so.
-- **`gate.js?v=41`** on all 53 pages (`request.html` and `admin-requests.html` are the 52nd and 53rd): `aisaAuth.submitRequest`,
+- **`gate.js?v=42`** on all 53 pages (`request.html` and `admin-requests.html` are the 52nd and 53rd): `aisaAuth.submitRequest`,
   `myRequests`, `adminRequests`, `adminRequestUpdate`, `recentErrors`; `menu.js?v=24`, `search-index.js?v=20`.
 - **Personal data:** a request is a named member of staff writing about their work: read by admins only on the server, never put
   in this repository (the prompt says so twice). The form asks for no student details and says so.
@@ -881,7 +881,7 @@ it to `?v=32`, and the search-result overflow fix (30 October 2026) to
 2026) to `?v=34`. That added `admin-analytics.html` and turned
 `admin-charts.html` into a redirect with no `gate.js`, so it is still
 51 pages. The admin top-bar fit, the same day, took it to `?v=35`, and the switch
-to the new server on Supabase to `?v=36`.
+to the new server on Supabase to `?v=36`. The admin notes (9 November 2026) took it to `?v=41`, and Request or report, merged after it, to `?v=42` (both branches had taken 41).
 
 **Use each number once.** On 3 November 2026 the Supabase switch
 (still an open pull request) and Hub Analytics had both taken `?v=34`.
@@ -1151,6 +1151,32 @@ with cohort teachers never seen on the Hub listed as "never opened the Hub"), th
 rate count those 62 only, and "finished every module" means every module that applies to the person. With a person or group
 filter on, only the cohort members it picks count. `tests/readiness-notice-test.js` reads the cohort from the new file and
 checks both pages load it; the regeneration recipes in `readiness-notice.js` and `sep18.html` read it too.
+
+## Admin notes, and roles edited in the app — added 9 November 2026
+
+**Notes** (`admin-notes.js?v=1`): a *Notes* button on Hub Analytics (beside Save as PDF, with the number of open notes) opens a
+side panel. An admin writes a note about the page or one of its sections (the mount's `data-topics`); every admin reads every
+note; the writer edits or deletes their own; anyone marks one done or open again. **"Check notes"**: a Claude session reads the
+open notes from the database with the Supabase connector, acts on them, and marks each done with a short reply that shows under
+the note (the procedure is in AISA-AI-web/AI-Lessons' CLAUDE.md, *"Check notes"*). Notes can name staff: **never copy one into
+this repository** (it is public), a PR or a commit message. Server: AI-Lessons' `learning-hub` function (`admin_notes_list`,
+`admin_note_save`, `admin_note_status`, `admin_note_delete`; migration `20261109150000_learning_hub_admin_notes.sql`); until it is
+deployed the panel says so. The four actions joined `gate.js`'s admin allow-list (`ROSTER_ACTIONS`; the list read is
+idempotent): the cascade to **`?v=41`**. To put notes on another admin page: a button with `data-admin-notes-open`, a
+`<div hidden data-admin-notes="<page>" data-topics="A|B">` (the page must be in `NOTE_PAGES` on the server: `analytics`,
+`dashboard`), and the script. `tests/admin-notes-test.js` checks the panel in Chromium.
+
+**Roles in groups** (`admin-dashboard.js?v=6`, `admin-roster.js?v=7`): a person's staff-list groups can carry `team:<id>` (a team
+in `admin-teams.js`), `gll`, `hod`, `slt` and `llt`. **Once anyone has one, the groups are the truth** for SLT, LLT, team leaders
+and teams (`ROLES_FROM_TAGS`; HR's grade departments still add to the homeroom teams), and any admin changes them on People ›
+Staff list › ⋯ › Edit (a Team picker and GLL / HOD / SLT / LLT boxes; the free-text groups box no longer shows role groups, and
+role groups show as gold chips). Until then the code's rules decide (`isSLTRule`, `isLLTRule`, the faculty list by name), and
+the role controls are locked, because one edited person would otherwise switch everyone else's roles off. **People › Sync with
+HR › Teams and roles › "Move roles to the staff list"** writes those rules' answer as groups in one `admin_roster_import`
+(their other groups kept), listing who could not be moved (not on the staff list, or not found). The dashboard loads the
+staff list's groups after its own request (`admin_roster_list`) and again whenever the People tab saves (`aisa:roster`). A CSV
+upload with a groups column keeps each person's role groups unless the file names roles. After the move, `admin-teams.js`
+only names the teams (labels, areas, `depts`); its member lists are no longer read.
 
 ## Anti-Bullying Policy: Teacher Awareness — PREVIEW, built 7 October 2026
 
@@ -2545,4 +2571,4 @@ Protection*), with the Arabic حماية الطفل ورعايته والوقا�
 pages, the module page, its certificate (new downloads), the admin tracker, Hub Analytics, the menu and search.
 The module id stays `safeguarding` and its short label stays *Safeguarding* (tracker columns, CSV headers, charts),
 so no completion, certificate record or number moves. Pins: `safeguarding-ar.js?v=4`, `orientation-nav.js?v=3`,
-`admin-analytics.js?v=2`, `search-index.js?v=19` in `gate.js`, and so `gate.js?v=40` on all 51 pages. Request or report (9 Nov 2026) took it to `?v=41` on 53 pages.
+`admin-analytics.js?v=2`, `search-index.js?v=19` in `gate.js`, and so `gate.js?v=40` on all 51 pages. Request or report (9 Nov 2026) took it to `?v=42` on 53 pages.

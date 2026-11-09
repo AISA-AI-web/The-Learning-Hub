@@ -330,6 +330,10 @@
         #panel-people .rs-bar { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .75rem 0; }
         #panel-people .rs-bar .grow { flex: 1 1 14rem; min-width: 0; }
         #panel-people .rs-bar select { max-width: 15rem; }
+        #panel-people .rs-roles { display: flex; flex-direction: column; gap: .3rem; margin-top: .35rem; }
+        #panel-people .rs-role-checks { display: flex; gap: .6rem; flex-wrap: wrap; font-size: .78rem; font-weight: 700; color: var(--ad-ink-2); }
+        #panel-people .rs-role-checks label { display: inline-flex; align-items: center; gap: .2rem; }
+        #panel-people .rs-chip.rs-role { background: #fff7e6; color: var(--ad-gold-ink); border: 1px solid #efe0bb; }
         #panel-people .rs-in, #panel-people textarea { border: 1px solid var(--ad-line); border-radius: 9px; padding: .45rem .6rem; font-size: .875rem; background: #fff; color: var(--ad-ink); min-width: 0; max-width: 100%; }
         #panel-people .rs-btn { display: inline-flex; align-items: center; gap: .35rem; border: 1px solid var(--ad-line); background: #fff; color: var(--ad-ink-2); border-radius: 9px; padding: .42rem .75rem; font-size: .82rem; font-weight: 700; cursor: pointer; white-space: nowrap; position: relative; }
         #panel-people .rs-btn:hover:not(:disabled) { background: var(--ad-lav-3); }
@@ -384,7 +388,7 @@
             #panel-people table.rs-cards td.rs-menu-cell { position: absolute; right: .4rem; top: .4rem; width: auto; }
         }
     </style>
-    <script src="auth/gate.js?v=41"></script>
+    <script src="auth/gate.js?v=42"></script>
 </head>
 <body>
 
@@ -816,6 +820,12 @@
                     </div>
                     <div id="rs-sc-result" class="hidden"></div>
                 </section>
+                <section class="rs-card" aria-labelledby="rs-roles-h" id="rs-roles-card">
+                    <h3 id="rs-roles-h">Teams and roles</h3>
+                    <p id="rs-roles-status" class="rs-dim">Loading…</p>
+                    <div id="rs-roles-detail"></div>
+                    <div class="rs-bar"><button type="button" id="rs-roles-move" class="rs-btn rs-primary hidden" data-guard>Move roles to the staff list</button></div>
+                </section>
             </div>
 
             <div id="pp-removed" role="tabpanel" aria-labelledby="pp-tab-removed" tabindex="-1" class="hidden">
@@ -919,8 +929,8 @@
         const REQUIRED = MODULES.filter(m => m.required);
 </script>
 <script src="admin-teams.js?v=2"></script>
-<script src="admin-dashboard.js?v=5"></script>
-<script src="admin-roster.js?v=6"></script>
+<script src="admin-dashboard.js?v=6"></script>
+<script src="admin-roster.js?v=7"></script>
 
 </body>
 </html>

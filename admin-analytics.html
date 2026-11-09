@@ -285,7 +285,7 @@
             .an-tbl-wrap { overflow: visible; }
         }
     </style>
-    <script src="auth/gate.js?v=41"></script>
+    <script src="auth/gate.js?v=42"></script>
 </head>
 <body>
 
@@ -364,6 +364,7 @@
                     <button type="button" class="an-btn" id="f-reset">Reset</button>
                     <button type="button" class="an-btn" id="f-refresh" title="Read the spreadsheet again rather than the backend’s cached copy">↻ Refresh</button>
                     <button type="button" class="an-btn" id="f-print">Save as PDF</button>
+                    <button type="button" class="an-btn" id="f-notes" data-admin-notes-open>Notes</button>
                 </span>
             </div>
             <div class="an-f-sum" id="f-sum" aria-live="polite"></div>
@@ -639,5 +640,8 @@
 <script src="admin-analytics-charts.js?v=1"></script>
 <script src="ai-literacy-cohort.js?v=1"></script>
 <script src="admin-analytics.js?v=3"></script>
+<!-- Notes for the admins (and for Claude, on "check notes"): admin-notes.js. The topics are this page's sections. -->
+<div hidden data-admin-notes="analytics" data-topics="Overview|Engagement|PD modules|Module spotlight|Newsletter|Notices|AI Literacy readiness|Teacher goals|Staff explorer"></div>
+<script src="admin-notes.js?v=1"></script>
 </body>
 </html>

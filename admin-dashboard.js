@@ -342,7 +342,20 @@
     var GROUPED = {};
     Object.keys(DIVISION_GROUPS).forEach(function (g) { DIVISION_GROUPS[g].divisions.forEach(function (d) { GROUPED[divKey(d)] = g; }); });
 
-    function isSLT(p) { return /principal/i.test(p.designation || '') || SLT_EMAILS.indexOf(divKey(p.email)) !== -1; }
+    /* ---- Roles: from the staff list's groups once they are there (9 Nov 2026) ----
+     * A person's groups can carry their roles: `team:<id>` (a team in admin-teams.js), `gll`, `hod`, `slt`, `llt`. Once anyone
+     * on the staff list has one of these, the groups are the truth for every role and team, and any admin changes them on
+     * People › Staff list (⋯ › Edit). Until then the rules below decide (SLT by title, LLT by division, teams by the faculty
+     * list): "Move roles to the staff list" on People › Sync with HR writes those rules' answer as groups, once. HR's grade
+     * departments still count for the homeroom teams either way (teacher assistants), because they come from HR. */
+    var ROLE_TAGS = ['slt', 'llt', 'gll', 'hod'];
+    var TAGS = null, ROLES_FROM_TAGS = false, tagsLoading = false;
+    function isRoleTag(t) { return ROLE_TAGS.indexOf(t) !== -1 || String(t).indexOf('team:') === 0; }
+    function tagsOf(p) { return (p && Array.isArray(p.tags)) ? p.tags : ((TAGS && TAGS[divKey(p && p.email)]) || []); }
+    function hasTag(p, t) { return tagsOf(p).indexOf(t) !== -1; }
+
+    function isSLTRule(p) { return /principal/i.test(p.designation || '') || SLT_EMAILS.indexOf(divKey(p.email)) !== -1; }
+    function isSLT(p) { return ROLES_FROM_TAGS ? hasTag(p, 'slt') : isSLTRule(p); }
     /* Teaching staff: a designation with "teacher" and not "assistant", or Primary Learning Support. Teacher Assistants,
      * counsellors, librarians and coordinators are not. */
     function isTeacher(p) {
@@ -364,9 +377,10 @@
      * decided by Brandon, 9 Nov 2026). Together they are "all leadership", each person counted once. */
     var LEADERSHIP_DIVISIONS = ['leadership'];
     var LLT_EMAILS = ['aturabi@aisa.sch.ae'];
-    function isLLT(p) {
-        return LLT_EMAILS.indexOf(divKey(p.email)) !== -1 || (!isSLT(p) && LEADERSHIP_DIVISIONS.indexOf(divKey(p.division)) !== -1);
+    function isLLTRule(p) {
+        return LLT_EMAILS.indexOf(divKey(p.email)) !== -1 || (!isSLTRule(p) && LEADERSHIP_DIVISIONS.indexOf(divKey(p.division)) !== -1);
     }
+    function isLLT(p) { return ROLES_FROM_TAGS ? hasTag(p, 'llt') : isLLTRule(p); }
     function isLeader(p) { return isSLT(p) || isLLT(p); }
     /* Which phase a department belongs to: "Early Years - KG1", "Primary - Grade 3", "Primary Arabic" → elem; "Secondary - PE" → sec. */
     function deptPhase(dep) {
@@ -482,7 +496,20 @@
         /* Surname only: still the same first initial (a nickname like "Sissy" for Angelique needs an address instead). */
         return tp.some(function (t) { return t[0] === f[0]; }) ? 1 : 0;
     }
+    /* Teams and leads from the groups (once roles are there), else from the faculty list by name. */
     function matchTeams() {
+        if (!ROLES_FROM_TAGS) { matchTeamsByName(); return; }
+        var byTeam = {}, leads = {};
+        TEAMS.forEach(function (t) { byTeam[t.id] = {}; });
+        Object.keys(TAGS).forEach(function (e) {
+            TAGS[e].forEach(function (t) {
+                if (t.indexOf('team:') === 0 && byTeam[t.slice(5)]) byTeam[t.slice(5)][e] = true;
+                if (t === 'gll' || t === 'hod') leads[e] = t;
+            });
+        });
+        teamIndex = { byTeam: byTeam, leads: leads, unmatched: [] };
+    }
+    function matchTeamsByName() {
         var byTeam = {}, leads = {}, unmatched = [], cache = {};
         TEAMS.forEach(function (t) {
             byTeam[t.id] = {};
@@ -503,7 +530,7 @@
                 }
                 if (found && DATA.byEmail[found]) {
                     byTeam[t.id][found] = true;
-                    if (m[2]) leads[found] = true;
+                    if (m[2]) leads[found] = /hod|head/i.test(m[2]) ? 'hod' : 'gll';
                 } else unmatched.push(name + ' (' + t.label + ')');
             });
         });
@@ -750,7 +777,7 @@
         return inDivision(p, $('tracker-division').value) && inTeam(p, $('tracker-team').value);
     }
     function fillGroupFilters() {
-        if (TEAMS.length) matchTeams(); else teamIndex = { byTeam: {}, leads: {}, unmatched: [] };
+        if (TEAMS.length || ROLES_FROM_TAGS) matchTeams(); else teamIndex = { byTeam: {}, leads: {}, unmatched: [] };
         var any = fillDivisionSelect($('tracker-division'), 'Everyone');
         $('tracker-division').closest('label').classList.toggle('hidden', !any);
         fillTeamSelect();
@@ -766,8 +793,60 @@
         fillStaff: function (sel, list, allLabel) { return DATA ? fillDivisionSelect(sel, allLabel, list) : false; },
         fillTeams: function (sel, list, allLabel) { return DATA ? fillTeamOptions(sel, list, allLabel) : false; },
         inStaff: inDivision,
-        inTeam: inTeam
+        inTeam: inTeam,
+        teams: TEAMS,
+        isRoleTag: isRoleTag,
+        rolesFromTags: function () { return ROLES_FROM_TAGS; },
+        /* The roles today's rules give each person on the staff list, as groups: what "Move roles to the staff list"
+         * writes. rows: [{email, tags}] (their other groups kept); counts per role; who has a role but is not on the list. */
+        seedRoles: function (roster) {
+            var keep = ROLES_FROM_TAGS;
+            ROLES_FROM_TAGS = false;
+            matchTeamsByName();
+            var onList = {}, rows = [], counts = { people: 0, team: 0, gll: 0, hod: 0, slt: 0, llt: 0 };
+            roster.forEach(function (p) {
+                onList[p.email] = true;
+                var roles = [];
+                TEAMS.forEach(function (t) { if (teamIndex.byTeam[t.id][p.email]) { roles.push('team:' + t.id); counts.team++; } });
+                var lead = teamIndex.leads[p.email];
+                if (lead) { roles.push(lead); counts[lead]++; }
+                if (isSLTRule(p)) { roles.push('slt'); counts.slt++; }
+                if (isLLTRule(p)) { roles.push('llt'); counts.llt++; }
+                if (!roles.length) return;
+                counts.people++;
+                rows.push({ email: p.email, tags: (p.tags || []).filter(function (t) { return !isRoleTag(t); }).concat(roles) });
+            });
+            var off = [];
+            Object.keys(teamIndex.byTeam).forEach(function (id) {
+                Object.keys(teamIndex.byTeam[id]).forEach(function (e) { if (!onList[e] && off.indexOf(e) === -1) off.push(e); });
+            });
+            var unmatched = teamIndex.unmatched.slice();
+            ROLES_FROM_TAGS = keep;
+            matchTeams();
+            return { rows: rows, counts: counts, offList: off.map(function (e) { var q = DATA.byEmail[e]; return (q && q.name) || e; }), unmatched: unmatched };
+        }
     };
+
+    /* The staff list's groups: loaded once after the dashboard's own request, and again whenever the People tab saves. */
+    function setTags(roster) {
+        TAGS = {};
+        ROLES_FROM_TAGS = false;
+        (roster || []).forEach(function (p) {
+            var t = Array.isArray(p.tags) ? p.tags : [];
+            TAGS[divKey(p.email)] = t;
+            if (t.some(isRoleTag)) ROLES_FROM_TAGS = true;
+        });
+        if (rendered) { fillGroupFilters(); renderOverview(); renderTracker(); }
+    }
+    function loadTags() {
+        if (TAGS || tagsLoading || !AUTH || !AUTH.adminRoster) return;
+        tagsLoading = true;
+        AUTH.adminRoster('admin_roster_list').then(function (r) {
+            if (r && r.ok !== false) setTags(r.roster);
+        }, function (err) { console.warn('AISA: staff list groups not loaded', err); })
+          .then(function () { tagsLoading = false; });
+    }
+    document.addEventListener('aisa:roster', function (e) { if (e.detail && e.detail.roster) setTags(e.detail.roster); });
     function groupFilterCount() {
         return GROUP_FILTERS.filter(function (id) { return $(id).value; }).length;
     }
@@ -1622,6 +1701,7 @@
         renderInnovation();
         showState('state-ready');
         rendered = true;
+        loadTags();
     }
 
     /* Only the backend's own `not_admin` means "Admin access required". Anything else is a failure to find out. */

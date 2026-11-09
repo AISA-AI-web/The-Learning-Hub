@@ -84,6 +84,7 @@
             roster.forEach(function (p) { if (selected[p.email]) still[p.email] = true; });
             selected = still;
             render();
+            try { document.dispatchEvent(new CustomEvent('aisa:roster', { detail: { roster: roster } })); } catch (e) { /* old browser: filters wait for a reload */ }
             /* Its own request: an older server does not have it, and the rest of the tab must work without it. */
             return call('admin_removed_list').then(function (x) { removed = (x && x.ok !== false && x.removed) || []; }, function () { removed = null; })
                 .then(renderRemoved);
@@ -93,6 +94,19 @@
     /* ---------- the staff table ---------- */
 
     function tagsText(p) { return (p.tags || []).join(', '); }
+
+    /* ---------- roles in groups (9 Nov 2026): team:<id>, gll, hod, slt, llt; see admin-dashboard.js ---------- */
+    var ROLE_LABEL = { slt: 'SLT', llt: 'LLT', gll: 'GLL', hod: 'HOD' };
+    function G() { return window.aisaStaffGroups || null; }
+    function isRole(t) { return !!ROLE_LABEL[t] || String(t).indexOf('team:') === 0; }
+    function plainTags(p) { return (p.tags || []).filter(function (t) { return !isRole(t); }); }
+    function roleTags(p) { return (p.tags || []).filter(isRole); }
+    function teamLabel(id) {
+        var t = ((G() && G().teams) || []).filter(function (x) { return x.id === id; })[0];
+        return t ? t.label : id;
+    }
+    function roleText(t) { return ROLE_LABEL[t] || teamLabel(String(t).slice(5)); }
+    function rolesLive() { return !!(G() && G().rolesFromTags && G().rolesFromTags()); }
 
     function visible() {
         var q = $('rs-search').value.trim().toLowerCase(), t = $('rs-tag').value, dv = $('rs-div').value, tm = $('rs-team').value;
@@ -129,7 +143,7 @@
         sel.classList.toggle('hidden', !has);
         team.classList.toggle('hidden', !g.fillTeams(team, roster, 'Every grade and team'));
     }
-    document.addEventListener('aisa:staff-groups', function () { if (roster.length) { renderDivFilter(); renderStaff(); } });
+    document.addEventListener('aisa:staff-groups', function () { if (roster.length) { renderDivFilter(); renderStaff(); renderRolesCard(); } });
 
     function person(p, suffix) {
         return h('div', { class: 'rs-person' }, [h('b', { text: (p.name || p.email) + (suffix || '') }), p.name ? h('span', { text: p.email }) : null]);
@@ -201,16 +215,39 @@
             tr.appendChild(h('td', { class: 'rs-cb' }, [cb]));
             if (editing === p.email) {
                 var nm = h('input', { type: 'text', value: p.name, maxlength: '300', 'aria-label': 'Name', class: 'rs-in' });
-                var tg = h('input', { type: 'text', value: tagsText(p), 'aria-label': 'Groups', placeholder: 'secondary, maths', class: 'rs-in' });
+                var tg = h('input', { type: 'text', value: plainTags(p).join(', '), 'aria-label': 'Groups', placeholder: 'secondary, maths', class: 'rs-in' });
+                var live = rolesLive(), mineRoles = roleTags(p);
+                var teamSel = h('select', { class: 'rs-in', 'aria-label': 'Team or grade', disabled: !live });
+                teamSel.appendChild(h('option', { value: '', text: 'No team' }));
+                ((G() && G().teams) || []).forEach(function (t) { teamSel.appendChild(h('option', { value: 'team:' + t.id, text: t.label })); });
+                var curTeam = mineRoles.filter(function (t) { return t.indexOf('team:') === 0; });
+                teamSel.value = curTeam[0] || '';
+                var boxes = ['gll', 'hod', 'slt', 'llt'].map(function (r) {
+                    var cb = h('input', { type: 'checkbox', 'aria-label': ROLE_LABEL[r], disabled: !live });
+                    cb.checked = mineRoles.indexOf(r) !== -1;
+                    cb.setAttribute('data-role', r);
+                    return cb;
+                });
+                var roleBox = h('div', { class: 'rs-roles' }, [teamSel, h('span', { class: 'rs-role-checks' }, boxes.map(function (cb) {
+                    return h('label', {}, [cb, ' ' + ROLE_LABEL[cb.getAttribute('data-role')]]);
+                })), live ? null : h('span', { class: 'rs-dim', text: 'Roles are set by the faculty list until they are moved here: People › Sync with HR.' })]);
+                var tagsToSave = function () {
+                    if (!live) return tg.value.split(',').concat(mineRoles).join(',');
+                    var out = tg.value.split(',').filter(function (t) { return !isRole(t.trim().toLowerCase()); });
+                    curTeam.slice(1).forEach(function (t) { out.push(t); });   // a second team, kept as it was
+                    if (teamSel.value) out.push(teamSel.value);
+                    boxes.forEach(function (cb) { if (cb.checked) out.push(cb.getAttribute('data-role')); });
+                    return out.join(',');
+                };
                 var dp = h('input', { type: 'text', value: p.department || '', maxlength: '200', 'aria-label': 'Department', placeholder: 'Primary - Grade 4', class: 'rs-in' });
                 var ds = h('input', { type: 'text', value: p.designation || '', maxlength: '200', 'aria-label': 'Designation', placeholder: 'Homeroom Teacher', class: 'rs-in' });
                 tr.appendChild(h('td', {}, [nm, h('span', { class: 'rs-dim', style: 'display:block', text: p.email })]));
                 tr.appendChild(h('td', {}, [dp]));
                 tr.appendChild(h('td', {}, [ds]));
-                tr.appendChild(h('td', {}, [tg]));
+                tr.appendChild(h('td', {}, [tg, roleBox]));
                 tr.appendChild(h('td', { class: 'rs-actions' }, [
                     h('button', { type: 'button', class: 'rs-btn rs-primary', 'data-guard': '', text: 'Save', onclick: function () {
-                        act(call('admin_roster_save', { email: p.email, name: nm.value, tags: tg.value, department: dp.value, designation: ds.value }), 'Saved ' + (nm.value || p.email) + '.', function () { editing = ''; });
+                        act(call('admin_roster_save', { email: p.email, name: nm.value, tags: tagsToSave(), department: dp.value, designation: ds.value }), 'Saved ' + (nm.value || p.email) + '.', function () { editing = ''; });
                     } }),
                     h('button', { type: 'button', class: 'rs-btn', text: 'Cancel', onclick: function () { editing = ''; renderStaff(); } })
                 ]));
@@ -221,7 +258,8 @@
                 tr.appendChild(h('td', { 'data-label': 'Designation', text: p.designation || '—' }));
                 var cell = h('td', { 'data-label': 'Groups' });
                 if (!p.tags.length) cell.appendChild(h('span', { class: 'rs-dim', text: 'no group' }));
-                p.tags.forEach(function (t) { cell.appendChild(h('span', { class: 'rs-chip', text: t })); });
+                roleTags(p).forEach(function (t) { cell.appendChild(h('span', { class: 'rs-chip rs-role', title: t, text: roleText(t) })); });
+                plainTags(p).forEach(function (t) { cell.appendChild(h('span', { class: 'rs-chip', text: t })); });
                 tr.appendChild(cell);
                 tr.appendChild(h('td', { class: 'rs-menu-cell' }, [rowMenu(p.name || p.email, [
                     { text: 'Edit', run: function () { editing = p.email; renderStaff(); } },
@@ -265,7 +303,38 @@
         $('rs-bulk-n').textContent = n + ' selected';
     }
 
-    function render() { renderTagFilter(); renderDivFilter(); renderStaff(); renderAdmins(); renderCompleteOptions(); }
+    function render() { renderTagFilter(); renderDivFilter(); renderStaff(); renderAdmins(); renderCompleteOptions(); renderRolesCard(); }
+
+    /* ---------- Teams and roles: from the faculty list to the staff list, once (9 Nov 2026) ---------- */
+    function renderRolesCard() {
+        var g = G(), status = $('rs-roles-status'), detail = $('rs-roles-detail'), btn = $('rs-roles-move');
+        if (!status) return;
+        detail.textContent = '';
+        if (!g || !g.ready()) { status.textContent = 'Waiting for the dashboard’s data…'; btn.classList.add('hidden'); return; }
+        var count = function (test) { return roster.filter(function (p) { return roleTags(p).some(test); }).length; };
+        if (rolesLive()) {
+            btn.classList.add('hidden');
+            status.textContent = 'Teams and roles are kept on the staff list: ' + count(function (t) { return t.indexOf('team:') === 0; }) + ' people have a team, ' +
+                count(function (t) { return t === 'gll' || t === 'hod'; }) + ' lead one (GLL or HOD), ' + count(function (t) { return t === 'slt'; }) + ' are SLT and ' +
+                count(function (t) { return t === 'llt'; }) + ' LLT. To change someone’s, open ⋯ › Edit on the Staff list. HR’s grade departments still count for the homeroom teams.';
+            return;
+        }
+        var seed = g.seedRoles(roster), c = seed.counts;
+        status.textContent = 'Teams and roles now come from the faculty list in the Hub’s code and from HR job titles, so only Claude can change them. ' +
+            'Move them to the staff list to change them here: ' + plural(c.people, 'person gets', 'people get') + ' their roles as groups (' +
+            plural(c.team, 'team place', 'team places') + ', ' + plural(c.gll, 'GLL', 'GLLs') + ', ' + plural(c.hod, 'HOD', 'HODs') + ', ' +
+            c.slt + ' SLT, ' + c.llt + ' LLT). Nothing else about them changes.';
+        if (seed.offList.length) detail.appendChild(block('Not on the staff list, so not moved (' + seed.offList.length + ')',
+            [h('p', { text: 'They are on the faculty list and have signed in, but are not on the staff list. Add them, then move again.' }), h('ul', { class: 'rs-list' }, seed.offList.map(function (n) { return h('li', { text: n }); }))]));
+        if (seed.unmatched.length) detail.appendChild(block('On the faculty list but not found on the Hub (' + seed.unmatched.length + ')',
+            [h('p', { text: 'Not signed in yet, or a different spelling. Once they are on the staff list, give them their team with ⋯ › Edit.' }), h('ul', { class: 'rs-list' }, seed.unmatched.map(function (n) { return h('li', { text: n }); }))]));
+        btn.classList.toggle('hidden', !seed.rows.length);
+        btn.onclick = function () {
+            if (!window.confirm('Write the teams and roles of ' + seed.rows.length + ' people to the staff list as groups?\n\nFrom then on every admin changes them on the Staff list (⋯ › Edit), and the code’s faculty list is no longer used.')) return;
+            act(call('admin_roster_import', { rows: seed.rows.map(function (r) { return { email: r.email, tags: r.tags.join(',') }; }) }),
+                function (r) { return 'Teams and roles moved to the staff list for ' + (r.updated || seed.rows.length) + ' people.'; });
+        };
+    }
 
     /* Runs a request, then reloads the lists; shows the message or the reason it failed. */
     function act(promise, okMsg, before) {
@@ -454,7 +523,15 @@
     function upload(replace) {
         if (!pending || !pending.valid) { note('Nothing usable to upload.', 'bad'); return; }
         if (replace && pending.remove && !window.confirm('This removes ' + pending.remove + ' ' + (pending.remove === 1 ? 'person' : 'people') + ' from the staff list. Their training records are kept. Continue?')) return;
-        var rows = pending.rows;
+        /* A groups cell replaces the person's groups. Their roles (team, GLL, HOD, SLT, LLT) are kept unless the file names roles. */
+        var have = {};
+        roster.forEach(function (p) { have[p.email] = p; });
+        var rows = pending.rows.map(function (r) {
+            var cur = have[String(r.email || '').trim().toLowerCase()];
+            var tags = cleanTags(r.tags);
+            if (!cur || !tags.length || tags.some(isRole)) return r;
+            return Object.assign({}, r, { tags: tags.concat(roleTags(cur)).join(',') });
+        });
         setBusy(true);
         call('admin_roster_import', { rows: rows, remove_missing: !!replace }).then(function (r) {
             if (r && r.ok === false) { var e = new Error(r.error); e.skipped = r.skipped; throw e; }
