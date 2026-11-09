@@ -53,8 +53,18 @@ without him auditing the site for improvements.
   stays ticked, **the errors `gate.js` noticed on that tab** (`aisaAuth.recentErrors()`: script errors, unhandled rejections and
   server calls that failed for good, at most eight, in `sessionStorage` `aisa_recent_errors_v1`; messages, file names and pages
   only, never a token or anything typed).
-- **The way in:** a gold *Request a training or report a problem* button at the foot of the menu drawer (above *Sign out*,
-  `menu.js`), carrying the current page; search entries; the admin drawer's *Requests inbox*; the admin dashboard's Tools menu.
+- **The way in:** a floating **Request or report** button at the bottom right of every page (`.aisa-fab`, built by `menu.js`,
+  so on all 53 pages; Brandon asked for it on 9 Nov 2026, in place of the first version's link at the foot of the menu
+  drawer). A purple pill with a gold ring; on phones (640px and below) a circle with the icon only. It is left off
+  `request.html` itself and out of print. Its link carries the page and hash at the moment of the click (`?from=`). It sits
+  at layer 1000: above the page, below the menu's own layers and any pop-up (the readiness notice is 10000, the Anti-Bullying
+  preview gate higher), which cover it as they should. **`FAB_AVOID` in `menu.js`** lists what already sits in that corner,
+  and `placeFab()` lifts the button above whichever is there, on scroll, resize and clicks: a module's Previous/Next bar
+  (`.aisa-train-nav`; AI & Assessment's own `.aia-nav-bar`), the Committees shortcuts button, Return to School's Gem helper,
+  Leo on the home page (phones), and Tools & Resources' own *Request a Tool or Resource* button. **Anything new fixed in the
+  bottom-right corner needs its selector there, or `data-fab-avoid`.** Checked on all 53 pages at 1280 and 390px, scrolled to
+  the top, middle and bottom: it covers no floating control. Also: search entries, the admin drawer's *Requests inbox*, and
+  the admin dashboard's Tools menu.
 - **`admin-requests.html`** (+ `admin-requests.js?v=1`), admins only (`admin_requests` checks the `admins` table): every request,
   newest first, opening on the open ones (new, planned, in progress), with the person's job, department and division from the
   staff list, an *Urgent* chip (urgent, cannot finish, really needed), filters by status and kind, and a search through every
@@ -71,11 +81,12 @@ without him auditing the site for improvements.
   person and 400 in all a day. Until the function is deployed and the migration applied the form says "the Hub's server is not
   ready for requests yet" and keeps the draft, and the inbox says so.
 - **`gate.js?v=42`** on all 53 pages (`request.html` and `admin-requests.html` are the 52nd and 53rd): `aisaAuth.submitRequest`,
-  `myRequests`, `adminRequests`, `adminRequestUpdate`, `recentErrors`; `menu.js?v=24`, `search-index.js?v=20`.
+  `myRequests`, `adminRequests`, `adminRequestUpdate`, `recentErrors`; `menu.js?v=24`, `search-index.js?v=20`. The floating
+  button took `menu.js?v=25` and so `gate.js?v=43`.
 - **Personal data:** a request is a named member of staff writing about their work: read by admins only on the server, never put
   in this repository (the prompt says so twice). The form asks for no student details and says so.
 - **Test:** `node tests/requests-test.js` runs the real `gate.js` and `menu.js` in Chromium, signed in as a made-up person, with
-  the server answered at the network: the menu link, the errors remembered (never the token), required answers, a draft surviving
+  the server answered at the network: the floating button (bottom right, not on the form itself, the page in its link), the errors remembered (never the token), required answers, a draft surviving
   a reload, what is sent (lists, "Other", ticks, role, page, errors in or out), *Your requests*, the inbox (filters, search,
   the prompt's rules and answers, several at once, saving a status), a teacher refused, 390px, no console errors.
 
@@ -2571,4 +2582,4 @@ Protection*), with the Arabic حماية الطفل ورعايته والوقا�
 pages, the module page, its certificate (new downloads), the admin tracker, Hub Analytics, the menu and search.
 The module id stays `safeguarding` and its short label stays *Safeguarding* (tracker columns, CSV headers, charts),
 so no completion, certificate record or number moves. Pins: `safeguarding-ar.js?v=4`, `orientation-nav.js?v=3`,
-`admin-analytics.js?v=2`, `search-index.js?v=19` in `gate.js`, and so `gate.js?v=40` on all 51 pages. Request or report (9 Nov 2026) took it to `?v=42` on 53 pages.
+`admin-analytics.js?v=2`, `search-index.js?v=19` in `gate.js`, and so `gate.js?v=40` on all 51 pages. Request or report (9 Nov 2026) took it to `?v=42` on 53 pages, and its floating button to `?v=43`.
