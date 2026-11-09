@@ -96,7 +96,7 @@ const bundle = {
         { email: 'x1@school.example', name: 'Outside Cohort', updated_at: '2026-09-15T10:00:00Z', data: { lesson: { needs_before: 'Help please' } } }] },
     survey: { ok: true, survey_id: 'secondary-teacher-goal-2026-27', responses: goals, fields: [], outstanding, roster_tags: ['secondary'] }
 };
-const roster = people.map(p => ({ email: p.email, name: p.name, tags: p.division === 'Secondary' ? ['secondary'] : [], department: p.department, designation: p.designation, division: p.division }));
+const roster = everyone.map(p => ({ email: p.email, name: p.name, tags: p.division === 'Secondary' ? ['secondary'] : [], department: p.department, designation: p.designation, division: p.division }));
 
 function stub() {
     return `(function(){
@@ -263,7 +263,16 @@ function serve() {
         await page.click('#tab-people');
         await page.waitForSelector('#rs-rows tr');
         ok((await page.$$('#rs-rows tr')).length === 50, 'staff list shows 50 to a page');
-        ok((await page.textContent('#pp-staff-n')).trim() === '60', 'Staff list sub-tab shows the count');
+        ok((await page.textContent('#pp-staff-n')).trim() === String(everyone.length), 'Staff list sub-tab shows the count');
+        const rsGroups = await page.$$eval('#rs-div optgroup', els => els.map(g => g.label));
+        ok(rsGroups.join('|') === 'Teaching staff|Leadership|Everyone in a phase|Support staff|Other', 'People: the same Staff group headings as the tracker (' + rsGroups.join(', ') + ')');
+        ok(await page.$('#rs-div option[value="Administrator"]') === null && await page.$('#rs-div option[value="Hallway Monitor"]') === null, 'People: no raw HR divisions taken into a group');
+        await page.selectOption('#rs-div', '__slt');
+        ok((await page.$$('#rs-rows tr')).length === 4, 'People: SLT narrows the staff list to the four');
+        await page.selectOption('#rs-div', '');
+        await page.selectOption('#rs-team', 'team:g4');
+        ok((await page.$$('#rs-rows tr')).length === 3, 'People: Grade or team narrows the staff list to Grade 4');
+        await page.selectOption('#rs-team', '');
         const h = await page.$eval('#rs-rows tr', tr => tr.getBoundingClientRect().height);
         ok(h <= 56, 'staff rows are compact (' + Math.round(h) + 'px)');
         await page.click('#rs-rows tr .rs-more');

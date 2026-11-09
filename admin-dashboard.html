@@ -329,6 +329,7 @@
         #panel-people .rs-card > p, #panel-people .rs-block > p, #panel-people .rs-preview p { color: var(--ad-ink-2); font-size: .875rem; line-height: 1.45; margin: .25rem 0 .75rem; max-width: 52rem; }
         #panel-people .rs-bar { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: .75rem 0; }
         #panel-people .rs-bar .grow { flex: 1 1 14rem; min-width: 0; }
+        #panel-people .rs-bar select { max-width: 15rem; }
         #panel-people .rs-in, #panel-people textarea { border: 1px solid var(--ad-line); border-radius: 9px; padding: .45rem .6rem; font-size: .875rem; background: #fff; color: var(--ad-ink); min-width: 0; max-width: 100%; }
         #panel-people .rs-btn { display: inline-flex; align-items: center; gap: .35rem; border: 1px solid var(--ad-line); background: #fff; color: var(--ad-ink-2); border-radius: 9px; padding: .42rem .75rem; font-size: .82rem; font-weight: 700; cursor: pointer; white-space: nowrap; position: relative; }
         #panel-people .rs-btn:hover:not(:disabled) { background: var(--ad-lav-3); }
@@ -731,7 +732,8 @@
                     <div class="rs-bar">
                         <input id="rs-search" type="text" class="grow rs-in" placeholder="Search name, email, department" aria-label="Search the staff list" autocomplete="off">
                         <select id="rs-tag" class="rs-in" aria-label="Show a group"></select>
-                        <select id="rs-div" class="rs-in hidden" aria-label="Show a division"></select>
+                        <select id="rs-div" class="rs-in hidden" aria-label="Show a staff group"></select>
+                        <select id="rs-team" class="rs-in hidden" aria-label="Show a grade or team"></select>
                         <button type="button" id="rs-add-open" class="rs-btn rs-primary" data-guard>Add a person</button>
                         <label class="rs-btn" style="cursor:pointer">Upload CSV<input id="rs-file" type="file" accept=".csv,.tsv,.txt,text/csv,text/plain" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden"></label>
                         <button type="button" id="rs-export" class="rs-btn">Download CSV</button>
@@ -977,8 +979,8 @@
         const REQUIRED = MODULES.filter(m => m.required);
 </script>
 <script src="admin-teams.js?v=2"></script>
-<script src="admin-dashboard.js?v=4"></script>
-<script src="admin-roster.js?v=5"></script>
+<script src="admin-dashboard.js?v=5"></script>
+<script src="admin-roster.js?v=6"></script>
 
 </body>
 </html>

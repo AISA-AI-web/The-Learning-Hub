@@ -1077,7 +1077,9 @@ only**, no rooms, extensions or courses, because this repo is public. A member's
 the repo (the AI Literacy cohort, and staff named elsewhere); the rest are matched by name in the browser (`matchTeams()`:
 surname or a near spelling, plus the first name, its first letters or a shortened form; a surname alone only when it is
 distinctive, unique and the initial agrees). Names that match no one are listed under the filter: add an email for them in
-`admin-teams.js`. The Roster tab's own Division filter is unchanged.
+`admin-teams.js`. **The People tab uses the same two filters** (`rs-div`, `rs-team`, `admin-roster.js?v=6`), through
+`window.aisaStaffGroups` in `admin-dashboard.js`, counted on the staff list, plus "No division" for people HR's list has not
+reached; it redraws when the dashboard's data arrives (`aisa:staff-groups`).
 
 **Two filters, not four (9 Nov 2026, `admin-dashboard.js?v=4`, `admin-teams.js?v=2`).** Division, Team, Department and
 Designation overlapped (a division is made from the department; the support groups were the same in two lists), so *More

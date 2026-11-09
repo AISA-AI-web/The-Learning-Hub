@@ -95,11 +95,12 @@
     function tagsText(p) { return (p.tags || []).join(', '); }
 
     function visible() {
-        var q = $('rs-search').value.trim().toLowerCase(), t = $('rs-tag').value, dv = $('rs-div').value;
+        var q = $('rs-search').value.trim().toLowerCase(), t = $('rs-tag').value, dv = $('rs-div').value, tm = $('rs-team').value;
+        var g = window.aisaStaffGroups;
         return roster.filter(function (p) {
             if (dv === '__none') { if (p.division) return false; }
-            else if (dv === '__elem') { if (p.division !== 'Early Years' && p.division !== 'Primary') return false; }
-            else if (dv && p.division !== dv) return false;
+            else if (dv && g && !g.inStaff(p, dv)) return false;
+            if (tm && g && !g.inTeam(p, tm)) return false;
             if (t === '__none') { if (p.tags.length) return false; }
             else if (t && p.tags.indexOf(t) === -1) return false;
             return !q || p.email.indexOf(q) !== -1 || p.name.toLowerCase().indexOf(q) !== -1 || (p.department || '').toLowerCase().indexOf(q) !== -1 || (p.designation || '').toLowerCase().indexOf(q) !== -1;
@@ -116,17 +117,19 @@
         sel.value = Array.prototype.some.call(sel.options, function (o) { return o.value === cur; }) ? cur : '';
     }
 
+    /* Staff group and Grade or team: the tracker's own lists (window.aisaStaffGroups in admin-dashboard.js), counted on
+     * the staff list. "No division" is added for people HR's list has not reached yet. */
     function renderDivFilter() {
-        var sel = $('rs-div'), cur = sel.value, c = {};
-        roster.forEach(function (p) { if (p.division) c[p.division] = (c[p.division] || 0) + 1; });
-        sel.textContent = '';
-        sel.appendChild(h('option', { value: '', text: 'All divisions' }));
-        if (c['Early Years'] && c['Primary']) sel.appendChild(h('option', { value: '__elem', text: 'Elementary: Early Years + Primary (' + (c['Early Years'] + c['Primary']) + ')' }));
-        Object.keys(c).sort().forEach(function (k) { sel.appendChild(h('option', { value: k, text: k + ' (' + c[k] + ')' })); });
-        if (Object.keys(c).length) sel.appendChild(h('option', { value: '__none', text: 'No division' }));
-        sel.classList.toggle('hidden', !Object.keys(c).length);
-        sel.value = Array.prototype.some.call(sel.options, function (o) { return o.value === cur; }) ? cur : '';
+        var sel = $('rs-div'), team = $('rs-team'), g = window.aisaStaffGroups, cur = sel.value;
+        if (!g || !g.ready()) { sel.classList.add('hidden'); team.classList.add('hidden'); return; }
+        var has = g.fillStaff(sel, roster, 'Every staff group');
+        var none = roster.filter(function (p) { return !p.division; }).length;
+        if (has && none) sel.appendChild(h('option', { value: '__none', text: 'No division (' + none + ')' }));
+        if (cur === '__none' && none) sel.value = '__none';
+        sel.classList.toggle('hidden', !has);
+        team.classList.toggle('hidden', !g.fillTeams(team, roster, 'Every grade and team'));
     }
+    document.addEventListener('aisa:staff-groups', function () { if (roster.length) { renderDivFilter(); renderStaff(); } });
 
     function person(p, suffix) {
         return h('div', { class: 'rs-person' }, [h('b', { text: (p.name || p.email) + (suffix || '') }), p.name ? h('span', { text: p.email }) : null]);
@@ -288,7 +291,7 @@
         }, function () { $('rs-add').reset(); $('rs-add-email').focus(); });
     });
 
-    ['rs-search', 'rs-tag', 'rs-div'].forEach(function (id) { $(id).addEventListener('input', function () { page = 0; renderStaff(); }); });
+    ['rs-search', 'rs-tag', 'rs-div', 'rs-team'].forEach(function (id) { $(id).addEventListener('input', function () { page = 0; renderStaff(); }); });
     $('rs-bulk-clear').addEventListener('click', function () { selected = {}; renderStaff(); });
     $('rs-all').addEventListener('change', function (e) {
         visible().forEach(function (p) { if (e.target.checked) selected[p.email] = true; else delete selected[p.email]; });

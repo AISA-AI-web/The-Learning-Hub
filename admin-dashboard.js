@@ -409,9 +409,10 @@
 
     /* Teaching staff, leadership, everyone in a phase, support staff, then any division no group takes (so a new one in
      * HR's data still shows). Each option says how many people it holds, counted with inDivision; empty ones are left out. */
-    function fillDivisionSelect(sel, allLabel) {
+    function fillDivisionSelect(sel, allLabel, list) {
+        list = list || DATA.list;
         var cur = sel.value;
-        function count(v) { var n = 0; DATA.list.forEach(function (p) { if (inDivision(p, v)) n++; }); return n; }
+        function count(v) { var n = 0; list.forEach(function (p) { if (inDivision(p, v)) n++; }); return n; }
         sel.textContent = '';
         function group(label, items) {
             var g = document.createElement('optgroup'); g.label = label;
@@ -423,7 +424,7 @@
             if (g.children.length) sel.appendChild(g);
         }
         var o = document.createElement('option'); o.value = ''; o.textContent = allLabel; sel.appendChild(o);
-        var hasData = DATA.list.some(function (p) { return p.division || p.designation; });
+        var hasData = list.some(function (p) { return p.division || p.designation; });
         if (!hasData) { sel.value = ''; return false; }
         group('Teaching staff', [['__teach', 'All teaching staff'], ['__teach_elem', 'KG & Primary teaching staff'], ['__teach_sec', 'Secondary teaching staff']]);
         group('Leadership', [['__lead', 'All leadership (SLT + LLT)'], ['__slt', 'Senior Leadership Team (SLT)'], ['__llt', 'LLT'],
@@ -431,7 +432,7 @@
         group('Everyone in a phase', [['__elem', 'Early Years & Primary'], ['__sec', 'Secondary']]);
         group('Support staff', Object.keys(DIVISION_GROUPS).map(function (k) { return [k, DIVISION_GROUPS[k].label]; }));
         var raw = {};
-        DATA.list.forEach(function (p) { var k = divKey(p.division); if (k && !absorbed(k) && !raw[k]) raw[k] = String(p.division).trim(); });
+        list.forEach(function (p) { var k = divKey(p.division); if (k && !absorbed(k) && !raw[k]) raw[k] = String(p.division).trim(); });
         group('Other', Object.keys(raw).map(function (k) { return raw[k]; }).sort(function (a, b) { return a.localeCompare(b); })
             .map(function (name) { return [name, name]; }));
         sel.value = Array.prototype.some.call(sel.options, function (x) { return x.value === cur; }) ? cur : '';
@@ -534,18 +535,19 @@
     }
     /* Grade or team: the faculty list's teams (each with its HR department), by area, then any grade or subject
      * department in HR's data that no team takes, so nobody filed under one disappears. */
-    function fillTeamSelect() {
-        var sel = $('tracker-team'), cur = sel.value;
+    function fillTeamOptions(sel, list, allLabel) {
+        list = list || DATA.list;
+        var cur = sel.value;
         sel.textContent = '';
-        function count(v) { var n = 0; DATA.list.forEach(function (p) { if (inTeam(p, v)) n++; }); return n; }
+        function count(v) { var n = 0; list.forEach(function (p) { if (inTeam(p, v)) n++; }); return n; }
         function add(parent, v, t) {
             var n = count(v);
             if (!n) return;
             var o = document.createElement('option'); o.value = v; o.textContent = t + ' (' + n + ')'; parent.appendChild(o);
         }
-        var o = document.createElement('option'); o.value = ''; o.textContent = 'Every grade and team'; sel.appendChild(o);
+        var o = document.createElement('option'); o.value = ''; o.textContent = allLabel || 'Every grade and team'; sel.appendChild(o);
         var raw = {};
-        DATA.list.forEach(function (p) {
+        list.forEach(function (p) {
             var k = divKey(p.department);
             if (k && deptPhase(k) && deptShort(p.department) && !raw[k] && !TEAMS.some(function (t) { return teamDeptMatch(t, p.department); })) raw[k] = String(p.department).trim();
         });
@@ -561,7 +563,11 @@
             if (g.children.length) sel.appendChild(g);
         });
         sel.value = Array.prototype.some.call(sel.options, function (x) { return x.value === cur; }) ? cur : '';
-        $('tracker-team').closest('label').classList.toggle('hidden', sel.options.length < 2);
+        return sel.options.length > 1;
+    }
+    function fillTeamSelect() {
+        var sel = $('tracker-team');
+        $('tracker-team').closest('label').classList.toggle('hidden', !fillTeamOptions(sel, DATA.list));
         var un = teamIndex ? teamIndex.unmatched : [], box = $('team-unmatched');
         box.classList.toggle('hidden', !un.length);
         if (un.length) {
@@ -751,7 +757,17 @@
         $('more-filters-empty').classList.toggle('hidden', any || !$('tracker-team').closest('label').classList.contains('hidden'));
         var hasOv = fillDivisionSelect($('ov-division'), 'All staff');
         $('ov-division').closest('label').classList.toggle('hidden', !hasOv);
+        document.dispatchEvent(new CustomEvent('aisa:staff-groups'));   // the People tab redraws its filters
     }
+
+    /* The same Staff group and Grade or team filters for the People tab (admin-roster.js), so the two lists never differ. */
+    window.aisaStaffGroups = {
+        ready: function () { return !!DATA; },
+        fillStaff: function (sel, list, allLabel) { return DATA ? fillDivisionSelect(sel, allLabel, list) : false; },
+        fillTeams: function (sel, list, allLabel) { return DATA ? fillTeamOptions(sel, list, allLabel) : false; },
+        inStaff: inDivision,
+        inTeam: inTeam
+    };
     function groupFilterCount() {
         return GROUP_FILTERS.filter(function (id) { return $(id).value; }).length;
     }
