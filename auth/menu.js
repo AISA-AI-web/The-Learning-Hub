@@ -260,7 +260,8 @@
         chart:  icon('<path d="M3 3v18h18"/><path d="M8 16v-5M12.5 16V7M17 16v-8"/>'),
         globe:  icon('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>'),
         close:  icon('<path d="M18 6L6 18M6 6l12 12"/>'),
-        signout: icon('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>')
+        signout: icon('<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>'),
+        chat:   icon('<path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.9A8 8 0 1 1 21 12z"/><path d="M8.5 10.5h7M8.5 14h4.5"/>')
     };
 
     /* -------- styles -------- */
@@ -428,14 +429,25 @@
                 'font:inherit;font-weight:700;cursor:pointer;transition:background .15s;}',
             '.aisa-menu-signout:hover{background:#fee2e2;}',
             '.aisa-menu-signout svg{width:16px;height:16px;}',
-            /* "Request or report": everyone's way to ask the Hub team for a
-             * training, report a problem or share an idea (request.html). */
-            '.aisa-menu-request{display:flex;align-items:center;gap:.65rem;margin-bottom:.6rem;padding:.7rem .85rem;',
-                'border-radius:.6rem;border:1px solid #D8B664;background:#fbf6e9;color:#21076C;text-decoration:none;',
-                'font-weight:700;font-size:.88rem;line-height:1.25;transition:background .15s;}',
-            '.aisa-menu-request:hover{background:#f5ecd2;}',
-            '.aisa-menu-request .ico{font-size:1.05rem;flex-shrink:0;}',
-            '.aisa-menu-request small{display:block;font-weight:500;font-size:.74rem;color:#5b5480;}',
+            /* "Request or report": a floating button at the bottom right of
+             * every page (request.html), everyone's way to ask the Hub team
+             * for a training, report a problem or share an idea. Below the
+             * menu's own layers and the readiness pop-up (10000), above the
+             * page. placeFab() lifts it above whatever already sits in that
+             * corner (FAB_AVOID). A circle on phones, a pill with its words
+             * from 641px. */
+            '.aisa-fab{position:fixed;right:20px;bottom:20px;z-index:1000;display:inline-flex;align-items:center;gap:.5rem;',
+                'height:3.25rem;padding:0 1.15rem 0 .95rem;border-radius:999px;background:#21076C;color:#fff;text-decoration:none;',
+                'font:700 .9rem/1 "DM Sans",Inter,system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.005em;',
+                'box-shadow:0 8px 24px rgba(33,7,108,.28),0 0 0 3px rgba(216,182,100,.9);',
+                'transition:bottom .2s ease,transform .15s ease,box-shadow .15s ease,background .15s ease;}',
+            '.aisa-fab:hover{background:#3b2596;transform:translateY(-2px);box-shadow:0 12px 28px rgba(33,7,108,.34),0 0 0 3px #D8B664;}',
+            '.aisa-fab:focus-visible{outline:3px solid #D8B664;outline-offset:3px;}',
+            '.aisa-fab svg{width:1.35rem;height:1.35rem;flex-shrink:0;}',
+            '.aisa-fab .t{white-space:nowrap;}',
+            '@media (max-width:640px){.aisa-fab{width:3.25rem;padding:0;justify-content:center;right:16px;bottom:16px;}.aisa-fab .t{display:none;}}',
+            '@media (prefers-reduced-motion:reduce){.aisa-fab{transition:none;}}',
+            '@media print{.aisa-fab{display:none!important;}}',
 
             /* === Bell dropdown panel === */
             '.aisa-bell-panel{position:fixed;top:calc(' + BAR_HEIGHT + ' + .25rem);z-index:2147483005;width:380px;max-width:calc(100vw - 1.2rem);',
@@ -588,6 +600,81 @@
 
     /* -------- build the topbar -------- */
 
+    /* -------- the floating "Request or report" button -------- */
+
+    /* What already sits in the bottom-right corner on some pages: a
+     * module's Previous/Next bar (Next is on the right), the Committees
+     * shortcuts button, Leo on the home page (phones), Tools & Resources'
+     * own "Request a Tool or Resource" button, Return to School's Gem
+     * helper, and AI & Assessment's own Previous/Next bar. The floating
+     * button goes above whichever of them is there. A new one: add its
+     * selector here, or give it data-fab-avoid. */
+    var FAB_AVOID = '.aisa-train-nav, .aia-nav-bar, #shortcuts-btn, #gem-container, .leo-mascot, ' +
+        'a[title="Request a Tool or Resource"], [data-fab-avoid]';
+    var fabEl = null, fabQueued = false;
+
+    function placeFab() {
+        fabQueued = false;
+        if (!fabEl) return;
+        var base = window.innerWidth <= 640 ? 16 : 20;
+        var w = fabEl.offsetWidth || 52, h = fabEl.offsetHeight || 52;
+        var vw = window.innerWidth, vh = window.innerHeight;
+        var others = document.querySelectorAll(FAB_AVOID);
+        var lift = base;
+        /* Twice: lifting above one thing can bring the button up against
+         * another above it. */
+        for (var pass = 0; pass < 3; pass++) {
+            var moved = false;
+            for (var i = 0; i < others.length; i++) {
+                var r = others[i].getBoundingClientRect();
+                if (r.width < 1 || r.height < 1) continue;
+                var cs = window.getComputedStyle(others[i]);
+                if (cs.visibility === 'hidden' || cs.display === 'none') continue;
+                var fabTop = vh - lift - h, fabLeft = vw - base - w;
+                var overlaps = r.left < vw - base + 4 && r.right > fabLeft - 8 &&
+                               r.top < vh - lift + 4 && r.bottom > fabTop - 8;
+                if (overlaps) {
+                    var need = Math.ceil(vh - r.top + 12);
+                    if (need > lift && need < vh - h - 8) { lift = need; moved = true; }
+                }
+            }
+            if (!moved) break;
+        }
+        fabEl.style.bottom = lift + 'px';
+    }
+    function queuePlaceFab() {
+        if (fabQueued) return;
+        fabQueued = true;
+        (window.requestAnimationFrame || setTimeout)(placeFab);
+    }
+
+    function buildFab() {
+        if (/\/request\.html$/.test(location.pathname)) return;   // the form itself
+        var a = document.createElement('a');
+        a.className = 'aisa-fab';
+        a.href = rootUrl('request.html');
+        a.title = 'Request a training, report a problem, or share an idea';
+        a.setAttribute('aria-label', 'Request a training, report a problem, or share an idea');
+        a.setAttribute('data-track', 'request:fab');
+        a.innerHTML = ICONS.chat + '<span class="t">Request or report</span>';
+        /* The page the person is on goes with them (at the moment they
+         * click: a module's chapter is in the hash), so a problem report
+         * starts with "which page?" already answered. */
+        function withFrom() {
+            a.href = rootUrl('request.html') + '?from=' + encodeURIComponent(location.pathname + location.hash);
+        }
+        a.addEventListener('mousedown', withFrom);
+        a.addEventListener('touchstart', withFrom, { passive: true });
+        a.addEventListener('focus', withFrom);
+        a.addEventListener('click', withFrom);
+        document.body.appendChild(a);
+        fabEl = a;
+        window.addEventListener('scroll', queuePlaceFab, { passive: true });
+        window.addEventListener('resize', queuePlaceFab);
+        document.addEventListener('click', function () { setTimeout(queuePlaceFab, 50); }, true);
+        [0, 400, 1200, 3000].forEach(function (ms) { setTimeout(queuePlaceFab, ms); });
+    }
+
     function build() {
         if (built) return;
         built = true;
@@ -670,12 +757,6 @@
                     '<span class="ico" aria-hidden="true">\u{1F4E5}</span>' +
                     '<span>Requests inbox</span></a></li>';
 
-        /* The page the person is on goes with them, so a problem report
-         * starts with "which page?" already answered. */
-        var requestHref = rootUrl('request.html') +
-            (/\/request\.html$/.test(location.pathname) ? '' :
-                '?from=' + encodeURIComponent(location.pathname + location.hash));
-
         drawer.innerHTML =
             '<div class="aisa-menu-head">' +
                 '<div class="logo"><img src="' + rootUrl('AISA_logo.png') + '" alt="AISA" ' +
@@ -687,10 +768,6 @@
             '</div>' +
             '<ul class="aisa-menu-list">' + linksHtml + adminHtml + '</ul>' +
             '<div class="aisa-menu-foot">' +
-                '<a class="aisa-menu-request" href="' + requestHref + '">' +
-                    '<span class="ico" aria-hidden="true">\u{1F4AC}</span>' +
-                    '<span>Request a training or report a problem' +
-                    '<small>Ideas welcome too: tell the Hub team</small></span></a>' +
                 '<button type="button" class="aisa-menu-signout">' + ICONS.signout + 'Sign out</button>' +
             '</div>';
 
@@ -724,6 +801,7 @@
         document.body.appendChild(drawer);
         document.body.appendChild(panel);
         document.body.appendChild(search);
+        buildFab();
 
         refs.bar         = bar;
         refs.backdrop    = backdrop;

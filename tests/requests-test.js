@@ -104,9 +104,14 @@ function answer(body) {
     try {
         /* ---------- the menu's link ---------- */
         let page = await open('PD%20Modules/pd.html');
-        await page.waitForSelector('.aisa-menu-request', { state: 'attached', timeout: 15000 });
-        const href = await page.getAttribute('.aisa-menu-request', 'href');
-        ok(/request\.html\?from=%2FPD%2520Modules%2Fpd\.html$/.test(href), 'the menu links to the form with the page it is on: ' + href);
+        await page.waitForSelector('.aisa-fab', { timeout: 15000 });
+        ok(await page.isVisible('.aisa-fab') && /Request or report/.test(await page.textContent('.aisa-fab')), 'a floating "Request or report" button on the page');
+        const fabBox = await page.$eval('.aisa-fab', el => { const r = el.getBoundingClientRect(); return { right: innerWidth - r.right, bottom: innerHeight - r.bottom }; });
+        ok(fabBox.right >= 12 && fabBox.right <= 24 && fabBox.bottom >= 12 && fabBox.bottom <= 24, 'in the bottom right corner: ' + JSON.stringify(fabBox));
+        ok(!(await page.$('.aisa-menu-request')), 'and no longer in the menu drawer');
+        await page.focus('.aisa-fab');
+        const href = await page.getAttribute('.aisa-fab', 'href');
+        ok(/request\.html\?from=%2FPD%2520Modules%2Fpd\.html$/.test(href), 'it links to the form with the page it is on: ' + href);
         /* a failed call is remembered for a problem report */
         await page.evaluate(() => window.aisaAuth.adminRoster('admin_roster_list').catch(() => {}));
         await page.evaluate(() => { setTimeout(() => { throw new Error('made-up crash'); }, 0); });
@@ -122,6 +127,7 @@ function answer(body) {
         await page.waitForSelector('.rq-kind');
         ok((await page.$$('.rq-kind')).length === 3, 'three kinds to choose from');
         ok(await page.isHidden('#rq-form'), 'the form waits for a choice');
+        ok(!(await page.$('.aisa-fab')), 'the floating button is not on the form itself');
         await page.click('.rq-kind:has(input[value=training])');
         ok(await page.isVisible('#rq-f-title') && await page.evaluate(() => document.activeElement && document.activeElement.id === 'rq-f-title'), 'choosing a training shows its questions, and the first one has the focus');
         await page.click('#rq-send');
@@ -164,7 +170,7 @@ function answer(body) {
 
         /* ---------- a problem report ---------- */
         await page.goto(base + 'PD%20Modules/pd.html');
-        await page.waitForSelector('.aisa-menu-request', { state: 'attached', timeout: 15000 });
+        await page.waitForSelector('.aisa-fab', { timeout: 15000 });
         await page.evaluate(() => window.aisaAuth.adminRoster('admin_roster_list').catch(() => {}));
         await page.waitForTimeout(200);
         await page.goto(base + 'request.html?type=bug&from=' + encodeURIComponent('/dashboard.html#certificates'));
@@ -190,6 +196,19 @@ function answer(body) {
         await page.click('#rq-send');
         await page.waitForSelector('#rq-done:not([hidden])');
         ok(!sent[2].context.errors, 'unticked, the errors stay out');
+
+        /* on a module, it moves above the Previous/Next bar instead of covering Next */
+        for (const vp of [{ width: 1280, height: 800 }, { width: 390, height: 844 }]) {
+            const mod = await open('PD%20Modules/sustainability-module.html', vp);
+            await mod.waitForSelector('.aisa-train-nav', { timeout: 15000 });
+            await mod.waitForTimeout(800);
+            const clash = await mod.evaluate(() => {
+                const f = document.querySelector('.aisa-fab').getBoundingClientRect(), n = document.querySelector('.aisa-train-nav').getBoundingClientRect();
+                return { overlap: f.left < n.right && f.right > n.left && f.top < n.bottom && f.bottom > n.top, gap: Math.round(n.top - f.bottom) };
+            });
+            ok(!clash.overlap && clash.gap >= 4, 'on a module at ' + vp.width + 'px the button sits above the chapter bar (gap ' + clash.gap + 'px)');
+            await mod.close();
+        }
 
         /* an idea, on a phone */
         const phone = await open('request.html?type=idea', { width: 390, height: 844 });
