@@ -8,42 +8,54 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
     <script>
         if (window.tailwind) {
             tailwind.config = {
                 theme: { extend: {
-                    fontFamily: { heading: ['Poppins', 'sans-serif'] },
-                    colors: { primary: '#b45309', secondary: '#d97706', accent: '#fbbf24' }
+                    fontFamily: { heading: ['DM Sans', 'sans-serif'] },
+                    colors: { primary: '#21076C', secondary: '#3A1F94', accent: '#D8B664' }
                 }}
             }
         }
     </script>
+    <script src="../auth/tw-brand.js?v=1"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
-        .hero-gradient { background: linear-gradient(135deg, #78350f 0%, #b45309 45%, #f59e0b 100%); }
-        .bg-leo-pattern {
-            background-color: #fef3c7;
-            background-image:
-                radial-gradient(ellipse at top left, rgba(251, 191, 36, 0.18), transparent 50%),
-                radial-gradient(ellipse at bottom right, rgba(180, 83, 9, 0.12), transparent 50%);
-        }
-        .resource-pill { transition: background-color .2s ease; }
-        .resource-pill:hover { background-color: #fde68a; }
-    </style>
-    <script src="../auth/gate.js?v=43"></script>
-</head>
-<body class="bg-leo-pattern text-gray-800 min-h-screen flex flex-col">
+        body { font-family: 'DM Sans', sans-serif; }
+        .font-heading { font-family: 'DM Sans', sans-serif; }
 
-<section class="hero-gradient text-white relative overflow-hidden">
-        <div class="container mx-auto px-6 py-12 md:py-16 relative z-10">
-            <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-5">
-                <span class="text-xl">&#127891;</span>
-                <span class="text-xs font-bold uppercase tracking-widest">Teaching &amp; Learning</span>
+        /* ===== Redesign, 10 Nov 2026: the page on the Hub's design system
+           (auth/hub.css): the standard page header, white page, one card
+           style (white, hairline border, no coloured strips), purple for
+           structure, line icons instead of emoji. ===== */
+        body { background: #fff; }
+        .lh-hero__lede a { color: #fff; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+        body :is(.rounded-2xl, .rounded-xl).bg-white:not(.quiz-option) { border: 1px solid var(--lh-line) !important; box-shadow: var(--lh-shadow-sm) !important; }
+        body .rounded-2xl.bg-white { border-radius: var(--lh-radius-lg) !important; }
+        main details.bg-white[open] { border-color: var(--lh-border) !important; }
+        main details.bg-white summary h4 { color: var(--lh-ink); }
+        .ori-ic { display: inline-flex; color: var(--lh-purple); flex-shrink: 0; }
+        .ori-ic svg { width: 1.15rem; height: 1.15rem; }
+        .ori-card-ic { margin-bottom: .75rem; }
+        .resource-pill { background: var(--lh-tint) !important; color: var(--lh-purple) !important; border: 1px solid transparent; }
+        .resource-pill:hover { background: #fff !important; border-color: var(--lh-border); }
+        .ori-back { margin-top: 3rem; }
+    </style>
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
+</head>
+<body class="bg-white text-gray-800 min-h-screen flex flex-col">
+
+<section class="lh-hero">
+        <div class="lh-hero__inner">
+            <ol class="lh-crumbs"><li><a href="../index.html">Home</a></li><li><a href="orientation-hub.html">Orientation Hub</a></li></ol>
+            <div class="lh-hero__row">
+                <div class="lh-hero__main">
+                    <p class="lh-hero__eyebrow">Teaching &amp; Learning</p>
+                    <h1 class="lh-hero__title">Programs &amp; Curriculum</h1>
+                    <p class="lh-hero__lede">A K&ndash;12 picture of how AISA teaches: PYP in Elementary, standards-based pathways through Middle and High School, the IB Diploma Programme, schedules, and how we assess.</p>
+                </div>
             </div>
-            <h2 class="text-3xl md:text-5xl font-heading font-extrabold leading-tight mb-3 drop-shadow-lg">Programs &amp; Curriculum.</h2>
-            <p class="text-lg max-w-2xl text-amber-50 drop-shadow">A K&ndash;12 picture of how AISA teaches: PYP in Elementary, standards-based pathways through Middle and High School, the IB Diploma Programme, schedules, and how we assess.</p>
         </div>
     </section>
 
@@ -51,29 +63,29 @@
         <div class="container mx-auto px-6 py-12 max-w-5xl space-y-14">
 
             <!-- Quick Nav -->
-            <nav class="bg-white rounded-2xl shadow-sm border border-amber-100 p-5">
-                <p class="text-[10px] font-bold text-amber-700 uppercase tracking-widest mb-3">Jump to</p>
+            <nav class="bg-white rounded-2xl shadow-sm border border-purple-200 p-5">
+                <p class="text-[10px] font-bold text-purple-700 uppercase tracking-widest mb-3">Jump to</p>
                 <div class="flex flex-wrap gap-2 text-sm">
-                    <a href="#elementary" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Elementary</a>
-                    <a href="#middle" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Middle School</a>
-                    <a href="#high" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">High School</a>
-                    <a href="#ibdp" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">IB Diploma</a>
-                    <a href="#schedule" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Bell Schedule</a>
-                    <a href="#community-circles" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Community Circles</a>
-                    <a href="#sbl" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Standards-Based Learning</a>
-                    <a href="#testing" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">External Testing</a>
+                    <a href="#elementary" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">Elementary</a>
+                    <a href="#middle" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">Middle School</a>
+                    <a href="#high" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">High School</a>
+                    <a href="#ibdp" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">IB Diploma</a>
+                    <a href="#schedule" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">Bell Schedule</a>
+                    <a href="#community-circles" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">Community Circles</a>
+                    <a href="#sbl" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">Standards-Based Learning</a>
+                    <a href="#testing" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">External Testing</a>
                 </div>
             </nav>
 
             <!-- Elementary -->
             <section id="elementary">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-amber-100 flex items-center justify-center text-xl">&#127979;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Elementary School</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 22v-4a2 2 0 1 0-4 0v4"/><path d="m18 10 4 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8l4-2"/><path d="M18 5v17"/><path d="m4 6 8-4 8 4"/><path d="M6 5v17"/><circle cx="12" cy="9" r="2"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Elementary School</h3>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-md border-l-8 border-amber-600 p-6 md:p-7 mb-6">
-                    <h4 class="font-heading font-bold text-lg text-amber-900 mb-3">Curriculum Overview</h4>
+                <div class="bg-white rounded-2xl shadow-md border p-6 md:p-7 mb-6">
+                    <h4 class="font-heading font-bold text-lg text-purple-900 mb-3">Curriculum Overview</h4>
                     <p class="text-gray-700 mb-3">AISA Elementary uses the <strong>IB Primary Years Programme (PYP)</strong> framework. All subjects are taught through inquiry, with a focus on concepts, skills, and knowledge.</p>
                     <p class="text-gray-700 mb-3">We follow:</p>
                     <ul class="list-disc list-inside text-gray-700 space-y-1 mb-3">
@@ -85,8 +97,8 @@
                 </div>
 
                 <div class="grid md:grid-cols-2 gap-5 mb-6">
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-blue-500 p-6">
-                        <h4 class="font-heading font-bold text-blue-900 mb-2 flex items-center gap-2"><span>&#128214;</span> Literacy Resources</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-6">
+                        <h4 class="font-heading font-bold text-blue-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span> Literacy Resources</h4>
                         <ul class="text-sm text-gray-700 space-y-1.5">
                             <li><strong>Heggerty</strong> &mdash; Phonemic awareness</li>
                             <li><strong>UFLI</strong> &mdash; Systematic phonics instruction</li>
@@ -94,22 +106,22 @@
                             <li><strong>IXL Reading &amp; Language</strong> &mdash; Skill practice</li>
                         </ul>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-emerald-500 p-6">
-                        <h4 class="font-heading font-bold text-emerald-900 mb-2 flex items-center gap-2"><span>&#128290;</span> Math Resources</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-6">
+                        <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg></span> Math Resources</h4>
                         <ul class="text-sm text-gray-700 space-y-1.5">
                             <li><strong>Zearn</strong> &mdash; Core program aligned with CCSS, KG1&ndash;Grade 5</li>
                             <li><strong>IXL Math</strong> &mdash; Supplemental skill practice</li>
                         </ul>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-purple-500 p-6">
-                        <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span>&#128301;</span> Science Resources</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-6">
+                        <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg></span> Science Resources</h4>
                         <ul class="text-sm text-gray-700 space-y-1.5">
                             <li><strong>Mystery Science</strong> &mdash; Hands-on, inquiry-based lessons</li>
                             <li><strong>Science A to Z</strong> &mdash; Printable resources and leveled texts</li>
                         </ul>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-rose-500 p-6">
-                        <h4 class="font-heading font-bold text-rose-900 mb-2 flex items-center gap-2"><span>&#127760;</span> Social Studies &amp; Tools</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-6">
+                        <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span> Social Studies &amp; Tools</h4>
                         <ul class="text-sm text-gray-700 space-y-1.5">
                             <li><strong>Text Sets</strong> &mdash; Curated by the librarian to align with AERO standards and Units of Inquiry</li>
                             <li><strong>Seesaw</strong> &mdash; Digital portfolios and family communication</li>
@@ -118,77 +130,77 @@
                     </div>
                 </div>
 
-                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6">
-                    <h4 class="font-heading font-bold text-amber-900 mb-3">Elementary Beliefs &amp; Practices</h4>
+                <div class="bg-purple-50 border border-purple-200 rounded-2xl p-6">
+                    <h4 class="font-heading font-bold text-purple-900 mb-3">Elementary Beliefs &amp; Practices</h4>
                     <div class="space-y-4 text-sm text-gray-700">
                         <div>
-                            <p class="font-semibold text-amber-800">Constructivist, inquiry-based teaching</p>
+                            <p class="font-semibold text-purple-800">Constructivist, inquiry-based teaching</p>
                             <p>Learning is an active, social process. Students build meaning by connecting new ideas to prior knowledge. Teachers help students answer: <em>What are you learning? Why is it important? What are your next steps?</em></p>
                         </div>
                         <div>
-                            <p class="font-semibold text-amber-800">Standards-based curriculum &amp; PLCs</p>
+                            <p class="font-semibold text-purple-800">Standards-based curriculum &amp; PLCs</p>
                             <p>Curriculum is mapped in Atlas and planned backward. Teachers meet weekly in PLC blocks with the PYP Coordinator and Grade Level Team. Reports go home three times per year on a standards-based card.</p>
                         </div>
                         <div>
-                            <p class="font-semibold text-amber-800">Assessment for learning</p>
+                            <p class="font-semibold text-purple-800">Assessment for learning</p>
                             <p>Learning goals and success criteria are shared with students. Formative assessment (conferences, exit tickets, performance tasks) informs instruction. English and math benchmarks are re-assessed in trimester 3.</p>
                         </div>
                         <div>
-                            <p class="font-semibold text-amber-800">Differentiated instruction &amp; daily Acceleration Block</p>
+                            <p class="font-semibold text-purple-800">Differentiated instruction &amp; daily Acceleration Block</p>
                             <p>Whole-class mini-lessons are brief; tasks, groupings, and supports differ by student need. Every day includes an Acceleration Block of just-in-time support or extension based on data, including MTSS, ELL, and enrichment.</p>
                         </div>
                         <div>
-                            <p class="font-semibold text-amber-800">Visible thinking &amp; high-impact practices</p>
+                            <p class="font-semibold text-purple-800">Visible thinking &amp; high-impact practices</p>
                             <p>Techniques from <em>Teach Like a Champion</em> &mdash; cold calling, wait time, tracking &mdash; build engagement, equity, and rigor.</p>
                         </div>
                         <div>
-                            <p class="font-semibold text-amber-800">Positive behavior &amp; school culture</p>
+                            <p class="font-semibold text-purple-800">Positive behavior &amp; school culture</p>
                             <p>Behavior is framed around four values: <strong>Be Responsible, Be Respectful, Be Safe, Be Kind</strong> &mdash; grounded in the IB Learner Profile and modeled consistently.</p>
                         </div>
                     </div>
                 </div>
 
-                <div class="mt-6 bg-white rounded-2xl shadow-md border border-amber-100 p-6">
-                    <h4 class="font-heading font-bold text-amber-900 mb-2 flex items-center gap-2"><span>&#128241;</span> iPads &amp; the SAMR Model</h4>
+                <div class="mt-6 bg-white rounded-2xl shadow-md border border-purple-200 p-6">
+                    <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></span> iPads &amp; the SAMR Model</h4>
                     <p class="text-sm text-gray-700">Students in Grades 1&ndash;5 bring their own iPads. KG1 &amp; KG2 share six iPad carts (22 each). Teachers receive Apple Macs and Apple TV with Smartboards in every classroom. AISA reflects on tech integration through the <strong>SAMR model</strong> by Dr. Ruben Puentedura.</p>
                 </div>
 
-                <div class="mt-6 bg-gradient-to-br from-amber-100 to-yellow-50 border border-amber-200 rounded-2xl p-6">
-                    <h4 class="font-heading font-bold text-amber-900 mb-2 flex items-center gap-2"><span>&#127942;</span> IB PYP Programme</h4>
+                <div class="mt-6 bg-purple-50 border border-purple-200 rounded-2xl p-6">
+                    <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span> IB PYP Programme</h4>
                     <p class="text-sm text-gray-700 mb-2">AISA was authorized as a PYP school in 2008 with reauthorizations in 2011, 2016, and 2020 (joint with IB, CIS, MSA). The synchronized review visit is scheduled for <strong>November 2025</strong>.</p>
                     <p class="text-sm text-gray-700 mb-2">Teachers new to IB joining in 2025&ndash;26 will participate in a <strong>two-day on-site IB training on November 22&ndash;23</strong>. The Programme of Inquiry was redesigned in 2024&ndash;25 to embed CCSS, NGSS, and AERO within the inquiry framework.</p>
-                    <p class="text-sm text-gray-700">Questions? Email <a class="font-semibold text-amber-800 underline" href="mailto:sbrown@aisa.sch.ae">Stephanie Brown (PYP)</a> or <a class="font-semibold text-amber-800 underline" href="mailto:aturabi@aisa.sch.ae">Amira Al Turabi (Curriculum)</a>.</p>
+                    <p class="text-sm text-gray-700">Questions? Email <a class="font-semibold text-purple-800 underline" href="mailto:sbrown@aisa.sch.ae">Stephanie Brown (PYP)</a> or <a class="font-semibold text-purple-800 underline" href="mailto:aturabi@aisa.sch.ae">Amira Al Turabi (Curriculum)</a>.</p>
                 </div>
             </section>
 
             <!-- Middle School -->
             <section id="middle">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-blue-100 flex items-center justify-center text-xl">&#128218;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Middle School (Grades 6&ndash;8)</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Middle School (Grades 6&ndash;8)</h3>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-md border-l-8 border-blue-500 p-6 md:p-7 mb-6">
+                <div class="bg-white rounded-2xl shadow-md border p-6 md:p-7 mb-6">
                     <p class="text-gray-700 mb-3">From Grade 6, all classes are <strong>gender-segregated</strong> in alignment with local guidelines. Students follow the U.S. <strong>Common Core State Standards (CCSS)</strong> in English, Humanities, Math, and Science, with a focus on critical thinking, problem-solving, collaboration, and communication.</p>
                     <p class="text-gray-700 mb-3"><strong>English &amp; Humanities</strong> &mdash; analysis of complex texts and narrative, expository, and argumentative writing supported by reasoning and evidence. Literacy is integrated across all content areas.</p>
                     <p class="text-gray-700"><strong>Math &amp; Science</strong> &mdash; students explain reasoning, justify answers, and reflect on thinking. Listening and speaking are practiced through structured discussions and presentations.</p>
                 </div>
 
                 <div class="grid md:grid-cols-2 gap-5">
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-blue-500 p-6">
-                        <h4 class="font-heading font-bold text-blue-900 mb-2 flex items-center gap-2"><span>&#127912;</span> Exploratory &amp; Electives</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-6">
+                        <h4 class="font-heading font-bold text-blue-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/></svg></span> Exploratory &amp; Electives</h4>
                         <p class="text-sm text-gray-700">Grade 6 rotates through trimesters of <strong>Music, Art, and Computer Science</strong>. Grades 7&ndash;8 choose two of these as electives based on interest.</p>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-blue-500 p-6">
-                        <h4 class="font-heading font-bold text-blue-900 mb-2 flex items-center gap-2"><span>&#127759;</span> Languages &amp; Local Studies</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-6">
+                        <h4 class="font-heading font-bold text-blue-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></span> Languages &amp; Local Studies</h4>
                         <ul class="text-sm text-gray-700 space-y-1">
                             <li><strong>Arabic</strong> &mdash; native and non-native tracks</li>
                             <li><strong>Islamic Education</strong> &mdash; required for Muslim students; non-Muslim students take a Tutorial period</li>
                             <li><strong>UAE Social Studies</strong> &mdash; required for all; English or Arabic depending on passport nationality</li>
                         </ul>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-blue-500 p-6 md:col-span-2">
-                        <h4 class="font-heading font-bold text-blue-900 mb-2 flex items-center gap-2"><span>&#128241;</span> Technology &amp; BYOD</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-6 md:col-span-2">
+                        <h4 class="font-heading font-bold text-blue-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></span> Technology &amp; BYOD</h4>
                         <p class="text-sm text-gray-700">AISA is a <strong>Bring Your Own Device (BYOD)</strong> school. All MS students bring an iPad daily. Every classroom has a Smart Board.</p>
                     </div>
                 </div>
@@ -197,11 +209,11 @@
             <!-- High School -->
             <section id="high">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-purple-100 flex items-center justify-center text-xl">&#127891;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">High School (Grades 9&ndash;12)</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">High School (Grades 9&ndash;12)</h3>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-md border-l-8 border-purple-500 p-6 md:p-7 mb-6">
+                <div class="bg-white rounded-2xl shadow-md border p-6 md:p-7 mb-6">
                     <p class="text-gray-700 mb-3">High School builds on Middle School foundations. Grades 9&ndash;10 follow the <strong>Common Core State Standards</strong> through a Standards-Based Learning approach &mdash; students are measured on progress toward specific learning goals, developing transferable skills in reasoning, analysis, and communication.</p>
                     <p class="text-gray-700 mb-3"><strong>From Grade 11</strong>, students choose one of two pathways:</p>
                     <div class="grid md:grid-cols-2 gap-4 mt-4">
@@ -216,23 +228,23 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-md border border-amber-100 p-6 mb-6">
-                    <h4 class="font-heading font-bold text-amber-900 mb-3">Subject Offerings</h4>
+                <div class="bg-white rounded-2xl shadow-md border border-purple-200 p-6 mb-6">
+                    <h4 class="font-heading font-bold text-purple-900 mb-3">Subject Offerings</h4>
                     <div class="grid sm:grid-cols-2 gap-x-6 gap-y-2 text-sm text-gray-700">
-                        <div><strong class="text-amber-800">English</strong> &mdash; English 9&ndash;12</div>
-                        <div><strong class="text-amber-800">Math</strong> &mdash; Integrated Math 1&ndash;4, Pre-Calculus, Calculus</div>
-                        <div><strong class="text-amber-800">Science</strong> &mdash; Integrated, Advanced Applied Chem, Biology, Physics, Environmental</div>
-                        <div><strong class="text-amber-800">Social Studies</strong> &mdash; Global Perspectives, Modern World History, American Government, Economics, Psychology</div>
-                        <div><strong class="text-amber-800">Arabic</strong> &mdash; Arabic A2 or B (depending on background)</div>
-                        <div><strong class="text-amber-800">Islamic Education</strong> &mdash; Muslim students; non-Muslim students take a Tutorial</div>
-                        <div class="sm:col-span-2"><strong class="text-amber-800">UAE Social Studies</strong> &mdash; required Grade 9, English or Arabic by passport</div>
+                        <div><strong class="text-purple-800">English</strong> &mdash; English 9&ndash;12</div>
+                        <div><strong class="text-purple-800">Math</strong> &mdash; Integrated Math 1&ndash;4, Pre-Calculus, Calculus</div>
+                        <div><strong class="text-purple-800">Science</strong> &mdash; Integrated, Advanced Applied Chem, Biology, Physics, Environmental</div>
+                        <div><strong class="text-purple-800">Social Studies</strong> &mdash; Global Perspectives, Modern World History, American Government, Economics, Psychology</div>
+                        <div><strong class="text-purple-800">Arabic</strong> &mdash; Arabic A2 or B (depending on background)</div>
+                        <div><strong class="text-purple-800">Islamic Education</strong> &mdash; Muslim students; non-Muslim students take a Tutorial</div>
+                        <div class="sm:col-span-2"><strong class="text-purple-800">UAE Social Studies</strong> &mdash; required Grade 9, English or Arabic by passport</div>
                     </div>
-                    <h5 class="font-heading font-bold text-amber-900 mt-4 mb-2">Electives &amp; Enrichment</h5>
+                    <h5 class="font-heading font-bold text-purple-900 mt-4 mb-2">Electives &amp; Enrichment</h5>
                     <p class="text-sm text-gray-700">Computer Science &middot; Business &amp; Marketing &middot; Media Studies &middot; Public Speaking &amp; Debate &middot; Personal Finance &amp; Investment &middot; Visual Arts &middot; Sports Science &amp; PE &middot; World Languages (French, Spanish). Course availability varies by enrollment and scheduling.</p>
                 </div>
 
                 <div class="bg-purple-50 border border-purple-200 rounded-2xl p-6">
-                    <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span>&#128105;&#8205;&#127979;</span> What teaching looks like in HS</h4>
+                    <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> What teaching looks like in HS</h4>
                     <ul class="text-sm text-gray-700 space-y-1.5">
                         <li>Average teaching load: <strong>5 classes and 3 preps</strong></li>
                         <li>Teach both boys' and girls' classes</li>
@@ -245,37 +257,37 @@
             <!-- IBDP -->
             <section id="ibdp">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-rose-100 flex items-center justify-center text-xl">&#127942;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">The IB Diploma Programme</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">The IB Diploma Programme</h3>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-md border-l-8 border-rose-500 p-6 md:p-7 mb-6">
+                <div class="bg-white rounded-2xl shadow-md border p-6 md:p-7 mb-6">
                     <p class="text-gray-700 mb-3">AISA has been a proud <strong>IB World School since 1996</strong>, and was the first school in Abu Dhabi to offer both the IB Diploma Programme and the Primary Years Programme.</p>
                     <p class="text-gray-700 mb-3">The DP is a two-year academically challenging programme for students aged 16&ndash;19, with final examinations preparing students for university and life beyond. Students study six courses at higher or standard level over Grades 11&ndash;12, plus the core: <strong>Theory of Knowledge (TOK)</strong>, <strong>Extended Essay (EE)</strong>, and <strong>Creativity-Action-Service (CAS)</strong>.</p>
                     <p class="text-gray-700">AISA currently has <strong>45 students</strong> enrolled in the DP. Grade 10 students may take the IB Preparatory Programme to build the concepts and strategies needed for the IBDP.</p>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-md border border-amber-100 p-6">
-                    <h4 class="font-heading font-bold text-amber-900 mb-3">Subjects Currently Offered</h4>
+                <div class="bg-white rounded-2xl shadow-md border border-purple-200 p-6">
+                    <h4 class="font-heading font-bold text-purple-900 mb-3">Subjects Currently Offered</h4>
                     <div class="space-y-2 text-sm text-gray-700">
-                        <div><strong class="text-rose-800">Group 1:</strong> English Language and Literature / Language A Literature SSST</div>
-                        <div><strong class="text-rose-800">Group 2:</strong> Spanish &amp; French ab initio, French and Arabic B</div>
-                        <div><strong class="text-rose-800">Group 3:</strong> Business / Economics / Global Politics / Digital Society (Pamoja) / Psychology HL / SL</div>
-                        <div><strong class="text-rose-800">Group 4:</strong> Biology / Chemistry / Physics / Environmental Systems &amp; Societies HL / SL</div>
-                        <div><strong class="text-rose-800">Group 5:</strong> Mathematics Applications &amp; Interpretation SL, Mathematics Analysis &amp; Approaches SL / HL</div>
-                        <div><strong class="text-rose-800">Group 6:</strong> Visual Arts</div>
+                        <div><strong class="text-purple-800">Group 1:</strong> English Language and Literature / Language A Literature SSST</div>
+                        <div><strong class="text-purple-800">Group 2:</strong> Spanish &amp; French ab initio, French and Arabic B</div>
+                        <div><strong class="text-purple-800">Group 3:</strong> Business / Economics / Global Politics / Digital Society (Pamoja) / Psychology HL / SL</div>
+                        <div><strong class="text-purple-800">Group 4:</strong> Biology / Chemistry / Physics / Environmental Systems &amp; Societies HL / SL</div>
+                        <div><strong class="text-purple-800">Group 5:</strong> Mathematics Applications &amp; Interpretation SL, Mathematics Analysis &amp; Approaches SL / HL</div>
+                        <div><strong class="text-purple-800">Group 6:</strong> Visual Arts</div>
                     </div>
-                    <p class="text-xs text-gray-500 mt-4">DP Coordinator: <a class="font-semibold text-amber-700 hover:underline" href="mailto:kmejia@aisa.sch.ae">Kelly Mejia</a></p>
+                    <p class="text-xs text-gray-500 mt-4">DP Coordinator: <a class="font-semibold text-purple-700 hover:underline" href="mailto:kmejia@aisa.sch.ae">Kelly Mejia</a></p>
                 </div>
             </section>
 
             <!-- Bell Schedule -->
             <section id="schedule">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-sky-100 flex items-center justify-center text-xl">&#128337;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Secondary Bell &amp; Teaching Schedule</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Secondary Bell &amp; Teaching Schedule</h3>
                 </div>
-                <div class="bg-white rounded-2xl shadow-md border-l-8 border-sky-500 p-6 md:p-7">
+                <div class="bg-white rounded-2xl shadow-md border p-6 md:p-7">
                     <p class="text-gray-700 mb-3">Secondary teachers and students follow a <strong>10-day cycle</strong>, Monday to Friday. Each period is <strong>55 minutes</strong> with 5 minutes for transitions.</p>
                     <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside mb-4">
                         <li>Students leave at <strong>2:45 pm</strong> Monday&ndash;Thursday</li>
@@ -289,10 +301,10 @@
             <!-- Community Circles -->
             <section id="community-circles">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-emerald-100 flex items-center justify-center text-xl">&#129309;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Community Circles</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Community Circles</h3>
                 </div>
-                <div class="bg-white rounded-2xl shadow-md border-l-8 border-emerald-500 p-6 md:p-7">
+                <div class="bg-white rounded-2xl shadow-md border p-6 md:p-7">
                     <p class="text-gray-700 mb-3">Community Circles are a cornerstone of student well-being and character development in MS and HS. They create a safe, structured space where students and teachers build authentic connections, promote empathy, and cultivate mutual respect.</p>
                     <p class="text-gray-700 mb-3"><strong>When:</strong> Every Wednesday morning, <strong>7:30&ndash;7:45 a.m.</strong> during the Moral Education and Homeroom period.</p>
                     <p class="text-gray-700">Each week students engage with a grade-specific Moral Education prompt covering values, identity, relationships, and social responsibility. Circles reinforce equality and inclusion &mdash; everyone's voice matters &mdash; through honest sharing, active listening, and respectful dialogue.</p>
@@ -302,10 +314,10 @@
             <!-- Standards-Based Learning -->
             <section id="sbl">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-fuchsia-100 flex items-center justify-center text-xl">&#128203;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Standards-Based Learning (Secondary)</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Standards-Based Learning (Secondary)</h3>
                 </div>
-                <div class="bg-white rounded-2xl shadow-md border-l-8 border-fuchsia-500 p-6 md:p-7 mb-5">
+                <div class="bg-white rounded-2xl shadow-md border p-6 md:p-7 mb-5">
                     <p class="text-gray-700 mb-3">For five years, AISA has been focused on standards-based learning and reporting. Teachers assess students progressively against curricula (CCSS, NGSS, SHAPE, etc.) &mdash; students should have multiple opportunities over time to demonstrate proficiency with a standard.</p>
                     <p class="text-gray-700 mb-3">In a standards-based system we <strong>only assess academic performance</strong> &mdash; not participation, attendance, tardiness, or homework completion. We measure what students can <em>do</em> with content knowledge in each discipline. This is a shift from traditional grading; ongoing support is provided across the year.</p>
                     <p class="text-gray-700">Teacher teams develop course- and unit-level <strong>KUDs (Know, Understand, Do)</strong> to define clear learning targets and scales.</p>
@@ -332,13 +344,13 @@
             <!-- External Testing -->
             <section id="testing">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-orange-100 flex items-center justify-center text-xl">&#128202;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">External Testing</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">External Testing</h3>
                 </div>
 
                 <div class="grid md:grid-cols-3 gap-5">
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-orange-500 p-6">
-                        <h4 class="font-heading font-bold text-orange-900 mb-2">NWEA MAP Growth</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-6">
+                        <h4 class="font-heading font-bold text-purple-900 mb-2">NWEA MAP Growth</h4>
                         <p class="text-xs text-gray-600 mb-3">Twice per year &mdash; differentiated instruction support.</p>
                         <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
                             <li>KG2&ndash;Grade 1: Early Literacy &amp; Numeracy</li>
@@ -348,14 +360,14 @@
                         <p class="text-xs text-gray-500 mt-3">Results shared at parent conferences and on secondary report cards.</p>
                     </div>
 
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-orange-500 p-6">
-                        <h4 class="font-heading font-bold text-orange-900 mb-2">Arabic Basic Skills Test (ABT)</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-6">
+                        <h4 class="font-heading font-bold text-purple-900 mb-2">Arabic Basic Skills Test (ABT)</h4>
                         <p class="text-xs text-gray-600 mb-3">Standardized Arabic proficiency assessment.</p>
                         <p class="text-sm text-gray-700">Measures reading, writing, vocabulary, grammar, and comprehension. Aligned with MOE standards to support targeted instruction and curriculum planning.</p>
                     </div>
 
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-orange-500 p-6">
-                        <h4 class="font-heading font-bold text-orange-900 mb-2">CAT-4</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-6">
+                        <h4 class="font-heading font-bold text-purple-900 mb-2">CAT-4</h4>
                         <p class="text-xs text-gray-600 mb-3">Diagnostic assessment of academic potential.</p>
                         <p class="text-sm text-gray-700">8 short tests across 4 ability areas. Administered annually to <strong>Grades 3, 6, and 9</strong> to help teachers and students understand how they learn.</p>
                     </div>
@@ -365,13 +377,13 @@
         </div>
     </main>
 
-    <footer class="bg-amber-900 text-amber-100 mt-auto">
-        <div class="container mx-auto px-6 py-8 text-center">
-            <div class="flex items-center justify-center gap-3 mb-3">
-                <img src="../assets/brand/aisa-seal-white.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
-                <span class="font-heading font-bold text-lg tracking-wide">AISA Orientation Hub</span>
-            </div>
-            <p class="text-xs text-amber-200/80">American International School in Abu Dhabi &middot; Welcome to the Pride</p>
+    <footer class="lh-footer mt-auto">
+        <div class="lh-footer__inner">
+            <span class="lh-footer__brand">
+                <img src="../AISA_logo.png" alt="" width="28" height="28">
+                American International School in Abu Dhabi
+            </span>
+            <span>Orientation Hub &middot; Teaching &amp; Learning</span>
         </div>
     </footer>
 

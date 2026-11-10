@@ -7,47 +7,35 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
     <script>
         if (window.tailwind) {
             tailwind.config = {
                 theme: {
                     extend: {
-                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        fontFamily: { heading: ['DM Sans', 'sans-serif'] },
                     }
                 }
             }
         }
     </script>
+    <script src="../auth/tw-brand.js?v=1"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
+        body { font-family: 'DM Sans', sans-serif; }
+        .font-heading { font-family: 'DM Sans', sans-serif; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
         .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
         .no-scrollbar::-webkit-scrollbar { display: none; width: 0; height: 0; }
-        .bg-governance-pattern {
-            background-color: #f8fafc;
-            background-image:
-                radial-gradient(ellipse at top, rgba(79, 70, 229, 0.08), transparent 50%),
-                radial-gradient(ellipse at bottom, rgba(37, 99, 235, 0.06), transparent 50%);
-        }
-        .hero-governance {
-            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #4f46e5 100%);
-        }
-        .hero-overlay {
-            background-image:
-                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.10) 0, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.08) 0, transparent 40%);
-        }
+        body { background: #fff; }
         .committee-card {
             position: relative;
-            border-top: 6px solid var(--theme-border, #4f46e5);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            border: 1px solid var(--lh-line);
+            border-radius: var(--lh-radius-lg) !important;
+            box-shadow: var(--lh-shadow-sm) !important;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
-        .committee-card[data-expanded="false"]:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 14px 30px -12px rgba(0,0,0,0.12);
-        }
+        .committee-card:hover { border-color: var(--lh-border); }
+        .committee-card[data-expanded="false"]:hover { box-shadow: var(--lh-shadow-lg) !important; }
         .card-summary {
             display: flex;
             align-items: center;
@@ -62,14 +50,15 @@
             cursor: pointer;
         }
         .card-summary:focus-visible {
-            outline: 2px solid var(--theme-border, #4f46e5);
+            outline: 2px solid var(--theme-border, var(--lh-purple-500));
             outline-offset: -2px;
             border-radius: 0.5rem;
         }
-        .card-summary .summary-icon { font-size: 2rem; line-height: 1; flex-shrink: 0; }
+        .card-summary .summary-icon { display: inline-flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; border-radius: 12px; background: var(--lh-tint); color: var(--lh-purple); flex-shrink: 0; }
+        .card-summary .summary-icon svg { width: 1.375rem; height: 1.375rem; }
         .card-summary .summary-text { flex: 1; min-width: 0; }
         .card-summary .summary-title {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'DM Sans', sans-serif;
             font-weight: 700;
             font-size: 1rem;
             color: #111827;
@@ -92,7 +81,8 @@
         }
         @media (max-width: 640px) {
             .card-summary { gap: 0.75rem; padding: 0.85rem 1rem; }
-            .card-summary .summary-icon { font-size: 1.5rem; }
+            .card-summary .summary-icon { width: 2.25rem; height: 2.25rem; border-radius: 10px; }
+            .card-summary .summary-icon svg { width: 1.15rem; height: 1.15rem; }
             .card-summary .summary-title { font-size: 0.95rem; }
             .card-summary .summary-area { display: none; }
             .card-summary .summary-stats .badge-req { display: none; }
@@ -105,7 +95,7 @@
         }
         .committee-card[data-expanded="true"] .summary-chevron {
             transform: rotate(180deg);
-            color: var(--theme-text, #3730a3);
+            color: var(--theme-text, var(--lh-purple));
         }
         .card-body {
             display: grid;
@@ -143,8 +133,8 @@
         }
         .card-meta .meta-pill svg { width: 11px; height: 11px; }
         .card-meta .meta-pill.strong {
-            background: var(--theme-bg, #eef2ff);
-            color: var(--theme-text, #3730a3);
+            background: var(--theme-bg, var(--lh-tint));
+            color: var(--theme-text, var(--lh-purple));
         }
         .read-mission {
             display: inline-flex;
@@ -152,7 +142,7 @@
             gap: 0.25rem;
             font-size: 11px;
             font-weight: 700;
-            color: var(--theme-text, #3730a3);
+            color: var(--theme-text, var(--lh-purple));
             cursor: pointer;
             margin-top: 0.4rem;
             text-transform: uppercase;
@@ -176,16 +166,16 @@
         .chair-pill {
             display: inline-flex !important;
             align-items: center;
-            background: var(--theme-bg, #eef2ff);
-            color: var(--theme-text, #3730a3);
-            border: 1px solid var(--theme-border, #4f46e5);
+            background: var(--theme-bg, var(--lh-tint));
+            color: var(--theme-text, var(--lh-purple));
+            border: 1px solid var(--theme-border, var(--lh-purple-500));
             cursor: pointer;
         }
         .chair-pill:hover { filter: brightness(0.95); }
         .chair-pill .chair-role {
             margin-left: 0.25rem;
             padding: 0.05rem 0.45rem;
-            background: var(--theme-border, #4f46e5);
+            background: var(--theme-border, var(--lh-purple-500));
             color: #fff;
             border-radius: 9999px;
             font-size: 9px;
@@ -209,10 +199,10 @@
             max-width: none;
         }
         .chair-avatar {
-            background: var(--theme-border, #4f46e5);
+            background: var(--theme-border, var(--lh-purple-500));
             color: #fff;
         }
-        .accent-bullet { color: var(--theme-border, #4f46e5); }
+        .accent-bullet { color: var(--theme-border, var(--lh-purple-500)); }
         .tab-btn {
             position: relative;
             transition: color 0.2s ease;
@@ -221,7 +211,7 @@
             .tab-btn { padding-left: 0.85rem; padding-right: 0.85rem; padding-top: 0.85rem; padding-bottom: 0.85rem; font-size: 12px; }
             .tab-btn .tab-count { min-width: 1.1rem; height: 1.1rem; font-size: 9px; }
         }
-        .tab-btn[aria-selected="true"] { color: #1e3a8a; }
+        .tab-btn[aria-selected="true"] { color: var(--lh-purple); }
         .tab-btn[aria-selected="true"]::after {
             content: '';
             position: absolute;
@@ -229,7 +219,7 @@
             left: 10%;
             right: 10%;
             height: 3px;
-            background: linear-gradient(90deg, #4f46e5, #06b6d4);
+            background: var(--lh-purple);
             border-radius: 3px 3px 0 0;
         }
         details > summary { list-style: none; }
@@ -237,9 +227,6 @@
         details[open] .chev { transform: rotate(180deg); }
         .chev { transition: transform 0.2s ease; }
         .committee-card.hidden-by-filter { display: none; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; }
 
         .stat-card {
             position: relative;
@@ -279,7 +266,7 @@
             transition: background 0.2s ease, color 0.2s ease;
         }
         .tab-btn[aria-selected="true"] .tab-count {
-            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            background: var(--lh-purple);
             color: #fff;
         }
         @media (prefers-reduced-motion: reduce) {
@@ -297,32 +284,32 @@
             font-weight: 700;
             letter-spacing: 0.04em;
             text-transform: uppercase;
-            border: 1px solid #e5e7eb;
+            border: 1px solid var(--lh-line);
             background: #fff;
             color: #4b5563;
             cursor: pointer;
             transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
             white-space: nowrap;
         }
-        .filter-chip:hover { transform: translateY(-1px); box-shadow: 0 4px 10px -4px rgba(0,0,0,0.12); }
+        .filter-chip:hover { border-color: var(--lh-border); }
         .filter-chip .dot {
             width: 8px; height: 8px; border-radius: 9999px; background: currentColor;
         }
-        .filter-chip[data-req="adek-mandated"] { color: #be123c; }
-        .filter-chip[data-req="adek-aligned"] { color: #b45309; }
-        .filter-chip[data-req="school-directed"] { color: #6b21a8; }
-        .filter-chip[data-req="school-initiated"] { color: #047857; }
+        .filter-chip[data-req="adek-mandated"] { color: var(--lh-warning); }
+        .filter-chip[data-req="adek-aligned"] { color: var(--lh-gold-text); }
+        .filter-chip[data-req="school-directed"] { color: var(--lh-purple); }
+        .filter-chip[data-req="school-initiated"] { color: var(--lh-muted); }
         .filter-chip[aria-pressed="true"] {
             background: currentColor;
             border-color: transparent;
-            box-shadow: 0 6px 14px -6px rgba(0,0,0,0.2);
+            box-shadow: none;
         }
         .filter-chip[aria-pressed="true"] .chip-label { color: #fff; }
         .filter-chip[aria-pressed="true"] .dot { background: #fff; }
 
         .legend-overlay {
             position: fixed; inset: 0;
-            background: rgba(15, 23, 42, 0.55);
+            background: rgba(22, 4, 73, 0.55);
             backdrop-filter: blur(3px);
             z-index: 80;
             display: flex;
@@ -372,8 +359,8 @@
         }
 
         @keyframes card-flash {
-            0% { box-shadow: 0 0 0 0 rgba(79,70,229,0); transform: translateY(0); }
-            20% { box-shadow: 0 0 0 6px rgba(79,70,229,0.25); transform: translateY(-3px); }
+            0% { box-shadow: 0 0 0 0 rgba(91,63,208,0); transform: translateY(0); }
+            20% { box-shadow: 0 0 0 6px rgba(91,63,208,0.25); transform: translateY(-3px); }
             100% { box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12); transform: translateY(0); }
         }
         .committee-card.flash {
@@ -395,16 +382,16 @@
         }
 
         mark.search-hit {
-            background: linear-gradient(180deg, rgba(252, 211, 77, 0) 55%, #fde68a 55%);
+            background: linear-gradient(180deg, rgba(216, 182, 100, 0) 55%, rgba(216, 182, 100, .45) 55%);
             color: inherit;
             padding: 0 0.1em;
             border-radius: 2px;
             font-weight: 600;
         }
         .cross-tab-banner {
-            border: 1px solid #c7d2fe;
-            background: linear-gradient(135deg, #eef2ff, #e0f2fe);
-            color: #1e3a8a;
+            border: 1px solid var(--lh-border);
+            background: var(--lh-tint-2);
+            color: var(--lh-purple);
             border-radius: 1rem;
             padding: 0.9rem 1.1rem;
             display: flex;
@@ -422,14 +409,14 @@
             padding: 0.3rem 0.75rem;
             border-radius: 9999px;
             background: #fff;
-            border: 1px solid #c7d2fe;
-            color: #3730a3;
+            border: 1px solid var(--lh-border);
+            color: var(--lh-purple);
             font-weight: 700;
             font-size: 12px;
             cursor: pointer;
             transition: background 0.15s ease;
         }
-        .cross-tab-banner button:hover { background: #eef2ff; }
+        .cross-tab-banner button:hover { background: var(--lh-tint); }
 
         .member-pill {
             display: inline-flex;
@@ -446,15 +433,15 @@
             transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
         }
         .member-pill:hover {
-            background: #eef2ff;
-            border-color: #c7d2fe;
+            background: var(--lh-tint);
+            border-color: var(--lh-border);
             transform: translateY(-1px);
-            box-shadow: 0 4px 10px -4px rgba(79,70,229,0.25);
+            box-shadow: 0 4px 10px -4px rgba(91,63,208,0.25);
         }
         .member-pill:focus-visible, .chair-pill:focus-visible,
         .filter-chip:focus-visible,
         .show-more-btn:focus-visible {
-            outline: 2px solid #4f46e5;
+            outline: 2px solid var(--lh-purple-500);
             outline-offset: 2px;
         }
         .member-pill .member-avatar {
@@ -479,9 +466,9 @@
             align-items: center;
             gap: 0.35rem;
             padding: 0.35rem 0.8rem;
-            background: var(--theme-bg, #eef2ff);
-            color: var(--theme-text, #3730a3);
-            border: 1px dashed var(--theme-border, #4f46e5);
+            background: var(--theme-bg, var(--lh-tint));
+            color: var(--theme-text, var(--lh-purple));
+            border: 1px dashed var(--theme-border, var(--lh-purple-500));
             border-radius: 9999px;
             font-size: 12px;
             font-weight: 700;
@@ -521,7 +508,7 @@
 
         .directory-overlay {
             position: fixed; inset: 0;
-            background: rgba(15, 23, 42, 0.55);
+            background: rgba(22, 4, 73, 0.55);
             backdrop-filter: blur(3px);
             z-index: 70;
             opacity: 0;
@@ -546,7 +533,7 @@
         .directory-panel[hidden] { display: none; }
         .directory-header {
             padding: 1.25rem 1.5rem;
-            background: linear-gradient(135deg, #1e3a8a, #4f46e5);
+            background: var(--lh-purple);
             color: #fff;
             flex-shrink: 0;
             position: relative;
@@ -578,8 +565,8 @@
         }
         .directory-search:focus {
             outline: none;
-            border-color: #6366f1;
-            box-shadow: 0 0 0 3px rgba(99,102,241,0.2);
+            border-color: var(--lh-purple-500);
+            box-shadow: 0 0 0 3px rgba(91,63,208,0.2);
         }
         .directory-search-wrap {
             position: relative;
@@ -610,36 +597,36 @@
         .top-connector-card .row:focus-visible,
         .person-committee-item:focus-visible,
         .dir-back:focus-visible {
-            outline: 2px solid #4f46e5;
+            outline: 2px solid var(--lh-purple-500);
             outline-offset: 2px;
         }
         .dir-person-row .dir-avatar {
             width: 2rem; height: 2rem; border-radius: 9999px;
-            background: linear-gradient(135deg, #6366f1, #06b6d4);
-            color: #fff; font-size: 11px; font-weight: 700;
+            background: var(--lh-tint);
+            color: var(--lh-purple); font-size: 11px; font-weight: 700;
             display: flex; align-items: center; justify-content: center;
             flex-shrink: 0;
         }
         .dir-person-row .dir-name { font-size: 14px; font-weight: 600; color: #1f2937; flex: 1; }
         .dir-person-row .dir-count {
             font-size: 11px; font-weight: 700;
-            background: #eef2ff; color: #3730a3;
+            background: var(--lh-tint); color: var(--lh-purple);
             padding: 0.15rem 0.5rem; border-radius: 9999px;
         }
         .dir-person-row .dir-count.hot {
-            background: linear-gradient(135deg, #f59e0b, #ef4444);
-            color: #fff;
+            background: var(--lh-gold);
+            color: var(--lh-purple-900);
         }
         .top-connector-card {
-            background: linear-gradient(135deg, #eef2ff, #e0f2fe);
-            border: 1px solid #c7d2fe;
+            background: var(--lh-tint-2);
+            border: 1px solid var(--lh-border);
             border-radius: 0.9rem;
             padding: 0.85rem 1rem;
             margin-bottom: 1rem;
         }
         .top-connector-card h4 {
             font-size: 10px; font-weight: 800;
-            color: #3730a3;
+            color: var(--lh-purple);
             text-transform: uppercase; letter-spacing: 0.08em;
             margin-bottom: 0.5rem;
             display: flex; align-items: center; gap: 0.35rem;
@@ -662,7 +649,7 @@
             width: 1.25rem; height: 1.25rem;
             border-radius: 9999px;
             background: #fff;
-            color: #4f46e5;
+            color: var(--lh-purple-500);
             font-weight: 800; font-size: 10px;
             display: flex; align-items: center; justify-content: center;
         }
@@ -670,7 +657,7 @@
             width: 4.5rem; height: 4.5rem;
             border-radius: 9999px;
             background: #fff;
-            color: #3730a3;
+            color: var(--lh-purple);
             display: flex; align-items: center; justify-content: center;
             font-size: 22px; font-weight: 800;
             box-shadow: 0 8px 20px -4px rgba(0,0,0,0.2);
@@ -681,7 +668,7 @@
             padding: 0.85rem 1rem;
             border-radius: 0.75rem;
             background: #fff;
-            border-left: 4px solid var(--theme-border, #4f46e5);
+            border-left: 4px solid var(--theme-border, var(--lh-purple-500));
             border-top: 1px solid #f3f4f6;
             border-right: 1px solid #f3f4f6;
             border-bottom: 1px solid #f3f4f6;
@@ -705,8 +692,8 @@
             font-size: 10px; font-weight: 800;
             padding: 0.2rem 0.55rem;
             border-radius: 9999px;
-            background: var(--theme-bg, #eef2ff);
-            color: var(--theme-text, #3730a3);
+            background: var(--theme-bg, var(--lh-tint));
+            color: var(--theme-text, var(--lh-purple));
             text-transform: uppercase;
             letter-spacing: 0.05em;
             white-space: nowrap;
@@ -758,7 +745,7 @@
         }
         .help-overlay {
             position: fixed; inset: 0;
-            background: rgba(15, 23, 42, 0.55);
+            background: rgba(22, 4, 73, 0.55);
             backdrop-filter: blur(3px);
             z-index: 80;
             display: flex;
@@ -799,7 +786,7 @@
             width: 2.5rem; height: 2.5rem;
             border-radius: 9999px;
             background: #fff;
-            color: #4f46e5;
+            color: var(--lh-purple-500);
             border: 1px solid #e5e7eb;
             display: flex; align-items: center; justify-content: center;
             box-shadow: 0 10px 25px -10px rgba(0,0,0,0.25);
@@ -812,7 +799,7 @@
         }
         .shortcuts-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 14px 30px -10px rgba(79, 70, 229, 0.35);
+            box-shadow: 0 14px 30px -10px rgba(91, 63, 208, 0.35);
         }
 
         .back-top-btn {
@@ -821,10 +808,10 @@
             right: 4.5rem;
             width: 2.5rem; height: 2.5rem;
             border-radius: 9999px;
-            background: linear-gradient(135deg, #4f46e5, #06b6d4);
+            background: var(--lh-purple);
             color: #fff;
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 25px -8px rgba(79, 70, 229, 0.4);
+            box-shadow: 0 10px 25px -8px rgba(91, 63, 208, 0.4);
             cursor: pointer;
             z-index: 40;
             border: none;
@@ -839,7 +826,7 @@
             pointer-events: auto;
         }
         .back-top-btn:hover {
-            box-shadow: 0 14px 30px -8px rgba(79, 70, 229, 0.55);
+            box-shadow: 0 14px 30px -8px rgba(91, 63, 208, 0.55);
         }
 
         @media print {
@@ -912,90 +899,121 @@
             mark.search-hit { background: #ffff99 !important; }
             a[href]:after { content: ""; }
         }
+
+        /* ===== Redesign, 10 Nov 2026: the page on the Hub's design system
+           (auth/hub.css). The standard page header carries the search and
+           the stats; one card style for every committee (no coloured strip,
+           a line icon in a tint square); purple for structure, gold for
+           emphasis; the mandate filters use status colours only where the
+           mandate is a requirement (ADEK-Mandated). ===== */
+        .gov-hero .lh-hero__actions { margin-top: 0; }
+        .gov-tools { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.25rem 2rem; align-items: end; margin-top: 2rem; }
+        .gov-search { position: relative; max-width: 40rem; }
+        .gov-search svg { position: absolute; inset-inline-start: 1.1rem; top: 50%; transform: translateY(-50%); width: 1.15rem; height: 1.15rem; color: var(--lh-muted); pointer-events: none; }
+        .gov-search input { display: block; width: 100%; box-sizing: border-box; height: 3rem; padding-inline: 2.9rem 1rem; border-radius: 999px; border: 1px solid transparent; background: #fff; color: var(--lh-ink); font: 500 .9375rem/1 var(--lh-font); }
+        .gov-search input::placeholder { color: #8A8698; }
+        .gov-search input:focus { outline: none; box-shadow: 0 0 0 3px rgba(216, 182, 100, .55); }
+        .gov-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; }
+        .gov-stats .stat-card { background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .14); border-radius: 12px; padding: .7rem 1rem; min-width: 6.5rem; }
+        .gov-stats .stat-card:hover { transform: none; background: rgba(255, 255, 255, .1); }
+        .gov-stats .stat-card::before { content: none; }
+        .gov-stats .stat-card .gov-num { font-size: 1.5rem; font-weight: 700; line-height: 1.1; color: #fff; letter-spacing: -.01em; }
+        .gov-stats .stat-card .gov-lbl { font-size: .6875rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: rgba(255, 255, 255, .7); margin-top: .2rem; }
+        html[lang="ar"] .gov-stats .stat-card .gov-lbl { letter-spacing: 0; }
+        @media (max-width: 960px) { .gov-tools { grid-template-columns: minmax(0, 1fr); } .gov-search { max-width: none; } }
+        @media (max-width: 520px) { .gov-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+        .tab-btn .tab-ic { display: inline-flex; align-items: center; justify-content: center; width: 1.5rem; height: 1.5rem; border-radius: 999px; background: var(--lh-tint); color: var(--lh-purple); font-size: 10px; font-weight: 800; }
+        .tab-btn .tab-ic svg { width: .85rem; height: .85rem; }
+        .tab-btn[aria-selected="true"] .tab-ic { background: var(--lh-purple); color: #fff; }
+        .person-committee-item .title .title-ic { display: inline-flex; vertical-align: -2px; margin-inline-end: .35rem; color: var(--lh-purple); }
+        .person-committee-item .title .title-ic svg { width: 1rem; height: 1rem; }
+        .group-pill .group-pill-icon svg { width: .9rem; height: .9rem; }
+        .top-connector-card h4 .tc-ic, .cross-tab-banner .tc-ic { display: inline-flex; vertical-align: -2px; margin-inline-end: .3rem; color: var(--lh-gold-text); }
+        .top-connector-card h4 .tc-ic svg, .cross-tab-banner .tc-ic svg { width: 1rem; height: 1rem; }
+        .gov-empty .lh-icon { margin-bottom: .75rem; }
+        body > main.container, body > .sticky > .container { max-width: var(--lh-max); }
+        .directory-panel { top: var(--lh-bar); }
+        .directory-search-wrap svg { top: calc(50% - .5rem); }
+        .summary-stats .meta-pill { display: inline-flex; align-items: center; gap: .3rem; height: 1.625rem; padding: 0 .6rem; border-radius: 999px; font-size: .75rem; font-weight: 700; background: var(--lh-tint); color: var(--lh-purple); }
+        .summary-stats .meta-pill svg { width: .8rem; height: .8rem; }
     </style>
-    <script src="../auth/gate.js?v=43"></script>
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
 </head>
-<body class="bg-governance-pattern text-gray-800 min-h-screen flex flex-col">
+<body class="bg-white text-gray-800 min-h-screen flex flex-col">
 
-<section class="hero-governance text-white relative overflow-hidden">
-        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
-        <div class="container mx-auto px-6 py-16 md:py-20 relative z-10">
-            <div class="max-w-4xl mx-auto text-center">
-                <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
-                    <span class="text-xl">🏛️</span>
-                    <span class="text-xs font-bold uppercase tracking-widest">2025-26 Committee List</span>
+<section class="lh-hero gov-hero hero-governance">
+        <div class="lh-hero__inner">
+            <div class="lh-hero__row">
+                <div class="lh-hero__main">
+                    <p class="lh-hero__eyebrow">2025&ndash;26 committee list</p>
+                    <h1 class="lh-hero__title">AISA Committees &amp; Governance</h1>
+                    <p class="lh-hero__lede">The committees that drive academic quality, wellbeing, safeguarding, innovation, and community engagement at AISA: each one's mission, initial tasks, success indicators, and full membership.</p>
                 </div>
-                <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-4 drop-shadow-lg">AISA Committees &amp; Governance</h2>
-                <p class="text-lg md:text-xl text-indigo-100 max-w-3xl mx-auto mb-8">
-                    Explore the committees that drive academic quality, wellbeing, safeguarding, innovation, and community engagement at AISA. Each committee's mission, initial tasks, success indicators, and full membership are detailed below.
-                </p>
-
-                <div class="max-w-2xl mx-auto relative">
-                    <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </div>
-                    <label for="committee-search" class="sr-only">Search committees</label>
-                    <input type="text" id="committee-search" placeholder="Search by committee, policy area, or member name..." aria-label="Search committees by name, policy area, or member" class="block w-full pl-12 pr-4 py-3.5 rounded-full text-gray-900 bg-white/95 shadow-xl focus:ring-4 focus:ring-indigo-400/30 focus:outline-none placeholder-gray-400 font-medium">
-                </div>
-
-                <div class="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15" role="group" aria-labelledby="stat-total-label">
-                        <div class="text-3xl font-heading font-extrabold"><span id="stat-total" class="stat-num" data-target="0" aria-hidden="true">0</span></div>
-                        <div id="stat-total-label" class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">Committees</div>
-                    </div>
-                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15" role="group" aria-labelledby="stat-members-label">
-                        <div class="text-3xl font-heading font-extrabold"><span id="stat-members" class="stat-num" data-target="0" aria-hidden="true">0</span></div>
-                        <div id="stat-members-label" class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">Members</div>
-                    </div>
-                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15" role="group" aria-labelledby="stat-adek-label">
-                        <div class="text-3xl font-heading font-extrabold"><span id="stat-adek" class="stat-num" data-target="0" aria-hidden="true">0</span></div>
-                        <div id="stat-adek-label" class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">ADEK-Mandated</div>
-                    </div>
-                    <div class="stat-card bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/15" role="group" aria-labelledby="stat-ai-label">
-                        <div class="text-3xl font-heading font-extrabold"><span id="stat-ai" class="stat-num" data-target="0" aria-hidden="true">0</span></div>
-                        <div id="stat-ai-label" class="text-xs uppercase tracking-wider text-indigo-100 font-semibold mt-1">AI Subcommittees</div>
-                    </div>
-                </div>
-
-                <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
-                    <button id="open-committees-directory" type="button" class="inline-flex items-center gap-2 bg-white text-indigo-800 hover:bg-indigo-50 font-semibold py-2.5 px-5 rounded-full transition-colors shadow-lg">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-4H5m14 8H5m14 4H5"/></svg>
-                        Committees Directory
+                <div class="lh-hero__actions">
+                    <button id="open-committees-directory" type="button" class="lh-btn lh-btn--gold">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+                        Committees directory
                     </button>
-                    <button id="open-directory" type="button" class="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/25 text-white font-semibold py-2.5 px-5 rounded-full transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                        People Directory
+                    <button id="open-directory" type="button" class="lh-btn lh-btn--on-dark">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                        People directory
                     </button>
-                    <a href="25-26%20committee%20list%20%281%29.pdf" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm border border-white/25 text-white font-semibold py-2.5 px-5 rounded-full transition-colors">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        Download the Full PDF
+                    <a href="25-26%20committee%20list%20%281%29.pdf" target="_blank" rel="noopener noreferrer" class="lh-btn lh-btn--on-dark">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+                        Full list (PDF)
                     </a>
+                </div>
+            </div>
+            <div class="gov-tools">
+                <div class="gov-search">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <label for="committee-search" class="sr-only">Search committees</label>
+                    <input type="text" id="committee-search" placeholder="Search by committee, policy area, or member name..." aria-label="Search committees by name, policy area, or member">
+                </div>
+                <div class="gov-stats">
+                    <div class="stat-card" role="group" aria-labelledby="stat-total-label">
+                        <div class="gov-num"><span id="stat-total" class="stat-num" data-target="0" aria-hidden="true">0</span></div>
+                        <div id="stat-total-label" class="gov-lbl">Committees</div>
+                    </div>
+                    <div class="stat-card" role="group" aria-labelledby="stat-members-label">
+                        <div class="gov-num"><span id="stat-members" class="stat-num" data-target="0" aria-hidden="true">0</span></div>
+                        <div id="stat-members-label" class="gov-lbl">Members</div>
+                    </div>
+                    <div class="stat-card" role="group" aria-labelledby="stat-adek-label">
+                        <div class="gov-num"><span id="stat-adek" class="stat-num" data-target="0" aria-hidden="true">0</span></div>
+                        <div id="stat-adek-label" class="gov-lbl">ADEK-Mandated</div>
+                    </div>
+                    <div class="stat-card" role="group" aria-labelledby="stat-ai-label">
+                        <div class="gov-num"><span id="stat-ai" class="stat-num" data-target="0" aria-hidden="true">0</span></div>
+                        <div id="stat-ai-label" class="gov-lbl">AI Subcommittees</div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <div class="bg-white border-b border-gray-200 sticky top-[65px] z-40 shadow-sm">
+    <div class="bg-white border-b border-gray-200 sticky top-[60px] z-40">
         <div class="container mx-auto px-6">
             <div class="flex flex-col gap-1 pb-2">
             <div role="tablist" aria-label="Committee categories" class="no-scrollbar flex items-center gap-1 md:gap-2 overflow-x-auto">
-                <button id="tab-all" role="tab" aria-selected="true" aria-controls="panel-level-1 panel-level-2 panel-ai" tabindex="0" data-tab="all" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
-                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-cyan-500 text-white text-[10px] font-black">★</span>
+                <button id="tab-all" role="tab" aria-selected="true" aria-controls="panel-level-1 panel-level-2 panel-ai" tabindex="0" data-tab="all" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-purple-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
+                    <span class="tab-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg></span>
                     All Committees
                     <span class="tab-count" data-tab-count="all">0</span>
                 </button>
-                <button id="tab-level-1" role="tab" aria-selected="false" aria-controls="panel-level-1" tabindex="-1" data-tab="level-1" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
-                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-black">1</span>
+                <button id="tab-level-1" role="tab" aria-selected="false" aria-controls="panel-level-1" tabindex="-1" data-tab="level-1" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-purple-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
+                    <span class="tab-ic" aria-hidden="true">1</span>
                     Level 1
                     <span class="tab-count" data-tab-count="level-1">0</span>
                 </button>
-                <button id="tab-level-2" role="tab" aria-selected="false" aria-controls="panel-level-2" tabindex="-1" data-tab="level-2" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
-                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 text-blue-700 text-[10px] font-black">2</span>
+                <button id="tab-level-2" role="tab" aria-selected="false" aria-controls="panel-level-2" tabindex="-1" data-tab="level-2" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-purple-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
+                    <span class="tab-ic" aria-hidden="true">2</span>
                     Level 2
                     <span class="tab-count" data-tab-count="level-2">0</span>
                 </button>
-                <button id="tab-ai" role="tab" aria-selected="false" aria-controls="panel-ai" tabindex="-1" data-tab="ai" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-blue-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
-                    <span class="text-base">🤖</span>
+                <button id="tab-ai" role="tab" aria-selected="false" aria-controls="panel-ai" tabindex="-1" data-tab="ai" class="tab-btn flex items-center gap-2 px-4 md:px-6 py-4 text-sm font-semibold text-gray-500 whitespace-nowrap hover:text-purple-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400 focus-visible:ring-offset-2 rounded-t-md">
+                    <span class="tab-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg></span>
                     AI Incubator
                     <span class="tab-count" data-tab-count="ai">0</span>
                 </button>
@@ -1027,11 +1045,11 @@
     </div>
 
     <main class="flex-grow container mx-auto px-6 py-12">
-        <div id="no-results" class="hidden text-center py-16" role="status" aria-live="polite">
-            <div class="text-5xl mb-3">🔍</div>
+        <div id="no-results" class="gov-empty hidden py-16" role="status" aria-live="polite">
+            <span class="lh-icon lh-icon--lg" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
             <h3 class="text-xl font-bold text-gray-700">No committees match your search</h3>
             <p class="text-gray-500 mt-1">Try a different keyword, or clear filters to browse all committees.</p>
-            <button id="reset-all" type="button" class="mt-5 inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-full text-sm transition-colors">
+            <button id="reset-all" type="button" class="mt-5 lh-btn lh-btn--primary lh-btn--sm">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                 Reset search and filters
             </button>
@@ -1106,13 +1124,13 @@
                 </button>
             </div>
             <dl>
-                <dt style="color:#be123c">ADEK-Mandated</dt>
+                <dt style="color:var(--lh-warning)">ADEK-Mandated</dt>
                 <dd>Required by ADEK regulation. Must exist, with defined membership, cadence, and records.</dd>
-                <dt style="color:#b45309">ADEK-Aligned</dt>
+                <dt style="color:var(--lh-gold-text)">ADEK-Aligned</dt>
                 <dd>Not explicitly mandated, but closely tied to an ADEK policy area (e.g. Digital Policy, RAIL).</dd>
-                <dt style="color:#6b21a8">School-Directed</dt>
+                <dt style="color:var(--lh-purple)">School-Directed</dt>
                 <dd>Established by AISA leadership to meet internal policy or operational needs.</dd>
-                <dt style="color:#047857">School-Initiated</dt>
+                <dt style="color:var(--lh-muted)">School-Initiated</dt>
                 <dd>Voluntary and community-led — morale, sustainability, parent engagement, and the like.</dd>
             </dl>
         </div>
@@ -1140,38 +1158,54 @@
         <div class="directory-body" id="committees-body"></div>
     </aside>
 
-    <footer class="bg-blue-900 text-blue-100 mt-auto">
-        <div class="container mx-auto px-6 py-8 text-center">
-            <div class="flex items-center justify-center gap-3 mb-3">
-                <img src="../assets/brand/aisa-seal-white.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
-                <span class="font-heading font-bold text-lg tracking-wide">AISA Committees &amp; Governance</span>
-            </div>
-            <p class="text-xs text-blue-200/80">American International School in Abu Dhabi &middot; 2025-26 Committee List</p>
+    <footer class="lh-footer mt-auto">
+        <div class="lh-footer__inner">
+            <span class="lh-footer__brand">
+                <img src="../AISA_logo.png" alt="" width="28" height="28">
+                American International School in Abu Dhabi
+            </span>
+            <span>Committees &amp; Governance &middot; 2025&ndash;26 committee list</span>
         </div>
     </footer>
 
     <script>
-        const themes = {
-            indigo:   { border: '#4f46e5', bg: '#eef2ff', text: '#3730a3' },
-            emerald:  { border: '#059669', bg: '#d1fae5', text: '#065f46' },
-            teal:     { border: '#0d9488', bg: '#ccfbf1', text: '#115e59' },
-            sky:      { border: '#0284c7', bg: '#e0f2fe', text: '#075985' },
-            blue:     { border: '#2563eb', bg: '#dbeafe', text: '#1e40af' },
-            violet:   { border: '#7c3aed', bg: '#ede9fe', text: '#5b21b6' },
-            fuchsia:  { border: '#c026d3', bg: '#fae8ff', text: '#86198f' },
-            rose:     { border: '#e11d48', bg: '#ffe4e6', text: '#9f1239' },
-            amber:    { border: '#d97706', bg: '#fef3c7', text: '#92400e' },
-            lime:     { border: '#65a30d', bg: '#ecfccb', text: '#3f6212' },
-            slate:    { border: '#475569', bg: '#f1f5f9', text: '#1e293b' },
-            cyan:     { border: '#0891b2', bg: '#cffafe', text: '#155e75' }
+        // One brand look for every committee (Redesign, 10 Nov 2026): the keys
+        // stay so the data below keeps its colour names.
+        const BRAND_THEME = { border: '#21076C', bg: '#F2EFFA', text: '#21076C' };
+        const themes = Object.fromEntries(['indigo', 'emerald', 'teal', 'sky', 'blue', 'violet', 'fuchsia', 'rose', 'amber', 'lime', 'slate', 'cyan'].map(k => [k, BRAND_THEME]));
+        // Line icons for the committees and role seats (never emoji).
+        const svgIcon = (d) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+        const ICO = {
+            target: svgIcon('<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>'),
+            heart: svgIcon('<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>'),
+            shield: svgIcon('<path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/>'),
+            sun: svgIcon('<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>'),
+            trees: svgIcon('<path d="M10 10v.2A3 3 0 0 1 8.9 16H5a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"/><path d="M7 16v6"/><path d="M13 19v3"/><path d="M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5"/>'),
+            star: svgIcon('<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>'),
+            cap: svgIcon('<path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>'),
+            lock: svgIcon('<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'),
+            alert: svgIcon('<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>'),
+            users: svgIcon('<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'),
+            filetext: svgIcon('<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/>'),
+            bookopen: svgIcon('<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>'),
+            landmark: svgIcon('<path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 2 20 7H4z"/>'),
+            calendar: svgIcon('<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/>'),
+            sparkles: svgIcon('<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>'),
+            map: svgIcon('<path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/>'),
+            workflow: svgIcon('<rect x="3" y="3" width="8" height="8" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect x="13" y="13" width="8" height="8" rx="2"/>'),
+            brain: svgIcon('<path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/><path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/><path d="M12 5v13"/>'),
+            compass: svgIcon('<circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/>'),
+            stethoscope: svgIcon('<path d="M11 2v2"/><path d="M5 2v2"/><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"/><path d="M8 15a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/>'),
+            user: svgIcon('<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>'),
+            chevright: svgIcon('<path d="m9 18 6-6-6-6"/>')
         };
 
         const requirementBadge = (req) => {
             const r = (req || '').toLowerCase();
-            if (r.includes('adek-mandated')) return { cls: 'bg-rose-100 text-rose-800', label: 'ADEK-Mandated' };
-            if (r.includes('adek-aligned')) return { cls: 'bg-amber-100 text-amber-800', label: 'ADEK-Aligned' };
+            if (r.includes('adek-mandated')) return { cls: 'bg-orange-50 text-amber-800', label: 'ADEK-Mandated' };
+            if (r.includes('adek-aligned')) return { cls: 'bg-yellow-100 text-yellow-800', label: 'ADEK-Aligned' };
             if (r.includes('school-directed')) return { cls: 'bg-purple-100 text-purple-800', label: 'School-Directed' };
-            if (r.includes('school-initiated')) return { cls: 'bg-emerald-100 text-emerald-800', label: 'School-Initiated' };
+            if (r.includes('school-initiated')) return { cls: 'bg-gray-100 text-gray-700', label: 'School-Initiated' };
             return { cls: 'bg-gray-100 text-gray-700', label: req || 'N/A' };
         };
 
@@ -1183,9 +1217,9 @@
 
         const GROUP_ENTITY_NAMES = new Set(['school nurses', 'principals', 'assistant principals']);
         const GROUP_ENTITY_ICONS = {
-            'school nurses': '⚕️',
-            'principals': '🎓',
-            'assistant principals': '🎓'
+            'school nurses': ICO.stethoscope,
+            'principals': ICO.cap,
+            'assistant principals': ICO.cap
         };
         const isGroupEntity = (name) => GROUP_ENTITY_NAMES.has((name || '').trim().toLowerCase());
 
@@ -1193,7 +1227,7 @@
             const hiddenCls = isHidden ? ' is-hidden' : '';
             if (isGroupEntity(m.name)) {
                 const key = m.name.trim().toLowerCase();
-                const icon = GROUP_ENTITY_ICONS[key] || '👥';
+                const icon = GROUP_ENTITY_ICONS[key] || ICO.users;
                 return `<span class="group-pill${hiddenCls}" title="Role-based seat, not an individual person">
                     <span class="group-pill-icon">${icon}</span>
                     <span>${escapeHtml(m.name)}</span>
@@ -1320,7 +1354,7 @@
                                     <svg class="chev w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </summary>
                                 <ul class="mt-3 space-y-2 text-sm text-gray-600">
-                                    ${c.indicators.map(t => `<li class="flex items-start"><span class="accent-bullet mr-2 font-bold">✓</span><span>${escapeHtml(t)}</span></li>`).join('')}
+                                    ${c.indicators.map(t => `<li class="flex items-start"><span class="accent-bullet mr-2 font-bold">&#10003;</span><span>${escapeHtml(t)}</span></li>`).join('')}
                                 </ul>
                             </details>` : ''}
 
@@ -1351,7 +1385,7 @@
 
         const committees = [
             {
-                id: 'school-dev', group: 'level-1', icon: '🎯', color: 'indigo',
+                id: 'school-dev', group: 'level-1', icon: ICO.target, color: 'indigo',
                 name: 'School Development Committee',
                 policyArea: 'Academic Quality / School Improvement',
                 requirement: 'ADEK-Mandated',
@@ -1384,7 +1418,7 @@
                 ]
             },
             {
-                id: 'wellbeing', group: 'level-1', icon: '💚', color: 'emerald',
+                id: 'wellbeing', group: 'level-1', icon: ICO.heart, color: 'emerald',
                 name: 'Student and Staff Wellbeing Committee',
                 policyArea: 'Student and Staff Wellbeing',
                 requirement: 'ADEK-Mandated',
@@ -1418,7 +1452,7 @@
                 ]
             },
             {
-                id: 'digital-safeguarding', group: 'level-1', icon: '🛡️', color: 'cyan',
+                id: 'digital-safeguarding', group: 'level-1', icon: ICO.shield, color: 'cyan',
                 name: 'Digital Safeguarding & Digital Wellbeing Committee',
                 policyArea: 'Digital Strategy and Safety',
                 requirement: 'ADEK-Aligned',
@@ -1450,7 +1484,7 @@
                 ]
             },
             {
-                id: 'teacher-sunshine', group: 'level-1', icon: '☀️', color: 'amber',
+                id: 'teacher-sunshine', group: 'level-1', icon: ICO.sun, color: 'amber',
                 name: 'Teacher Sunshine Committee',
                 policyArea: 'Staff Wellbeing and Morale',
                 requirement: 'School-Initiated',
@@ -1486,7 +1520,7 @@
                 ]
             },
             {
-                id: 'sustainability', group: 'level-1', icon: '🌱', color: 'lime',
+                id: 'sustainability', group: 'level-1', icon: ICO.trees, color: 'lime',
                 name: 'Sustainability Committee',
                 policyArea: 'Environmental Sustainability & ESD',
                 requirement: 'School-Initiated',
@@ -1517,7 +1551,7 @@
                 ]
             },
             {
-                id: 'pbis', group: 'level-2', icon: '🦁', color: 'rose',
+                id: 'pbis', group: 'level-2', icon: ICO.star, color: 'rose',
                 name: 'PBIS / Behavior Management & House System Committee',
                 policyArea: 'Student Behavior, SEL, School Climate & House Engagement',
                 requirement: 'ADEK-Mandated',
@@ -1568,7 +1602,7 @@
                 ]
             },
             {
-                id: 'pd', group: 'level-2', icon: '🎓', color: 'blue',
+                id: 'pd', group: 'level-2', icon: ICO.cap, color: 'blue',
                 name: 'Professional Development Committee',
                 policyArea: 'Teacher Growth, Instructional Quality & Capacity Building',
                 requirement: 'School-Initiated',
@@ -1605,7 +1639,7 @@
                 ]
             },
             {
-                id: 'safeguarding', group: 'level-2', icon: '🔒', color: 'violet',
+                id: 'safeguarding', group: 'level-2', icon: ICO.lock, color: 'violet',
                 name: 'Safeguarding Committee',
                 policyArea: 'Child Protection (Compliance & Wellbeing)',
                 requirement: 'School-Directed',
@@ -1636,7 +1670,7 @@
                 ]
             },
             {
-                id: 'health-safety', group: 'level-2', icon: '🚨', color: 'rose',
+                id: 'health-safety', group: 'level-2', icon: ICO.alert, color: 'rose',
                 name: 'Health & Safety Committee',
                 policyArea: 'Operational Health, Safety & Environment',
                 requirement: 'ADEK-Mandated',
@@ -1662,7 +1696,7 @@
                 ]
             },
             {
-                id: 'inclusion', group: 'level-2', icon: '🤝', color: 'teal',
+                id: 'inclusion', group: 'level-2', icon: ICO.users, color: 'teal',
                 name: 'Inclusion Support Team (Student Support Team)',
                 policyArea: 'Inclusion / Special Education Needs',
                 requirement: 'ADEK-Mandated',
@@ -1695,7 +1729,7 @@
                 ]
             },
             {
-                id: 'parent-engagement', group: 'level-2', icon: '👨‍👩‍👧', color: 'fuchsia',
+                id: 'parent-engagement', group: 'level-2', icon: ICO.users, color: 'fuchsia',
                 name: 'Parent Engagement and Events Committee',
                 policyArea: 'Parent Engagement & Community Partnerships',
                 requirement: 'School-Initiated',
@@ -1733,7 +1767,7 @@
                 ]
             },
             {
-                id: 'scc', group: 'level-2', icon: '📋', color: 'slate',
+                id: 'scc', group: 'level-2', icon: ICO.filetext, color: 'slate',
                 name: 'School Complaints Committee (SCC)',
                 policyArea: 'Compliance / Governance (Stakeholder Complaints)',
                 requirement: 'ADEK-Mandated',
@@ -1763,7 +1797,7 @@
                 ]
             },
             {
-                id: 'resource-selection', group: 'level-2', icon: '📚', color: 'amber',
+                id: 'resource-selection', group: 'level-2', icon: ICO.bookopen, color: 'amber',
                 name: 'Resource Selection Committee',
                 policyArea: 'Curriculum Resources & Cultural Compliance',
                 requirement: 'ADEK-Mandated',
@@ -1791,7 +1825,7 @@
                 ]
             },
             {
-                id: 'bac', group: 'level-2', icon: '⚖️', color: 'violet',
+                id: 'bac', group: 'level-2', icon: ICO.landmark, color: 'violet',
                 name: 'Behavior Appeals Committee (BAC)',
                 policyArea: 'Discipline Appeals',
                 requirement: 'ADEK-Mandated',
@@ -1825,7 +1859,7 @@
                 ]
             },
             {
-                id: 'calendar', group: 'level-2', icon: '📅', color: 'sky',
+                id: 'calendar', group: 'level-2', icon: ICO.calendar, color: 'sky',
                 name: 'Academic Calendar Committee',
                 policyArea: 'Governance & Operations',
                 requirement: 'School-Initiated',
@@ -1856,7 +1890,7 @@
                 ]
             },
             {
-                id: 'ai-incubator-main', group: 'ai', icon: '🤖', color: 'indigo',
+                id: 'ai-incubator-main', group: 'ai', icon: ICO.sparkles, color: 'indigo',
                 name: 'AI Incubator Team',
                 policyArea: 'AI Strategy & Governance (Parent Body)',
                 requirement: 'ADEK-Aligned',
@@ -1881,7 +1915,7 @@
                 members: []
             },
             {
-                id: 'ai-rail', group: 'ai', icon: '🛤️', color: 'indigo',
+                id: 'ai-rail', group: 'ai', icon: ICO.map, color: 'indigo',
                 name: 'RAIL Subcommittee',
                 policyArea: 'Middle States — Responsible AI in Learning (Lead Subcommittee)',
                 requirement: 'ADEK-Aligned',
@@ -1907,7 +1941,7 @@
                 ]
             },
             {
-                id: 'ai-digital-strategy', group: 'ai', icon: '🔌', color: 'blue',
+                id: 'ai-digital-strategy', group: 'ai', icon: ICO.workflow, color: 'blue',
                 name: 'Digital Strategy Subcommittee',
                 policyArea: 'Reviewing & Publishing an AISA Digital Strategy',
                 requirement: 'ADEK-Aligned',
@@ -1933,7 +1967,7 @@
                 ]
             },
             {
-                id: 'ai-pd', group: 'ai', icon: '🧠', color: 'violet',
+                id: 'ai-pd', group: 'ai', icon: ICO.brain, color: 'violet',
                 name: 'AI Professional Development Subcommittee',
                 policyArea: 'Ongoing PD for AI Integration',
                 requirement: 'School-Initiated',
@@ -1958,7 +1992,7 @@
                 ]
             },
             {
-                id: 'ai-day', group: 'ai', icon: '🎪', color: 'fuchsia',
+                id: 'ai-day', group: 'ai', icon: ICO.compass, color: 'fuchsia',
                 name: 'Day of AI Subcommittee',
                 policyArea: 'ESOL-Coordinated Day of AI Event',
                 requirement: 'School-Initiated',
@@ -2464,7 +2498,7 @@
                             <button type="button" class="person-committee-item" data-go-committee="${escapeHtml(c.id)}" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" aria-label="${escapeHtml(c.name)}, ${memberCount} members, ${req.label}. Jump to this committee.">
                                 <div class="header">
                                     <div>
-                                        <div class="title">${escapeHtml(c.icon)} ${escapeHtml(c.name)}</div>
+                                        <div class="title"><span class="title-ic">${c.icon}</span>${escapeHtml(c.name)}</div>
                                         ${c.policyArea ? `<div class="area">${escapeHtml(c.policyArea)}</div>` : ''}
                                     </div>
                                     <div class="flex flex-col items-end gap-1 flex-shrink-0">
@@ -2561,7 +2595,7 @@
 
                 ${topConnectors.length ? `
                 <div class="top-connector-card">
-                    <h4>⭐ ${filter ? 'Top Connectors in results' : 'Top Connectors'}</h4>
+                    <h4><span class="tc-ic">${svgIcon('<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>')}</span>${filter ? 'Top Connectors in results' : 'Top Connectors'}</h4>
                     ${topConnectors.map(([key, v], i) => `
                         <button type="button" class="row" data-person-key="${escapeHtml(key)}" aria-label="${escapeHtml(v.displayName)}, ${v.memberships.length} committees">
                             <span class="rank" aria-hidden="true">${i + 1}</span>
@@ -2637,7 +2671,7 @@
                             <button type="button" class="person-committee-item" data-go-committee="${escapeHtml(m.committeeId)}" data-group="${escapeHtml(m.group)}" style="--theme-border:${theme.border};--theme-bg:${theme.bg};--theme-text:${theme.text}" aria-label="${escapeHtml(m.committeeName)}, role: ${escapeHtml(m.role)}. Jump to this committee.">
                                 <div class="header">
                                     <div>
-                                        <div class="title">${escapeHtml(m.icon)} ${escapeHtml(m.committeeName)}</div>
+                                        <div class="title"><span class="title-ic">${m.icon}</span>${escapeHtml(m.committeeName)}</div>
                                         ${m.policyArea ? `<div class="area">${escapeHtml(m.policyArea)}</div>` : ''}
                                         ${m.rosterLabel ? `<span class="tab-pill">${escapeHtml(m.rosterLabel)}</span>` : ''}
                                     </div>
@@ -2815,7 +2849,7 @@
             banner.setAttribute('role', 'status');
             banner.setAttribute('aria-live', 'polite');
             banner.innerHTML = `
-                <span>🔎 No matches here, but we found matches in other tabs:</span>
+                <span><span class="tc-ic">${ICO.compass}</span>No matches here, but we found matches in other tabs:</span>
                 ${otherTabs.map(t => `<button type="button" data-switch-tab="${t}">${labels[t]} · ${perTab[t]}</button>`).join('')}
             `;
             banner.querySelectorAll('[data-switch-tab]').forEach(b => {

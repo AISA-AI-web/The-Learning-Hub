@@ -23,7 +23,7 @@
 * { box-sizing: border-box; }
 
 body {
-    font-family: 'Inter', 'Segoe UI', Tahoma, sans-serif;
+    font-family: 'DM Sans', 'Segoe UI', Tahoma, sans-serif;
     font-size: 14px;
     color: var(--pr-ink);
     line-height: 1.45;

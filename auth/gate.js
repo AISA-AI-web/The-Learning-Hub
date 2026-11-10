@@ -125,7 +125,7 @@
         if (auxLoaded) return;
         auxLoaded = true;
         if (!GATE_SCRIPT_SRC) return;
-        ['certificate.js?v=7', 'search-index.js?v=20', 'menu.js?v=25', 'dwell.js?v=2'].forEach(function (name) {
+        ['certificate.js?v=7', 'search-index.js?v=20', 'menu.js?v=26', 'dwell.js?v=2'].forEach(function (name) {
             var url = GATE_SCRIPT_SRC.replace(/gate\.js(\?.*)?$/, name);
             if (url === GATE_SCRIPT_SRC) return;  // pattern didn't match — skip safely
             var s = document.createElement('script');
@@ -528,31 +528,33 @@
         var style = document.createElement('style');
         style.id = 'aisa-gate-style';
         style.textContent = [
+            /* On the brand (10 Nov 2026): AISA purple, the seal, DM Sans. */
             '#aisa-auth-gate{position:fixed;inset:0;z-index:2147483647;',
-            'background:linear-gradient(135deg,#0c4a6e 0%,#1e3a8a 50%,#312e81 100%);',
+            'background:#21076C radial-gradient(60rem 30rem at 85% -10%,rgba(91,63,208,.55),transparent 60%);',
             'display:flex;align-items:center;justify-content:center;',
-            'font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;',
-            'color:#f8fafc;padding:1rem;}',
-            '#aisa-auth-gate .aisa-card{background:#fff;color:#0f172a;max-width:440px;',
-            'width:100%;padding:2.5rem 2rem;border-radius:1.25rem;',
-            'box-shadow:0 25px 50px -12px rgba(0,0,0,.5);text-align:center;}',
-            '#aisa-auth-gate .aisa-logo{font-size:2.5rem;margin-bottom:.5rem;line-height:1;}',
-            '#aisa-auth-gate h1{margin:.25rem 0 .5rem;font-size:1.5rem;font-weight:800;',
-            'letter-spacing:-.01em;color:#0f172a;}',
-            '#aisa-auth-gate .aisa-sub{margin:0 0 1.5rem;color:#475569;font-size:.95rem;',
-            'line-height:1.5;}',
-            '#aisa-auth-gate .aisa-domain{display:inline-block;background:#f1f5f9;',
-            'color:#0f172a;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;',
-            'font-size:.85rem;padding:2px 8px;border-radius:6px;}',
+            'font-family:"DM Sans",Cairo,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;',
+            'color:#fff;padding:1rem;-webkit-font-smoothing:antialiased;}',
+            '#aisa-auth-gate .aisa-card{background:#fff;color:#1A1A1A;max-width:420px;',
+            'width:100%;padding:2.5rem 2rem 2rem;border-radius:20px;',
+            'box-shadow:0 30px 60px -12px rgba(22,4,73,.6);text-align:center;}',
+            '#aisa-auth-gate .aisa-logo{width:64px;height:64px;margin:0 auto 1rem;display:block;}',
+            '#aisa-auth-gate .aisa-eyebrow{margin:0;font-size:.6875rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#7A5C14;}',
+            '#aisa-auth-gate h1{margin:.35rem 0 .6rem;font-size:1.6rem;font-weight:700;',
+            'letter-spacing:-.02em;color:#21076C;}',
+            '#aisa-auth-gate .aisa-sub{margin:0 0 1.5rem;color:#5E5A6B;font-size:.95rem;',
+            'line-height:1.55;}',
+            '#aisa-auth-gate .aisa-domain{display:inline-block;background:#F2EFFA;',
+            'color:#21076C;font-weight:600;',
+            'font-size:.85rem;padding:1px 8px;border-radius:999px;}',
             '#aisa-auth-gate .aisa-btn-wrap{display:flex;justify-content:center;',
             'min-height:44px;margin-top:.5rem;}',
             '#aisa-auth-gate .aisa-error{margin-top:1.25rem;padding:.75rem 1rem;',
-            'border-radius:.5rem;background:#fef2f2;color:#991b1b;font-size:.85rem;',
-            'border:1px solid #fecaca;display:none;text-align:left;}',
+            'border-radius:12px;background:#FEF3F2;color:#B42318;font-size:.85rem;',
+            'border:1px solid #FECDCA;display:none;text-align:left;}',
             '#aisa-auth-gate .aisa-error.show{display:block;}',
-            '#aisa-auth-gate .aisa-foot{margin-top:1.5rem;font-size:.75rem;color:#94a3b8;}',
+            '#aisa-auth-gate .aisa-foot{margin-top:1.75rem;padding-top:1.25rem;border-top:1px solid #F0EDF7;font-size:.75rem;color:#5E5A6B;}',
             '#aisa-auth-gate .aisa-spinner{display:inline-block;width:18px;height:18px;',
-            'border:2px solid #cbd5e1;border-top-color:#0f172a;border-radius:50%;',
+            'border:2px solid #E7E2F4;border-top-color:#21076C;border-radius:50%;',
             'animation:aisa-spin .8s linear infinite;}',
             '@keyframes aisa-spin{to{transform:rotate(360deg)}}'
         ].join('');
@@ -572,7 +574,8 @@
               'Google account to continue.';
         gate.innerHTML =
             '<div class="aisa-card">' +
-                '<div class="aisa-logo" aria-hidden="true">&#129409;</div>' +
+                (GATE_SCRIPT_SRC ? '<img class="aisa-logo" src="' + GATE_SCRIPT_SRC.replace(/auth\/gate\.js.*$/, '') + 'assets/brand/aisa-seal-navy-1024.png" alt="">' : '') +
+                '<p class="aisa-eyebrow">AISA</p>' +
                 '<h1>' + heading + '</h1>' +
                 '<p class="aisa-sub">' + subBody + '</p>' +
                 '<div class="aisa-btn-wrap" id="aisa-gsi-button">' +

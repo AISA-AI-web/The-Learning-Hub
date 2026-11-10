@@ -7,13 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
         if (window.tailwind) {
             tailwind.config = {
                 theme: {
                     extend: {
-                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        fontFamily: { heading: ['DM Sans', 'sans-serif'] },
                         colors: { primary: '#0b2545', secondary: '#0891b2', accent: '#f59e0b' },
                         animation: { 'blob': 'blob 7s infinite' },
                         keyframes: {
@@ -29,9 +29,10 @@
             }
         }
     </script>
+    <script src="../auth/tw-brand.js?v=1"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
+        body { font-family: 'DM Sans', sans-serif; }
+        .font-heading { font-family: 'DM Sans', sans-serif; }
         .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(8, 47, 73, 0.25); }
         .hero-gradient { background: linear-gradient(135deg, #0a1929 0%, #0b3559 35%, #0e6e91 75%, #0891b2 100%); }
@@ -57,7 +58,7 @@
 
         /* Arabic typography */
         html[lang="ar"] body,
-        html[lang="ar"] .font-heading { font-family: 'Cairo', 'Inter', sans-serif; }
+        html[lang="ar"] .font-heading { font-family: 'Cairo', 'DM Sans', sans-serif; }
         html[lang="ar"] .uppercase { text-transform: none; letter-spacing: normal; }
         html[lang="ar"] .tracking-widest,
         html[lang="ar"] .tracking-wider { letter-spacing: normal; }
@@ -120,7 +121,8 @@
         .dates-table th, .dates-table td { padding: 0.7rem 0.9rem; vertical-align: top; }
         .dates-table tbody tr + tr { border-top: 1px solid rgba(207, 250, 254, 0.16); }
     </style>
-    <script src="../auth/gate.js?v=43"></script>
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
 </head>
 <body class="bg-slate-50 text-gray-800 min-h-screen flex flex-col">
 

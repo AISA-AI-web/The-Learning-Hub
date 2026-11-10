@@ -8,90 +8,80 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
     <script>
         if (window.tailwind) {
             tailwind.config = {
                 theme: {
                     extend: {
-                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
-                        colors: { primary: '#b45309', secondary: '#d97706', accent: '#fbbf24' },
-                        animation: {
-                            'blob': 'blob 7s infinite',
-                            'leo-bob': 'leo-bob 3.4s ease-in-out infinite',
-                        },
-                        keyframes: {
-                            blob: {
-                                '0%':   { transform: 'translate(0px, 0px) scale(1)' },
-                                '33%':  { transform: 'translate(30px, -50px) scale(1.1)' },
-                                '66%':  { transform: 'translate(-20px, 20px) scale(0.9)' },
-                                '100%': { transform: 'translate(0px, 0px) scale(1)' },
-                            },
-                            'leo-bob': {
-                                '0%,100%': { transform: 'translateY(0) rotate(0deg)' },
-                                '50%':     { transform: 'translateY(-6px) rotate(2deg)' },
-                            }
-                        }
+                        fontFamily: { heading: ['DM Sans', 'sans-serif'] },
+                        colors: { primary: '#21076C', secondary: '#3A1F94', accent: '#D8B664' }
                     }
                 }
             }
         }
     </script>
+    <script src="../auth/tw-brand.js?v=1"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
-        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -10px rgba(180, 83, 9, 0.25); }
+        /* ===== Redesign, 10 Nov 2026: the page on the Hub's design system
+           (auth/hub.css): the standard page header, .lh-card trails, one
+           purple feature panel for the handbook, line icons, no mascot art.
+           Green on a module card means done, nothing else. ===== */
+        body { background: #fff; }
+        .ori-main { max-width: var(--lh-max); margin-inline: auto; padding: 3rem 1.5rem 4rem; box-sizing: border-box; width: 100%; }
+        .ori-block + .ori-block { margin-top: 3.5rem; }
+        .ori-block .lh-section-head h2 { margin-top: .35rem; }
+        .ori-card .lh-card__top { display: flex; align-items: flex-start; justify-content: space-between; gap: .75rem; }
+        .ori-card h3 { font-size: 1.0625rem; }
         .ori-mod { position: relative; }
-        .ori-mod[data-completed="true"] { border-color: #10b981 !important; }
+        .ori-mod[data-completed="true"] { border-color: #ABEFC6; }
         .ori-mod[data-completed="true"]::after {
-            content: '\2713 Completed';
-            position: absolute; top: 10px; right: 10px; z-index: 5;
-            background: #10b981; color: #fff; font-size: 10px; font-weight: 800;
-            letter-spacing: 0.06em; text-transform: uppercase; padding: 4px 9px;
-            border-radius: 9999px; box-shadow: 0 2px 6px -1px rgba(16,185,129,0.45);
-            pointer-events: none;
+            content: '\2713  Completed';
+            position: absolute; top: 1rem; inset-inline-end: 1rem; z-index: 5;
+            background: #ECFDF3; color: var(--lh-success); border: 1px solid #ABEFC6;
+            font-size: .6875rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+            padding: .2rem .55rem; border-radius: 999px; pointer-events: none;
         }
-        .hero-gradient { background: linear-gradient(135deg, #78350f 0%, #b45309 45%, #f59e0b 100%); }
-        .hero-overlay {
-            background-image:
-                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 0, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.10) 0, transparent 40%);
+        .ori-mod[data-completed="true"] .lh-chip--required { visibility: hidden; }
+        .ori-feature {
+            position: relative; overflow: hidden; isolation: isolate;
+            display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1.75rem;
+            background: var(--lh-purple); color: #fff; border-radius: var(--lh-radius-lg); padding: 2rem;
         }
-        .bg-leo-pattern {
-            background-color: #fef3c7;
-            background-image:
-                radial-gradient(ellipse at top left, rgba(251, 191, 36, 0.18), transparent 50%),
-                radial-gradient(ellipse at bottom right, rgba(180, 83, 9, 0.12), transparent 50%);
-        }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #fef3c7; }
-        ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #b45309; }
+        .ori-feature::before { content: ''; position: absolute; inset: 0; z-index: -1; background: radial-gradient(30rem 16rem at 100% 0%, rgba(91, 63, 208, .55), transparent 60%); }
+        .ori-feature h2 { margin: .5rem 0 .4rem; font-size: 1.5rem; font-weight: 700; letter-spacing: -.015em; }
+        .ori-feature p { margin: 0; color: rgba(255, 255, 255, .78); font-size: .9375rem; line-height: 1.6; max-width: 42rem; }
+        .ori-feature .lh-chip { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .16); color: rgba(255, 255, 255, .88); }
+        .ori-feature .ori-chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
+        .ori-feature .lh-icon { background: rgba(255, 255, 255, .1); color: var(--lh-gold); }
+        @media (max-width: 860px) { .ori-feature { grid-template-columns: minmax(0, 1fr); padding: 1.5rem; gap: 1.25rem; } }
+        .ori-cert { background: var(--lh-tint-2); border-color: var(--lh-border); }
+        .ori-cert-meta { display: flex; justify-content: space-between; font-size: .75rem; font-weight: 700; color: var(--lh-muted); margin-bottom: .4rem; }
+        .ori-cert-bar { height: .5rem; border-radius: 999px; background: var(--lh-line); overflow: hidden; }
+        .ori-cert-bar > div { height: 100%; width: 0; background: var(--lh-gold); border-radius: 999px; transition: width .7s var(--lh-ease); }
+        .ori-cert .lh-btn[aria-disabled="true"] { background: #fff; color: var(--lh-muted); border-color: var(--lh-line); cursor: not-allowed; }
+        .ori-cert .lh-btn[aria-disabled="true"]:active { transform: none; }
+        .ori-cert small { display: block; font-size: .6875rem; color: var(--lh-muted); margin-top: .5rem; }
+        .lh-card.ori-help { display: flex; gap: 1rem; align-items: flex-start; flex-direction: row; }
+        @media (max-width: 640px) { .ori-main { padding: 2rem 1rem 3rem; } }
     </style>
-    <script src="../auth/gate.js?v=43"></script>
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
 </head>
-<body class="bg-leo-pattern text-gray-800 min-h-screen flex flex-col">
+<body class="bg-white text-gray-800 min-h-screen flex flex-col">
 
-<!-- Hero -->
-    <section class="hero-gradient text-white relative overflow-hidden">
-        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
-        <div class="absolute -top-20 -left-20 w-72 h-72 bg-amber-300/25 rounded-full blur-3xl animate-blob"></div>
-        <div class="absolute -bottom-24 -right-16 w-80 h-80 bg-yellow-200/25 rounded-full blur-3xl animate-blob" style="animation-delay: 2s;"></div>
-        <div class="container mx-auto px-6 py-16 md:py-20 relative z-10">
-            <div class="grid md:grid-cols-[1fr_auto] items-center gap-8">
-                <div>
-                    <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
-                        <span class="text-xl">&#128062;</span>
-                        <span class="text-xs font-bold uppercase tracking-widest">Leo's Orientation Trail</span>
-                    </div>
-                    <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-5 drop-shadow-lg">Welcome to AISA.</h2>
-                    <p class="text-lg md:text-xl max-w-2xl text-amber-50 drop-shadow">
-                        I'm <strong>Leo</strong>, your guide. Start with a piece of our history, learn how we teach, and get to know the people and places that make this school what it is.
-                    </p>
+    <!-- Page header (auth/hub.css .lh-hero) -->
+    <section class="lh-hero">
+        <div class="lh-hero__inner">
+            <div class="lh-hero__row">
+                <div class="lh-hero__main">
+                    <p class="lh-hero__eyebrow">Orientation Hub</p>
+                    <h1 class="lh-hero__title">Welcome to AISA</h1>
+                    <p class="lh-hero__lede">Leo, the AISA lion, is your guide. Start with a piece of our history, learn how we teach, and get to know the people and places that make this school what it is.</p>
                 </div>
-                <div class="hidden md:flex items-center justify-center" aria-hidden="true">
-                    <div class="text-[8rem] lg:text-[10rem] drop-shadow-[0_6px_16px_rgba(0,0,0,0.3)] animate-leo-bob select-none">&#129409;</div>
+                <div class="lh-hero__actions">
+                    <a class="lh-btn lh-btn--on-dark" href="#handbook"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>Staff handbook</a>
+                    <a class="lh-btn lh-btn--gold" href="#orientation-modules"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>Orientation modules</a>
                 </div>
             </div>
         </div>
@@ -99,235 +89,166 @@
 
     <!-- Main -->
     <main class="flex-grow">
-        <div class="container mx-auto px-6 py-14">
+        <div class="ori-main">
 
-            <div class="text-center mb-10">
-                <span class="text-amber-700 text-xs font-bold uppercase tracking-widest">Choose a trail</span>
-                <h3 class="font-heading font-black text-3xl md:text-4xl text-amber-900 mt-2">Where would you like to start?</h3>
-                <p class="text-gray-600 text-sm md:text-base max-w-xl mx-auto mt-2">Each card is a self-guided tour. More are added as the school year progresses &mdash; if something says "Coming Soon," Leo is still working on it.</p>
-            </div>
-
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-
-                <!-- AISA History -->
-                <a href="aisa-history.html" class="card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-amber-600 p-7 flex flex-col">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="h-14 w-14 rounded-2xl bg-amber-100 flex items-center justify-center text-3xl" aria-hidden="true">&#127963;</div>
-                        <span class="inline-block bg-amber-100 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Featured</span>
+            <section class="ori-block">
+                <div class="lh-section-head">
+                    <div>
+                        <span class="lh-eyebrow">Choose a trail</span>
+                        <h2>Where would you like to start?</h2>
+                        <p>Each card is a self-guided tour. More are added as the school year goes on &mdash; if something says "Coming soon," Leo is still working on it.</p>
                     </div>
-                    <h4 class="text-xl font-bold font-heading text-amber-900 mb-2">AISA History</h4>
-                    <p class="text-gray-600 text-sm mb-5 flex-grow">The founding story, milestones, and the people who built the American International School in Abu Dhabi.</p>
-                    <span class="mt-auto inline-flex items-center gap-2 text-amber-700 font-semibold text-sm">
-                        Explore our story
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                    </span>
+                </div>
+                <div class="lh-grid lh-grid--3">
+                <a href="aisa-history.html" class="lh-card lh-card--link ori-card">
+                    <div class="lh-card__top"><span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 22h18"/><path d="M6 18v-7"/><path d="M10 18v-7"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M12 2 20 7H4z"/></svg></span><span class="lh-chip lh-chip--gold">Featured</span></div>
+                    <h3>AISA History</h3>
+                    <p>The founding story, milestones, and the people who built the American International School in Abu Dhabi.</p>
+                    <div class="lh-card__foot"><span class="lh-link">Explore our story <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
                 </a>
-
-                <!-- Teaching & Learning Foundations (existing orientation.html) -->
-                <a href="orientation.html" class="card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-blue-600 p-7 flex flex-col">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="h-14 w-14 rounded-2xl bg-blue-100 flex items-center justify-center text-3xl" aria-hidden="true">&#127891;</div>
-                        <span class="inline-block bg-blue-100 text-blue-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Ready</span>
-                    </div>
-                    <h4 class="text-xl font-bold font-heading text-blue-900 mb-2">Teaching &amp; Learning Foundations</h4>
-                    <p class="text-gray-600 text-sm mb-5 flex-grow">Higher-Order Thinking, the Thinking Ladder, and the Question Transformation Lab &mdash; the teaching stance every AISA classroom builds on.</p>
-                    <span class="mt-auto inline-flex items-center gap-2 text-blue-700 font-semibold text-sm">
-                        Open the guide
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                    </span>
+                <a href="orientation.html" class="lh-card lh-card--link ori-card">
+                    <div class="lh-card__top"><span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span></div>
+                    <h3>Teaching &amp; Learning Foundations</h3>
+                    <p>Higher-Order Thinking, the Thinking Ladder, and the Question Transformation Lab &mdash; the teaching stance every AISA classroom builds on.</p>
+                    <div class="lh-card__foot"><span class="lh-link">Open the guide <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
                 </a>
-
-                <!-- Meet the AISA Team -->
-                <a href="meet-the-team.html" class="card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-emerald-500 p-7 flex flex-col">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="h-14 w-14 rounded-2xl bg-emerald-100 flex items-center justify-center text-3xl" aria-hidden="true">&#128101;</div>
-                        <span class="inline-block bg-emerald-100 text-emerald-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Ready</span>
-                    </div>
-                    <h4 class="text-xl font-bold font-heading text-emerald-900 mb-2">Meet the AISA Team</h4>
-                    <p class="text-gray-600 text-sm mb-5 flex-grow">Director, principals, coordinators, heads of department, athletics, HR &mdash; "who to ask" for everything from curriculum to AI support.</p>
-                    <span class="mt-auto inline-flex items-center gap-2 text-emerald-700 font-semibold text-sm">
-                        Browse the team
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                    </span>
+                <a href="meet-the-team.html" class="lh-card lh-card--link ori-card">
+                    <div class="lh-card__top"><span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span></div>
+                    <h3>Meet the AISA Team</h3>
+                    <p>Director, principals, coordinators, heads of department, athletics, HR &mdash; "who to ask" for everything from curriculum to AI support.</p>
+                    <div class="lh-card__foot"><span class="lh-link">Browse the team <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
                 </a>
-
-                <!-- Programs & Curriculum -->
-                <a href="programs-and-curriculum.html" class="card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-sky-500 p-7 flex flex-col">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="h-14 w-14 rounded-2xl bg-sky-100 flex items-center justify-center text-3xl" aria-hidden="true">&#128218;</div>
-                        <span class="inline-block bg-sky-100 text-sky-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Ready</span>
-                    </div>
-                    <h4 class="text-xl font-bold font-heading text-sky-900 mb-2">Programs &amp; Curriculum</h4>
-                    <p class="text-gray-600 text-sm mb-5 flex-grow">Elementary PYP, Middle and High School pathways, the IB Diploma Programme, schedules, Standards-Based Learning, and external testing.</p>
-                    <span class="mt-auto inline-flex items-center gap-2 text-sky-700 font-semibold text-sm">
-                        Explore programs
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                    </span>
+                <a href="programs-and-curriculum.html" class="lh-card lh-card--link ori-card">
+                    <div class="lh-card__top"><span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span></div>
+                    <h3>Programs &amp; Curriculum</h3>
+                    <p>Elementary PYP, Middle and High School pathways, the IB Diploma Programme, schedules, Standards-Based Learning, and external testing.</p>
+                    <div class="lh-card__foot"><span class="lh-link">Explore programs <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
                 </a>
-
-                <!-- Work Matters & Policies -->
-                <a href="work-matters.html" class="card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-rose-500 p-7 flex flex-col">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="h-14 w-14 rounded-2xl bg-rose-100 flex items-center justify-center text-3xl" aria-hidden="true">&#128220;</div>
-                        <span class="inline-block bg-rose-100 text-rose-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Ready</span>
-                    </div>
-                    <h4 class="text-xl font-bold font-heading text-rose-900 mb-2">Work Matters &amp; Policies</h4>
-                    <p class="text-gray-600 text-sm mb-5 flex-grow">Visa documents, contract benefits, dress code, money matters, transportation, and the airport-arrival sequence.</p>
-                    <span class="mt-auto inline-flex items-center gap-2 text-rose-700 font-semibold text-sm">
-                        Open the guide
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                    </span>
+                <a href="work-matters.html" class="lh-card lh-card--link ori-card">
+                    <div class="lh-card__top"><span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></span></div>
+                    <h3>Work Matters &amp; Policies</h3>
+                    <p>Visa documents, contract benefits, dress code, money matters, transportation, and the airport-arrival sequence.</p>
+                    <div class="lh-card__foot"><span class="lh-link">Open the guide <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
                 </a>
-
-                <!-- First-Week & FAQs -->
-                <a href="first-week-faqs.html" class="card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-purple-500 p-7 flex flex-col">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="h-14 w-14 rounded-2xl bg-purple-100 flex items-center justify-center text-3xl" aria-hidden="true">&#9989;</div>
-                        <span class="inline-block bg-purple-100 text-purple-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Ready</span>
-                    </div>
-                    <h4 class="text-xl font-bold font-heading text-purple-900 mb-2">First-Week &amp; FAQs</h4>
-                    <p class="text-gray-600 text-sm mb-5 flex-grow">Practical answers on school, housing, personal, and arrival &mdash; plus the things experienced staff recommend bringing from home.</p>
-                    <span class="mt-auto inline-flex items-center gap-2 text-purple-700 font-semibold text-sm">
-                        Read the FAQs
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                    </span>
+                <a href="first-week-faqs.html" class="lh-card lh-card--link ori-card">
+                    <div class="lh-card__top"><span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg></span></div>
+                    <h3>First-Week &amp; FAQs</h3>
+                    <p>Practical answers on school, housing, personal, and arrival &mdash; plus the things experienced staff recommend bringing from home.</p>
+                    <div class="lh-card__foot"><span class="lh-link">Read the FAQs <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
                 </a>
-
-                <!-- Living in Abu Dhabi -->
-                <a href="living-in-abu-dhabi.html" class="card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-orange-500 p-7 flex flex-col">
-                    <div class="flex items-start justify-between mb-4">
-                        <div class="h-14 w-14 rounded-2xl bg-orange-100 flex items-center justify-center text-3xl" aria-hidden="true">&#127964;</div>
-                        <span class="inline-block bg-orange-100 text-orange-800 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Ready</span>
-                    </div>
-                    <h4 class="text-xl font-bold font-heading text-orange-900 mb-2">Living in Abu Dhabi</h4>
-                    <p class="text-gray-600 text-sm mb-5 flex-grow">Beyond the school day &mdash; leisure, shopping, food, events, useful apps, basic Arabic, the UAE anthem, and the AISA campus address.</p>
-                    <span class="mt-auto inline-flex items-center gap-2 text-orange-700 font-semibold text-sm">
-                        Discover the city
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-                    </span>
+                <a href="living-in-abu-dhabi.html" class="lh-card lh-card--link ori-card">
+                    <div class="lh-card__top"><span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span></div>
+                    <h3>Living in Abu Dhabi</h3>
+                    <p>Beyond the school day &mdash; leisure, shopping, food, events, useful apps, basic Arabic, the UAE anthem, and the AISA campus address.</p>
+                    <div class="lh-card__foot"><span class="lh-link">Discover the city <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
                 </a>
-
-            </div>
+                </div>
+            </section>
 
             <!-- Staff & Faculty Handbook 2026–2027 -->
-            <section id="handbook" class="mt-14 scroll-mt-24">
-                <div class="relative overflow-hidden rounded-2xl shadow-lg bg-gradient-to-br from-amber-900 via-amber-800 to-orange-700 text-white p-7 md:p-9">
-                    <div class="absolute -top-16 -right-10 w-56 h-56 bg-amber-400/20 rounded-full blur-3xl pointer-events-none" aria-hidden="true"></div>
-                    <div class="relative grid md:grid-cols-[auto_1fr_auto] items-center gap-6 md:gap-8">
-                        <div class="h-20 w-20 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center text-5xl shrink-0 shadow-inner" aria-hidden="true">&#128216;</div>
-                        <div class="min-w-0">
-                            <div class="flex items-center gap-2 flex-wrap mb-2">
-                                <span class="inline-block bg-amber-300 text-amber-950 text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest">2026&ndash;2027</span>
-                                <span class="inline-block bg-white/15 border border-white/25 text-amber-50 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">The reference for everything</span>
-                            </div>
-                            <h3 class="font-heading font-black text-2xl md:text-3xl leading-tight mb-2">Staff &amp; Faculty Handbook</h3>
-                            <p class="text-amber-50/90 text-sm md:text-base max-w-2xl">The authoritative guide to how AISA works &mdash; leadership and who to speak with, academic expectations, professional conduct, leave and attendance, safeguarding, health and safety, student life, and the full Code of Conduct and Supervision &amp; Evaluation program.</p>
-                            <div class="flex flex-wrap gap-2 mt-4">
-                                <span class="text-[11px] font-semibold bg-white/10 border border-white/20 rounded-full px-3 py-1">Leadership &amp; Governance</span>
-                                <span class="text-[11px] font-semibold bg-white/10 border border-white/20 rounded-full px-3 py-1">Leave &amp; Attendance</span>
-                                <span class="text-[11px] font-semibold bg-white/10 border border-white/20 rounded-full px-3 py-1">Code of Conduct</span>
-                                <span class="text-[11px] font-semibold bg-white/10 border border-white/20 rounded-full px-3 py-1">Safeguarding</span>
-                                <span class="text-[11px] font-semibold bg-white/10 border border-white/20 rounded-full px-3 py-1">Appraisal &amp; Evaluation</span>
-                            </div>
+            <section id="handbook" class="ori-block scroll-mt-24">
+                <div class="ori-feature">
+                    <span class="lh-icon lh-icon--lg" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></span>
+                    <div class="min-w-0">
+                        <span class="lh-chip lh-chip--gold">2026&ndash;2027</span>
+                        <h2>Staff &amp; Faculty Handbook</h2>
+                        <p>The authoritative guide to how AISA works &mdash; leadership and who to speak with, academic expectations, professional conduct, leave and attendance, safeguarding, health and safety, student life, and the full Code of Conduct and Supervision &amp; Evaluation program.</p>
+                        <div class="ori-chips">
+                            <span class="lh-chip">Leadership &amp; Governance</span>
+                            <span class="lh-chip">Leave &amp; Attendance</span>
+                            <span class="lh-chip">Code of Conduct</span>
+                            <span class="lh-chip">Safeguarding</span>
+                            <span class="lh-chip">Appraisal &amp; Evaluation</span>
                         </div>
-                        <a href="AISA-Staff-Faculty-Handbook-2026-2027.pdf" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 bg-white text-amber-900 font-bold py-3 px-6 rounded-full shadow-lg hover:bg-amber-50 hover:-translate-y-0.5 transition-all text-sm whitespace-nowrap shrink-0">
-                            <span aria-hidden="true">&#128196;</span> Open the Handbook (PDF)
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                        </a>
                     </div>
+                    <a href="AISA-Staff-Faculty-Handbook-2026-2027.pdf" target="_blank" rel="noopener noreferrer" class="lh-btn lh-btn--gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>Open the handbook (PDF)</a>
                 </div>
             </section>
 
             <!-- New-Staff Orientation Training Modules -->
-            <section id="orientation-modules" class="mt-16 scroll-mt-24">
-                <div class="text-center mb-8">
-                    <span class="text-amber-700 text-xs font-bold uppercase tracking-widest">Required for new staff</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900 mt-2">Orientation Training Modules</h3>
-                    <p class="text-gray-600 text-sm md:text-base max-w-2xl mx-auto mt-2">Self-paced trainings to complete during onboarding. Progress is shared with the PD Hub &mdash; finish a module here or there and it counts once. Each is available in English &amp; Arabic.</p>
+            <section id="orientation-modules" class="ori-block scroll-mt-24">
+                <div class="lh-section-head">
+                    <div>
+                        <span class="lh-eyebrow">Required for new staff</span>
+                        <h2>Orientation training modules</h2>
+                        <p>Self-paced trainings to complete during onboarding. Progress is shared with PD Modules &mdash; finish a module here or there and it counts once. Each is available in English &amp; Arabic.</p>
+                    </div>
                 </div>
-                <div id="ori-modules" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                <div id="ori-modules" class="lh-grid lh-grid--3">
 
-                    <a href="../PD%20Modules/payroll-prf-module.html?from=orientation" data-module-id="payroll-prf" class="ori-mod card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-amber-500 p-5 flex flex-col">
-                        <div class="h-11 w-11 rounded-2xl bg-amber-100 flex items-center justify-center text-xl mb-2.5" aria-hidden="true">&#128181;</div>
-                        <h4 class="text-lg font-bold font-heading text-amber-900 mb-1 leading-tight">Payroll &amp; Purchase Requisitions</h4>
-                        <p class="text-gray-600 text-sm mb-3 flex-grow">Bank details &amp; WPS, pay slips, and how to raise or claim a purchase with a PRF.</p>
-                        <span class="mt-auto inline-flex items-center gap-2 text-amber-700 font-semibold text-sm">Start module <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></span>
+                    <a href="../PD%20Modules/payroll-prf-module.html?from=orientation" data-module-id="payroll-prf" class="ori-mod lh-card lh-card--link ori-card">
+                        <div class="lh-card__top"><span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span></div>
+                        <h3>Payroll &amp; Purchase Requisitions</h3>
+                        <p>Bank details &amp; WPS, pay slips, and how to raise or claim a purchase with a PRF.</p>
+                        <div class="lh-card__foot"><span class="lh-link mt-auto">Start module <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
+                    </a>
+                    <a href="../PD%20Modules/visa-emirates-id-module.html?from=orientation" data-module-id="visa-emirates-id" class="ori-mod lh-card lh-card--link ori-card">
+                        <div class="lh-card__top"><span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M15 8h2"/><path d="M15 12h2"/><path d="M7 16h10"/></svg></span></div>
+                        <h3>Employment Visa &amp; Emirates ID</h3>
+                        <p>The seven steps from job offer to UAE residence visa, guided by the PRO team.</p>
+                        <div class="lh-card__foot"><span class="lh-link mt-auto">Start module <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
+                    </a>
+                    <a href="../PD%20Modules/campus-safety-module.html?from=orientation" data-module-id="campus-safety" class="ori-mod lh-card lh-card--link ori-card">
+                        <div class="lh-card__top"><span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg></span></div>
+                        <h3>Campus Layout, Safety &amp; Security</h3>
+                        <p>Gates, parking, your safety duties, and what to do in a fire, evacuation or lockdown.</p>
+                        <div class="lh-card__foot"><span class="lh-link mt-auto">Start module <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
+                    </a>
+                    <a href="../PD%20Modules/safeguarding-module.html?from=orientation" data-module-id="safeguarding" class="ori-mod lh-card lh-card--link ori-card">
+                        <div class="lh-card__top"><span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg></span><span class="lh-chip lh-chip--required">Required</span></div>
+                        <h3>Child Protection, Safeguarding, and Drug Prevention</h3>
+                        <p>Recognise concerns, the 5 R's of responding, and reporting to your DSL. Mandatory annually.</p>
+                        <div class="lh-card__foot"><span class="lh-link mt-auto">Start module <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
+                    </a>
+                    <a href="../PD%20Modules/sharepoint-workflows-module.html?from=orientation" data-module-id="sharepoint-workflows" class="ori-mod lh-card lh-card--link ori-card">
+                        <div class="lh-card__top"><span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="8" height="8" rx="2"/><path d="M7 11v4a2 2 0 0 0 2 2h4"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg></span></div>
+                        <h3>SharePoint WorkFlows</h3>
+                        <p>The AISA WorkFlows hub for leave, field trips, work orders, housing and event requests.</p>
+                        <div class="lh-card__foot"><span class="lh-link mt-auto">Start module <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span></div>
                     </a>
 
-                    <a href="../PD%20Modules/visa-emirates-id-module.html?from=orientation" data-module-id="visa-emirates-id" class="ori-mod card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-sky-500 p-5 flex flex-col">
-                        <div class="h-11 w-11 rounded-2xl bg-sky-100 flex items-center justify-center text-xl mb-2.5" aria-hidden="true">&#129534;</div>
-                        <h4 class="text-lg font-bold font-heading text-sky-900 mb-1 leading-tight">Employment Visa &amp; Emirates ID</h4>
-                        <p class="text-gray-600 text-sm mb-3 flex-grow">The seven steps from job offer to UAE residence visa, guided by the PRO team.</p>
-                        <span class="mt-auto inline-flex items-center gap-2 text-sky-700 font-semibold text-sm">Start module <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></span>
-                    </a>
-
-                    <a href="../PD%20Modules/campus-safety-module.html?from=orientation" data-module-id="campus-safety" class="ori-mod card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-emerald-500 p-5 flex flex-col">
-                        <div class="h-11 w-11 rounded-2xl bg-emerald-100 flex items-center justify-center text-xl mb-2.5" aria-hidden="true">&#128506;</div>
-                        <h4 class="text-lg font-bold font-heading text-emerald-900 mb-1 leading-tight">Campus Layout, Safety &amp; Security</h4>
-                        <p class="text-gray-600 text-sm mb-3 flex-grow">Gates, parking, your safety duties, and what to do in a fire, evacuation or lockdown.</p>
-                        <span class="mt-auto inline-flex items-center gap-2 text-emerald-700 font-semibold text-sm">Start module <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></span>
-                    </a>
-
-                    <a href="../PD%20Modules/safeguarding-module.html?from=orientation" data-module-id="safeguarding" class="ori-mod card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-violet-600 p-5 flex flex-col">
-                        <div class="flex items-start justify-between">
-                            <div class="h-11 w-11 rounded-2xl bg-violet-100 flex items-center justify-center text-xl mb-2.5" aria-hidden="true">&#128737;</div>
-                            <span class="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase tracking-widest bg-red-50 text-red-700 border border-red-200 rounded-full px-2 py-0.5">Required</span>
-                        </div>
-                        <h4 class="text-lg font-bold font-heading text-violet-900 mb-1 leading-tight">Child Protection, Safeguarding, and Drug Prevention</h4>
-                        <p class="text-gray-600 text-sm mb-3 flex-grow">Recognise concerns, the 5 R's of responding, and reporting to your DSL. Mandatory annually.</p>
-                        <span class="mt-auto inline-flex items-center gap-2 text-violet-700 font-semibold text-sm">Start module <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></span>
-                    </a>
-
-                    <a href="../PD%20Modules/sharepoint-workflows-module.html?from=orientation" data-module-id="sharepoint-workflows" class="ori-mod card-hover block bg-white rounded-2xl shadow-lg border-t-8 border-teal-500 p-5 flex flex-col">
-                        <div class="h-11 w-11 rounded-2xl bg-teal-100 flex items-center justify-center text-xl mb-2.5" aria-hidden="true">&#128451;</div>
-                        <h4 class="text-lg font-bold font-heading text-teal-900 mb-1 leading-tight">SharePoint WorkFlows</h4>
-                        <p class="text-gray-600 text-sm mb-3 flex-grow">The AISA WorkFlows hub for leave, field trips, work orders, housing and event requests.</p>
-                        <span class="mt-auto inline-flex items-center gap-2 text-teal-700 font-semibold text-sm">Start module <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg></span>
-                    </a>
-
-                    <!-- Combined onboarding certificate — fills the grid's last cell; a distinct reward card, not a training -->
-                    <div id="ori-cert-card" class="relative overflow-hidden rounded-2xl shadow-lg p-5 flex flex-col text-white bg-gradient-to-br from-violet-600 via-violet-700 to-indigo-800">
-                        <span class="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-amber-300 to-amber-400" aria-hidden="true"></span>
-                        <div class="h-11 w-11 rounded-2xl bg-white/15 flex items-center justify-center text-xl mb-2.5" aria-hidden="true">&#127891;</div>
-                        <h4 class="text-lg font-bold font-heading mb-1 leading-tight">AISA Onboarding Certificate</h4>
-                        <p class="text-violet-100 text-sm">Unlocks once every orientation training above is complete.</p>
-                        <div class="mt-auto pt-4">
-                            <div class="flex items-center justify-between text-xs font-bold text-violet-100 mb-1.5">
+                    <!-- Combined onboarding certificate: fills the grid's last cell; a reward, not a training -->
+                    <div id="ori-cert-card" class="lh-card ori-cert">
+                        <div class="lh-card__top"><span class="lh-icon lh-icon--gold" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg></span></div>
+                        <h3>AISA Onboarding Certificate</h3>
+                        <p>Unlocks once every orientation training above is complete.</p>
+                        <div class="lh-card__foot">
+                            <div class="ori-cert-meta">
                                 <span id="ori-cert-progress-label">0 of 5 trainings complete</span>
                                 <span id="ori-cert-progress-pct">0%</span>
                             </div>
-                            <div class="w-full h-2 bg-white/20 rounded-full overflow-hidden">
-                                <div id="ori-cert-progress-bar" class="h-full bg-gradient-to-r from-amber-300 to-amber-400 w-0 transition-all duration-700 ease-out"></div>
-                            </div>
-                            <button id="ori-cert-btn" type="button" aria-disabled="true"
-                                class="mt-3 w-full inline-flex items-center justify-center gap-2 font-bold py-2.5 px-5 rounded-xl transition-all border border-white/30 bg-white/15 text-white/80 cursor-not-allowed">
-                                <span aria-hidden="true">&#128274;</span> <span id="ori-cert-btn-label">Complete all trainings to download</span>
+                            <div class="ori-cert-bar"><div id="ori-cert-progress-bar"></div></div>
+                            <button id="ori-cert-btn" type="button" aria-disabled="true" class="lh-btn lh-btn--block" style="margin-top: .9rem;">
+                                <span class="ori-cert-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span> <span id="ori-cert-btn-label">Complete all trainings to download</span>
                             </button>
-                            <p class="text-[11px] text-violet-200 mt-2 text-center">Name &amp; date fill in automatically · Print → Save as PDF.</p>
+                            <small>Name &amp; date fill in automatically · Print → Save as PDF.</small>
                         </div>
                     </div>
 
                 </div>
             </section>
 
-            <!-- Leo help card -->
-            <section class="mt-14 max-w-3xl mx-auto text-center bg-white rounded-2xl shadow-md border border-amber-100 p-8">
-                <div class="text-5xl mb-3" aria-hidden="true">&#129409;</div>
-                <h4 class="text-2xl font-heading font-bold text-amber-900 mb-2">Need a Roar of Help?</h4>
-                <p class="text-gray-600 max-w-xl mx-auto text-sm">New to AISA and not sure where to start? Reach out to the Teaching &amp; Learning Department or your line manager &mdash; we're here to make your first weeks smooth.</p>
+            <!-- Help -->
+            <section class="ori-block">
+                <div class="lh-card ori-help">
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span>
+                    <div>
+                        <h3>Need a hand?</h3>
+                        <p style="margin-top: .35rem;">New to AISA and not sure where to start? Reach out to the Teaching &amp; Learning Department or your line manager &mdash; we're here to make your first weeks smooth.</p>
+                    </div>
+                </div>
             </section>
 
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-amber-900 text-amber-100 mt-auto">
-        <div class="container mx-auto px-6 py-8 text-center">
-            <div class="flex items-center justify-center gap-3 mb-3">
-                <img src="../assets/brand/aisa-seal-white.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
-                <span class="font-heading font-bold text-lg tracking-wide">AISA Orientation Hub</span>
-            </div>
-            <p class="text-xs text-amber-200/80">American International School in Abu Dhabi &middot; Welcome to the Pride</p>
+    <footer class="lh-footer mt-auto">
+        <div class="lh-footer__inner">
+            <span class="lh-footer__brand">
+                <img src="../AISA_logo.png" alt="" width="28" height="28">
+                American International School in Abu Dhabi
+            </span>
+            <span>Orientation Hub &middot; Teaching &amp; Learning</span>
         </div>
     </footer>
 
@@ -357,14 +278,14 @@
                 unlocked = (done === total && total > 0);
                 if (!btn) return;
                 btn.setAttribute('aria-disabled', String(!unlocked));
-                var icon = btn.querySelector('span[aria-hidden]');
+                var icon = btn.querySelector('.ori-cert-ic');
                 if (unlocked) {
-                    btn.className = 'mt-3 w-full inline-flex items-center justify-center gap-2 font-bold py-2.5 px-5 rounded-xl transition-all bg-white text-violet-800 hover:bg-amber-50 cursor-pointer shadow-lg hover:-translate-y-0.5';
-                    if (icon) icon.textContent = '🎓';
+                    btn.className = 'lh-btn lh-btn--primary lh-btn--block';
+                    if (icon) icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>';
                     if (btnLabel) btnLabel.textContent = 'Download your certificate';
                 } else {
-                    btn.className = 'mt-3 w-full inline-flex items-center justify-center gap-2 font-bold py-2.5 px-5 rounded-xl transition-all border border-white/30 bg-white/15 text-white/80 cursor-not-allowed';
-                    if (icon) icon.textContent = '🔒';
+                    btn.className = 'lh-btn lh-btn--block';
+                    if (icon) icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
                     if (btnLabel) btnLabel.textContent = 'Complete all trainings to download';
                 }
             }

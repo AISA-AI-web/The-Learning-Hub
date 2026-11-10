@@ -7,19 +7,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
     <script>
         if (window.tailwind) {
             tailwind.config = {
                 theme: {
                     extend: {
                         fontFamily: {
-                            heading: ['Poppins', 'sans-serif'],
+                            heading: ['DM Sans', 'sans-serif'],
                         },
                         colors: {
-                            primary: '#b45309',
-                            secondary: '#92400e',
-                            accent: '#f59e0b',
+                            primary: '#21076C',
+                            secondary: '#3A1F94',
+                            accent: '#D8B664',
                         },
                         animation: {
                             'blob': 'blob 7s infinite',
@@ -37,100 +37,71 @@
             }
         }
     </script>
+    <script src="../auth/tw-brand.js?v=1"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
-        .bg-library-pattern {
-            background-color: #fffbeb;
-            background-image:
-                radial-gradient(ellipse at top left, rgba(251, 191, 36, 0.12), transparent 50%),
-                radial-gradient(ellipse at bottom right, rgba(180, 83, 9, 0.10), transparent 50%);
-        }
-        .audience-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-        }
-        .audience-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px -12px rgba(180, 83, 9, 0.35);
-        }
-        .hero-gradient {
-            background: linear-gradient(135deg, #78350f 0%, #b45309 45%, #d97706 100%);
-        }
-        .hero-overlay {
-            background-image:
-                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 0, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.10) 0, transparent 40%);
-        }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #fef3c7; }
-        ::-webkit-scrollbar-thumb { background: #d97706; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #b45309; }
+        /* Redesign, 10 Nov 2026: the page on the Hub's design system
+           (auth/hub.css): the standard header and two door cards. */
+        .lib-doors { max-width: 64rem; }
+        .lh-card.lib-door { padding: 2rem; gap: 1rem; }
+        .lib-door h2 { margin: 0; font-size: 1.375rem; font-weight: 700; color: var(--lh-ink); letter-spacing: -.015em; }
+        .lib-door .lh-eyebrow { margin-top: -.25rem; }
+        .lib-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: .55rem; font-size: .9rem; color: var(--lh-ink-2); }
+        .lib-list li { display: flex; align-items: flex-start; gap: .55rem; }
+        .lib-list svg { width: 1.05rem; height: 1.05rem; flex-shrink: 0; margin-top: .15rem; color: var(--lh-purple-500); }
+        .lib-door .lh-card__foot { padding-top: .5rem; }
     </style>
-    <script src="../auth/gate.js?v=43"></script>
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
 </head>
-<body class="bg-library-pattern text-gray-800 min-h-screen flex flex-col">
+<body class="bg-white text-gray-800 min-h-screen flex flex-col">
 
-<!-- Hero Section -->
-    <section class="hero-gradient text-white relative overflow-hidden">
-        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
-        <div class="absolute -top-20 -left-20 w-72 h-72 bg-amber-300/20 rounded-full blur-3xl animate-blob"></div>
-        <div class="absolute -bottom-24 -right-16 w-80 h-80 bg-yellow-200/20 rounded-full blur-3xl animate-blob" style="animation-delay: 2s;"></div>
-        <div class="container mx-auto px-6 py-20 md:py-24 text-center relative z-10">
-            <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
-                <span class="text-xl">📚</span>
-                <span class="text-xs font-bold uppercase tracking-widest">Welcome to the Library Hub</span>
+<!-- Page header (auth/hub.css .lh-hero) -->
+    <section class="lh-hero">
+        <div class="lh-hero__inner">
+            <div class="lh-hero__row">
+                <div class="lh-hero__main">
+                    <p class="lh-hero__eyebrow">Library Hub</p>
+                    <h1 class="lh-hero__title">Choose your view</h1>
+                    <p class="lh-hero__lede">The Library Hub has resources for both students and staff. Pick the one that matches what you're here for today; you can switch any time.</p>
+                </div>
             </div>
-            <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-5 drop-shadow-lg">Choose Your View</h2>
-            <p class="text-lg md:text-xl max-w-3xl mx-auto text-amber-50 drop-shadow">
-                The Library Hub has resources for both students and staff. Pick the door that matches what you're here for today — you can switch any time.
-            </p>
         </div>
     </section>
 
     <!-- Audience Chooser -->
     <main class="flex-grow">
-        <div class="container mx-auto px-6 py-14">
-            <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        <div class="lh-container lh-section lib-doors">
+            <div class="lh-grid lh-grid--2">
 
                 <!-- Student card -->
-                <a href="student.html" class="audience-card block bg-white rounded-3xl shadow-lg border-2 border-amber-100 hover:border-amber-400 overflow-hidden">
-                    <div class="bg-gradient-to-r from-amber-700 to-yellow-600 p-8 text-white">
-                        <div class="text-5xl mb-3">🎒</div>
-                        <h3 class="text-2xl md:text-3xl font-extrabold font-heading mb-1">For Students</h3>
-                        <p class="text-amber-50 text-sm font-semibold uppercase tracking-widest">Research &amp; Reading</p>
-                    </div>
-                    <div class="p-8">
-                        <p class="text-gray-600 mb-5">Tools to help you choose a topic, find credible sources, and use AI with integrity.</p>
-                        <ul class="text-sm text-gray-700 space-y-2 mb-6">
-                            <li class="flex items-start"><span class="text-amber-600 mr-2">✓</span> Research Topic Advisor &amp; Search Assistant Gem</li>
-                            <li class="flex items-start"><span class="text-amber-600 mr-2">✓</span> Trusted databases (EBSCO and more)</li>
-                            <li class="flex items-start"><span class="text-amber-600 mr-2">✓</span> AI research guidelines for students</li>
-                        </ul>
-                        <span class="inline-flex items-center gap-2 bg-amber-700 text-white py-2.5 px-5 rounded-full text-sm font-semibold">
-                            Enter Student Library
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                        </span>
+                <a href="student.html" class="lh-card lh-card--link lib-door">
+                    <span class="lh-icon lh-icon--lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.92a1 1 0 0 0-.02-1.84L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.83l8.57 3.91a2 2 0 0 0 1.66 0z"/><path d="M22 10v6M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>
+                    <h2>For students</h2>
+                    <p class="lh-eyebrow">Research &amp; reading</p>
+                    <p>Tools to help you choose a topic, find credible sources, and use AI with integrity.</p>
+                    <ul class="lib-list">
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Research Topic Advisor &amp; Search Assistant Gem</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Trusted databases (EBSCO and more)</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> AI research guidelines for students</li>
+                    </ul>
+                    <div class="lh-card__foot">
+                        <span class="lh-btn lh-btn--primary">Enter the student library <svg class="lh-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                     </div>
                 </a>
 
                 <!-- Teacher card -->
-                <a href="teacher.html" class="audience-card block bg-white rounded-3xl shadow-lg border-2 border-stone-100 hover:border-stone-500 overflow-hidden">
-                    <div class="bg-gradient-to-r from-stone-700 to-amber-800 p-8 text-white">
-                        <div class="text-5xl mb-3">🧑‍🏫</div>
-                        <h3 class="text-2xl md:text-3xl font-extrabold font-heading mb-1">For Teachers &amp; Staff</h3>
-                        <p class="text-amber-50 text-sm font-semibold uppercase tracking-widest">Collection &amp; Compliance</p>
-                    </div>
-                    <div class="p-8">
-                        <p class="text-gray-600 mb-5">Resources from the librarian to support collection development and ADEK alignment.</p>
-                        <ul class="text-sm text-gray-700 space-y-2 mb-6">
-                            <li class="flex items-start"><span class="text-stone-700 mr-2">✓</span> ADEK content removal records</li>
-                            <li class="flex items-start"><span class="text-stone-700 mr-2">✓</span> Sensitive Topics UAE guidance</li>
-                            <li class="flex items-start"><span class="text-stone-700 mr-2">✓</span> Checkout history &amp; circulation records</li>
-                        </ul>
-                        <span class="inline-flex items-center gap-2 bg-stone-700 text-white py-2.5 px-5 rounded-full text-sm font-semibold">
-                            Enter Staff Library
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                        </span>
+                <a href="teacher.html" class="lh-card lh-card--link lib-door">
+                    <span class="lh-icon lh-icon--lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+                    <h2>For teachers &amp; staff</h2>
+                    <p class="lh-eyebrow">Collection &amp; compliance</p>
+                    <p>Resources from the librarian to support collection development and ADEK alignment.</p>
+                    <ul class="lib-list">
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> ADEK content removal records</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Sensitive Topics UAE guidance</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg> Checkout history &amp; circulation records</li>
+                    </ul>
+                    <div class="lh-card__foot">
+                        <span class="lh-btn lh-btn--primary">Enter the staff library <svg class="lh-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
                     </div>
                 </a>
 
@@ -138,14 +109,13 @@
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-amber-900 text-amber-100 mt-auto">
-        <div class="container mx-auto px-6 py-8 text-center">
-            <div class="flex items-center justify-center gap-3 mb-3">
-                <img src="../assets/brand/aisa-seal-white.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
-                <span class="font-heading font-bold text-lg tracking-wide">AISA Library Hub</span>
-            </div>
-            <p class="text-xs text-amber-200/80">American International School in Abu Dhabi &middot; Library &amp; Research Services</p>
+    <footer class="lh-footer">
+        <div class="lh-footer__inner">
+            <span class="lh-footer__brand">
+                <img src="../AISA_logo.png" alt="" width="28" height="28">
+                American International School in Abu Dhabi
+            </span>
+            <span>Library &amp; Research Services &middot; &copy; 2026</span>
         </div>
     </footer>
 

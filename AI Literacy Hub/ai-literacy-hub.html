@@ -8,21 +8,22 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <script>
         if (window.tailwind) {
             tailwind.config = {
                 theme: {
                     extend: {
-                        fontFamily: { heading: ['Poppins', 'sans-serif'] }
+                        fontFamily: { heading: ['DM Sans', 'sans-serif'] }
                     }
                 }
             }
         }
     </script>
+    <script src="../auth/tw-brand.js?v=1"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
+        body { font-family: 'DM Sans', sans-serif; }
+        .font-heading { font-family: 'DM Sans', sans-serif; }
 
         /* --- Bilingual toggle: show only the active language.
                The toggle itself lives in the global app-bar (auth/menu.js),
@@ -33,7 +34,7 @@
         html[lang="ar"] .lang-en { display: none !important; }
 
         html[lang="ar"] body,
-        html[lang="ar"] .font-heading { font-family: 'Cairo', 'Inter', sans-serif; }
+        html[lang="ar"] .font-heading { font-family: 'Cairo', 'DM Sans', sans-serif; }
         html[lang="ar"] .uppercase { text-transform: none; letter-spacing: normal; }
         html[lang="ar"] .tracking-widest,
         html[lang="ar"] .tracking-wider { letter-spacing: normal; }
@@ -45,10 +46,10 @@
            app-bar (auth/menu.js, BAR_HEIGHT = 3.75rem), so anchored
            scrolling has to clear it or every heading lands behind the bar. */
         html { scroll-behavior: smooth; }
-        [id] { scroll-margin-top: 5.5rem; }
+        [id] { scroll-margin-top: 8.25rem; }   /* top bar + the sticky sub-nav */
 
         .hub-card { transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease; }
-        .hub-card:hover { transform: translateY(-3px); box-shadow: 0 22px 40px -22px rgba(30, 27, 75, .55); }
+        .hub-card:hover { transform: translateY(-2px); box-shadow: 0 2px 4px rgba(22,4,73,.06), 0 16px 40px -12px rgba(22,4,73,.22); }
 
         /* A class beats the `hidden` attribute's UA display:none, so an
            inline-flex element carrying [hidden] still shows. The tracker
@@ -61,13 +62,13 @@
            status strip's "complete" tint is applied from script, and a
            class that appears nowhere in the served HTML is not something
            to make the CDN's JIT responsible for. */
-        #status-strip.is-done { background: rgba(52, 211, 153, .18); border-color: rgba(167, 243, 208, .45); }
+        #status-strip.is-done { background: rgba(52, 211, 153, .14); border-color: rgba(167, 243, 208, .4); }
+        #status-strip.is-done .ail-status__icon { color: #86EFAC; }
 
         /* The jump strip wraps rather than scrolling sideways. A nowrap
            scrolling row inside a grid/flex parent needs min-width:0 on the
            parent or it sets the whole page's min-content width — the trap
            that made the AI Growth Test guide 1578px wide on a phone. */
-        .jump-strip { flex-wrap: wrap; min-width: 0; }
 
         /* Dropped from the PDF: a computed "today" that would freeze. */
         .no-print:empty { display: none; }
@@ -77,8 +78,8 @@
            CDN never answers. Same shape as the newsletter's. */
         #nl-send {
             position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
-            background: #17203a; color: #e9e4f7; border-top: 1px solid #2f3a5e;
-            font-family: 'Inter', sans-serif;
+            background: #160449; color: #e9e4f7; border-top: 1px solid #3A1F94;
+            font-family: 'DM Sans', sans-serif;
         }
         #nl-send .nl-inner {
             max-width: 72rem; margin: 0 auto; padding: .7rem 1rem;
@@ -86,76 +87,126 @@
         }
         #nl-send .nl-kicker {
             font-size: .62rem; font-weight: 800; letter-spacing: .09em;
-            text-transform: uppercase; color: #a9b0ff;
+            text-transform: uppercase; color: #D8B664;
         }
         #nl-send button {
             font: inherit; font-size: .8rem; font-weight: 700; cursor: pointer;
-            border-radius: .6rem; padding: .45rem .9rem; border: 1px solid #47507a;
+            border-radius: 999px; padding: .45rem .9rem; border: 1px solid #5B3FD0;
             background: transparent; color: #e9e4f7;
         }
-        #nl-send button.nl-go { background: #4f46e5; border-color: #4f46e5; color: #fff; }
+        #nl-send button.nl-go { background: #D8B664; border-color: #D8B664; color: #160449; }
         #nl-send button:disabled { opacity: .5; cursor: default; }
         #nl-send .nl-msg { flex-basis: 100%; margin: .2rem 0 0; font-size: .78rem; line-height: 1.4; }
+        /* ===== Redesign, 10 Nov 2026: the Hub's design system (auth/hub.css).
+           The standard header with the training status box inside it (dark),
+           a sticky one-row sub-nav for "on this page", .lh-card cards and
+           line icons. ===== */
+        .ail-hero .lh-hero__inner { max-width: 72rem; }
+        .ail-hero .lh-hero__main { max-width: 52rem; }
+        .ail-status { margin-top: 1.75rem; display: flex; align-items: center; gap: 1rem 1.25rem; flex-wrap: wrap;
+                      padding: 1rem 1.1rem; border-radius: 16px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); }
+        .ail-status__main { display: flex; align-items: center; gap: .85rem; flex: 1 1 20rem; min-width: 0; }
+        .ail-status__icon { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 2.75rem; height: 2.75rem;
+                            border-radius: 12px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); color: #D8B664; }
+        .ail-status__icon svg { width: 1.375rem; height: 1.375rem; }
+        .ail-status__title { margin: 0; font-weight: 700; font-size: 1.0625rem; line-height: 1.3; color: #fff; }
+        .ail-status__detail { margin: .2rem 0 0; font-size: .875rem; line-height: 1.45; color: rgba(255,255,255,.72); }
+        .ail-status .lh-btn { flex-shrink: 0; }
+        @media (max-width: 640px) { .ail-status .lh-btn { width: 100%; } }
+
+        .ail-jump { position: sticky; top: 3.75rem; z-index: 30; background: rgba(255,255,255,.94);
+                    -webkit-backdrop-filter: saturate(180%) blur(12px); backdrop-filter: saturate(180%) blur(12px);
+                    border-bottom: 1px solid #E7E2F4; min-width: 0; }
+        .ail-jump__inner { max-width: 72rem; margin-inline: auto; padding: .75rem 1.5rem; box-sizing: border-box;
+                           display: flex; gap: .4rem; overflow-x: auto; scrollbar-width: none; min-width: 0; }
+        .ail-jump__inner::-webkit-scrollbar { display: none; }
+        @media (max-width: 640px) { .ail-jump__inner { padding-inline: 1rem; } }
+        .ail-pill { flex: 0 0 auto; display: inline-flex; align-items: center; padding: .45rem .9rem; border-radius: 999px;
+                    background: #fff; border: 1px solid #E7E2F4; color: #21076C; font-size: .8125rem; font-weight: 600;
+                    white-space: nowrap; text-decoration: none; transition: background-color .15s, border-color .15s, color .15s; }
+        .ail-pill:hover { background: #F2EFFA; border-color: #A99BE0; }
+        .ail-pill.is-active { background: #21076C; border-color: #21076C; color: #fff; }
+        .ail-pill:focus-visible { outline: 2px solid #5B3FD0; outline-offset: 2px; }
+        .ail-main { padding-top: 2.5rem; }
+        .ail-warn-ic { display: inline-flex; flex-shrink: 0; color: #B45309; margin-top: .1rem; }
+        .ail-warn-ic svg { width: 1.25rem; height: 1.25rem; }
+        .hub-card { border-color: #E7E2F4 !important; border-radius: 16px !important; box-shadow: 0 1px 2px rgba(22,4,73,.06) !important; }
+        .hub-card:hover { border-color: #C8BEE8 !important; }
+        #tracker-card { border-style: dashed !important; border-color: #C8BEE8 !important; }
+        @media print { .ail-jump { display: none; } .ail-status .lh-btn { display: none; } .ail-main { padding-top: 0; } }
     </style>
-    <script src="../auth/gate.js?v=43"></script>
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="bg-white text-slate-900">
 
-<main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+<!-- ===================== PAGE HEADER (auth/hub.css .lh-hero) ===================== -->
+<section class="lh-hero ail-hero">
+    <div class="lh-hero__inner">
+        <div class="lh-hero__row">
+            <div class="lh-hero__main">
+                <p class="lh-hero__eyebrow">
+                    <span class="lang-en">ADEK curriculum &middot; Teaching from 21 September 2026</span>
+                    <span class="lang-ar">منهج دائرة التعليم والمعرفة · التدريس اعتباراً من ٢١ سبتمبر ٢٠٢٦</span>
+                </p>
+                <h1 class="lh-hero__title">
+                    <span class="lang-en">AI Literacy</span>
+                    <span class="lang-ar">الثقافة في الذكاء الاصطناعي</span>
+                </h1>
+                <p class="lh-hero__lede">
+                    <span class="lang-en">Everything in one place: the training, the curriculum map, the platform, the assessment, and what is due when. If you are teaching the AI Literacy curriculum this term, start at the top and work down.</span>
+                    <span class="lang-ar">كل ما تحتاجونه في مكان واحد: التدريب، وخريطة المنهج، والمنصّة، والتقييم، وما هو مستحقّ ومتى. إن كنتم تدرّسون منهج الثقافة في الذكاء الاصطناعي هذا الفصل، فابدأوا من الأعلى وتابعوا نزولاً.</span>
+                </p>
 
-    <!-- ===================== HERO ===================== -->
-    <header class="rounded-3xl bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-700 text-white p-6 sm:p-9 shadow-xl">
-        <p class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-indigo-200">
-            <span class="lang-en">ADEK curriculum &middot; Teaching from 21 September 2026</span>
-            <span class="lang-ar">منهج دائرة التعليم والمعرفة · التدريس اعتباراً من ٢١ سبتمبر ٢٠٢٦</span>
-        </p>
-        <h1 class="font-heading font-black text-3xl sm:text-4xl md:text-5xl leading-tight mt-2">
-            <span class="lang-en">AI Literacy</span>
-            <span class="lang-ar">الثقافة في الذكاء الاصطناعي</span>
-        </h1>
-        <p class="mt-3 text-indigo-100 text-base sm:text-lg leading-relaxed max-w-3xl">
-            <span class="lang-en">Everything in one place: the training, the curriculum map, the platform, the assessment, and what is due when. If you are teaching the AI Literacy curriculum this term, start at the top and work down.</span>
-            <span class="lang-ar">كل ما تحتاجونه في مكان واحد: التدريب، وخريطة المنهج، والمنصّة، والتقييم، وما هو مستحقّ ومتى. إن كنتم تدرّسون منهج الثقافة في الذكاء الاصطناعي هذا الفصل، فابدأوا من الأعلى وتابعوا نزولاً.</span>
-        </p>
-
-        <!-- Training status — filled in by the page script from this
-             person's own completion record. Starts in the "checking"
-             state and always settles on something, including when the
-             visitor is signed out or the backend cannot be reached. -->
-        <div id="status-strip" class="mt-5 rounded-2xl bg-white/10 border border-white/20 p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-            <div class="flex items-center gap-3 flex-1 min-w-0">
-                <span id="status-icon" class="h-10 w-10 rounded-xl bg-white/15 flex items-center justify-center text-xl shrink-0" aria-hidden="true">⏳</span>
-                <div class="min-w-0">
-                    <p id="status-title" class="font-heading font-bold text-base sm:text-lg leading-tight">
-                        <span class="lang-en">Checking your training record&hellip;</span>
-                        <span class="lang-ar">جارٍ التحقّق من سجلّ تدريبكم…</span>
-                    </p>
-                    <p id="status-detail" class="text-sm text-indigo-100/90 leading-snug mt-0.5">
-                        <span class="lang-en">One moment.</span>
-                        <span class="lang-ar">لحظة من فضلكم.</span>
-                    </p>
+                <!-- Training status — filled in by the page script from this
+                     person's own completion record. Starts in the "checking"
+                     state and always settles on something, including when the
+                     visitor is signed out or the backend cannot be reached. -->
+                <div id="status-strip" class="ail-status">
+                    <div class="ail-status__main">
+                        <span id="status-icon" class="ail-status__icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+                        <div class="min-w-0">
+                            <p id="status-title" class="ail-status__title">
+                                <span class="lang-en">Checking your training record&hellip;</span>
+                                <span class="lang-ar">جارٍ التحقّق من سجلّ تدريبكم…</span>
+                            </p>
+                            <p id="status-detail" class="ail-status__detail">
+                                <span class="lang-en">One moment.</span>
+                                <span class="lang-ar">لحظة من فضلكم.</span>
+                            </p>
+                        </div>
+                    </div>
+                    <a href="../PD%20Modules/ai-curriculum-readiness-module.html" data-track="ai-literacy:status-cta"
+                       class="lh-btn lh-btn--gold">
+                        <span class="lang-en">Open the training</span>
+                        <span class="lang-ar">افتحوا التدريب</span>
+                        <svg class="rtl-flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
                 </div>
             </div>
-            <a href="../PD%20Modules/ai-curriculum-readiness-module.html" data-track="ai-literacy:status-cta"
-               class="shrink-0 inline-flex items-center justify-center gap-2 rounded-xl bg-white text-indigo-800 font-heading font-bold text-sm px-5 py-3 hover:bg-indigo-50 transition-colors">
-                <span class="lang-en">Open the training</span>
-                <span class="lang-ar">افتحوا التدريب</span>
-                <svg class="w-4 h-4 rtl-flip" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"></path></svg>
-            </a>
         </div>
-    </header>
+    </div>
+</section>
 
-    <!-- ===================== JUMP STRIP ===================== -->
-    <nav class="jump-strip flex gap-2 mt-5" aria-label="On this page">
-        <a href="#session"      class="rounded-full border border-indigo-300 bg-indigo-50 px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-indigo-800 hover:border-indigo-500 transition-colors"><span class="lang-en">The training session</span><span class="lang-ar">جلسة التدريب</span></a>
-        <a href="#start-here"   class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">Start here</span><span class="lang-ar">ابدأوا هنا</span></a>
-        <a href="#instructwin"  class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">InstrucTwin</span><span class="lang-ar">InstrucTwin</span></a>
-        <a href="#teaching"     class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">How often you teach it</span><span class="lang-ar">كم مرّة تدرّسونه</span></a>
-        <a href="#assessment"   class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">Assessment</span><span class="lang-ar">التقييم</span></a>
-        <a href="#level-1"      class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">Level 1 certification</span><span class="lang-ar">شهادة المستوى الأوّل</span></a>
-        <a href="#responsible"  class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">Responsible use</span><span class="lang-ar">الاستخدام المسؤول</span></a>
-        <a href="#questions"    class="rounded-full border border-slate-300 bg-white px-3.5 py-1.5 text-xs sm:text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors"><span class="lang-en">Questions</span><span class="lang-ar">الأسئلة</span></a>
-    </nav>
+<!-- ===================== ON THIS PAGE (sticky sub-nav) =====================
+     One row of pills that sticks under the top bar. The row scrolls
+     sideways on a phone; min-width:0 on it is load-bearing (a nowrap
+     row's min-content width is the whole row, and without it the page
+     scrolls sideways). The page script marks the section in view. -->
+<nav class="ail-jump jump-strip" aria-label="On this page">
+    <div class="ail-jump__inner">
+            <a href="#session" class="ail-pill"><span class="lang-en">The training session</span><span class="lang-ar">جلسة التدريب</span></a>
+            <a href="#start-here" class="ail-pill"><span class="lang-en">Start here</span><span class="lang-ar">ابدأوا هنا</span></a>
+            <a href="#instructwin" class="ail-pill"><span class="lang-en">InstrucTwin</span><span class="lang-ar">InstrucTwin</span></a>
+            <a href="#teaching" class="ail-pill"><span class="lang-en">How often you teach it</span><span class="lang-ar">كم مرّة تدرّسونه</span></a>
+            <a href="#assessment" class="ail-pill"><span class="lang-en">Assessment</span><span class="lang-ar">التقييم</span></a>
+            <a href="#level-1" class="ail-pill"><span class="lang-en">Level 1 certification</span><span class="lang-ar">شهادة المستوى الأوّل</span></a>
+            <a href="#responsible" class="ail-pill"><span class="lang-en">Responsible use</span><span class="lang-ar">الاستخدام المسؤول</span></a>
+            <a href="#questions" class="ail-pill"><span class="lang-en">Questions</span><span class="lang-ar">الأسئلة</span></a>
+    </div>
+</nav>
+
+<main class="max-w-6xl mx-auto px-4 sm:px-6 pb-6 sm:pb-8 ail-main">
 
     <!-- ===================== THE SESSION =====================
          The face-to-face training. Everything factual here is static so
@@ -163,7 +214,7 @@
          pill is computed, and it carries .no-print so the PDF does not
          freeze a "today" that stops being today. Change SESSION at the
          bottom of this file to move it. -->
-    <section id="session" class="mt-8">
+    <section id="session">
         <div class="rounded-2xl border-2 border-indigo-300 bg-indigo-50 p-5 sm:p-6">
             <div class="flex items-center gap-2 flex-wrap">
                 <span class="text-[10px] font-bold uppercase tracking-widest text-white bg-indigo-700 rounded-full px-2.5 py-1">
@@ -306,7 +357,7 @@
             <a href="../PD%20Modules/ai-curriculum-readiness-module.html" data-track="ai-literacy:module"
                class="hub-card block rounded-2xl bg-white border border-slate-200 hover:border-indigo-400 p-5 shadow-sm">
                 <div class="flex items-center gap-3">
-                    <span class="h-12 w-12 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center text-2xl shrink-0" aria-hidden="true">🎓</span>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg></span>
                     <span class="text-[10px] font-bold uppercase tracking-widest text-amber-800 bg-amber-100 border border-amber-200 rounded-full px-2.5 py-1">
                         <span class="lang-en">Required</span>
                         <span class="lang-ar">مطلوب</span>
@@ -337,7 +388,7 @@
             <a href="../PD%20Modules/ai-literacy-scope-and-sequence.html" data-track="ai-literacy:scope-and-sequence"
                class="hub-card block rounded-2xl bg-white border border-slate-200 hover:border-teal-400 p-5 shadow-sm">
                 <div class="flex items-center gap-3">
-                    <span class="h-12 w-12 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center text-2xl shrink-0" aria-hidden="true">🗺️</span>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15M9 3.236v15"/></svg></span>
                     <span class="text-[10px] font-bold uppercase tracking-widest text-teal-800 bg-teal-100 border border-teal-200 rounded-full px-2.5 py-1">
                         <span class="lang-en">Reference</span>
                         <span class="lang-ar">مرجع</span>
@@ -371,7 +422,7 @@
             <div id="tracker-card"
                  class="hub-card rounded-2xl bg-white border border-dashed border-slate-300 p-5 shadow-sm flex flex-col">
                 <div class="flex items-center gap-3">
-                    <span class="h-12 w-12 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center text-2xl shrink-0" aria-hidden="true">📋</span>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></span>
                     <span id="tracker-badge" class="text-[10px] font-bold uppercase tracking-widest text-slate-600 bg-slate-100 border border-slate-200 rounded-full px-2.5 py-1">
                         <span class="lang-en">Link coming</span>
                         <span class="lang-ar">الرابط قريباً</span>
@@ -424,7 +475,7 @@
              — the two say the same thing and must not drift apart. -->
         <div class="mt-4 rounded-2xl bg-amber-50 border border-amber-200 p-4 sm:p-5">
             <div class="flex items-start gap-3">
-                <span class="text-xl shrink-0" aria-hidden="true">⚠️</span>
+                <span class="ail-warn-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg></span>
                 <div>
                     <h3 class="font-heading font-bold text-amber-900">
                         <span class="lang-en">Known issue: the lessons are still uploading</span>
@@ -609,7 +660,7 @@
             <a href="../Tools%20and%20Resources/ai-growth-test-guide.html" data-track="ai-literacy:aigt-guide"
                class="hub-card block rounded-2xl bg-white border border-slate-200 hover:border-indigo-400 p-5 shadow-sm">
                 <div class="flex items-center gap-3">
-                    <span class="h-12 w-12 rounded-xl bg-slate-900 text-white flex items-center justify-center text-2xl shrink-0" aria-hidden="true">🧭</span>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-1.8 5.4a2 2 0 0 1-1.28 1.28l-5.4 1.8 1.8-5.4a2 2 0 0 1 1.28-1.28z"/></svg></span>
                     <span class="text-[10px] font-bold uppercase tracking-widest text-slate-600 bg-slate-100 border border-slate-200 rounded-full px-2.5 py-1">
                         <span class="lang-en">Guide</span>
                         <span class="lang-ar">دليل</span>
@@ -806,35 +857,38 @@
 
         <div class="mt-4 flex flex-wrap gap-2">
             <a href="../Media%20Hub/sep18.html" data-track="ai-literacy:newsletter"
-               class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors">
-                <span class="lang-en">📰 Digital Lion, Issue No. 5</span>
-                <span class="lang-ar">📰 ديجيتال لايون، العدد الخامس</span>
+               class="lh-btn lh-btn--secondary lh-btn--sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18h-5M18 14h-8"/><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-4 0v-9a2 2 0 0 1 2-2h2"/><rect width="8" height="4" x="10" y="6" rx="1"/></svg>
+                <span class="lang-en">Digital Lion, Issue No. 5</span>
+                <span class="lang-ar">ديجيتال لايون، العدد الخامس</span>
             </a>
             <a href="../PD%20Modules/pd.html" data-track="ai-literacy:pd"
-               class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors">
-                <span class="lang-en">🎓 All PD modules</span>
-                <span class="lang-ar">🎓 جميع وحدات التطوير المهني</span>
+               class="lh-btn lh-btn--secondary lh-btn--sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
+                <span class="lang-en">All PD modules</span>
+                <span class="lang-ar">جميع وحدات التطوير المهني</span>
             </a>
             <a href="../dashboard.html" data-track="ai-literacy:dashboard"
-               class="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-indigo-400 hover:text-indigo-700 transition-colors">
-                <span class="lang-en">📊 My dashboard</span>
-                <span class="lang-ar">📊 لوحتي</span>
+               class="lh-btn lh-btn--secondary lh-btn--sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+                <span class="lang-en">My dashboard</span>
+                <span class="lang-ar">لوحتي</span>
             </a>
         </div>
     </section>
 
-    <footer class="mt-10 border-t border-slate-200 pt-5 pb-8 text-xs text-slate-500 flex flex-col sm:flex-row gap-1 sm:items-center sm:justify-between">
-        <p>
-            <span class="lang-en">&copy; 2026 American International School in Abu Dhabi &middot; Teaching &amp; Learning</span>
-            <span class="lang-ar">&copy; ٢٠٢٦ المدرسة الأمريكية الدولية في أبوظبي · التعليم والتعلّم</span>
-        </p>
-        <p>
-            <span class="lang-en">ADEK AI Literacy curriculum &middot; 2026–27</span>
-            <span class="lang-ar">منهج الثقافة في الذكاء الاصطناعي · ٢٠٢٦–٢٠٢٧</span>
-        </p>
-    </footer>
-
 </main>
+
+<footer class="lh-footer">
+    <div class="lh-footer__inner">
+        <span class="lh-footer__brand">
+            <img src="../AISA_logo.png" alt="" width="28" height="28">
+            <span class="lang-en">American International School in Abu Dhabi</span>
+            <span class="lang-ar">المدرسة الأمريكية الدولية في أبوظبي</span>
+        </span>
+        <span>
+            <span class="lang-en">ADEK AI Literacy curriculum &middot; Teaching &amp; Learning &middot; &copy; 2026</span>
+            <span class="lang-ar">منهج الثقافة في الذكاء الاصطناعي · التعليم والتعلّم · &copy; ٢٠٢٦</span>
+        </span>
+    </div>
+</footer>
 
 <!-- Mail-out bar. Rendered only for the addresses the server's
      NEWSLETTER_SENDERS allowlist names, and hiding it is a courtesy, not
@@ -1081,8 +1135,14 @@
     var detailEl = document.getElementById('status-detail');
     var stripEl  = document.getElementById('status-strip');
 
+    /* Line icons for the status box (never emoji). */
+    var STATUS_ICONS = {
+        done: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>',
+        pin:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>',
+        info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>'
+    };
     function setStatus(icon, titleEn, titleAr, detailEn, detailAr) {
-        if (iconEl)  iconEl.textContent = icon;
+        if (iconEl)  iconEl.innerHTML = STATUS_ICONS[icon] || STATUS_ICONS.info;
         if (titleEl) titleEl.innerHTML =
             '<span class="lang-en">' + titleEn + '</span>' +
             '<span class="lang-ar">' + titleAr + '</span>';
@@ -1121,7 +1181,7 @@
         if (done) {
             var when = formatDate(done.completed_at);
             if (stripEl) stripEl.classList.add('is-done');
-            setStatus('✅',
+            setStatus('done',
                 'Training complete',
                 'التدريب مكتمل',
                 when ? 'Recorded on ' + when + '. Reopen it any time — your answers and your plan are still there.'
@@ -1129,7 +1189,7 @@
                 when ? 'مُسجَّل بتاريخ ' + when + '. أعيدوا فتحها متى شئتم — فإجاباتكم وخطتكم لا تزال محفوظة.'
                      : 'مُسجَّل باسمكم. أعيدوا فتحها متى شئتم — فإجاباتكم وخطتكم لا تزال محفوظة.');
         } else {
-            setStatus('📌',
+            setStatus('pin',
                 'No completion recorded yet',
                 'لم يُسجَّل الإتمام بعد',
                 'If you are delivering AI Literacy lessons this term, this one is required. It takes about an hour and saves as you go.',
@@ -1138,7 +1198,7 @@
     }
 
     function unknown(titleEn, titleAr, detailEn, detailAr) {
-        setStatus('ℹ️', titleEn, titleAr, detailEn, detailAr);
+        setStatus('info', titleEn, titleAr, detailEn, detailAr);
     }
 
     function start(auth) {
@@ -1206,6 +1266,31 @@
         } catch (e) {}
         syncTitle();
         document.addEventListener('aisa:lang-change', syncTitle);
+    })();
+</script>
+
+<!-- Mark the section in view in the sticky sub-nav. -->
+<script>
+    (function () {
+        var pills = Array.prototype.slice.call(document.querySelectorAll('.ail-pill'));
+        if (!pills.length || !('IntersectionObserver' in window)) return;
+        var byId = {};
+        pills.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
+        var io = new IntersectionObserver(function (entries) {
+            entries.forEach(function (e) {
+                if (!e.isIntersecting) return;
+                pills.forEach(function (a) { a.classList.remove('is-active'); });
+                var a = byId[e.target.id];
+                if (a) {
+                    a.classList.add('is-active');
+                    /* Keep the active pill in view on a phone (works in RTL too:
+                       the shift is measured on screen, not from offsetLeft). */
+                    var row = a.parentNode, r = row.getBoundingClientRect(), b = a.getBoundingClientRect();
+                    if (b.left < r.left || b.right > r.right) row.scrollLeft += b.left - r.left - 16;
+                }
+            });
+        }, { rootMargin: '-140px 0px -60% 0px' });
+        Object.keys(byId).forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
     })();
 </script>
 

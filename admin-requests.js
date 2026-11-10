@@ -133,7 +133,7 @@
         '- The Hub’s repository is PUBLIC. Never commit anyone’s name, email address or anything personal from this request (staff named on purpose, like a presenter credited on a page, only with their agreement). Nothing about students, ever.',
         '- Work on a branch and open a pull request; never push to `main`. Say in the pull request what you built, how you checked it, and anything still to confirm.',
         '- Follow the Hub’s conventions in CLAUDE.md, especially the `?v=N` cache-busting: a change to `auth/gate.js`, or to a helper it loads (`menu.js`, `search-index.js`, …), means the next unused number on every page that loads `gate.js`.',
-        '- The brand: DM Sans, deep purple #21076C, gold #D8B664, white. Pages must work on a phone (no sideways scroll at 390px) and, where the Hub has it, in Arabic too.',
+        '- The brand and the design system: DM Sans, deep purple #21076C, gold #D8B664, white; use the `lh-` classes in `auth/hub.css` (the `.lh-hero` page header, `.lh-btn`, `.lh-card`, line icons, no emoji as icons), as `index.html` and `PD Modules/pd.html` do. Pages must work on a phone (no sideways scroll at 390px) and, where the Hub has it, in Arabic too.',
         '- Use only facts from this request, its linked material and the repository. Where something needed is missing, do not invent it: write [TO CONFIRM: …] in the page and list the open questions in the pull request.'
     ].join('\n');
 

@@ -7,20 +7,23 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
     <script>
         if (window.tailwind) {
-            tailwind.config = { theme: { extend: { fontFamily: { heading: ['Poppins', 'sans-serif'] } } } };
+            tailwind.config = { theme: { extend: { fontFamily: { heading: ['DM Sans', 'sans-serif'] } } } };
         }
     </script>
+    <script src="../auth/tw-brand.js?v=1"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
-        .bg-dot-pattern {
-            background-color: #f8fafc;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
-            background-size: 24px 24px;
-        }
+        body { font-family: 'DM Sans', sans-serif; }
+        .font-heading { font-family: 'DM Sans', sans-serif; }
+        /* Redesign, 10 Nov 2026: the Hub's design system (auth/hub.css). */
+        .stg-narrow { max-width: 48rem; }
+        .stg-intro { border: 1px solid #E7E2F4; border-radius: 16px; background: #F8F6FD; padding: 1.1rem 1.25rem; }
+        .stg-intro p { margin: 0; font-size: .9375rem; line-height: 1.6; color: #3D3A48; }
+        .stg-intro p + p { margin-top: .6rem; }
+        .stg-intro strong { color: #21076C; }
+        #form-card { border-color: #E7E2F4 !important; border-radius: 16px !important; box-shadow: 0 1px 2px rgba(22,4,73,.06) !important; }
         /* The step rail scrolls sideways on a phone rather than wrapping
            into three ragged lines. */
         #step-rail { scrollbar-width: none; }
@@ -33,38 +36,37 @@
             body { background: #fff !important; }
             #form-card { border: 0 !important; box-shadow: none !important; padding: 0 !important; }
             #print-copy { display: block !important; }
+            .stg-intro { border: 0; background: none; padding: 0; }
         }
     </style>
-    <script src="../auth/gate.js?v=43"></script>
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
 </head>
-<body class="bg-dot-pattern text-slate-800 min-h-screen">
+<body class="bg-white text-slate-800 min-h-screen">
+
+<!-- Page header (auth/hub.css .lh-hero) -->
+<section class="lh-hero">
+    <div class="lh-hero__inner stg-narrow">
+        <div class="lh-hero__row">
+            <div class="lh-hero__main">
+                <p class="lh-hero__eyebrow">Secondary &middot; 2026&ndash;27</p>
+                <h1 class="lh-hero__title">Your Personal Goal for the Year</h1>
+                <p class="lh-hero__lede">One goal is required. It works better with your full attention than two
+                   would with half of it, so a second is optional and only worth adding if you genuinely want one.</p>
+            </div>
+        </div>
+    </div>
+</section>
 
 <main class="max-w-3xl mx-auto px-4 sm:px-6 pt-8 pb-24">
 
-    <!-- Masthead -->
-    <header class="mb-7">
-        <div class="inline-flex items-center gap-2 bg-indigo-50 border border-indigo-200 text-indigo-800 text-[11px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full mb-3 no-print">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6m0 8v6M2 12h6m8 0h6"/><circle cx="12" cy="12" r="3"/></svg>
-            Secondary &middot; 2026&ndash;27
-        </div>
-        <h1 class="text-2xl sm:text-3xl font-heading font-black text-slate-900 leading-tight">
-            Your Personal Goal for the Year
-        </h1>
-        <p class="text-sm text-slate-600 mt-3 leading-relaxed max-w-2xl">
-            This is your personal goal for the year &mdash; <strong>one goal is required</strong>, and it works
-            better with your full attention than two would with half of it, so a second is optional and only
-            worth adding if you genuinely want one.
-        </p>
-        <p class="text-sm text-slate-600 mt-3 leading-relaxed max-w-2xl">
-            <strong>Before you begin:</strong> review your Self-Assessment. Pick the area of your practice you
+    <div class="stg-intro mb-7">
+        <p><strong>Before you begin:</strong> review your Self-Assessment. Pick the area of your practice you
             most want to grow in below. You&rsquo;ll get guidance and real strategies for that area, then write
-            your goal in the required format and name one specific if-then plan for actually doing it.
-        </p>
-        <p class="text-sm text-slate-600 mt-3 leading-relaxed max-w-2xl">
-            A copy of your response will be emailed to you. We&rsquo;ll come back to this goal at your
-            mid-year and end-of-year check-ins, and in your appraisal conversation.
-        </p>
-    </header>
+            your goal in the required format and name one specific if-then plan for actually doing it.</p>
+        <p>A copy of your response will be emailed to you. We&rsquo;ll come back to this goal at your
+            mid-year and end-of-year check-ins, and in your appraisal conversation.</p>
+    </div>
 
     <!-- Already submitted: shown once the server confirms a submitted
          response exists, so a returning teacher knows this is an edit

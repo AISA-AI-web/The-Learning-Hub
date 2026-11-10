@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700;1,9..40,400&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="../auth/training.css?v=5">
+    <link rel="stylesheet" href="../auth/training.css?v=6">
 
     <style>
         /* ---- AISA brand tokens. Nothing below hardcodes a hex. ---- */
@@ -58,30 +58,6 @@
             margin-bottom: .4rem;
         }
         .eyebrow-muted { color: var(--aisa-muted); }
-
-        /* ---- Page masthead ---- */
-        .masthead {
-            background: var(--aisa-purple);
-            color: var(--aisa-white);
-            padding: 2.5rem 1.25rem 2.75rem;
-        }
-        .masthead-inner { max-width: var(--maxw); margin: 0 auto; }
-        .masthead h1 { color: var(--aisa-white); margin-bottom: .75rem; }
-        .masthead .eyebrow { color: var(--aisa-gold); }
-        .masthead p { color: var(--aisa-white); opacity: .92; margin-bottom: 0; max-width: 46rem; }
-        .masthead-meta {
-            margin-top: 1.5rem;
-            display: flex; flex-wrap: wrap; gap: .5rem .75rem;
-        }
-        .chip {
-            display: inline-block;
-            border: 1px solid var(--aisa-gold);
-            color: var(--aisa-gold);
-            border-radius: 999px;
-            padding: .25rem .8rem;
-            font-size: .8rem;
-            font-weight: 500;
-        }
 
         /* ---- Chapter shell ---- */
         .timeline-container {
@@ -305,51 +281,13 @@
             overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
         }
 
-        /* ---- Floating Scope & Sequence launcher ----
-         * The curriculum reference is wanted at any point, not at one
-         * step, so it follows the page rather than living in a chapter.
-         *
-         * Anchored under the Hub topbar (fixed, 0–60px) rather than
-         * above the chapter nav: that nav is sticky at bottom:1rem, so
-         * it slides between its stuck and natural positions as you
-         * scroll and no fixed bottom offset clears it at both. */
-        .scope-fab {
-            position: fixed;
-            right: 1rem;
-            top: 4.75rem;
-            z-index: 40;
-            display: inline-flex; align-items: center; gap: .5rem;
-            font-family: inherit; font-size: .85rem; font-weight: 700;
-            text-decoration: none;
-            color: var(--aisa-white); background: var(--aisa-purple);
-            border: 2px solid var(--aisa-white);
-            border-radius: 999px;
-            padding: .6rem 1rem;
-            box-shadow: 0 10px 26px -10px rgba(0,0,0,.55);
-        }
-        .scope-fab:hover { background: var(--aisa-purple-soft); }
-        .scope-fab svg { width: 15px; height: 15px; flex: none; }
-        body.lang-ar .scope-fab { right: auto; left: 1rem; }
-        @media (max-width: 30rem) {
-            .scope-fab .scope-fab-text { display: none; }
-            .scope-fab { padding: .7rem; }
-        }
-        @media print { .scope-fab { display: none; } }
-
         /* ---- Language toggle ---- */
-        .lang-toggle {
-            display: inline-flex; align-items: center; gap: .45rem;
-            font-family: inherit; font-size: .85rem; font-weight: 700;
-            background: transparent; color: var(--aisa-gold);
-            border: 1px solid var(--aisa-gold); border-radius: 999px;
-            padding: .35rem .9rem; cursor: pointer;
-        }
-        .lang-toggle:hover { background: var(--aisa-gold); color: var(--aisa-purple); }
-        .lang-toggle svg { width: 14px; height: 14px; }
+        /* The toggle is the header's .lh-btn--on-dark pill (auth/hub.css). */
+        .lang-toggle { font-family: 'Cairo', 'Tajawal', 'DM Sans', sans-serif; }
 
         /* Brief dip while the swap happens, so it reads as deliberate. */
         body.lang-switching .timeline-container,
-        body.lang-switching .masthead { transition: opacity .25s ease; opacity: .45; }
+        body.lang-switching .rd-hero { transition: opacity .25s ease; opacity: .45; }
 
         /* ---- Arabic / RTL ----
          * Everything below only applies once the toggle sets .lang-ar,
@@ -383,53 +321,60 @@
         body.lang-ar .aisa-train-nav svg { transform: scaleX(-1); }
         body.lang-ar .aisa-train-btn.primary { margin-left: 0; margin-right: auto; }
 
+        /* Redesign, 10 Nov 2026: the training layout sits in <body> here,
+         * so give it the Hub's page width and gutters; the chapters use the
+         * whole main column. */
+        body > .aisa-train-layout { max-width: var(--lh-max, 1200px); margin: 0 auto; padding: 2rem 1.5rem 0; }
+        .aisa-train-main > .timeline-container { max-width: none; padding: 0 0 3rem; }
+        @media (max-width: 640px) { body > .aisa-train-layout { padding: 1.5rem 1rem 0; } }
+
         /* Latin-script names, emails and product names stay LTR inside
          * an RTL paragraph, or the punctuation jumps to the wrong end. */
         body.lang-ar .ltr { direction: ltr; unicode-bidi: embed; display: inline-block; }
 
     </style>
 
-    <script src="../auth/gate.js?v=43"></script>
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
     <script src="../auth/training.js?v=6"></script>
 </head>
 <body>
 
-<a class="scope-fab" href="ai-literacy-scope-and-sequence.html" target="_blank" rel="noopener"
-   title="Open the full Scope &amp; Sequence in a new tab">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-    </svg>
-    <span class="scope-fab-text">Scope &amp; Sequence</span>
-</a>
-
-<header class="masthead">
-    <div class="masthead-inner">
-        <div class="eyebrow">Internal cascade training</div>
-        <h1>AI Literacy Curriculum: Teacher Readiness</h1>
-        <p>
-            Sixty minutes, one sitting. By the end you will have a written delivery plan for
-            your first AI Literacy lesson, and we will both know what you still need before
-            you teach it.
-        </p>
-        <div class="masthead-meta">
-            <button type="button" class="lang-toggle ob-lang" onclick="AISA_toggleLang()"
-                    data-no-translate aria-label="تبديل اللغة إلى العربية"
-                    title="Click here for Arabic — اضغط هنا للعربية">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                    <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/>
-                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                </svg>
-                <span class="ob-lang-text">العربية</span>
-            </button>
-            <span class="chip">Complete by 20 September 2026</span>
-            <span class="chip">Teaching begins week of 21 September</span>
-            <span class="chip">In person, 21 September</span>
+<!-- Page header (auth/hub.css .lh-hero). The Scope & Sequence link
+     used to float at the top right; it is the header's second button. -->
+<section class="lh-hero aisa-mod-hero rd-hero">
+    <div class="lh-hero__inner">
+        <div class="lh-hero__row">
+            <div class="lh-hero__main">
+                <p class="lh-hero__eyebrow">Internal cascade training</p>
+                <h1 class="lh-hero__title">AI Literacy Curriculum: Teacher Readiness</h1>
+                <p class="lh-hero__lede">
+                    Sixty minutes, one sitting. By the end you will have a written delivery plan for
+                    your first AI Literacy lesson, and we will both know what you still need before
+                    you teach it.
+                </p>
+                <div class="lh-hero__meta">
+                    <span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>Complete by 20 September 2026</span>
+                    <span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>Teaching begins week of 21 September</span>
+                    <span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>In person, 21 September</span>
+                </div>
+            </div>
+            <div class="lh-hero__actions">
+                <button type="button" class="lang-toggle ob-lang lh-btn lh-btn--on-dark" onclick="AISA_toggleLang()"
+                        data-no-translate aria-label="تبديل اللغة إلى العربية"
+                        title="Click here for Arabic — اضغط هنا للعربية">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    <span class="ob-lang-text">العربية</span>
+                </button>
+                <a class="lh-btn lh-btn--on-dark" href="ai-literacy-scope-and-sequence.html" target="_blank" rel="noopener"
+                   title="Open the full Scope &amp; Sequence in a new tab">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    <span>Scope &amp; Sequence</span>
+                </a>
+            </div>
         </div>
     </div>
-</header>
+</section>
 
 <div class="timeline-container">
 

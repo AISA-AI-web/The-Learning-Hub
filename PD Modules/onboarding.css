@@ -11,242 +11,28 @@
  * inline <style> (--ob-from / --ob-via / --ob-to / etc.).
  */
 
-/* ============ Ambient page backdrop ============ */
+/* Redesign, 10 Nov 2026: the onboarding look now sits on the Hub's design
+ * system (auth/hub.css). The page header is the standard .lh-hero (the
+ * section keeps the "ob-hero" class and its actions "ob-actions", which
+ * onboarding-i18n.js uses to place the Arabic toggle); the page is white;
+ * the per-module palettes (--ob-from …) are all the brand purple, set on
+ * body.ob-scope so they win over each page's own :root values. */
 body.ob-scope {
-    background-color: var(--ob-page, #f6f8fb);
-    background-image:
-        radial-gradient(58rem 58rem at 10% -12%, var(--ob-orb1, rgba(99,102,241,.16)) 0, transparent 55%),
-        radial-gradient(48rem 48rem at 112% 6%, var(--ob-orb2, rgba(37,99,235,.14)) 0, transparent 52%),
-        radial-gradient(var(--ob-dot, #e2e8f0) 1px, transparent 1px);
-    background-size: auto, auto, 26px 26px;
-    background-attachment: fixed, fixed, scroll;
-    background-repeat: no-repeat, no-repeat, repeat;
-}
-
-/* ============ HERO ============ */
-.ob-hero {
-    position: relative;
-    overflow: hidden;
-    isolation: isolate;
-    border-radius: 1.85rem;
-    padding: clamp(1.75rem, 4vw, 3rem);
-    margin-bottom: 2.25rem;
-    color: #fff;
-    background:
-        linear-gradient(135deg, var(--ob-from, #1e3a8a) 0%, var(--ob-via, var(--ob-from, #1e3a8a)) 52%, var(--ob-to, #6366f1) 100%);
-    box-shadow:
-        0 34px 68px -26px var(--ob-glow, rgba(2, 6, 23, .5)),
-        inset 0 1px 0 rgba(255, 255, 255, .20);
-}
-/* Fine engraved grid, faded toward the lower-left */
-.ob-hero::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    opacity: .55;
-    background-image:
-        linear-gradient(rgba(255, 255, 255, .07) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255, 255, 255, .07) 1px, transparent 1px);
-    background-size: 36px 36px;
-    -webkit-mask-image: radial-gradient(125% 125% at 82% 0%, #000 28%, transparent 76%);
-            mask-image: radial-gradient(125% 125% at 82% 0%, #000 28%, transparent 76%);
-}
-.ob-hero-orb {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(38px);
-    opacity: .5;
-    z-index: 0;
-}
-.ob-hero-orb.a {
-    width: 19rem; height: 19rem;
-    background: var(--ob-orb1b, rgba(255, 255, 255, .5));
-    top: -7.5rem; right: -3.5rem;
-    animation: ob-float 15s ease-in-out infinite;
-}
-.ob-hero-orb.b {
-    width: 14rem; height: 14rem;
-    background: var(--ob-orb2b, rgba(255, 255, 255, .32));
-    bottom: -6rem; left: -2.5rem;
-    animation: ob-float 19s ease-in-out infinite reverse;
-}
-@keyframes ob-float {
-    0%, 100% { transform: translate(0, 0) scale(1); }
-    50%      { transform: translate(22px, -28px) scale(1.05); }
-}
-
-.ob-hero-inner { position: relative; z-index: 1; }
-
-.ob-eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: .55rem;
-    font-size: .72rem;
-    font-weight: 800;
-    letter-spacing: .16em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, .92);
-    background: rgba(255, 255, 255, .12);
-    border: 1px solid rgba(255, 255, 255, .24);
-    padding: .42rem .85rem;
-    border-radius: 9999px;
-    -webkit-backdrop-filter: blur(6px);
-            backdrop-filter: blur(6px);
-}
-.ob-pulse {
-    width: .5rem; height: .5rem;
-    border-radius: 50%;
+    --ob-from: #21076C; --ob-via: #21076C; --ob-to: #3A1F94;
+    --ob-glow: rgba(22, 4, 73, .22);
+    --ob-ring: #E7E2F4;
+    --ob-page: #F8F6FD; --ob-dot: transparent;
     background: #fff;
-    animation: ob-ping 1.9s ease-out infinite;
+    background-image: none;
 }
-@keyframes ob-ping {
-    0%   { box-shadow: 0 0 0 0 rgba(255, 255, 255, .65); }
-    70%  { box-shadow: 0 0 0 9px rgba(255, 255, 255, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
-}
-
-.ob-hero-row {
-    display: flex;
-    align-items: center;
-    gap: 1.15rem;
-    margin-top: 1.15rem;
-}
-.ob-hero-icon {
-    flex-shrink: 0;
-    width: 4.75rem; height: 4.75rem;
-    border-radius: 1.35rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.4rem;
-    line-height: 1;
-    background: rgba(255, 255, 255, .17);
-    border: 1px solid rgba(255, 255, 255, .32);
-    box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, .45),
-        0 12px 26px -10px rgba(0, 0, 0, .45);
-    -webkit-backdrop-filter: blur(8px);
-            backdrop-filter: blur(8px);
-}
-.ob-hero-title {
-    font-family: 'Poppins', sans-serif;
-    font-weight: 900;
-    line-height: 1.04;
-    letter-spacing: -.012em;
-    font-size: clamp(1.7rem, 3.6vw, 2.6rem);
-    text-shadow: 0 2px 16px rgba(0, 0, 0, .18);
-}
-.ob-hero-sub {
-    margin-top: .55rem;
-    max-width: 48rem;
-    font-size: clamp(.95rem, 1.5vw, 1.1rem);
-    line-height: 1.5;
-    color: rgba(255, 255, 255, .92);
-}
-
-.ob-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .5rem;
-    margin-top: 1.3rem;
-}
-.ob-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: .42rem;
-    font-size: .78rem;
-    font-weight: 700;
-    color: #fff;
-    background: rgba(255, 255, 255, .14);
-    border: 1px solid rgba(255, 255, 255, .26);
-    padding: .44rem .82rem;
-    border-radius: 9999px;
-    -webkit-backdrop-filter: blur(6px);
-            backdrop-filter: blur(6px);
-}
-
-.ob-actions {
-    margin-top: 1.45rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: .7rem;
-}
-.ob-link {
-    display: inline-flex;
-    align-items: center;
-    gap: .5rem;
-    font-size: .85rem;
-    font-weight: 800;
-    color: var(--ob-from, #1e3a8a);
-    background: #fff;
-    padding: .62rem 1.1rem;
-    border-radius: 9999px;
-    box-shadow: 0 12px 24px -12px rgba(0, 0, 0, .55);
-    transition: transform .15s ease, box-shadow .15s ease;
-}
-.ob-link:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 16px 28px -12px rgba(0, 0, 0, .6);
-}
-.ob-note {
-    font-size: .78rem;
-    color: rgba(255, 255, 255, .82);
-}
+/* Old hero parts, in case a cached page still has them. */
+.ob-hero-orb, .ob-pulse { display: none; }
 
 /* ============ Card depth (every chapter + quiz card) ============ */
 .ob-scope [data-chapter] > .bg-white {
-    border-radius: 1.5rem !important;
-    border: 1px solid var(--ob-ring, rgba(15, 23, 42, .06)) !important;
-    box-shadow:
-        0 1px 2px rgba(15, 23, 42, .04),
-        0 20px 44px -26px var(--ob-glow, rgba(2, 6, 23, .4)) !important;
-    transition: transform .25s ease, box-shadow .25s ease;
-}
-.ob-scope [data-chapter] > .bg-white:hover {
-    transform: translateY(-3px);
-    box-shadow:
-        0 2px 4px rgba(15, 23, 42, .05),
-        0 32px 58px -28px var(--ob-glow, rgba(2, 6, 23, .5)) !important;
-}
-/* Textured, light-swept section header */
-.ob-scope [data-chapter] > .bg-white > [class*="bg-gradient-to-r"]:first-child {
-    position: relative;
-}
-.ob-scope [data-chapter] > .bg-white > [class*="bg-gradient-to-r"]:first-child::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: .55;
-    background-image: radial-gradient(rgba(255, 255, 255, .18) 1px, transparent 1px);
-    background-size: 15px 15px;
-    -webkit-mask-image: linear-gradient(105deg, #000, transparent 68%);
-            mask-image: linear-gradient(105deg, #000, transparent 68%);
-}
-
-/* ============ Completion banner — celebratory glow + shine ============ */
-.ob-scope .ob-complete {
-    position: relative;
-    overflow: hidden;
-    border-radius: 1.6rem !important;
-    box-shadow: 0 26px 64px -22px var(--ob-glow, rgba(2, 6, 23, .55));
-}
-.ob-scope .ob-complete::after {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -60%;
-    width: 55%;
-    height: 200%;
-    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, .38), transparent);
-    transform: skewX(-18deg);
-    animation: ob-shine 3.4s ease-in-out infinite;
-}
-@keyframes ob-shine {
-    0%        { left: -60%; }
-    55%, 100% { left: 130%; }
+    border-radius: 16px !important;
+    border: 1px solid #E7E2F4 !important;
+    box-shadow: 0 1px 2px rgba(22, 4, 73, .06) !important;
 }
 
 /* ============ Chapter content polish ============
@@ -258,43 +44,30 @@ body.ob-scope {
    div-only + exclusions keep quiz options, principle cards and figures
    on their own dedicated treatments below. */
 .ob-scope [data-chapter] div[class*="rounded-xl"][class*="border"]:not(.aisa-quiz-option):not(.principle-card) {
-    border-radius: 1rem;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, .03), 0 14px 28px -20px rgba(15, 23, 42, .30);
-    transition: transform .2s ease, box-shadow .2s ease;
+    border-radius: 12px;
 }
-.ob-scope [data-chapter] div[class*="rounded-xl"][class*="border"]:not(.aisa-quiz-option):not(.principle-card):hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 4px rgba(15, 23, 42, .04), 0 24px 38px -22px rgba(15, 23, 42, .38);
-}
+
 
 /* Left-accent callouts: round the trailing corners + add depth. */
 .ob-scope [data-chapter] div[class*="border-l-4"] {
-    border-radius: 0 1rem 1rem 0;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, .03), 0 16px 32px -22px rgba(15, 23, 42, .32);
+    border-radius: 0 12px 12px 0;
 }
 
 /* Feature / step cards (the .principle-card grid tiles). */
-.ob-scope [data-chapter] .principle-card {
-    border-radius: 1rem;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 16px 30px -22px var(--ob-glow, rgba(2, 6, 23, .35));
-}
-.ob-scope [data-chapter] .principle-card:hover {
-    box-shadow: 0 6px 14px rgba(15, 23, 42, .06), 0 28px 46px -22px var(--ob-glow, rgba(2, 6, 23, .5));
-}
+.ob-scope [data-chapter] .principle-card { border-radius: 12px; }
+.ob-scope [data-chapter] .principle-card:hover { transform: none; box-shadow: 0 2px 4px rgba(22, 4, 73, .06), 0 16px 40px -12px rgba(22, 4, 73, .22); border-color: #C8BEE8; }
 
 /* Reference screenshots: framed, soft, with a gentle hover zoom. */
 .ob-scope [data-chapter] figure {
-    border-radius: 1.1rem !important;
+    border-radius: 12px !important;
     overflow: hidden;
-    box-shadow: 0 1px 2px rgba(15, 23, 42, .05), 0 22px 44px -24px rgba(15, 23, 42, .5);
+    border: 1px solid #E7E2F4;
 }
 .ob-scope [data-chapter] figure > img {
     transition: transform .45s cubic-bezier(.22, 1, .36, 1);
     display: block;
 }
-.ob-scope [data-chapter] figure:hover > img {
-    transform: scale(1.025);
-}
+
 
 /* Knowledge-check options: themed hover + slide + reactive letter badge. */
 .ob-scope .aisa-quiz-option {
@@ -302,10 +75,8 @@ body.ob-scope {
     transition: transform .15s ease, border-color .15s, box-shadow .15s, background .15s;
 }
 .ob-scope .aisa-quiz-option:not(.aisa-quiz-locked):hover {
-    transform: translateX(4px);
     border-color: var(--ob-from);
-    background: #fff;
-    box-shadow: -3px 0 0 0 var(--ob-from), 0 12px 22px -16px var(--ob-glow, rgba(2, 6, 23, .45));
+    background: #F8F6FD;
 }
 .ob-scope .aisa-quiz-option:not(.aisa-quiz-locked):hover > span:first-child {
     background: var(--ob-from) !important;
@@ -319,7 +90,7 @@ body.ob-scope {
     box-shadow: 0 1px 2px rgba(15, 23, 42, .04), 0 18px 36px -24px var(--ob-glow, rgba(2, 6, 23, .4));
 }
 .ob-scope .gate-table thead th {
-    background: linear-gradient(135deg, var(--ob-from), var(--ob-to)) !important;
+    background: #21076C !important;
     color: #fff !important;
 }
 .ob-scope .gate-table tbody tr { transition: background .15s; }
@@ -349,38 +120,10 @@ body.ob-scope {
     to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ============ Theme the injected wizard chrome to match the module ============
-   (onboarding.css only loads on the three onboarding pages, so these
-   overrides never affect other PD modules.) */
-.ob-scope .aisa-train-topbar-bar-fill {
-    background: linear-gradient(90deg, var(--ob-via, var(--ob-from)), var(--ob-to)) !important;
-}
-.ob-scope .aisa-train-btn.primary {
-    background: linear-gradient(135deg, var(--ob-from), var(--ob-to)) !important;
-    box-shadow: 0 8px 18px -6px var(--ob-glow, rgba(2, 6, 23, .5)) !important;
-}
-.ob-scope .aisa-train-btn.primary:hover:not(:disabled) {
-    box-shadow: 0 12px 26px -6px var(--ob-glow, rgba(2, 6, 23, .6)) !important;
-}
-.ob-scope .aisa-train-btn.primary:disabled {
-    background: #cbd5e1 !important;
-    box-shadow: none !important;
-}
-
-/* ============ Return button polish ============ */
-.ob-return {
-    box-shadow: 0 16px 30px -14px var(--ob-glow, rgba(2, 6, 23, .5)) !important;
-    transition: transform .15s ease, box-shadow .15s ease;
-}
-.ob-return:hover {
-    transform: translateY(-2px);
-}
-
 @media (prefers-reduced-motion: reduce) {
     .ob-hero-orb,
     .ob-pulse,
     .ob-complete::after,
-    .ob-lang::after,
     .ob-scope [data-chapter].aisa-current > div > div:last-child > * { animation: none !important; }
     .ob-scope [data-chapter] > .bg-white,
     .ob-scope [data-chapter] figure > img { transition: none; }
@@ -398,83 +141,69 @@ body.ob-scope {
     display: inline-flex;
     align-items: center;
     gap: .4rem;
-    font-weight: 800;
-    font-size: .92rem;
-    padding: .7rem 1.4rem;
+    font-weight: 600;
+    font-size: .9375rem;
+    height: 2.75rem;
+    padding: 0 1.2rem;
+    box-sizing: border-box;
     border-radius: 9999px;
     text-decoration: none;
     transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
 }
 .ori-nav-primary {
-    background: #fff;
-    color: var(--ob-from, #1e3a8a);
-    box-shadow: 0 12px 24px -12px rgba(0, 0, 0, .55);
+    background: #D8B664;
+    color: #160449;
 }
-.ori-nav-primary:hover { transform: translateY(-1px); box-shadow: 0 16px 28px -12px rgba(0, 0, 0, .6); }
+.ori-nav-primary:hover { background: #E3C57E; }
 .ori-nav-ghost {
-    background: rgba(255, 255, 255, .15);
+    background: rgba(255, 255, 255, .08);
     color: #fff;
-    border: 1px solid rgba(255, 255, 255, .55);
+    border: 1px solid rgba(255, 255, 255, .28);
 }
-.ori-nav-ghost:hover { background: rgba(255, 255, 255, .25); }
+.ori-nav-ghost:hover { background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .5); }
 
 /* ============ Language toggle button ============ */
+/* In the page header it looks like .lh-btn--on-dark; elsewhere
+ * (.ob-lang-floating) a white .lh-btn--secondary pill. */
 .ob-lang {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: .5rem;
-    font-family: 'Tajawal', 'Inter', sans-serif;
-    font-size: .9rem;
-    font-weight: 800;
+    height: 2.75rem;
+    padding: 0 1.15rem;
+    box-sizing: border-box;
+    font-family: 'Cairo', 'Tajawal', 'DM Sans', sans-serif;
+    font-size: .9375rem;
+    font-weight: 600;
     line-height: 1;
-    color: var(--ob-from, #1e3a8a);
+    color: #21076C;
     background: #fff;
-    border: 0;
-    padding: .62rem 1.05rem;
+    border: 1px solid #C8BEE8;
     border-radius: 9999px;
     cursor: pointer;
-    position: relative;
-    box-shadow: 0 12px 24px -12px rgba(0, 0, 0, .55);
-    transition: transform .15s ease, box-shadow .15s ease;
+    transition: background-color .15s, border-color .15s;
 }
-.ob-lang::after {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    border-radius: 9999px;
-    border: 2px solid rgba(255, 255, 255, .65);
-    opacity: 0;
-    pointer-events: none;
-    animation: ob-langping 2.6s ease-out infinite;
-}
-@keyframes ob-langping {
-    0%   { opacity: .7; transform: scale(1); }
-    100% { opacity: 0; transform: scale(1.14); }
-}
-.ob-lang:hover { transform: translateY(-1px); box-shadow: 0 16px 28px -12px rgba(0, 0, 0, .6); }
-.ob-lang-globe {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1.25rem; height: 1.25rem;
-    border-radius: 50%;
-    background: var(--ob-from, #1e3a8a);
-    color: #fff;
-}
-.ob-lang-globe svg { width: 13px; height: 13px; }
+.ob-lang:hover { border-color: #21076C; background: #F8F6FD; }
+.ob-lang:focus-visible { outline: 2px solid #D8B664; outline-offset: 3px; }
+.lh-hero .ob-lang { color: #fff; background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .28); }
+.lh-hero .ob-lang:hover { background: rgba(255, 255, 255, .16); border-color: rgba(255, 255, 255, .5); }
+.ob-lang-globe { display: inline-flex; align-items: center; justify-content: center; }
+.ob-lang-globe svg { width: 1.1rem; height: 1.1rem; stroke-width: 1.75; }
 .ob-lang-floating {
     position: fixed;
     bottom: 1rem;
     inset-inline-start: 1rem;
     z-index: 50;
+    box-shadow: 0 10px 28px -8px rgba(33, 7, 108, .35);
 }
 
 /* ============ Arabic / RTL ============ */
-body.lang-ar { direction: rtl; font-family: 'Tajawal', 'Inter', sans-serif; }
+body.lang-ar { direction: rtl; font-family: 'Cairo', 'Tajawal', 'DM Sans', sans-serif; }
 body.lang-ar .font-heading,
 body.lang-ar .ob-hero-title,
 body.lang-ar h1, body.lang-ar h2, body.lang-ar h3, body.lang-ar h4 {
-    font-family: 'Tajawal', 'Poppins', sans-serif;
+    font-family: 'Cairo', 'Tajawal', 'DM Sans', sans-serif;
     letter-spacing: 0;
 }
 /* Smooth cross-fade while the language is swapped */
@@ -499,16 +228,11 @@ body.lang-ar .text-right { text-align: left; }
 body.lang-ar .gate-table th,
 body.lang-ar .gate-table td { text-align: right; }
 /* Knowledge-check hover slides the other way in RTL */
-body.lang-ar .aisa-quiz-option:not(.aisa-quiz-locked):hover {
-    transform: translateX(-4px);
-    box-shadow: 3px 0 0 0 var(--ob-from), 0 12px 22px -16px var(--ob-glow, rgba(2, 6, 23, .45));
-}
+
 /* Wizard nav: keep the primary action at the leading (right) edge + mirror arrows */
 body.lang-ar .aisa-train-btn.primary { margin-left: 0; margin-right: auto; }
 body.lang-ar .aisa-train-nav svg,
 body.lang-ar .ob-hero .ob-link { /* arrows/glyphs that imply direction */ }
 body.lang-ar .aisa-train-nav svg { transform: scaleX(-1); }
 body.lang-ar .ob-lang-floating { inset-inline-start: auto; inset-inline-end: 1rem; }
-@media (max-width: 560px) {
-    .ob-hero-row { flex-direction: column; align-items: flex-start; gap: .85rem; }
-}
+

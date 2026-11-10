@@ -8,42 +8,54 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
     <script>
         if (window.tailwind) {
             tailwind.config = {
                 theme: { extend: {
-                    fontFamily: { heading: ['Poppins', 'sans-serif'] },
-                    colors: { primary: '#b45309', secondary: '#d97706', accent: '#fbbf24' }
+                    fontFamily: { heading: ['DM Sans', 'sans-serif'] },
+                    colors: { primary: '#21076C', secondary: '#3A1F94', accent: '#D8B664' }
                 }}
             }
         }
     </script>
+    <script src="../auth/tw-brand.js?v=1"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
-        .hero-gradient { background: linear-gradient(135deg, #78350f 0%, #b45309 45%, #f59e0b 100%); }
-        .bg-leo-pattern {
-            background-color: #fef3c7;
-            background-image:
-                radial-gradient(ellipse at top left, rgba(251, 191, 36, 0.18), transparent 50%),
-                radial-gradient(ellipse at bottom right, rgba(180, 83, 9, 0.12), transparent 50%);
-        }
-        .resource-pill { transition: background-color .2s ease; }
-        .resource-pill:hover { background-color: #fde68a; }
-    </style>
-    <script src="../auth/gate.js?v=43"></script>
-</head>
-<body class="bg-leo-pattern text-gray-800 min-h-screen flex flex-col">
+        body { font-family: 'DM Sans', sans-serif; }
+        .font-heading { font-family: 'DM Sans', sans-serif; }
 
-<section class="hero-gradient text-white relative overflow-hidden">
-        <div class="container mx-auto px-6 py-12 md:py-16 relative z-10">
-            <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-5">
-                <span class="text-xl">&#127964;</span>
-                <span class="text-xs font-bold uppercase tracking-widest">Beyond the School Day</span>
+        /* ===== Redesign, 10 Nov 2026: the page on the Hub's design system
+           (auth/hub.css): the standard page header, white page, one card
+           style (white, hairline border, no coloured strips), purple for
+           structure, line icons instead of emoji. ===== */
+        body { background: #fff; }
+        .lh-hero__lede a { color: #fff; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+        body :is(.rounded-2xl, .rounded-xl).bg-white:not(.quiz-option) { border: 1px solid var(--lh-line) !important; box-shadow: var(--lh-shadow-sm) !important; }
+        body .rounded-2xl.bg-white { border-radius: var(--lh-radius-lg) !important; }
+        main details.bg-white[open] { border-color: var(--lh-border) !important; }
+        main details.bg-white summary h4 { color: var(--lh-ink); }
+        .ori-ic { display: inline-flex; color: var(--lh-purple); flex-shrink: 0; }
+        .ori-ic svg { width: 1.15rem; height: 1.15rem; }
+        .ori-card-ic { margin-bottom: .75rem; }
+        .resource-pill { background: var(--lh-tint) !important; color: var(--lh-purple) !important; border: 1px solid transparent; }
+        .resource-pill:hover { background: #fff !important; border-color: var(--lh-border); }
+        .ori-back { margin-top: 3rem; }
+    </style>
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
+</head>
+<body class="bg-white text-gray-800 min-h-screen flex flex-col">
+
+<section class="lh-hero">
+        <div class="lh-hero__inner">
+            <ol class="lh-crumbs"><li><a href="../index.html">Home</a></li><li><a href="orientation-hub.html">Orientation Hub</a></li></ol>
+            <div class="lh-hero__row">
+                <div class="lh-hero__main">
+                    <p class="lh-hero__eyebrow">Beyond the School Day</p>
+                    <h1 class="lh-hero__title">Living in Abu Dhabi</h1>
+                    <p class="lh-hero__lede">Stay curious, embrace the cultural differences, and take full advantage of the adventure ahead. Here's how AISA staff make the most of life in the capital.</p>
+                </div>
             </div>
-            <h2 class="text-3xl md:text-5xl font-heading font-extrabold leading-tight mb-3 drop-shadow-lg">Living in Abu Dhabi.</h2>
-            <p class="text-lg max-w-2xl text-amber-50 drop-shadow">Stay curious, embrace the cultural differences, and take full advantage of the adventure ahead. Here's how AISA staff make the most of life in the capital.</p>
         </div>
     </section>
 
@@ -51,32 +63,32 @@
         <div class="container mx-auto px-6 py-12 max-w-5xl space-y-14">
 
             <!-- Quick Nav -->
-            <nav class="bg-white rounded-2xl shadow-sm border border-amber-100 p-5">
-                <p class="text-[10px] font-bold text-amber-700 uppercase tracking-widest mb-3">Jump to</p>
+            <nav class="bg-white rounded-2xl shadow-sm border border-purple-200 p-5">
+                <p class="text-[10px] font-bold text-purple-700 uppercase tracking-widest mb-3">Jump to</p>
                 <div class="flex flex-wrap gap-2 text-sm">
-                    <a href="#about" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">About the UAE</a>
-                    <a href="#leisure" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Leisure</a>
-                    <a href="#shopping" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Shopping</a>
-                    <a href="#food" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Food</a>
-                    <a href="#events" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Events</a>
-                    <a href="#apps" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Apps &amp; Groups</a>
-                    <a href="#arabic" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">Basic Arabic</a>
-                    <a href="#anthem" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">National Anthem</a>
-                    <a href="#campus" class="resource-pill bg-amber-100 text-amber-900 font-semibold rounded-full px-3 py-1">AISA Campus</a>
+                    <a href="#about" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">About the UAE</a>
+                    <a href="#leisure" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">Leisure</a>
+                    <a href="#shopping" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">Shopping</a>
+                    <a href="#food" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">Food</a>
+                    <a href="#events" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">Events</a>
+                    <a href="#apps" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">Apps &amp; Groups</a>
+                    <a href="#arabic" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">Basic Arabic</a>
+                    <a href="#anthem" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">National Anthem</a>
+                    <a href="#campus" class="resource-pill bg-purple-100 text-purple-900 font-semibold rounded-full px-3 py-1">AISA Campus</a>
                 </div>
             </nav>
 
             <!-- About the UAE / Abu Dhabi -->
             <section id="about">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-amber-100 flex items-center justify-center text-xl">&#127965;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">About the UAE &amp; Abu Dhabi</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">About the UAE &amp; Abu Dhabi</h3>
                 </div>
-                <div class="bg-white rounded-2xl shadow-md border-l-8 border-amber-600 p-6 md:p-7 mb-5">
+                <div class="bg-white rounded-2xl shadow-md border p-6 md:p-7 mb-5">
                     <p class="text-gray-700 mb-3">The UAE is a union of seven emirates formed in <strong>1971</strong>. Each emirate is ruled by a sheikh and is independent in its governance. <strong>Abu Dhabi</strong> is the richest emirate, with wealth from oil; <strong>Dubai</strong> is the second richest and the main trading port. The country has one of the highest incomes per capita in the world.</p>
                     <p class="text-gray-700">Abu Dhabi is vibrant, safe, and rapidly growing &mdash; emerging as a cultural hub of the Gulf. The <strong>Saadiyat Island Cultural District</strong> hosts the Louvre Abu Dhabi, the upcoming Guggenheim, concert halls, and theaters. Outdoor enthusiasts have easy access to the Rub Al Khali (the world's largest sand desert), the Omani mountains, and miles of beaches. Many AISA teachers enjoy desert camping and coastal boating.</p>
                 </div>
-                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+                <div class="bg-purple-50 border border-purple-200 rounded-2xl p-5">
                     <p class="text-sm text-gray-700">The cost of living for expatriates is reasonable compared to Europe, North America, or much of Asia &mdash; though prices have risen alongside the economic boom.</p>
                 </div>
             </section>
@@ -84,29 +96,29 @@
             <!-- Leisure -->
             <section id="leisure">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-sky-100 flex items-center justify-center text-xl">&#127946;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Leisure &amp; Activities</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 10v.2A3 3 0 0 1 8.9 16H5a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0Z"/><path d="M7 16v6"/><path d="M13 19v3"/><path d="M12 19h8.3a1 1 0 0 0 .7-1.7L18 14h.3a1 1 0 0 0 .7-1.7L16 9h.2a1 1 0 0 0 .8-1.7L13 3l-1.4 1.5"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Leisure &amp; Activities</h3>
                 </div>
                 <p class="text-gray-700 mb-5 max-w-3xl">We work hard at AISA, but we also play hard. Make time for yourself &mdash; your students will benefit.</p>
 
                 <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-sky-500 p-5">
-                        <div class="text-3xl mb-2">&#127948;</div>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <div class="lh-icon ori-card-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg></div>
                         <h4 class="font-heading font-bold text-sky-900 mb-1">Sports</h4>
                         <p class="text-xs text-gray-600">Numerous golf courses with reasonable green fees. Many teachers play on basketball, football, and hockey teams.</p>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-sky-500 p-5">
-                        <div class="text-3xl mb-2">&#127958;&#65039;</div>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <div class="lh-icon ori-card-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg></div>
                         <h4 class="font-heading font-bold text-sky-900 mb-1">Beaches &amp; Resorts</h4>
                         <p class="text-xs text-gray-600">The Corniche is the most famous; some have segregated sections. Bikinis are worn, topless bathing is prohibited. Resorts offer spas and water sports.</p>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-sky-500 p-5">
-                        <div class="text-3xl mb-2">&#127904;</div>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <div class="lh-icon ori-card-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/></svg></div>
                         <h4 class="font-heading font-bold text-sky-900 mb-1">Theme Parks</h4>
                         <p class="text-xs text-gray-600">Yas Water World and Ferrari World (with one of the fastest roller coasters anywhere). New parks open across the UAE often.</p>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-sky-500 p-5">
-                        <div class="text-3xl mb-2">&#129704;</div>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <div class="lh-icon ori-card-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg></div>
                         <h4 class="font-heading font-bold text-sky-900 mb-1">Spas &amp; Salons</h4>
                         <p class="text-xs text-gray-600">Salons are gender-segregated. Tip to Toes and Bedashing are popular for manicures and pedicures.</p>
                     </div>
@@ -116,29 +128,29 @@
             <!-- Shopping -->
             <section id="shopping">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-rose-100 flex items-center justify-center text-xl">&#128722;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Shopping</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Shopping</h3>
                 </div>
 
                 <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-rose-500 p-5">
-                        <div class="text-3xl mb-2">&#127978;</div>
-                        <h4 class="font-heading font-bold text-rose-900 mb-1">Malls</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <div class="lh-icon ori-card-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg></div>
+                        <h4 class="font-heading font-bold text-purple-900 mb-1">Malls</h4>
                         <p class="text-xs text-gray-600">Galleria, Reem, and Yas Mall. From Forever 21 and Gap to Chanel and Gucci. Many include ski slopes, flight simulators, and cafes for sightseeing.</p>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-rose-500 p-5">
-                        <div class="text-3xl mb-2">&#129507;</div>
-                        <h4 class="font-heading font-bold text-rose-900 mb-1">Souks &amp; Fabrics</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <div class="lh-icon ori-card-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/></svg></div>
+                        <h4 class="font-heading font-bold text-purple-900 mb-1">Souks &amp; Fabrics</h4>
                         <p class="text-xs text-gray-600">Souks in Abu Dhabi and Dubai for bargaining practice. Fabric is sold widely; many staff customize wardrobes via local tailors.</p>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-rose-500 p-5">
-                        <div class="text-3xl mb-2">&#128230;</div>
-                        <h4 class="font-heading font-bold text-rose-900 mb-1">Dragon Mart</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <div class="lh-icon ori-card-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 10 5-10 5L2 7z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg></div>
+                        <h4 class="font-heading font-bold text-purple-900 mb-1">Dragon Mart</h4>
                         <p class="text-xs text-gray-600">In Dubai &mdash; a mile of everything from bicycles to furniture, clothing, and food. Top spot for furnishing your apartment.</p>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-rose-500 p-5">
-                        <div class="text-3xl mb-2">&#127979;</div>
-                        <h4 class="font-heading font-bold text-rose-900 mb-1">Local Shops</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <div class="lh-icon ori-card-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 22v-4a2 2 0 1 0-4 0v4"/><path d="m18 10 4 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8l4-2"/><path d="M18 5v17"/><path d="m4 6 8-4 8 4"/><path d="M6 5v17"/><circle cx="12" cy="9" r="2"/></svg></div>
+                        <h4 class="font-heading font-bold text-purple-900 mb-1">Local Shops</h4>
                         <p class="text-xs text-gray-600">Exotic products: fabrics from India, bejewelled shoes from Pakistan, gold from everywhere. Don't skip them.</p>
                     </div>
                 </div>
@@ -147,30 +159,30 @@
             <!-- Food -->
             <section id="food">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-orange-100 flex items-center justify-center text-xl">&#127869;&#65039;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Foodie Heaven</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Foodie Heaven</h3>
                 </div>
                 <p class="text-gray-700 mb-5 max-w-3xl">Whatever your food style, you'll find it &mdash; the statistic that 80% of new arrivals put on weight is no joke. Sugar is everywhere; pace yourself.</p>
 
                 <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-orange-500 p-5">
-                        <div class="text-3xl mb-2">&#127976;</div>
-                        <h4 class="font-heading font-bold text-orange-900 mb-1">Hotel Restaurants</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <div class="lh-icon ori-card-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/></svg></div>
+                        <h4 class="font-heading font-bold text-purple-900 mb-1">Hotel Restaurants</h4>
                         <p class="text-xs text-gray-600">The Beach Rotana alone has Italian, German, Indian, Japanese, Asian, steak, and seafood. Hotels are the only places that legally serve <strong>alcohol with meals</strong>; bars are also hotel-attached. Joining a hotel is cheap and unlocks discounts.</p>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-orange-500 p-5">
-                        <div class="text-3xl mb-2">&#127869;&#65039;</div>
-                        <h4 class="font-heading font-bold text-orange-900 mb-1">Restaurants</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <div class="lh-icon ori-card-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></div>
+                        <h4 class="font-heading font-bold text-purple-900 mb-1">Restaurants</h4>
                         <p class="text-xs text-gray-600">Cheaper than hotels, equally international, and most home-deliver. Dine at home with wine or beer purchased from a liquor chain (requires a <strong>liquor licence</strong>, applied online once you have visa + Emirates ID).</p>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-orange-500 p-5">
-                        <div class="text-3xl mb-2">&#127828;</div>
-                        <h4 class="font-heading font-bold text-orange-900 mb-1">Fast Food</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <div class="lh-icon ori-card-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/></svg></div>
+                        <h4 class="font-heading font-bold text-purple-900 mb-1">Fast Food</h4>
                         <p class="text-xs text-gray-600">Subway, McDonald's, Burger King, KFC, Texas Roadhouse, etc. &mdash; all home-deliver via <strong>Talabat</strong> and <strong>Deliveroo</strong>.</p>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-orange-500 p-5">
-                        <div class="text-3xl mb-2">&#129473;</div>
-                        <h4 class="font-heading font-bold text-orange-900 mb-1">Cupcakes &amp; Sweets</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <div class="lh-icon ori-card-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg></div>
+                        <h4 class="font-heading font-bold text-purple-900 mb-1">Cupcakes &amp; Sweets</h4>
                         <p class="text-xs text-gray-600">Cupcake, donut, chocolate, and date shops are everywhere. The school has a sugar-treat ban (except for birthday celebrations) for a reason.</p>
                     </div>
                 </div>
@@ -179,32 +191,32 @@
             <!-- Events -->
             <section id="events">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-purple-100 flex items-center justify-center text-xl">&#127914;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Major Events to Watch</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Major Events to Watch</h3>
                 </div>
                 <p class="text-gray-700 mb-5 max-w-3xl">Abu Dhabi and nearby Dubai (an hour's drive) host top-tier arts and sporting events year-round.</p>
 
                 <div class="grid sm:grid-cols-2 gap-5">
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-purple-500 p-5">
-                        <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span>&#128218;</span> Emirates Airline LitFest</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span> Emirates Airline LitFest</h4>
                         <p class="text-xs text-gray-600">Brings the world's most popular authors to Dubai for talks, readings, workshops, and a children's fringe.</p>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-purple-500 p-5">
-                        <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span>&#127953;</span> Formula 1</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></svg></span> Formula 1</h4>
                         <p class="text-xs text-gray-600">The Yas Marina Circuit hosts the Abu Dhabi GP with concerts featuring world-class artists (Maroon 5, Foo Fighters, Eminem, Rihanna, Muse, etc.).</p>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-purple-500 p-5">
-                        <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span>&#127932;</span> Abu Dhabi Festival</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span> Abu Dhabi Festival</h4>
                         <p class="text-xs text-gray-600">A concert series running October&ndash;May at venues including Al Jahili Fort, Emirates Palace, Manarat Al Saadiyat, and a floating stage at the Corniche.</p>
                     </div>
-                    <div class="bg-white rounded-2xl shadow-md border-t-4 border-purple-500 p-5">
-                        <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span>&#9971;</span> Golf</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-5">
+                        <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg></span> Golf</h4>
                         <p class="text-xs text-gray-600">Abu Dhabi HSBC Championship (Yas Links, November), Team Cup (Abu Dhabi Golf Club, January), Fatima Bint Mubarak Ladies Open (Saadiyat Beach), and the Abu Dhabi Challenge (Al Ain, April).</p>
                     </div>
                 </div>
 
-                <div class="mt-5 bg-amber-50 border border-amber-200 rounded-2xl p-5">
-                    <h4 class="font-heading font-bold text-amber-900 mb-2">Stay in the loop</h4>
+                <div class="mt-5 bg-purple-50 border border-purple-200 rounded-2xl p-5">
+                    <h4 class="font-heading font-bold text-purple-900 mb-2">Stay in the loop</h4>
                     <ul class="text-sm text-gray-700 space-y-1 list-disc list-inside">
                         <li><strong>Time Out Abu Dhabi</strong> &mdash; events and culture</li>
                         <li><strong>Abu Dhabi Week</strong> &mdash; free local-events magazine</li>
@@ -217,25 +229,25 @@
             <!-- Apps & FB Groups -->
             <section id="apps">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-emerald-100 flex items-center justify-center text-xl">&#128241;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Useful Apps &amp; Facebook Groups</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Useful Apps &amp; Facebook Groups</h3>
                 </div>
 
                 <div class="grid md:grid-cols-2 gap-5">
-                    <div class="bg-white rounded-2xl shadow-md border-l-8 border-emerald-500 p-6">
-                        <h4 class="font-heading font-bold text-emerald-900 mb-3">Apps &amp; Websites</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-6">
+                        <h4 class="font-heading font-bold text-purple-900 mb-3">Apps &amp; Websites</h4>
                         <div class="space-y-2 text-sm text-gray-700">
-                            <p><strong class="text-emerald-700">Families:</strong> kidzapp</p>
-                            <p><strong class="text-emerald-700">Food delivery:</strong> Talabat, Zomato, Careem</p>
-                            <p><strong class="text-emerald-700">Taxis:</strong> Yango, Careem, Abu Dhabi Taxi</p>
-                            <p><strong class="text-emerald-700">Discount apps:</strong> Entertainer, Groupon</p>
-                            <p><strong class="text-emerald-700">Buy &amp; sell:</strong> Dubizzle</p>
-                            <p><strong class="text-emerald-700">Events:</strong> visitabudhabi.ae</p>
+                            <p><strong class="text-purple-700">Families:</strong> kidzapp</p>
+                            <p><strong class="text-purple-700">Food delivery:</strong> Talabat, Zomato, Careem</p>
+                            <p><strong class="text-purple-700">Taxis:</strong> Yango, Careem, Abu Dhabi Taxi</p>
+                            <p><strong class="text-purple-700">Discount apps:</strong> Entertainer, Groupon</p>
+                            <p><strong class="text-purple-700">Buy &amp; sell:</strong> Dubizzle</p>
+                            <p><strong class="text-purple-700">Events:</strong> visitabudhabi.ae</p>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-2xl shadow-md border-l-8 border-emerald-500 p-6">
-                        <h4 class="font-heading font-bold text-emerald-900 mb-3">Facebook Groups</h4>
+                    <div class="bg-white rounded-2xl shadow-md border p-6">
+                        <h4 class="font-heading font-bold text-purple-900 mb-3">Facebook Groups</h4>
                         <ul class="space-y-1.5 text-sm text-gray-700 list-disc list-inside">
                             <li>Abu Dhabi Q &amp; A &mdash; general info</li>
                             <li>Abu Dhabi Female Network</li>
@@ -253,55 +265,55 @@
             <!-- Basic Arabic -->
             <section id="arabic">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-amber-100 flex items-center justify-center text-xl">&#128203;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Learn Basic Arabic</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Learn Basic Arabic</h3>
                 </div>
-                <div class="bg-white rounded-2xl shadow-md border-l-8 border-amber-600 p-6 md:p-7 mb-5">
+                <div class="bg-white rounded-2xl shadow-md border p-6 md:p-7 mb-5">
                     <p class="text-gray-700 mb-4">A handful of phrases will go a long way. Try these to start.</p>
                     <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                            <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Hello</p>
-                            <p class="font-heading font-bold text-amber-900 text-lg">Marhaba</p>
+                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                            <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Hello</p>
+                            <p class="font-heading font-bold text-purple-900 text-lg">Marhaba</p>
                             <p class="text-xs text-gray-600">&#1605;&#1585;&#1581;&#1576;&#1611;&#1575;</p>
                         </div>
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                            <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Peace be upon you</p>
-                            <p class="font-heading font-bold text-amber-900 text-lg">As-salaam alaikum</p>
+                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                            <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Peace be upon you</p>
+                            <p class="font-heading font-bold text-purple-900 text-lg">As-salaam alaikum</p>
                             <p class="text-xs text-gray-600">&#1575;&#1604;&#1587;&#1604;&#1575;&#1605; &#1593;&#1604;&#1610;&#1603;&#1605;</p>
                         </div>
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                            <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Thank you</p>
-                            <p class="font-heading font-bold text-amber-900 text-lg">Shukran</p>
+                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                            <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Thank you</p>
+                            <p class="font-heading font-bold text-purple-900 text-lg">Shukran</p>
                             <p class="text-xs text-gray-600">&#1588;&#1603;&#1585;&#1611;&#1575;</p>
                         </div>
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                            <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">You're welcome</p>
-                            <p class="font-heading font-bold text-amber-900 text-lg">Afwan</p>
+                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                            <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">You're welcome</p>
+                            <p class="font-heading font-bold text-purple-900 text-lg">Afwan</p>
                             <p class="text-xs text-gray-600">&#1593;&#1601;&#1608;&#1611;&#1575;</p>
                         </div>
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                            <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Yes / No</p>
-                            <p class="font-heading font-bold text-amber-900 text-lg">Na'am / La</p>
+                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                            <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Yes / No</p>
+                            <p class="font-heading font-bold text-purple-900 text-lg">Na'am / La</p>
                             <p class="text-xs text-gray-600">&#1606;&#1593;&#1605; / &#1604;&#1575;</p>
                         </div>
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                            <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Please</p>
-                            <p class="font-heading font-bold text-amber-900 text-lg">Min fadlak</p>
+                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                            <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Please</p>
+                            <p class="font-heading font-bold text-purple-900 text-lg">Min fadlak</p>
                             <p class="text-xs text-gray-600">&#1605;&#1606; &#1601;&#1590;&#1604;&#1603;</p>
                         </div>
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                            <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">How are you?</p>
-                            <p class="font-heading font-bold text-amber-900 text-lg">Kayf halak?</p>
+                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                            <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">How are you?</p>
+                            <p class="font-heading font-bold text-purple-900 text-lg">Kayf halak?</p>
                             <p class="text-xs text-gray-600">&#1603;&#1610;&#1601; &#1581;&#1575;&#1604;&#1603;&#1567;</p>
                         </div>
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                            <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Good / Fine</p>
-                            <p class="font-heading font-bold text-amber-900 text-lg">Bekhair</p>
+                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                            <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Good / Fine</p>
+                            <p class="font-heading font-bold text-purple-900 text-lg">Bekhair</p>
                             <p class="text-xs text-gray-600">&#1576;&#1582;&#1610;&#1585;</p>
                         </div>
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-                            <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Goodbye</p>
-                            <p class="font-heading font-bold text-amber-900 text-lg">Ma' as-salaama</p>
+                        <div class="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                            <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Goodbye</p>
+                            <p class="font-heading font-bold text-purple-900 text-lg">Ma' as-salaama</p>
                             <p class="text-xs text-gray-600">&#1605;&#1593; &#1575;&#1604;&#1587;&#1604;&#1575;&#1605;&#1577;</p>
                         </div>
                     </div>
@@ -312,10 +324,10 @@
             <!-- National Anthem -->
             <section id="anthem">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-rose-100 flex items-center justify-center text-xl">&#127482;&#127462;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">UAE National Anthem</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><path d="M4 22v-7"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">UAE National Anthem</h3>
                 </div>
-                <div class="bg-white rounded-2xl shadow-md border-l-8 border-rose-500 p-6 md:p-7">
+                <div class="bg-white rounded-2xl shadow-md border p-6 md:p-7">
                     <p class="text-gray-700 mb-3">The school day starts with the <strong>UAE National Anthem</strong>. Elementary students love singing along &mdash; it'll quickly become a part of your morning routine.</p>
                     <p class="text-gray-700">Search YouTube for "UAE National Anthem with lyrics" or "Eshy Bilady" to learn the words ahead of time.</p>
                 </div>
@@ -324,36 +336,36 @@
             <!-- Campus / Address -->
             <section id="campus">
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-amber-100 flex items-center justify-center text-xl">&#128205;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">AISA Campus &amp; Contact</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">AISA Campus &amp; Contact</h3>
                 </div>
-                <div class="bg-white rounded-2xl shadow-md border-l-8 border-amber-600 p-6 md:p-7 mb-5">
-                    <h4 class="font-heading font-bold text-amber-900 mb-3">Locating Our Campus</h4>
-                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+                <div class="bg-white rounded-2xl shadow-md border p-6 md:p-7 mb-5">
+                    <h4 class="font-heading font-bold text-purple-900 mb-3">Locating Our Campus</h4>
+                    <div class="bg-purple-50 border border-purple-200 rounded-xl p-4 mb-4">
                         <p class="text-sm text-gray-700"><strong>Corner of Airport Road and 29th Street</strong><br>Opposite the Al Bustan Novotel<br>Abu Dhabi, UAE</p>
                         <p class="text-sm text-gray-700 mt-2">Tel: <strong>+971 2 4444 333</strong></p>
-                        <p class="text-sm text-gray-700">Web: <a class="font-semibold text-amber-700 hover:underline" href="https://www.aisa.sch.ae" target="_blank" rel="noopener noreferrer">www.aisa.sch.ae</a></p>
+                        <p class="text-sm text-gray-700">Web: <a class="font-semibold text-purple-700 hover:underline" href="https://www.aisa.sch.ae" target="_blank" rel="noopener noreferrer">www.aisa.sch.ae</a></p>
                     </div>
                     <p class="text-sm text-gray-700">AISA opened in 1995 with around 500 K&ndash;12 students. Today the campus has a central rotunda with wings on either side &mdash; the ground floor for elementary, second and third floors for MS and HS &mdash; plus two gymnasiums, a grass soccer pitch, swimming and paddling pools, a 5th-grade building, a KG building, and two separate art rooms.</p>
                 </div>
 
-                <div class="bg-gradient-to-br from-amber-100 to-yellow-50 border border-amber-200 rounded-2xl p-6">
-                    <h4 class="font-heading font-bold text-amber-900 mb-2 flex items-center gap-2"><span>&#9993;&#65039;</span> New Teachers Group Email</h4>
+                <div class="bg-purple-50 border border-purple-200 rounded-2xl p-6">
+                    <h4 class="font-heading font-bold text-purple-900 mb-2 flex items-center gap-2"><span class="ori-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span> New Teachers Group Email</h4>
                     <p class="text-sm text-gray-700 mb-2">Newly hired staff can begin communicating using:</p>
-                    <a class="inline-block bg-white text-amber-800 font-mono text-sm font-semibold rounded-full px-4 py-2 border border-amber-300 hover:bg-amber-50" href="mailto:newteachers25-26@aisa.sch.ae">newteachers25-26@aisa.sch.ae</a>
+                    <a class="inline-block bg-white text-purple-800 font-mono text-sm font-semibold rounded-full px-4 py-2 border border-purple-300 hover:bg-purple-50" href="mailto:newteachers25-26@aisa.sch.ae">newteachers25-26@aisa.sch.ae</a>
                 </div>
             </section>
 
         </div>
     </main>
 
-    <footer class="bg-amber-900 text-amber-100 mt-auto">
-        <div class="container mx-auto px-6 py-8 text-center">
-            <div class="flex items-center justify-center gap-3 mb-3">
-                <img src="../assets/brand/aisa-seal-white.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
-                <span class="font-heading font-bold text-lg tracking-wide">AISA Orientation Hub</span>
-            </div>
-            <p class="text-xs text-amber-200/80">American International School in Abu Dhabi &middot; Welcome to the Pride</p>
+    <footer class="lh-footer mt-auto">
+        <div class="lh-footer__inner">
+            <span class="lh-footer__brand">
+                <img src="../AISA_logo.png" alt="" width="28" height="28">
+                American International School in Abu Dhabi
+            </span>
+            <span>Orientation Hub &middot; Teaching &amp; Learning</span>
         </div>
     </footer>
 

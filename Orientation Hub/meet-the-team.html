@@ -8,44 +8,58 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
     <script>
         if (window.tailwind) {
             tailwind.config = {
                 theme: { extend: {
-                    fontFamily: { heading: ['Poppins', 'sans-serif'] },
-                    colors: { primary: '#b45309', secondary: '#d97706', accent: '#fbbf24' }
+                    fontFamily: { heading: ['DM Sans', 'sans-serif'] },
+                    colors: { primary: '#21076C', secondary: '#3A1F94', accent: '#D8B664' }
                 }}
             }
         }
     </script>
+    <script src="../auth/tw-brand.js?v=1"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
-        .hero-gradient { background: linear-gradient(135deg, #78350f 0%, #b45309 45%, #f59e0b 100%); }
-        .bg-leo-pattern {
-            background-color: #fef3c7;
-            background-image:
-                radial-gradient(ellipse at top left, rgba(251, 191, 36, 0.18), transparent 50%),
-                radial-gradient(ellipse at bottom right, rgba(180, 83, 9, 0.12), transparent 50%);
-        }
-        .person-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .person-card:hover { transform: translateY(-3px); box-shadow: 0 12px 28px -8px rgba(180,83,9,0.25); }
-        .avatar { background: linear-gradient(135deg, #fbbf24 0%, #b45309 100%); }
+        body { font-family: 'DM Sans', sans-serif; }
+        .font-heading { font-family: 'DM Sans', sans-serif; }
+        .person-card { transition: border-color .2s, box-shadow .2s; }
+        .person-card:hover { border-color: var(--lh-border) !important; box-shadow: var(--lh-shadow-lg) !important; }
+        .avatar { background: var(--lh-tint); color: var(--lh-purple) !important; }
+
+        /* ===== Redesign, 10 Nov 2026: the page on the Hub's design system
+           (auth/hub.css): the standard page header, white page, one card
+           style (white, hairline border, no coloured strips), purple for
+           structure, line icons instead of emoji. ===== */
+        body { background: #fff; }
+        .lh-hero__lede a { color: #fff; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+        body :is(.rounded-2xl, .rounded-xl).bg-white:not(.quiz-option) { border: 1px solid var(--lh-line) !important; box-shadow: var(--lh-shadow-sm) !important; }
+        body .rounded-2xl.bg-white { border-radius: var(--lh-radius-lg) !important; }
+        main details.bg-white[open] { border-color: var(--lh-border) !important; }
+        main details.bg-white summary h4 { color: var(--lh-ink); }
+        .ori-ic { display: inline-flex; color: var(--lh-purple); flex-shrink: 0; }
+        .ori-ic svg { width: 1.15rem; height: 1.15rem; }
+        .ori-card-ic { margin-bottom: .75rem; }
+        .resource-pill { background: var(--lh-tint) !important; color: var(--lh-purple) !important; border: 1px solid transparent; }
+        .resource-pill:hover { background: #fff !important; border-color: var(--lh-border); }
+        .ori-back { margin-top: 3rem; }
     </style>
-    <script src="../auth/gate.js?v=43"></script>
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
 </head>
-<body class="bg-leo-pattern text-gray-800 min-h-screen flex flex-col">
+<body class="bg-white text-gray-800 min-h-screen flex flex-col">
 
 <!-- Hero -->
-    <section class="hero-gradient text-white relative overflow-hidden">
-        <div class="container mx-auto px-6 py-12 md:py-16 relative z-10">
-            <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-5">
-                <span class="text-xl">&#128101;</span>
-                <span class="text-xs font-bold uppercase tracking-widest">The People of AISA</span>
+    <section class="lh-hero">
+        <div class="lh-hero__inner">
+            <ol class="lh-crumbs"><li><a href="../index.html">Home</a></li><li><a href="orientation-hub.html">Orientation Hub</a></li></ol>
+            <div class="lh-hero__row">
+                <div class="lh-hero__main">
+                    <p class="lh-hero__eyebrow">The People of AISA</p>
+                    <h1 class="lh-hero__title">Meet the AISA Team</h1>
+                    <p class="lh-hero__lede">The director, principals, coordinators, heads of department, and the support teams who make AISA run. Click any email to reach out directly.</p>
+                </div>
             </div>
-            <h2 class="text-3xl md:text-5xl font-heading font-extrabold leading-tight mb-3 drop-shadow-lg">Meet the AISA Team.</h2>
-            <p class="text-lg max-w-2xl text-amber-50 drop-shadow">The director, principals, coordinators, heads of department, and the support teams who make AISA run. Click any email to reach out directly.</p>
         </div>
     </section>
 
@@ -56,16 +70,16 @@
             <!-- Section: School Director -->
             <section>
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-amber-100 flex items-center justify-center text-xl">&#127979;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">School Director</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 22v-4a2 2 0 1 0-4 0v4"/><path d="m18 10 4 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8l4-2"/><path d="M18 5v17"/><path d="m4 6 8-4 8 4"/><path d="M6 5v17"/><circle cx="12" cy="9" r="2"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">School Director</h3>
                 </div>
-                <div class="bg-white rounded-2xl shadow-md border-l-8 border-amber-600 p-7 max-w-2xl person-card">
+                <div class="bg-white rounded-2xl shadow-md border p-7 max-w-2xl person-card">
                     <div class="flex items-center gap-5">
                         <div class="avatar h-16 w-16 rounded-full flex items-center justify-center text-white text-2xl font-bold font-heading shadow-md">AT</div>
                         <div>
-                            <h4 class="font-heading font-bold text-xl text-amber-900">Dr Andrew Torris</h4>
+                            <h4 class="font-heading font-bold text-xl text-purple-900">Dr Andrew Torris</h4>
                             <p class="text-sm text-gray-600">School Director</p>
-                            <a href="mailto:atorris@aisa.sch.ae" class="text-sm text-amber-700 font-semibold hover:underline">atorris@aisa.sch.ae</a>
+                            <a href="mailto:atorris@aisa.sch.ae" class="text-sm text-purple-700 font-semibold hover:underline">atorris@aisa.sch.ae</a>
                         </div>
                     </div>
                     <p class="text-gray-600 text-sm mt-4 italic">"As you join our international community, you're also stepping into a new home here in the UAE. Stay curious, embrace the cultural differences, and take full advantage of the adventure ahead."</p>
@@ -75,55 +89,55 @@
             <!-- Section: Principals & Asst Principals -->
             <section>
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-amber-100 flex items-center justify-center text-xl">&#127979;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Principals &amp; Assistant Principals</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 22v-4a2 2 0 1 0-4 0v4"/><path d="m18 10 4 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8l4-2"/><path d="M18 5v17"/><path d="m4 6 8-4 8 4"/><path d="M6 5v17"/><circle cx="12" cy="9" r="2"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Principals &amp; Assistant Principals</h3>
                 </div>
                 <p class="text-gray-600 mb-6 max-w-3xl">The Director and the Principals oversee the academic and extracurricular life of the school.</p>
 
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
 
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-amber-600 p-5 flex items-start gap-4">
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-5 flex items-start gap-4">
                         <div class="avatar h-14 w-14 rounded-full flex items-center justify-center text-white text-lg font-bold font-heading shadow shrink-0">BK</div>
                         <div class="min-w-0">
-                            <h4 class="font-heading font-bold text-amber-900">Brian Kelley</h4>
+                            <h4 class="font-heading font-bold text-purple-900">Brian Kelley</h4>
                             <p class="text-xs text-gray-600 mb-1">Secondary Principal</p>
-                            <a href="mailto:bkelley@aisa.sch.ae" class="text-xs text-amber-700 font-semibold hover:underline break-all">bkelley@aisa.sch.ae</a>
+                            <a href="mailto:bkelley@aisa.sch.ae" class="text-xs text-purple-700 font-semibold hover:underline break-all">bkelley@aisa.sch.ae</a>
                         </div>
                     </div>
 
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-amber-600 p-5 flex items-start gap-4">
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-5 flex items-start gap-4">
                         <div class="avatar h-14 w-14 rounded-full flex items-center justify-center text-white text-lg font-bold font-heading shadow shrink-0">KF</div>
                         <div class="min-w-0">
-                            <h4 class="font-heading font-bold text-amber-900">Dr Kevin Fosburgh</h4>
+                            <h4 class="font-heading font-bold text-purple-900">Dr Kevin Fosburgh</h4>
                             <p class="text-xs text-gray-600 mb-1">Elementary Principal</p>
-                            <a href="mailto:kfosburgh@aisa.sch.ae" class="text-xs text-amber-700 font-semibold hover:underline break-all">kfosburgh@aisa.sch.ae</a>
+                            <a href="mailto:kfosburgh@aisa.sch.ae" class="text-xs text-purple-700 font-semibold hover:underline break-all">kfosburgh@aisa.sch.ae</a>
                         </div>
                     </div>
 
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-amber-500 p-5 flex items-start gap-4">
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-5 flex items-start gap-4">
                         <div class="avatar h-14 w-14 rounded-full flex items-center justify-center text-white text-lg font-bold font-heading shadow shrink-0">CM</div>
                         <div class="min-w-0">
-                            <h4 class="font-heading font-bold text-amber-900">Cristina Martin</h4>
+                            <h4 class="font-heading font-bold text-purple-900">Cristina Martin</h4>
                             <p class="text-xs text-gray-600 mb-1">Secondary Asst. Principal</p>
-                            <a href="mailto:cmartin@aisa.sch.ae" class="text-xs text-amber-700 font-semibold hover:underline break-all">cmartin@aisa.sch.ae</a>
+                            <a href="mailto:cmartin@aisa.sch.ae" class="text-xs text-purple-700 font-semibold hover:underline break-all">cmartin@aisa.sch.ae</a>
                         </div>
                     </div>
 
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-amber-500 p-5 flex items-start gap-4">
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-5 flex items-start gap-4">
                         <div class="avatar h-14 w-14 rounded-full flex items-center justify-center text-white text-lg font-bold font-heading shadow shrink-0">SL</div>
                         <div class="min-w-0">
-                            <h4 class="font-heading font-bold text-amber-900">Savvas Largatzis</h4>
+                            <h4 class="font-heading font-bold text-purple-900">Savvas Largatzis</h4>
                             <p class="text-xs text-gray-600 mb-1">Secondary Asst. Principal</p>
-                            <a href="mailto:slargatzis@aisa.sch.ae" class="text-xs text-amber-700 font-semibold hover:underline break-all">slargatzis@aisa.sch.ae</a>
+                            <a href="mailto:slargatzis@aisa.sch.ae" class="text-xs text-purple-700 font-semibold hover:underline break-all">slargatzis@aisa.sch.ae</a>
                         </div>
                     </div>
 
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-amber-500 p-5 flex items-start gap-4">
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-5 flex items-start gap-4">
                         <div class="avatar h-14 w-14 rounded-full flex items-center justify-center text-white text-lg font-bold font-heading shadow shrink-0">AN</div>
                         <div class="min-w-0">
-                            <h4 class="font-heading font-bold text-amber-900">Alia Nejdawi</h4>
+                            <h4 class="font-heading font-bold text-purple-900">Alia Nejdawi</h4>
                             <p class="text-xs text-gray-600 mb-1">Elementary Asst. Principal</p>
-                            <a href="mailto:anejdawi@aisa.sch.ae" class="text-xs text-amber-700 font-semibold hover:underline break-all">anejdawi@aisa.sch.ae</a>
+                            <a href="mailto:anejdawi@aisa.sch.ae" class="text-xs text-purple-700 font-semibold hover:underline break-all">anejdawi@aisa.sch.ae</a>
                         </div>
                     </div>
 
@@ -133,41 +147,41 @@
             <!-- Section: Curriculum Coordinators -->
             <section>
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-amber-100 flex items-center justify-center text-xl">&#128218;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Curriculum Coordinators</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Curriculum Coordinators</h3>
                 </div>
                 <p class="text-gray-600 mb-6 max-w-3xl">AISA's coordinators lead curriculum development, programme compliance, and instructional support across the school.</p>
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-blue-500 p-5 flex items-start gap-4">
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-5 flex items-start gap-4">
                         <div class="avatar h-14 w-14 rounded-full flex items-center justify-center text-white text-lg font-bold font-heading shadow shrink-0">AT</div>
                         <div class="min-w-0">
-                            <h4 class="font-heading font-bold text-amber-900">Amira Al Turabi</h4>
+                            <h4 class="font-heading font-bold text-purple-900">Amira Al Turabi</h4>
                             <p class="text-xs text-gray-600 mb-1">K12 Curriculum Coordinator</p>
-                            <a href="mailto:aturabi@aisa.sch.ae" class="text-xs text-amber-700 font-semibold hover:underline break-all">aturabi@aisa.sch.ae</a>
+                            <a href="mailto:aturabi@aisa.sch.ae" class="text-xs text-purple-700 font-semibold hover:underline break-all">aturabi@aisa.sch.ae</a>
                         </div>
                     </div>
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-blue-500 p-5 flex items-start gap-4">
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-5 flex items-start gap-4">
                         <div class="avatar h-14 w-14 rounded-full flex items-center justify-center text-white text-lg font-bold font-heading shadow shrink-0">KM</div>
                         <div class="min-w-0">
-                            <h4 class="font-heading font-bold text-amber-900">Kelly Mejia</h4>
+                            <h4 class="font-heading font-bold text-purple-900">Kelly Mejia</h4>
                             <p class="text-xs text-gray-600 mb-1">IBDP Coordinator</p>
-                            <a href="mailto:kmejia@aisa.sch.ae" class="text-xs text-amber-700 font-semibold hover:underline break-all">kmejia@aisa.sch.ae</a>
+                            <a href="mailto:kmejia@aisa.sch.ae" class="text-xs text-purple-700 font-semibold hover:underline break-all">kmejia@aisa.sch.ae</a>
                         </div>
                     </div>
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-blue-500 p-5 flex items-start gap-4">
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-5 flex items-start gap-4">
                         <div class="avatar h-14 w-14 rounded-full flex items-center justify-center text-white text-lg font-bold font-heading shadow shrink-0">SB</div>
                         <div class="min-w-0">
-                            <h4 class="font-heading font-bold text-amber-900">Stephanie Brown</h4>
+                            <h4 class="font-heading font-bold text-purple-900">Stephanie Brown</h4>
                             <p class="text-xs text-gray-600 mb-1">PYP Coordinator</p>
-                            <a href="mailto:sbrown@aisa.sch.ae" class="text-xs text-amber-700 font-semibold hover:underline break-all">sbrown@aisa.sch.ae</a>
+                            <a href="mailto:sbrown@aisa.sch.ae" class="text-xs text-purple-700 font-semibold hover:underline break-all">sbrown@aisa.sch.ae</a>
                         </div>
                     </div>
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-blue-500 p-5 flex items-start gap-4">
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-5 flex items-start gap-4">
                         <div class="avatar h-14 w-14 rounded-full flex items-center justify-center text-white text-lg font-bold font-heading shadow shrink-0">BB</div>
                         <div class="min-w-0">
-                            <h4 class="font-heading font-bold text-amber-900">Brandon Baki</h4>
+                            <h4 class="font-heading font-bold text-purple-900">Brandon Baki</h4>
                             <p class="text-xs text-gray-600 mb-1">Head of AI &amp; Innovation</p>
-                            <a href="mailto:bbaki@aisa.sch.ae" class="text-xs text-amber-700 font-semibold hover:underline break-all">bbaki@aisa.sch.ae</a>
+                            <a href="mailto:bbaki@aisa.sch.ae" class="text-xs text-purple-700 font-semibold hover:underline break-all">bbaki@aisa.sch.ae</a>
                         </div>
                     </div>
                 </div>
@@ -176,29 +190,29 @@
             <!-- Section: Business & Operations -->
             <section>
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-emerald-100 flex items-center justify-center text-xl">&#128188;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Business &amp; Operations</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect x="2" y="6" width="20" height="14" rx="2"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Business &amp; Operations</h3>
                 </div>
                 <p class="text-gray-600 mb-6 max-w-3xl">The team that keeps finances, IT, and the systems behind the scenes running smoothly. Check the AISA website for additional business staff.</p>
                 <div class="grid sm:grid-cols-2 gap-5 max-w-4xl">
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-emerald-500 p-6">
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-6">
                         <div class="flex items-start gap-4">
                             <div class="avatar h-14 w-14 rounded-full flex items-center justify-center text-white text-lg font-bold font-heading shadow shrink-0">AR</div>
                             <div class="min-w-0">
-                                <h4 class="font-heading font-bold text-amber-900">Ahmed Abdul Raouf</h4>
+                                <h4 class="font-heading font-bold text-purple-900">Ahmed Abdul Raouf</h4>
                                 <p class="text-xs text-gray-600 mb-1">Finance Manager</p>
-                                <a href="mailto:araouf@aisa.sch.ae" class="text-xs text-amber-700 font-semibold hover:underline break-all">araouf@aisa.sch.ae</a>
+                                <a href="mailto:araouf@aisa.sch.ae" class="text-xs text-purple-700 font-semibold hover:underline break-all">araouf@aisa.sch.ae</a>
                             </div>
                         </div>
                         <p class="text-gray-600 text-sm mt-3">Head of business operations and the school's financial process. Joined AISA in 2023.</p>
                     </div>
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-emerald-500 p-6">
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-6">
                         <div class="flex items-start gap-4">
                             <div class="avatar h-14 w-14 rounded-full flex items-center justify-center text-white text-lg font-bold font-heading shadow shrink-0">KK</div>
                             <div class="min-w-0">
-                                <h4 class="font-heading font-bold text-amber-900">Kashan Khan</h4>
+                                <h4 class="font-heading font-bold text-purple-900">Kashan Khan</h4>
                                 <p class="text-xs text-gray-600 mb-1">IT Manager</p>
-                                <a href="mailto:kkhan@aisa.sch.ae" class="text-xs text-amber-700 font-semibold hover:underline break-all">kkhan@aisa.sch.ae</a>
+                                <a href="mailto:kkhan@aisa.sch.ae" class="text-xs text-purple-700 font-semibold hover:underline break-all">kkhan@aisa.sch.ae</a>
                             </div>
                         </div>
                         <p class="text-gray-600 text-sm mt-3">Head of Technical Systems since 2010. Leads a team of three technicians (Musthafa, Owais &amp; Sameer) keeping all systems running.</p>
@@ -209,26 +223,26 @@
             <!-- Section: Athletics & Activities -->
             <section>
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-orange-100 flex items-center justify-center text-xl">&#127942;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Athletics &amp; Activities</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Athletics &amp; Activities</h3>
                 </div>
-                <div class="bg-white rounded-2xl shadow-md border-l-8 border-orange-500 p-6 max-w-2xl person-card">
+                <div class="bg-white rounded-2xl shadow-md border p-6 max-w-2xl person-card">
                     <div class="flex items-center gap-4">
                         <div class="avatar h-14 w-14 rounded-full flex items-center justify-center text-white text-lg font-bold font-heading shadow shrink-0">LZ</div>
                         <div>
-                            <h4 class="font-heading font-bold text-amber-900">Luka Zischka</h4>
+                            <h4 class="font-heading font-bold text-purple-900">Luka Zischka</h4>
                             <p class="text-xs text-gray-600 mb-1">Athletics &amp; Activities Director</p>
-                            <a href="mailto:lzischka@aisa.sch.ae" class="text-xs text-amber-700 font-semibold hover:underline break-all">lzischka@aisa.sch.ae</a>
+                            <a href="mailto:lzischka@aisa.sch.ae" class="text-xs text-purple-700 font-semibold hover:underline break-all">lzischka@aisa.sch.ae</a>
                         </div>
                     </div>
                 </div>
                 <div class="grid md:grid-cols-2 gap-5 mt-5 max-w-4xl">
-                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-5">
-                        <h4 class="font-heading font-bold text-amber-900 mb-2">Lion Cubs (Grade 2&ndash;6)</h4>
+                    <div class="bg-purple-50 border border-purple-200 rounded-xl p-5">
+                        <h4 class="font-heading font-bold text-purple-900 mb-2">Lion Cubs (Grade 2&ndash;6)</h4>
                         <p class="text-sm text-gray-700">Junior swimmers from Grade 2; Grade 4&ndash;6 compete in the Junior Emirates Athletic Conference (JEAC) across three seasons: soccer, track &amp; field, and basketball. No-cuts, equal playing-time philosophy.</p>
                     </div>
-                    <div class="bg-amber-50 border border-amber-200 rounded-xl p-5">
-                        <h4 class="font-heading font-bold text-amber-900 mb-2">Senior Lions (Grade 6&ndash;12)</h4>
+                    <div class="bg-purple-50 border border-purple-200 rounded-xl p-5">
+                        <h4 class="font-heading font-bold text-purple-900 mb-2">Senior Lions (Grade 6&ndash;12)</h4>
                         <p class="text-sm text-gray-700">Middle School, JV, and Varsity teams compete in EAC, ISAC, and internationally in NESAC. Seasons cover swimming, volleyball, tennis, soccer, basketball, cross-country, band, choir, track, badminton, and academic games.</p>
                     </div>
                 </div>
@@ -237,212 +251,212 @@
             <!-- Section: HR Team / Onboarding Support -->
             <section>
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-rose-100 flex items-center justify-center text-xl">&#129309;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">HR &amp; Onboarding Support</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">HR &amp; Onboarding Support</h3>
                 </div>
                 <p class="text-gray-600 mb-6 max-w-3xl">The HR team helps you get settled &mdash; contracts, ADEK approvals, accommodation, and UAE documents (visa, Emirates ID, licences).</p>
                 <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-rose-400 p-5">
-                        <h4 class="font-heading font-bold text-amber-900">Ibtissam Harrache</h4>
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-5">
+                        <h4 class="font-heading font-bold text-purple-900">Ibtissam Harrache</h4>
                         <p class="text-xs text-gray-600 mt-1">Assistant to the Director</p>
                         <p class="text-xs text-gray-500 mt-2">Helps you get your contract.</p>
                     </div>
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-rose-400 p-5">
-                        <h4 class="font-heading font-bold text-amber-900">Maram Abdulkarim</h4>
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-5">
+                        <h4 class="font-heading font-bold text-purple-900">Maram Abdulkarim</h4>
                         <p class="text-xs text-gray-600 mt-1">Ministry Liaison</p>
                         <p class="text-xs text-gray-500 mt-2">Obtains ADEK approval and related documents.</p>
                     </div>
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-rose-400 p-5">
-                        <h4 class="font-heading font-bold text-amber-900">Morena Martin</h4>
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-5">
+                        <h4 class="font-heading font-bold text-purple-900">Morena Martin</h4>
                         <p class="text-xs text-gray-600 mt-1">Accommodation &amp; Insurance</p>
                         <p class="text-xs text-gray-500 mt-2">Helps with housing and insurance setup.</p>
                     </div>
-                    <div class="person-card bg-white rounded-2xl shadow-md border-t-4 border-rose-400 p-5">
-                        <h4 class="font-heading font-bold text-amber-900">Diea Alsakka</h4>
+                    <div class="person-card bg-white rounded-2xl shadow-md border p-5">
+                        <h4 class="font-heading font-bold text-purple-900">Diea Alsakka</h4>
                         <p class="text-xs text-gray-600 mt-1">Public Relations Officer</p>
                         <p class="text-xs text-gray-500 mt-2">Helps with Visa, Emirates ID, and other UAE documents.</p>
                     </div>
                 </div>
-                <div class="mt-5 bg-rose-50 border border-rose-200 rounded-xl p-4 max-w-3xl">
-                    <p class="text-sm text-rose-900"><strong>Stuck on documents or housing?</strong> Email Sajitha Sreenath at <a class="font-semibold underline" href="mailto:snair@aisa.sch.ae">snair@aisa.sch.ae</a> for further help.</p>
+                <div class="mt-5 bg-purple-50 border border-purple-200 rounded-xl p-4 max-w-3xl">
+                    <p class="text-sm text-purple-900"><strong>Stuck on documents or housing?</strong> Email Sajitha Sreenath at <a class="font-semibold underline" href="mailto:snair@aisa.sch.ae">snair@aisa.sch.ae</a> for further help.</p>
                 </div>
             </section>
 
             <!-- Section: Heads of Department & Grade Level Leaders -->
             <section>
                 <div class="flex items-center gap-3 mb-5">
-                    <span class="h-9 w-9 rounded-xl bg-amber-100 flex items-center justify-center text-xl">&#127891;</span>
-                    <h3 class="font-heading font-black text-2xl md:text-3xl text-amber-900">Heads of Department &amp; Grade Level Leaders</h3>
+                    <span class="lh-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg></span>
+                    <h3 class="font-heading font-black text-2xl md:text-3xl text-purple-900">Heads of Department &amp; Grade Level Leaders</h3>
                 </div>
                 <p class="text-gray-600 mb-6 max-w-3xl">For curriculum questions or day-to-day support, contact your grade level leader or department head.</p>
 
                 <!-- Elementary -->
-                <h4 class="font-heading font-bold text-xl text-amber-800 mb-3">Elementary School</h4>
+                <h4 class="font-heading font-bold text-xl text-purple-800 mb-3">Elementary School</h4>
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">KG 1</p>
-                        <h5 class="font-heading font-bold text-amber-900">Haley Hidalgo</h5>
-                        <a href="mailto:hhidalgo@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">hhidalgo@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">KG 1</p>
+                        <h5 class="font-heading font-bold text-purple-900">Haley Hidalgo</h5>
+                        <a href="mailto:hhidalgo@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">hhidalgo@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">KG 2</p>
-                        <h5 class="font-heading font-bold text-amber-900">Lauren Hill</h5>
-                        <a href="mailto:lahill@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">lahill@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">KG 2</p>
+                        <h5 class="font-heading font-bold text-purple-900">Lauren Hill</h5>
+                        <a href="mailto:lahill@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">lahill@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">KG 2</p>
-                        <h5 class="font-heading font-bold text-amber-900">Sabrina Stream</h5>
-                        <a href="mailto:sstream@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">sstream@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">KG 2</p>
+                        <h5 class="font-heading font-bold text-purple-900">Sabrina Stream</h5>
+                        <a href="mailto:sstream@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">sstream@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Grade 1</p>
-                        <h5 class="font-heading font-bold text-amber-900">Sonya Davis</h5>
-                        <a href="mailto:sdavis@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">sdavis@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Grade 1</p>
+                        <h5 class="font-heading font-bold text-purple-900">Sonya Davis</h5>
+                        <a href="mailto:sdavis@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">sdavis@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Grade 2</p>
-                        <h5 class="font-heading font-bold text-amber-900">Jen VanBelle</h5>
-                        <a href="mailto:jvanbelle@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">jvanbelle@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Grade 2</p>
+                        <h5 class="font-heading font-bold text-purple-900">Jen VanBelle</h5>
+                        <a href="mailto:jvanbelle@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">jvanbelle@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Grade 3</p>
-                        <h5 class="font-heading font-bold text-amber-900">Geoff Kurton</h5>
-                        <a href="mailto:gkurton@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">gkurton@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Grade 3</p>
+                        <h5 class="font-heading font-bold text-purple-900">Geoff Kurton</h5>
+                        <a href="mailto:gkurton@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">gkurton@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Grade 4</p>
-                        <h5 class="font-heading font-bold text-amber-900">Antonio Mejia</h5>
-                        <a href="mailto:amejia@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">amejia@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Grade 4</p>
+                        <h5 class="font-heading font-bold text-purple-900">Antonio Mejia</h5>
+                        <a href="mailto:amejia@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">amejia@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Grade 5</p>
-                        <h5 class="font-heading font-bold text-amber-900">Allyn Rydalch</h5>
-                        <a href="mailto:arydalch@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">arydalch@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Grade 5</p>
+                        <h5 class="font-heading font-bold text-purple-900">Allyn Rydalch</h5>
+                        <a href="mailto:arydalch@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">arydalch@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Head of Inclusion</p>
-                        <h5 class="font-heading font-bold text-amber-900">Dr Lisa Jones-Fisher</h5>
-                        <a href="mailto:ljones@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">ljones@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Head of Inclusion</p>
+                        <h5 class="font-heading font-bold text-purple-900">Dr Lisa Jones-Fisher</h5>
+                        <a href="mailto:ljones@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">ljones@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Specialist</p>
-                        <h5 class="font-heading font-bold text-amber-900">Quitney Price</h5>
-                        <a href="mailto:qprice@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">qprice@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Specialist</p>
+                        <h5 class="font-heading font-bold text-purple-900">Quitney Price</h5>
+                        <a href="mailto:qprice@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">qprice@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Arabic / Islamic</p>
-                        <h5 class="font-heading font-bold text-amber-900">Rafif Al Husari</h5>
-                        <a href="mailto:ralhusari@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">ralhusari@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Arabic / Islamic</p>
+                        <h5 class="font-heading font-bold text-purple-900">Rafif Al Husari</h5>
+                        <a href="mailto:ralhusari@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">ralhusari@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Counselor</p>
-                        <h5 class="font-heading font-bold text-amber-900">Mildred Stevenson</h5>
-                        <a href="mailto:mstevenson@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">mstevenson@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Counselor</p>
+                        <h5 class="font-heading font-bold text-purple-900">Mildred Stevenson</h5>
+                        <a href="mailto:mstevenson@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">mstevenson@aisa.sch.ae</a>
                     </div>
                 </div>
 
                 <!-- Middle School -->
-                <h4 class="font-heading font-bold text-xl text-amber-800 mb-3">Middle School (Grades 6&ndash;8)</h4>
+                <h4 class="font-heading font-bold text-xl text-purple-800 mb-3">Middle School (Grades 6&ndash;8)</h4>
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">English</p>
-                        <h5 class="font-heading font-bold text-amber-900">Miriam Kimsey</h5>
-                        <a href="mailto:mkimsey@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">mkimsey@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">English</p>
+                        <h5 class="font-heading font-bold text-purple-900">Miriam Kimsey</h5>
+                        <a href="mailto:mkimsey@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">mkimsey@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Humanities</p>
-                        <h5 class="font-heading font-bold text-amber-900">William Cowie</h5>
-                        <a href="mailto:wcowie@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">wcowie@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Humanities</p>
+                        <h5 class="font-heading font-bold text-purple-900">William Cowie</h5>
+                        <a href="mailto:wcowie@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">wcowie@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Science</p>
-                        <h5 class="font-heading font-bold text-amber-900">Nastassia Van Jaarsveldt</h5>
-                        <a href="mailto:neslin@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">neslin@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Science</p>
+                        <h5 class="font-heading font-bold text-purple-900">Nastassia Van Jaarsveldt</h5>
+                        <a href="mailto:neslin@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">neslin@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Math</p>
-                        <h5 class="font-heading font-bold text-amber-900">Ayla Din-Zahid</h5>
-                        <a href="mailto:adzahid@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">adzahid@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Math</p>
+                        <h5 class="font-heading font-bold text-purple-900">Ayla Din-Zahid</h5>
+                        <a href="mailto:adzahid@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">adzahid@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Counselor</p>
-                        <h5 class="font-heading font-bold text-amber-900">Joel Allen Hunter</h5>
-                        <a href="mailto:jallen@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">jallen@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Counselor</p>
+                        <h5 class="font-heading font-bold text-purple-900">Joel Allen Hunter</h5>
+                        <a href="mailto:jallen@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">jallen@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">VAPA</p>
-                        <h5 class="font-heading font-bold text-amber-900">Nataliia Verbenska</h5>
-                        <a href="mailto:nverbenska@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">nverbenska@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">VAPA</p>
+                        <h5 class="font-heading font-bold text-purple-900">Nataliia Verbenska</h5>
+                        <a href="mailto:nverbenska@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">nverbenska@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Arabic / Islamic</p>
-                        <h5 class="font-heading font-bold text-amber-900">Ahmed El Sawaf</h5>
-                        <a href="mailto:aelsawaf@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">aelsawaf@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Arabic / Islamic</p>
+                        <h5 class="font-heading font-bold text-purple-900">Ahmed El Sawaf</h5>
+                        <a href="mailto:aelsawaf@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">aelsawaf@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">PE</p>
-                        <h5 class="font-heading font-bold text-amber-900">Darrell Traylor</h5>
-                        <a href="mailto:dtraylor@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">dtraylor@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">PE</p>
+                        <h5 class="font-heading font-bold text-purple-900">Darrell Traylor</h5>
+                        <a href="mailto:dtraylor@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">dtraylor@aisa.sch.ae</a>
                     </div>
                 </div>
 
                 <!-- High School -->
-                <h4 class="font-heading font-bold text-xl text-amber-800 mb-3">High School (Grades 9&ndash;12)</h4>
+                <h4 class="font-heading font-bold text-xl text-purple-800 mb-3">High School (Grades 9&ndash;12)</h4>
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">English</p>
-                        <h5 class="font-heading font-bold text-amber-900">Storm Zenk</h5>
-                        <a href="mailto:sbaines@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">sbaines@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">English</p>
+                        <h5 class="font-heading font-bold text-purple-900">Storm Zenk</h5>
+                        <a href="mailto:sbaines@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">sbaines@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Humanities</p>
-                        <h5 class="font-heading font-bold text-amber-900">Naeima Zaki-Hassan</h5>
-                        <a href="mailto:nhassan@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">nhassan@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Humanities</p>
+                        <h5 class="font-heading font-bold text-purple-900">Naeima Zaki-Hassan</h5>
+                        <a href="mailto:nhassan@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">nhassan@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Math</p>
-                        <h5 class="font-heading font-bold text-amber-900">Zachary Zenk</h5>
-                        <a href="mailto:zzenk@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">zzenk@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Math</p>
+                        <h5 class="font-heading font-bold text-purple-900">Zachary Zenk</h5>
+                        <a href="mailto:zzenk@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">zzenk@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Science</p>
-                        <h5 class="font-heading font-bold text-amber-900">Arindam Banerjee</h5>
-                        <a href="mailto:abanerjee@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">abanerjee@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Science</p>
+                        <h5 class="font-heading font-bold text-purple-900">Arindam Banerjee</h5>
+                        <a href="mailto:abanerjee@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">abanerjee@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Counselor</p>
-                        <h5 class="font-heading font-bold text-amber-900">Jennifer Guss</h5>
-                        <a href="mailto:jguss@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">jguss@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Counselor</p>
+                        <h5 class="font-heading font-bold text-purple-900">Jennifer Guss</h5>
+                        <a href="mailto:jguss@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">jguss@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Counselor</p>
-                        <h5 class="font-heading font-bold text-amber-900">Taj Coleman</h5>
-                        <a href="mailto:tcoleman@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">tcoleman@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Counselor</p>
+                        <h5 class="font-heading font-bold text-purple-900">Taj Coleman</h5>
+                        <a href="mailto:tcoleman@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">tcoleman@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">World Languages</p>
-                        <h5 class="font-heading font-bold text-amber-900">Veronica Player</h5>
-                        <a href="mailto:vplayer@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">vplayer@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">World Languages</p>
+                        <h5 class="font-heading font-bold text-purple-900">Veronica Player</h5>
+                        <a href="mailto:vplayer@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">vplayer@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">VAPA (shared with MS)</p>
-                        <h5 class="font-heading font-bold text-amber-900">Nataliia Verbenska</h5>
-                        <a href="mailto:nverbenska@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">nverbenska@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">VAPA (shared with MS)</p>
+                        <h5 class="font-heading font-bold text-purple-900">Nataliia Verbenska</h5>
+                        <a href="mailto:nverbenska@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">nverbenska@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">PE (shared with MS)</p>
-                        <h5 class="font-heading font-bold text-amber-900">Darrell Traylor</h5>
-                        <a href="mailto:dtraylor@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">dtraylor@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">PE (shared with MS)</p>
+                        <h5 class="font-heading font-bold text-purple-900">Darrell Traylor</h5>
+                        <a href="mailto:dtraylor@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">dtraylor@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Arabic / Islamic (shared with MS)</p>
-                        <h5 class="font-heading font-bold text-amber-900">Ahmed El Sawaf</h5>
-                        <a href="mailto:aelsawaf@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">aelsawaf@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Arabic / Islamic (shared with MS)</p>
+                        <h5 class="font-heading font-bold text-purple-900">Ahmed El Sawaf</h5>
+                        <a href="mailto:aelsawaf@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">aelsawaf@aisa.sch.ae</a>
                     </div>
-                    <div class="bg-white rounded-xl shadow-sm border border-amber-100 p-4 person-card">
-                        <p class="text-xs text-amber-700 font-bold uppercase tracking-wider">Head of Inclusion (K-12)</p>
-                        <h5 class="font-heading font-bold text-amber-900">Dr Lisa Jones-Fisher</h5>
-                        <a href="mailto:ljones@aisa.sch.ae" class="text-xs text-amber-700 hover:underline break-all">ljones@aisa.sch.ae</a>
+                    <div class="bg-white rounded-xl shadow-sm border border-purple-200 p-4 person-card">
+                        <p class="text-xs text-purple-700 font-bold uppercase tracking-wider">Head of Inclusion (K-12)</p>
+                        <h5 class="font-heading font-bold text-purple-900">Dr Lisa Jones-Fisher</h5>
+                        <a href="mailto:ljones@aisa.sch.ae" class="text-xs text-purple-700 hover:underline break-all">ljones@aisa.sch.ae</a>
                     </div>
                 </div>
             </section>
@@ -451,13 +465,13 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-amber-900 text-amber-100 mt-auto">
-        <div class="container mx-auto px-6 py-8 text-center">
-            <div class="flex items-center justify-center gap-3 mb-3">
-                <img src="../assets/brand/aisa-seal-white.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
-                <span class="font-heading font-bold text-lg tracking-wide">AISA Orientation Hub</span>
-            </div>
-            <p class="text-xs text-amber-200/80">American International School in Abu Dhabi &middot; Welcome to the Pride</p>
+    <footer class="lh-footer mt-auto">
+        <div class="lh-footer__inner">
+            <span class="lh-footer__brand">
+                <img src="../AISA_logo.png" alt="" width="28" height="28">
+                American International School in Abu Dhabi
+            </span>
+            <span>Orientation Hub &middot; Teaching &amp; Learning</span>
         </div>
     </footer>
 

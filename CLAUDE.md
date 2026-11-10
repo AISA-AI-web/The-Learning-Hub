@@ -2,6 +2,47 @@
 
 Notes for future sessions on The Learning Hub.
 
+## Redesign: one design system for every page — 10 November 2026
+
+Brandon: the Hub "looks outdated, the menu bars are not unified, some of the buttons are just random"; he wanted it to look
+like a flagship company's site. Before this, each section had its own colour (indigo PD, teal Tools, pink Media, orange
+Library and Orientation, navy home), its own hero, its own buttons, Poppins + Inter on 44 pages and DM Sans on 7, and
+emoji as icons.
+
+- **`auth/hub.css`** is the design system, linked in the `<head>` of every page (just before `gate.js`): tokens
+  (`--lh-*`: purple `#21076C` for structure, gold `#D8B664` for emphasis, white surfaces, `--lh-tint` `#F2EFFA`), DM Sans
+  everywhere (Cairo for Arabic), and the components every page uses: `.lh-hero` (the page header: eyebrow, title,
+  lede, actions, on full-bleed purple), `.lh-btn` (`--primary`, `--gold`, `--secondary`, `--ghost`, `--on-dark`),
+  `.lh-card` (+ `--link`), `.lh-icon`, `.lh-chip`, `.lh-grid`, `.lh-section-head`, `.lh-footer`. Every class starts
+  `lh-`, so nothing clashes with Tailwind or a page's own styles. **A new page:** copy `index.html`'s or `pd.html`'s
+  header, use these classes, and link `hub.css`; `tests/topbar-test.js` fails if a page with `gate.js` does not.
+- **`auth/tw-brand.js`**, loaded right after each Tailwind page's own `tailwind.config` script, folds the brand into
+  that config: indigo, violet, purple, blue, sky, cyan, teal, fuchsia and pink become the AISA purple scale, yellow the
+  gold scale. **Green, amber, orange and red are left alone: they mean a status** (done, needs attention, required,
+  problem) and nothing else. A new Tailwind page needs the same `<script src="…auth/tw-brand.js?v=1">` after its config.
+- **The top bar (`menu.js?v=26`, so `gate.js?v=44`)** is rebuilt: the seal and "Learning Hub" on the left; the nav
+  (My Dashboard, PD Modules, AI Literacy, Tools, Media, More ▾, and Admin ▾ for admins) with the page's section marked
+  by a gold underline and `aria-current`; search, language, bell and an account button (initials) on the right. The
+  account menu holds My Dashboard, Request or report, the admin pages (admins) and Sign out. The Back and Home buttons
+  and the coloured My Dashboard / Admin / Analytics pills are gone (the browser has Back; the logo is Home; Admin and
+  Analytics are in the Admin menu). Below 1100px (`NAV_MIN`) the nav moves into the drawer, grouped You / Learn /
+  Resources (+ Admin). `NAV`, `MORE`, `ADMIN` and `DRAWER` at the top of `menu.js` are the one list of where things
+  are: **a new section goes there**, with a `match` for its folder. The drawer is `visibility:hidden` when closed (its
+  shadow used to show as a grey band down the left edge of every page). The bar is still 60px (`BAR_HEIGHT`), so the
+  sticky bars at `top: 3.75rem` are unchanged.
+- **`tests/topbar-test.js`** checks the bar fits its row at 30 widths from 320 to 1600px for staff and an admin in both
+  languages, the current section, More, the account and Admin menus, the drawer, the greeting, the language switch,
+  and that every page links `hub.css`. It supersedes the measuring by hand in *Top bar — too wide for admins*.
+- **The home page** (`index.html`) no longer uses Tailwind: a purple header that greets the person by first name
+  ("Good morning, Ada."), *What's new* beside it (the Digital Lion issue, PD Day, the survey; the newsletter swap is
+  still `issue-release.js`'s `data-dl-show/hide/preview`), the three main places (PD Modules, AI Literacy, Tools), the
+  newsletter and Orientation, then Media, Committees, Library and the Secondary Hub. Leo the emoji lion is gone from
+  the home page (Orientation has its own card); `.leo-mascot` in `FAB_AVOID` is now harmless.
+- **The sign-in screen** (`gate.js`) is on the brand too: purple, the seal, DM Sans.
+- Section pages, guides and modules have the standard header and the brand palette (see the pull request for the page
+  by page list). Newsletter issues (`Media Hub/<mon><day>.html`) keep their own designed look, like an email, and
+  `ai-literacy-scope-and-sequence.html` (a standalone reference document) is unchanged.
+
 ## Moving to Supabase — started 30 October 2026
 
 The Hub's data and backend are moving off the spreadsheet and Apps Script to the school's Supabase
@@ -65,7 +106,7 @@ without him auditing the site for improvements.
   bottom-right corner needs its selector there, or `data-fab-avoid`.** Checked on all 53 pages at 1280 and 390px, scrolled to
   the top, middle and bottom: it covers no floating control. Also: search entries, the admin drawer's *Requests inbox*, and
   the admin dashboard's Tools menu.
-- **`admin-requests.html`** (+ `admin-requests.js?v=1`), admins only (`admin_requests` checks the `admins` table): every request,
+- **`admin-requests.html`** (+ `admin-requests.js?v=2`), admins only (`admin_requests` checks the `admins` table): every request,
   newest first, opening on the open ones (new, planned, in progress), with the person's job, department and division from the
   staff list, an *Urgent* chip (urgent, cannot finish, really needed), filters by status and kind, and a search through every
   answer. **Copy AI prompt** writes a request up for an AI assistant (`promptFor()`): what the Hub is, where the pages and the
