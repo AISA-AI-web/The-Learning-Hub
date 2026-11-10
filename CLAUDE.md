@@ -2251,6 +2251,35 @@ arrangement and the dates land, both belong in the next issue rather
 than as an edit to this one.
 
 
+## Flint Class Setup guide — added 10 November 2026
+
+`Tools and Resources/flint-class-setup.html` is Brandon's *Flint Class
+Setup* guide: nine steps for a teacher to create a Flint class for each
+section and get students in (class link, join code, or emails / CSV), as
+a stepper with an *All steps* view. He supplied one self-contained HTML
+file with 7 screenshots inlined as base64; they are now files in
+`Tools and Resources/assets/flint/class-setup/` (named by the keys of the
+page's `IMG` object). **The words are his and unchanged.** The
+screenshots show only Flint's placeholders (*10th grade World History*,
+*Your Name*, code *ABC123*, example emails) — no student or staff.
+
+It is reached from a card right after the Flint Master Guide on
+`tools.html`, a callout at the end of the Master Guide's *Classes*
+section, and the *Students aren't in Flint yet* box in Issue No. 6
+(`Media Hub/oct30.html`, EN and AR), which now says that when students
+are ready, this guide shows how to set up the class. Not in
+`search-index.js` or `menu.js` yet (that is the `?v=` cascade; add it
+with the next one). Not a PD module.
+
+Fitted into the Hub as the Master Guide was: the `gate.js` include, a
+back link, `dir="ltr"` on its wrapper, the artifact meta and safe-area
+padding removed (menu.js owns the top), and **every rule scoped to
+`.fcs`** — its `header`, `footer`, `.card`, `.btn`, `.nav`, `.tabs` and
+`figure` rules were bare. Its arrow-key stepping ignores keys typed in
+an input (the Hub search). Clicks are tagged `flint-class-setup:open:*`
+and `flint-class-setup:view:*`. If Brandon sends a new version, redo the
+same and diff the text.
+
 ## Digital Lion — Issue No. 6, held for release (written 29 October 2026)
 
 `Media Hub/oct30.html`, dated Friday 30 October 2026. Brandon asked for an
