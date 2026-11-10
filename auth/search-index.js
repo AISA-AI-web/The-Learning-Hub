@@ -154,7 +154,7 @@
         { title: "Day of AI Subcommittee", desc: "Plans and runs AISA's Day of AI student event.", url: "Committees/committees.html#q=Day%20of%20AI", type: "Committee", icon: "📅", keywords: "day of ai subcommittee student event celebration" },
 
         // === Other ===
-        { title: "Request a Module", desc: "Suggest a new PD module or training topic for the team.", url: "PD%20Modules/pd.html", type: "Action", icon: "✨", keywords: "request module pd training suggest topic professional development form deep dive ai" },
+        { title: "Request a Module", desc: "Ask the Hub team for a new PD module or training topic.", url: "request.html?type=training", type: "Action", icon: "✨", keywords: "request module pd training suggest topic professional development deep dive ai" },
         { title: "Request a Tool or Resource", desc: "Suggest a new AI tool, app, or resource for Tools & Resources.", url: "Tools%20and%20Resources/tools.html", type: "Action", icon: "✨", keywords: "request tool resource suggest add ai app form tools resources" }
     ];
 })();
