@@ -83,6 +83,9 @@ without him auditing the site for improvements.
 - **`gate.js?v=42`** on all 53 pages (`request.html` and `admin-requests.html` are the 52nd and 53rd): `aisaAuth.submitRequest`,
   `myRequests`, `adminRequests`, `adminRequestUpdate`, `recentErrors`; `menu.js?v=24`, `search-index.js?v=20`. The floating
   button took `menu.js?v=25` and so `gate.js?v=43`.
+- **Request a Module (10 Nov 2026):** the PD Modules page's floating *Request a Module* button, which opened a Google Form, is
+  gone (the form is no longer used); its search entry now opens `request.html?type=training`: `search-index.js?v=21`, `gate.js?v=44`.
+  Tools & Resources' *Request a Tool or Resource* button still opens that same Google Form.
 - **Personal data:** a request is a named member of staff writing about their work: read by admins only on the server, never put
   in this repository (the prompt says so twice). The form asks for no student details and says so.
 - **Test:** `node tests/requests-test.js` runs the real `gate.js` and `menu.js` in Chromium, signed in as a made-up person, with
