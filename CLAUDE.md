@@ -2059,10 +2059,10 @@ What was tested (the scripts need Chromium and are not in the repo):
   the AI Growth Test guide.
 
 **The pilot is open to all teachers** (Brandon, 29 October 2026), so
-the guide needs no line saying who it is for. **Student rostering was
-still in progress** that day. The *Classes* and *Share & see results*
-sections assume students are in Flint, so check rostering has finished
-before pointing teachers at them in a newsletter or email.
+the guide needs no line saying who it is for. Student rostering was
+still in progress that day; since 10 November 2026 there is **no central
+rostering**: teachers create their classes and add their students
+themselves (see *Flint Class Setup guide* below).
 
 ## AI Growth Test guide — added 18 September 2026
 
@@ -2265,9 +2265,12 @@ screenshots show only Flint's placeholders (*10th grade World History*,
 
 It is reached from a card right after the Flint Master Guide on
 `tools.html`, a callout at the end of the Master Guide's *Classes*
-section, and the *Students aren't in Flint yet* box in Issue No. 6
-(`Media Hub/oct30.html`, EN and AR), which now says that when students
-are ready, this guide shows how to set up the class. Not in
+section, and the Flint box in Issue No. 6 (`Media Hub/oct30.html`, EN and
+AR). **Students are not rostered into Flint centrally** (Brandon, 10
+November 2026): teachers add their own, with this guide. So that box,
+which said "Students aren't in Flint yet … until I tell you they're
+ready, use Preview", was corrected to *Add your own students* with the
+link (a changed fact, as with Issue No. 5's session audience). Not in
 `search-index.js` or `menu.js` yet (that is the `?v=` cascade; add it
 with the next one). Not a PD module.
 
@@ -2396,9 +2399,8 @@ email is bilingual too.
   module does. Her email signature reads *Nastassia Enslin*,
   *Sustainability Coordinator*. Worth confirming which name
   she wants.
-- Flint: students were not rostered on 29 October, so the issue tells
-  teachers to use Preview, not to share with classes. When rostering is
-  done, that is news for the next issue.
+- Flint: there is no central rostering; teachers add their own students
+  (corrected in the issue on 10 November 2026, with the Class Setup guide).
 - The Arabic was written for this issue and has not been checked by an
   Arabic speaker.
 
