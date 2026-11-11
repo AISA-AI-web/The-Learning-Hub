@@ -7,14 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         if (window.tailwind) {
             tailwind.config = {
                 theme: {
                     extend: {
-                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        fontFamily: { heading: ['DM Sans', 'sans-serif'] },
                         colors: { primary: '#4f46e5', secondary: '#2563eb', accent: '#06b6d4' },
                         animation: { 'blob': 'blob 7s infinite', 'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite' },
                         keyframes: {
@@ -30,9 +30,10 @@
             }
         }
     </script>
+    <script src="../auth/tw-brand.js?v=1"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
+        body { font-family: 'DM Sans', sans-serif; }
+        .font-heading { font-family: 'DM Sans', sans-serif; }
         .bg-dot-pattern {
             background-color: #f8fafc;
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
@@ -165,7 +166,7 @@
 
         /* Typographic scales tuned for a projector */
         .pm-kicker {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'DM Sans', sans-serif;
             text-transform: uppercase;
             letter-spacing: 0.25em;
             font-weight: 700;
@@ -174,7 +175,7 @@
             margin-bottom: 1.25rem;
         }
         .pm-title {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'DM Sans', sans-serif;
             font-weight: 900;
             font-size: clamp(2.75rem, 6.5vw, 6.5rem);
             line-height: 1.02;
@@ -186,7 +187,7 @@
             margin-bottom: 1rem;
         }
         .pm-subtitle {
-            font-family: 'Inter', sans-serif;
+            font-family: 'DM Sans', sans-serif;
             font-weight: 400;
             font-size: clamp(1.1rem, 2.1vw, 2rem);
             color: rgba(255,255,255,0.85);
@@ -200,7 +201,7 @@
             max-width: 80ch;
         }
         .pm-mega-num {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'DM Sans', sans-serif;
             font-weight: 900;
             font-size: clamp(7rem, 18vw, 18rem);
             line-height: 1;
@@ -221,7 +222,7 @@
             transition: transform .3s ease, background .3s ease;
         }
         .pm-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.08); }
-        .pm-card-title { font-family:'Poppins', sans-serif; font-weight:700; font-size: clamp(1rem, 1.4vw, 1.3rem); margin-bottom:.4rem; }
+        .pm-card-title { font-family:'DM Sans', sans-serif; font-weight:700; font-size: clamp(1rem, 1.4vw, 1.3rem); margin-bottom:.4rem; }
         .pm-card-body  { font-size: clamp(.85rem, 1.1vw, 1.05rem); color: rgba(255,255,255,0.8); line-height:1.45; }
 
         .pm-chip {
@@ -258,7 +259,7 @@
             border-radius: 999px;
             font-size: .85rem;
             font-weight: 600;
-            font-family: 'Inter', sans-serif;
+            font-family: 'DM Sans', sans-serif;
         }
         .pm-btn {
             background: rgba(255,255,255,0.08);
@@ -336,7 +337,7 @@
             color: rgba(255,255,255,0.5);
             font-size: .75rem;
             z-index: 210;
-            font-family: 'Inter', sans-serif;
+            font-family: 'DM Sans', sans-serif;
             letter-spacing: .05em;
         }
         .pm-hint kbd {
@@ -344,7 +345,7 @@
             border: 1px solid rgba(255,255,255,0.2);
             border-radius: 4px;
             padding: 1px 6px;
-            font-family: 'Inter', sans-serif;
+            font-family: 'DM Sans', sans-serif;
             font-size: .7rem;
             margin: 0 2px;
         }
@@ -367,7 +368,7 @@
             height: clamp(64px, 7vw, 96px);
             border-radius: 50%;
             margin-bottom: 1rem;
-            font-family: 'Poppins', sans-serif;
+            font-family: 'DM Sans', sans-serif;
             font-weight: 900;
             font-size: clamp(1.5rem, 2.2vw, 2.2rem);
         }
@@ -377,111 +378,6 @@
 
         .pm-check { color:#86efac; }
         .pm-cross { color:#fca5a5; }
-
-        /* Launch button — attention-grabbing with pulsing ring */
-        .pm-launch-wrap {
-            position: relative;
-            display: inline-block;
-            padding: 6px; /* Space for the ping ring */
-        }
-        .pm-launch-wrap::before,
-        .pm-launch-wrap::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 999px;
-            pointer-events: none;
-        }
-        .pm-launch-wrap::before {
-            background: linear-gradient(135deg, #facc15, #f97316, #dc2626);
-            filter: blur(14px);
-            opacity: .55;
-            animation: pmLaunchGlow 2.4s ease-in-out infinite;
-            z-index: 0;
-        }
-        .pm-launch-wrap::after {
-            border: 2px solid rgba(253, 224, 71, 0.8);
-            animation: pmLaunchPing 2.2s cubic-bezier(0,0,0.2,1) infinite;
-            z-index: 0;
-        }
-        @keyframes pmLaunchGlow {
-            0%, 100% { opacity: .35; transform: scale(1); }
-            50%      { opacity: .7;  transform: scale(1.06); }
-        }
-        @keyframes pmLaunchPing {
-            0%   { transform: scale(1);    opacity: .9; }
-            80%  { transform: scale(1.25); opacity: 0; }
-            100% { transform: scale(1.25); opacity: 0; }
-        }
-        @keyframes pmLaunchBob {
-            0%, 100% { transform: translateY(0); }
-            50%      { transform: translateY(-3px); }
-        }
-        @keyframes pmLaunchShine {
-            0%   { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-        .pm-launch-btn {
-            position: relative;
-            z-index: 1;
-            background: linear-gradient(135deg, #facc15 0%, #f97316 50%, #dc2626 100%);
-            background-size: 200% auto;
-            border: 2px solid rgba(255,255,255,0.45);
-            color: #fff;
-            padding: 1rem 2rem;
-            border-radius: 999px;
-            font-weight: 800;
-            font-family: 'Poppins', sans-serif;
-            font-size: 1rem;
-            letter-spacing: .08em;
-            cursor: pointer;
-            transition: transform .25s, box-shadow .25s, filter .25s;
-            display: inline-flex;
-            align-items: center;
-            gap: .65rem;
-            text-transform: uppercase;
-            box-shadow: 0 10px 30px rgba(220,38,38,0.45), inset 0 1px 0 rgba(255,255,255,0.3);
-            animation: pmLaunchBob 2.6s ease-in-out infinite, pmLaunchShine 4s linear infinite;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.25);
-        }
-        .pm-launch-btn:hover {
-            transform: translateY(-3px) scale(1.03);
-            filter: brightness(1.08);
-            box-shadow: 0 16px 40px rgba(220,38,38,0.6), inset 0 1px 0 rgba(255,255,255,0.4);
-        }
-        .pm-launch-btn:active { transform: translateY(-1px) scale(1.0); }
-        .pm-launch-btn .pm-launch-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.25);
-            transition: transform .25s;
-        }
-        .pm-launch-btn:hover .pm-launch-icon { transform: scale(1.1) rotate(8deg); }
-        .pm-launch-sparkle {
-            position: absolute;
-            top: -8px; right: -8px;
-            width: 24px; height: 24px;
-            background: #fde047;
-            border-radius: 50%;
-            box-shadow: 0 0 12px rgba(253,224,71,0.9);
-            animation: pmLaunchPing 1.8s ease-out infinite;
-            z-index: 2;
-        }
-        .pm-launch-sparkle::after {
-            content: '\2605'; /* star */
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #7c2d12;
-            font-size: 14px;
-            font-weight: 900;
-        }
 
         @media (max-width: 640px) {
             .pm-slide { padding: 4vh 5vw; }
@@ -548,7 +444,7 @@
             transition: transform 0.2s ease, filter 0.2s ease;
             white-space: nowrap;
             direction: rtl;
-            font-family: 'Tajawal', 'Cairo', 'Noto Naskh Arabic', 'Inter', sans-serif;
+            font-family: 'Tajawal', 'Cairo', 'Noto Naskh Arabic', 'DM Sans', sans-serif;
         }
         .ar-lang-btn:hover {
             transform: translateY(-2px) scale(1.03);
@@ -594,7 +490,7 @@
             background-size: 200% 100%;
             border-color: rgba(59, 130, 246, 0.55);
             direction: ltr;
-            font-family: 'Inter', sans-serif;
+            font-family: 'DM Sans', sans-serif;
         }
         body.lang-ar .ar-lang-btn::before {
             border-color: rgba(59, 130, 246, 0.55);
@@ -656,86 +552,81 @@
             pointer-events: none;
             z-index: 300;
             transition: opacity 0.3s ease, transform 0.3s ease;
-            font-family: 'Tajawal', 'Cairo', 'Inter', sans-serif;
+            font-family: 'Tajawal', 'Cairo', 'DM Sans', sans-serif;
         }
         .ar-toast.show {
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
+
+        /* ===== Redesign, 10 Nov 2026: the page on the Hub's design system
+           (auth/hub.css; the module frame is in auth/training.css). The
+           Arabic button is the header's .lh-btn--on-dark pill. ===== */
+        .ar-lang-btn, body.lang-ar .ar-lang-btn {
+            animation: none; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.28);
+            height: 2.75rem; padding: 0 1.15rem; font-weight: 600; font-size: .9375rem; letter-spacing: 0;
+            font-family: 'Cairo', 'Tajawal', 'DM Sans', sans-serif;
+        }
+        .ar-lang-btn::before { display: none; }
+        .ar-lang-btn:hover { transform: none; filter: none; background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.5); }
+        .ar-lang-btn .ar-globe, .ar-lang-btn.ar-lang-btn-hero .ar-globe { width: auto; height: auto; background: none; border: 0; }
+        .ar-lang-btn.ar-lang-btn-hero { padding: 0 1.15rem; font-size: .9375rem; }
+        .ar-lang-btn.ar-lang-btn-hero .ar-text { font-size: 1rem; }
+        .ar-toast { background: rgba(33,7,108,.96); box-shadow: 0 10px 30px rgba(33,7,108,.3); }
+        #completion-banner > div[class*="bg-gradient-to-"] { background: #21076C !important; border-radius: 16px !important; box-shadow: 0 16px 40px -12px rgba(22,4,73,.22) !important; }
+        #completion-banner > div[class*="bg-gradient-to-"] p { color: rgba(255,255,255,.8) !important; }
+        @media (min-width: 768px) { main.container { padding-inline: 1.5rem; } }
     </style>
     <!-- Arabic web font for the language button -->
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../auth/training.css?v=5">
-    <script src="../auth/gate.js?v=43"></script>
+    <link rel="stylesheet" href="../auth/training.css?v=6">
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
     <script src="../auth/training.js?v=6"></script>
 </head>
-<body class="bg-gray-50 text-gray-800 min-h-screen">
+<body class="bg-white text-gray-800 min-h-screen">
 
 <!-- Small toast shown while translation is being applied -->
     <div id="arToast" class="ar-toast" role="status" aria-live="polite"></div>
 
-    <main class="container mx-auto px-4 md:px-8 py-8 max-w-6xl">
-
-        <!-- Hero Section -->
-        <section class="relative rounded-3xl overflow-hidden mb-12 bg-gradient-to-br from-red-700 via-red-800 to-orange-900 text-white shadow-2xl">
-            <div class="absolute inset-0 overflow-hidden">
-                <div class="absolute -top-40 -right-40 w-80 h-80 bg-orange-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-                <div class="absolute -bottom-40 -left-40 w-80 h-80 bg-red-400 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob" style="animation-delay: 2s;"></div>
-            </div>
-            <div class="relative z-10 px-8 md:px-14 py-12 md:py-16">
-                <div class="flex flex-wrap items-center gap-3 mb-6">
-                    <span class="bg-white/20 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full border border-white/30">ADEK Mandatory</span>
-                    <span class="bg-red-500/30 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full border border-white/30">Required Training</span>
-                    <span class="bg-orange-500/30 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full border border-white/30">Emergency Protocol</span>
-                </div>
-                <h2 class="text-3xl md:text-5xl font-black font-heading mb-4 leading-tight">Return to School<br>Emergency Protocol Training</h2>
-                <p class="text-red-100 max-w-2xl text-lg mb-6">ADEK Safe Education Protocol — mandatory training for all staff as a condition of school reopening. Complete all modules and the physical drill acknowledgment.</p>
-                <div class="mb-6">
-                    <div class="flex flex-wrap items-center gap-4">
-                        <div class="pm-launch-wrap">
-                            <span class="pm-launch-sparkle" aria-hidden="true"></span>
-                            <button onclick="enterPresenterMode()" class="pm-launch-btn" aria-label="Launch Presenter Mode">
-                                <span class="pm-launch-icon">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-                                </span>
-                                Launch Presenter Mode
-                            </button>
-                        </div>
-                        <!-- Prominent hero-area Arabic language button -->
-                        <button
-                            id="arLangBtnHero"
-                            type="button"
-                            onclick="toggleArabic()"
-                            class="ar-lang-btn ar-lang-btn-hero"
-                            aria-label="Switch language to Arabic"
-                            title="اضغط هنا للعربية — Click here for Arabic">
-                            <span class="ar-globe" aria-hidden="true">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                            </span>
-                            <span class="ar-text" data-ar-label>اضغط هنا للعربية</span>
-                        </button>
+    <!-- Page header (auth/hub.css .lh-hero). Its text nodes match the
+         Arabic dictionary (return-to-school-arabic.js) word for word. -->
+    <section class="lh-hero aisa-mod-hero">
+        <div class="lh-hero__inner">
+            <div class="lh-hero__row">
+                <div class="lh-hero__main">
+                    <p class="lh-hero__eyebrow">Required Training</p>
+                    <h1 class="lh-hero__title">Return to School<br>Emergency Protocol Training</h1>
+                    <p class="lh-hero__lede">ADEK Safe Education Protocol — mandatory training for all staff as a condition of school reopening. Complete all modules and the physical drill acknowledgment.</p>
+                    <div class="lh-hero__meta">
+                        <span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>ADEK Mandatory</span>
+                        <span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>Emergency Protocol</span>
+                        <span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>~90 min (60 min session + 30 min drill)</span>
+                        <span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>10 Modules + Knowledge Checks</span>
+                        <span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>All Teaching Staff</span>
                     </div>
-                    <p class="text-red-100 text-sm mt-3 font-semibold flex items-center gap-2">
-                        <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        Presenters: click here to start the full-screen slide deck &nbsp;·&nbsp; <span style="opacity:.9">Arabic speakers: click the green button to translate this page</span>
-                    </p>
                 </div>
-                <div class="flex flex-wrap gap-6 text-sm text-red-200">
-                    <span class="flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        ~90 min (60 min session + 30 min drill)
-                    </span>
-                    <span class="flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        10 Modules + Knowledge Checks
-                    </span>
-                    <span class="flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                        All Teaching Staff
-                    </span>
+                <div class="lh-hero__actions">
+                    <button type="button" onclick="enterPresenterMode()" class="lh-btn lh-btn--gold" aria-label="Launch Presenter Mode">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h20"/><path d="M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/></svg>
+                        Launch Presenter Mode
+                    </button>
+                    <button
+                        id="arLangBtnHero"
+                        type="button"
+                        onclick="toggleArabic()"
+                        class="ar-lang-btn ar-lang-btn-hero lh-btn lh-btn--on-dark"
+                        aria-label="Switch language to Arabic"
+                        title="اضغط هنا للعربية — Click here for Arabic">
+                        <span class="ar-globe" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span>
+                        <span class="ar-text" data-ar-label>اضغط هنا للعربية</span>
+                    </button>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
+
+    <main class="container mx-auto px-4 md:px-8 py-8 max-w-6xl">
 
         <!-- Progress Tracker -->
         <section class="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-10">
@@ -1327,10 +1218,10 @@
         <!-- Completion Banner -->
         <section id="completion-banner" data-cert-title="Return to School — Emergency Protocol Training" data-cert-hours="2" class="mb-12 hidden">
             <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl shadow-2xl p-8 text-center text-white">
-                <div class="text-5xl mb-4">&#127942;</div>
+                <span class="aisa-banner-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></svg></span>
                 <h3 class="text-2xl font-black font-heading mb-3">Training Complete!</h3>
                 <p class="text-emerald-100 max-w-xl mx-auto mb-6">You have completed all modules of the Return to School Emergency Protocol Training. Remember: your safety, their safety, our responsibility. AISA Lions are Responsible, Safe, Respectful, and Kind.</p>
-                <button onclick="window.location.href='../index.html'" class="bg-white text-emerald-700 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition-colors shadow-lg">
+                <button onclick="window.location.href='../index.html'" class="lh-btn lh-btn--gold">
                     Return to Dashboard
                 </button>
             </div>
@@ -1849,10 +1740,11 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-gray-900 text-gray-400 py-8 text-center text-sm">
-        <p class="font-heading font-semibold text-white mb-1">American International School of Abu Dhabi</p>
-        <p>ADEK Safe Education Protocol — Emergency Protocol Staff Training</p>
-        <p class="mt-2 text-gray-500">Your safety. Their safety. Our responsibility.</p>
+<footer class="lh-footer aisa-mod-footer">
+        <div class="lh-footer__inner">
+            <span class="lh-footer__brand"><img src="../AISA_logo.png" alt="" width="28" height="28"><span>American International School of Abu Dhabi</span></span>
+            <span class="aisa-mod-footer__meta"><span>ADEK Safe Education Protocol — Emergency Protocol Staff Training</span><span>Your safety. Their safety. Our responsibility.</span></span>
+        </div>
     </footer>
 
     <script>

@@ -40,9 +40,6 @@
         .rq-main h1, .rq-main h2, .rq-main h3, .rq-main p { margin: 0; }
         :where(.rq-main) button, :where(.rq-main) select, :where(.rq-main) input, :where(.rq-main) textarea { font: inherit; color: inherit; }
 
-        .rq-eyebrow { font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--rq-gold-ink); }
-        .rq-head h1 { font-size: clamp(1.6rem, 4vw, 2.1rem); line-height: 1.15; color: var(--rq-purple); margin: .35rem 0 .6rem; letter-spacing: -.01em; }
-        .rq-head p { color: var(--rq-ink-2); line-height: 1.55; max-width: 62ch; }
 
         /* ---------- the three kinds ---------- */
         .rq-kinds { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin: 1.5rem 0 1.25rem; border: 0; padding: 0; }
@@ -113,7 +110,6 @@
         .rq-banner.good { background: var(--rq-good-bg); border: 1px solid #bfe5cf; color: var(--rq-good); }
 
         .rq-done { text-align: center; padding: 2.25rem 1.25rem; }
-        .rq-done .big { font-size: 2.2rem; }
         .rq-done h2 { color: var(--rq-purple); margin: .6rem 0 .5rem; font-size: 1.35rem; }
         .rq-done p { color: var(--rq-ink-2); line-height: 1.55; max-width: 52ch; margin: 0 auto; }
         .rq-done .rq-actions { justify-content: center; }
@@ -135,17 +131,62 @@
         .rq-chip.s-done { background: var(--rq-good-bg); color: var(--rq-good); }
         .rq-chip.s-declined { background: #f2f2f5; color: #55536a; }
         .rq-empty { color: var(--rq-muted); font-size: .9rem; }
+        /* ===== Redesign, 10 Nov 2026: the Hub's design system (auth/hub.css).
+           White page, the standard header, line icons for the three kinds
+           (request.js writes the spec's emoji into .ic; the emoji is hidden
+           and a line icon drawn in its place, so request-spec.js, shared with
+           the admin inbox, stays as it is), pill buttons as .lh-btn. ===== */
+        body { background: #fff; }
+        .rq-hero .lh-hero__inner { max-width: 820px; padding-inline: 16px; }
+        .rq-main { padding-top: 2rem; }
+        .rq-kinds { margin-top: 0; }
+        .rq-kind { border: 1px solid #E7E2F4; border-radius: 16px; padding: 1.25rem; gap: .5rem; box-shadow: 0 1px 2px rgba(22,4,73,.06); }
+        .rq-kind:hover { border-color: #C8BEE8; box-shadow: 0 2px 4px rgba(22,4,73,.06), 0 16px 40px -12px rgba(22,4,73,.22); }
+        .rq-kind:has(input:checked) { border-color: #21076C; background: #F8F6FD; box-shadow: 0 0 0 3px rgba(33,7,108,.12); }
+        .rq-kind .ic { font-size: 0; color: transparent; position: relative; display: inline-flex; flex-shrink: 0;
+                       width: 2.75rem; height: 2.75rem; border-radius: 12px; background: #F2EFFA; margin-bottom: .25rem; }
+        .rq-kind .ic::before { content: ''; position: absolute; inset: 0; margin: auto; width: 1.375rem; height: 1.375rem;
+                       background: #21076C; -webkit-mask: var(--rq-ic) center / contain no-repeat; mask: var(--rq-ic) center / contain no-repeat; }
+        .rq-kind:has(input:checked) .ic { background: #21076C; }
+        .rq-kind:has(input:checked) .ic::before { background: #D8B664; }
+        .rq-kind:has(input[value="training"]) { --rq-ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z'/%3E%3Cpath d='M22 10v6'/%3E%3Cpath d='M6 12.5V16a6 3 0 0 0 12 0v-3.5'/%3E%3C/svg%3E"); }
+        .rq-kind:has(input[value="bug"]) { --rq-ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z'/%3E%3C/svg%3E"); }
+        .rq-kind:has(input[value="idea"]) { --rq-ic: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5'/%3E%3Cpath d='M9 18h6'/%3E%3Cpath d='M10 22h4'/%3E%3C/svg%3E"); }
+        .rq-kind .t { font-weight: 700; font-size: 1rem; color: #1A1A1A; }
+        .rq-kind .d { color: #5E5A6B; }
+        @media (max-width: 640px) { .rq-kind .ic { margin-bottom: 0; } }
+        .rq-card { border-radius: 16px; border-color: #E7E2F4; box-shadow: 0 1px 2px rgba(22,4,73,.06); }
+        .rq-note { align-items: flex-start; }
+        .rq-note svg { width: 1.1rem; height: 1.1rem; flex-shrink: 0; margin-top: .05rem; color: #7A5C14; }
+        .rq-btn { height: 2.75rem; padding: 0 1.15rem; font-weight: 600; font-size: .9375rem; line-height: 1; box-sizing: border-box; }
+        .rq-btn.primary:hover { background: #3A1F94; }
+        .rq-btn.ghost { border-color: #C8BEE8; color: #21076C; }
+        .rq-btn.ghost:hover { background: #F8F6FD; border-color: #21076C; }
+        .rq-done .rq-done-ic { display: inline-flex; align-items: center; justify-content: center; width: 3.25rem; height: 3.25rem;
+                       border-radius: 14px; background: #ECFDF3; color: #157347; }
+        .rq-done .rq-done-ic svg { width: 1.6rem; height: 1.6rem; }
+        .rq-chip.s-new { background: #F2EFFA; color: #21076C; }
+        .rq-mine h2 { font-size: 1.375rem; letter-spacing: -.015em; }
+        .rq-item { border-radius: 12px; border-color: #E7E2F4; }
     </style>
-    <script src="auth/gate.js?v=43"></script>
+    <link rel="stylesheet" href="auth/hub.css?v=1">
+    <script src="auth/gate.js?v=44"></script>
 </head>
 <body>
+<!-- Page header (auth/hub.css .lh-hero) -->
+<section class="lh-hero rq-hero">
+    <div class="lh-hero__inner">
+        <div class="lh-hero__row">
+            <div class="lh-hero__main">
+                <p class="lh-hero__eyebrow">Help shape the Learning Hub</p>
+                <h1 class="lh-hero__title">Request a training, report a problem, or share an idea</h1>
+                <p class="lh-hero__lede">Your answers go straight to the Hub team. The more you tell us, the faster we can build
+                    it or fix it: every question beyond the first few is optional, but each one saves a follow-up email.</p>
+            </div>
+        </div>
+    </div>
+</section>
 <main class="rq-main">
-    <header class="rq-head">
-        <div class="rq-eyebrow">Help shape the Learning Hub</div>
-        <h1>Request a training, report a problem, or share an idea</h1>
-        <p>Your answers go straight to the Hub team. The more you tell us, the faster we can build it or fix it: every question
-            beyond the first few is optional, but each one saves a follow-up email.</p>
-    </header>
 
     <section id="rq-form-wrap">
         <fieldset class="rq-kinds" id="rq-kinds">
@@ -153,7 +194,7 @@
         </fieldset>
 
         <form id="rq-form" class="rq-card" novalidate hidden>
-            <div class="rq-note" role="note"><span aria-hidden="true">&#128274;</span>
+            <div class="rq-note" role="note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 <span>Please do not include student names or other students’ details. Your name and email are added for you,
                     so the Hub team can reply.</span></div>
             <div id="rq-fields"></div>
@@ -179,7 +220,7 @@
     </section>
 
     <section id="rq-done" class="rq-card rq-done" hidden aria-live="polite">
-        <div class="big" aria-hidden="true">&#10024;</div>
+        <div class="rq-done-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg></div>
         <h2>Thank you, it’s with the Hub team</h2>
         <p id="rq-done-text"></p>
         <div class="rq-actions">

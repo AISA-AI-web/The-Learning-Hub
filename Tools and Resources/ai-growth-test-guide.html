@@ -7,56 +7,40 @@
 <meta name="description" content="Step-by-step reference for setting up and running the Baseline AI Growth Test (AIGT) for Grades 4-12 on InstrucTwin.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
    AI Growth Test — AI Lead & Proctor Guide
    Self-contained: no Tailwind, no build step. Palette follows the
-   Hub's teal; the three audiences carry their own accent so a
+   Hub's purple (auth/hub.css); the three audiences carry their own accent so a
    step's owner is readable at a glance.
    ============================================================ */
 :root{
-  --font:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  --head:"Poppins","Inter",system-ui,sans-serif;
+  --font:'DM Sans',system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --head:'DM Sans',system-ui,sans-serif;
   --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 
-  --bg:#F4F7F6; --surface:#FFFFFF; --surface-2:#EDF3F1; --surface-3:#E3ECE9;
-  --ink:#10201E; --ink-2:#334744; --muted:#5F7371;
-  --line:#DCE5E2; --line-strong:#BCCAC6;
+  --bg:#FFFFFF; --surface:#FFFFFF; --surface-2:#F8F6FD; --surface-3:#F2EFFA;
+  --ink:#1A1A1A; --ink-2:#3D3A48; --muted:#5E5A6B;
+  --line:#E7E2F4; --line-strong:#C8BEE8;
 
-  --accent:#0F766E; --accent-ink:#0B5B55; --accent-soft:#DCF1EE;
+  --accent:#21076C; --accent-ink:#3A1F94; --accent-soft:#F2EFFA;
 
-  /* audience accents */
-  --lead:#4338CA;    --lead-soft:#E7E7FC;   --lead-line:#C7C7F4;
-  --proc:#B45309;    --proc-soft:#FDF0DC;   --proc-line:#F3D6A8;
-  --stud:#0F766E;    --stud-soft:#D9F2EE;   --stud-line:#A7DCD5;
+  /* audience accents (redesign, 10 Nov 2026: the Hub's purple, gold and ink
+     instead of indigo, orange and teal; amber and green stay for status) */
+  --lead:#5B3FD0;    --lead-soft:#F2EFFA;   --lead-line:#C8BEE8;
+  --proc:#7A5C14;    --proc-soft:#FBF5E6;   --proc-line:#E9D49A;
+  --stud:#3D3A48;    --stud-soft:#F1F0F4;   --stud-line:#D6D3DE;
 
   --warn:#B45309; --warn-soft:#FEF4E4; --warn-line:#F0D5A6;
   --stop:#B91C1C; --stop-soft:#FDECEC; --stop-line:#F4C4C4;
   --ok:#15803D;   --ok-soft:#E4F5E9;   --ok-line:#B7E2C5;
 
-  --radius:14px;
+  --radius:16px;
   --topbar:3.75rem;          /* matches BAR_HEIGHT in auth/menu.js */
-  --shadow:0 1px 2px rgba(16,32,30,.05), 0 8px 24px -14px rgba(16,32,30,.28);
+  --shadow:0 2px 4px rgba(22,4,73,.06), 0 16px 40px -12px rgba(22,4,73,.22);
   color-scheme:light;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#101614; --surface:#171F1D; --surface-2:#1E2826; --surface-3:#25312E;
-    --ink:#E8F0ED; --ink-2:#C6D4D0; --muted:#94A6A2;
-    --line:#2A3633; --line-strong:#3C4B47;
-    --accent:#5EC8BC; --accent-ink:#8FDCD2; --accent-soft:#12312D;
-    --lead:#A5A5F5; --lead-soft:#21214A; --lead-line:#3B3B72;
-    --proc:#E6A75A; --proc-soft:#3A2B14; --proc-line:#5C441F;
-    --stud:#5EC8BC; --stud-soft:#12312D; --stud-line:#1E4A45;
-    --warn:#E6A75A; --warn-soft:#3A2B14; --warn-line:#5C441F;
-    --stop:#F08C8C; --stop-soft:#3A1C1C; --stop-line:#5E2C2C;
-    --ok:#7CD79A;   --ok-soft:#16321F;   --ok-line:#26512F;
-    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -14px rgba(0,0,0,.7);
-    color-scheme:dark;
-  }
-}
-
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
 @media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}}
@@ -118,14 +102,14 @@ main{min-width:0;padding:0 clamp(16px,3.5vw,52px) 80px}
 .rolebar-hint{font-size:.76rem;color:var(--muted);margin:-14px 0 22px 8px;line-height:1.45}
 
 /* ---------------- hero ---------------- */
-.hero{padding:clamp(28px,5vw,56px) 0 30px}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:.74rem;font-weight:800;
-         letter-spacing:.11em;text-transform:uppercase;color:var(--accent-ink);
-         background:var(--accent-soft);padding:5px 11px;border-radius:999px;margin-bottom:16px}
-.hero h1{font-size:clamp(2rem,4.6vw,3.15rem);font-weight:900;letter-spacing:-.03em;max-width:22ch}
-.hero-sub{margin-top:14px;font-size:clamp(1.02rem,1.5vw,1.17rem);color:var(--ink-2);max-width:60ch}
+/* Redesign, 10 Nov 2026: the standard page header (auth/hub.css .lh-hero) runs
+   full width above the sidebar; its text lines up with the reading column. */
+.agt-hero .lh-hero__inner{max-width:1460px;padding-inline:calc(270px + clamp(16px,3.5vw,52px)) clamp(16px,3.5vw,52px)}
+@media (max-width:1040px){.agt-hero .lh-hero__inner{padding-inline:clamp(16px,3.5vw,52px)}}
+.agt-hero .lh-hero__title{max-width:22ch}
+.hero{padding:clamp(22px,3vw,36px) 0 30px}
 
-.window-strip{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:22px;
+.window-strip{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:0;
               padding:13px 16px;border-radius:var(--radius);border:1px solid var(--line);
               background:var(--surface);box-shadow:var(--shadow)}
 .window-strip[data-state="open"]{border-color:var(--ok-line);background:var(--ok-soft)}
@@ -142,10 +126,11 @@ main{min-width:0;padding:0 clamp(16px,3.5vw,52px) 80px}
 .window-strip .dates{color:var(--ink-2);font-size:.92rem}
 .window-strip .cta{margin-left:auto}
 
-.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:10px;
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;
      background:var(--accent);color:#fff;font-weight:700;font-size:.9rem;text-decoration:none;
      border:1px solid transparent;cursor:pointer;font-family:inherit;transition:filter .15s}
-.btn:hover{filter:brightness(1.08)}
+.btn:hover{background:#3A1F94}
+.btn svg{width:1rem;height:1rem;flex:none}
 .btn-ghost{background:var(--surface);color:var(--ink);border-color:var(--line-strong)}
 .btn-ghost:hover{background:var(--surface-2);filter:none}
 
@@ -162,10 +147,10 @@ main{min-width:0;padding:0 clamp(16px,3.5vw,52px) 80px}
 /* ---------------- phase spine ---------------- */
 .phases{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:34px 0 0}
 .phase{display:block;text-decoration:none;color:inherit;padding:15px 16px 16px;
-       border:1px solid var(--line);border-top:3px solid var(--pc,var(--accent));
-       border-radius:0 0 var(--radius) var(--radius);background:var(--surface);
+       border:1px solid var(--line);
+       border-radius:var(--radius);background:var(--surface);box-shadow:0 1px 2px rgba(22,4,73,.06);
        transition:transform .16s ease,box-shadow .16s ease}
-.phase:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.phase:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--line-strong)}
 @media (prefers-reduced-motion: reduce){.phase:hover{transform:none}}
 .phase .pn{font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--pc)}
 .phase h3{font-size:1.02rem;margin:5px 0 5px}
@@ -404,10 +389,26 @@ body[data-role="lead"] .checks,body[data-role="proctor"] .checks{grid-template-c
   a[href^="http"]::after{content:" (" attr(href) ")";font-size:8pt;color:#555;word-break:break-all}
 }
 </style>
-<script src="../auth/gate.js?v=43"></script>
+<link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
 </head>
 <body>
 <a class="skip" href="#overview">Skip to content</a>
+
+<!-- ============ page header (auth/hub.css .lh-hero) ============ -->
+<section class="lh-hero agt-hero" id="top" dir="ltr">
+  <div class="lh-hero__inner">
+    <ol class="lh-crumbs"><li><a href="tools.html">Tools &amp; Resources</a></li><li>AI Growth Test guide</li></ol>
+    <div class="lh-hero__row">
+      <div class="lh-hero__main">
+        <p class="lh-hero__eyebrow">ADEK · InstrucTwin · Baseline</p>
+        <h1 class="lh-hero__title">AI Growth Test: AI&nbsp;Lead &amp; Proctor guide</h1>
+        <p class="lh-hero__lede">Everything needed to set up, run and close out the Baseline AI Growth Test
+           for Grades 4–12, from first login to marking the session complete.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
 <div class="layout" dir="ltr">
 
@@ -447,24 +448,19 @@ body[data-role="lead"] .checks,body[data-role="proctor"] .checks{grid-template-c
 
   <p class="side-label">Platform</p>
   <p style="margin:0 0 0 8px"><a class="btn" style="font-size:.82rem;padding:7px 13px"
-     href="https://instructwin.com/aigt" target="_blank" rel="noopener">Open InstrucTwin ↗</a></p>
+     href="https://instructwin.com/aigt" target="_blank" rel="noopener">Open InstrucTwin <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a></p>
 </nav>
 
-<main id="top">
+<main>
 
-<!-- ============ hero ============ -->
+<!-- ============ status + key facts (the page header is above the layout) ============ -->
 <header class="hero">
-  <span class="eyebrow">ADEK · InstrucTwin · Baseline</span>
-  <h1>AI Growth Test — AI&nbsp;Lead &amp; Proctor guide</h1>
-  <p class="hero-sub">Everything needed to set up, run and close out the Baseline AI Growth Test
-     for Grades 4–12 — from first login to marking the session complete.</p>
-
   <div class="window-strip" id="window-strip" data-state="open">
     <span class="pulse" aria-hidden="true"></span>
     <strong id="window-state">Assessment window</strong>
     <span class="dates">14 September – 4 October 2026</span>
     <span class="cta"><a class="btn" href="https://instructwin.com/aigt" target="_blank" rel="noopener">
-      Open the platform ↗</a></span>
+      Open the platform <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a></span>
   </div>
 
   <dl class="facts">
