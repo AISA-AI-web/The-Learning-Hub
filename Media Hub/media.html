@@ -7,14 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
     <script>
         if (window.tailwind) {
             tailwind.config = {
                 theme: {
                     extend: {
-                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
-                        colors: { primary: '#7e22ce', secondary: '#be185d', accent: '#ec4899' },
+                        fontFamily: { heading: ['DM Sans', 'sans-serif'] },
+                        colors: { primary: '#21076C', secondary: '#3A1F94', accent: '#D8B664' },
                         animation: { 'blob': 'blob 7s infinite' },
                         keyframes: {
                             blob: {
@@ -29,128 +29,133 @@
             }
         }
     </script>
+    <script src="../auth/tw-brand.js?v=1"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
-        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -10px rgba(126, 34, 206, 0.25); }
-        .hero-gradient { background: linear-gradient(135deg, #581c87 0%, #7e22ce 45%, #ec4899 100%); }
-        .hero-overlay {
-            background-image:
-                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 0, transparent 40%),
-                radial-gradient(circle at 80% 70%, rgba(255,255,255,0.10) 0, transparent 40%);
-        }
+        /* Redesign, 10 Nov 2026: the page on the Hub's design system
+           (auth/hub.css): the standard header, two plain cards. */
+        .mh-grid { display: grid; gap: 1.5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+        @media (max-width: 768px) { .mh-grid { grid-template-columns: minmax(0, 1fr); } }
+        .lh-card.mh-card { padding: 1.75rem; gap: 1rem; }
+        .mh-card h2 { margin: 0; font-size: 1.25rem; font-weight: 700; color: var(--lh-ink); letter-spacing: -.01em; }
+        .mh-logo { display: block; width: 100%; border-radius: 12px; border: 1px solid var(--lh-line); }
+        .mh-issue { background: var(--lh-tint-2); border: 1px solid var(--lh-line); border-radius: 12px; padding: 1rem 1.1rem; }
+        .mh-issue .mh-kicker { margin: 0 0 .3rem; font-size: .6875rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--lh-gold-text); display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; }
+        .mh-issue .mh-title { margin: 0 0 .25rem; font-size: .9375rem; font-weight: 700; color: var(--lh-purple); }
+        .mh-issue .mh-text { margin: 0; font-size: .8125rem; line-height: 1.55; color: var(--lh-muted); }
+        .mh-badge-preview { background: #FFF7ED; border: 1px solid #FED7AA; color: var(--lh-warning); border-radius: 999px; padding: .1rem .5rem; letter-spacing: .04em; }
+        .mh-past { display: flex; flex-direction: column; border-top: 1px solid var(--lh-line); }
+        .mh-past-head { margin: .9rem 0 .25rem; font-size: .6875rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--lh-muted); }
+        .mh-past a { display: block; padding: .55rem 0; border-bottom: 1px solid var(--lh-line); font-size: .8125rem; line-height: 1.5; color: var(--lh-muted); text-decoration: none; }
+        .mh-past a:last-child { border-bottom: 0; }
+        .mh-past a:hover { color: var(--lh-purple); }
+        .mh-past a .mh-past-title { font-weight: 600; color: var(--lh-ink-2); }
+        .mh-past a:hover .mh-past-title { color: var(--lh-purple); }
+        html[lang="ar"] .mh-issue .mh-kicker, html[lang="ar"] .mh-past-head { letter-spacing: 0; }
+        .lh-card.mh-soon { margin-top: 1.5rem; flex-direction: row; align-items: flex-start; gap: 1rem; }
+        .mh-soon h2 { margin: 0; font-size: 1.0625rem; font-weight: 700; color: var(--lh-ink); }
+        .mh-soon p { margin-top: .25rem; }
     </style>
-    <script src="../auth/gate.js?v=43"></script>
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
     <script src="issue-release.js?v=1"></script>
 </head>
-<body class="bg-purple-50 text-gray-800 min-h-screen flex flex-col">
+<body class="bg-white text-gray-800 min-h-screen flex flex-col">
 
-<!-- Hero -->
-    <section class="hero-gradient text-white relative overflow-hidden">
-        <div class="absolute inset-0 hero-overlay pointer-events-none"></div>
-        <div class="absolute -top-20 -left-20 w-72 h-72 bg-purple-300/20 rounded-full blur-3xl animate-blob"></div>
-        <div class="absolute -bottom-24 -right-16 w-80 h-80 bg-pink-200/20 rounded-full blur-3xl animate-blob" style="animation-delay: 2s;"></div>
-        <div class="container mx-auto px-6 py-16 md:py-20 text-center relative z-10">
-            <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-6">
-                <span class="text-xl">🎙️</span>
-                <span class="text-xs font-bold uppercase tracking-widest">Stay Connected</span>
+<!-- Page header (auth/hub.css .lh-hero) -->
+    <section class="lh-hero">
+        <div class="lh-hero__inner">
+            <div class="lh-hero__row">
+                <div class="lh-hero__main">
+                    <p class="lh-hero__eyebrow">Stay connected</p>
+                    <h1 class="lh-hero__title">Media Hub</h1>
+                    <p class="lh-hero__lede">Podcasts, newsletters and community updates from the Teaching &amp; Learning Department.</p>
+                </div>
             </div>
-            <h2 class="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold leading-tight mb-5 drop-shadow-lg">Listen &amp; Read.</h2>
-            <p class="text-lg md:text-xl max-w-3xl mx-auto text-purple-50 drop-shadow">
-                Catch up on our latest podcasts, newsletters, and community updates from the Teaching &amp; Learning Department.
-            </p>
         </div>
     </section>
 
     <!-- Main -->
     <main class="flex-grow">
-        <div class="container mx-auto px-6 py-14 max-w-5xl">
-            <div class="grid md:grid-cols-2 gap-8">
-
-                <!-- Podcasts -->
-                <div class="bg-white p-8 rounded-2xl shadow-lg card-hover border-t-8 border-purple-600 flex flex-col text-center">
-                    <div class="flex items-center justify-center mb-4">
-                        <div class="p-3 bg-purple-100 rounded-full">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-purple-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
-                        </div>
-                    </div>
-                    <h4 class="text-2xl font-bold mb-2 text-purple-900">T&amp;L Podcasts</h4>
-                    <p class="text-gray-600 mb-6 flex-grow">Listen to interviews, strategies, and insights from the Teaching &amp; Learning Department. Access our complete library of episodes below.</p>
-                    <a href="#" class="mt-auto block">
-                        <button class="bg-purple-700 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-purple-800 transition-transform hover:scale-105 shadow-md flex items-center justify-center mx-auto w-full">
-                            <span class="mr-2">📂</span> Access Full Podcast Archive
-                        </button>
-                    </a>
-                </div>
+        <div class="lh-container lh-section" style="max-width: 64rem;">
+            <div class="mh-grid">
 
                 <!-- Newsletters -->
-                <div class="bg-white p-8 rounded-2xl shadow-lg card-hover border-t-8 border-amber-400 flex flex-col text-center">
-                    <div class="-mt-12 -mx-4 mb-4">
-                        <img src="the_digital_lion_logo.png" alt="Digital Lion newsletter logo" class="w-full rounded-xl shadow-md border border-blue-100" loading="lazy">
-                    </div>
-                    <h4 class="text-2xl font-bold mb-2 text-blue-950">Digital Lion — T&amp;L Newsletter</h4>
-                    <p class="text-gray-600 mb-4 flex-grow">Read the latest updates, teaching tips, and community highlights in our weekly newsletters.</p>
+                <article class="lh-card mh-card">
+                    <img src="the_digital_lion_logo.png" alt="Digital Lion newsletter logo" class="mh-logo" loading="lazy">
+                    <h2>Digital Lion: T&amp;L newsletter</h2>
+                    <p>Updates, teaching tips and community highlights from Teaching &amp; Learning.</p>
                     <!-- Issue No. 6 is held back until released (issue-release.js):
                          data-dl-show elements appear, and data-dl-hide ones go,
                          once its bell notification exists, or straight away for
                          the newsletter senders, with a Preview badge. -->
-                    <div data-dl-show="oct30" style="display:none" class="bg-gradient-to-br from-amber-50 to-cyan-50 border border-amber-200 rounded-xl p-4 mb-3 text-left">
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-700 mb-1">Latest issue &middot; October 30 <span data-dl-preview="oct30" style="display:none" class="ml-1 bg-amber-400 text-amber-950 rounded-full px-2 py-0.5">Preview &middot; not released</span></p>
-                        <p class="text-sm font-semibold text-blue-950 mb-1">Digital Lion — Issue No. 6</p>
-                        <p class="text-xs text-gray-600">New tools, and one place to find them — MagicSchool has ended and Flint is open to every teacher, AISA Tools, the Activity Hub, the Data Anonymizer, the MAP Dashboard, AI Lessons in home languages, the Assessment Calendar, and the PD Day material.</p>
+                    <div data-dl-show="oct30" style="display:none" class="mh-issue">
+                        <p class="mh-kicker">Latest issue &middot; October 30 <span data-dl-preview="oct30" style="display:none" class="mh-badge-preview">Preview &middot; not released</span></p>
+                        <p class="mh-title">Digital Lion, Issue No. 6</p>
+                        <p class="mh-text">New tools, and one place to find them — MagicSchool has ended and Flint is open to every teacher, AISA Tools, the Activity Hub, the Data Anonymizer, the MAP Dashboard, AI Lessons in home languages, the Assessment Calendar, and the PD Day material.</p>
                     </div>
-                    <div data-dl-hide="oct30" class="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100 rounded-xl p-4 mb-3 text-left">
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-cyan-700 mb-1">Latest issue &middot; September 18</p>
-                        <p class="text-sm font-semibold text-blue-950 mb-1">Digital Lion — Issue No. 5</p>
-                        <p class="text-xs text-gray-600">What's happening with AI at AISA — the AI Literacy curriculum starts September 21, the teacher readiness module is due September 20, how often you'll teach it, Level 1 deadlines, and the Growth Test window.</p>
+                    <div data-dl-hide="oct30" class="mh-issue">
+                        <p class="mh-kicker">Latest issue &middot; September 18</p>
+                        <p class="mh-title">Digital Lion, Issue No. 5</p>
+                        <p class="mh-text">What's happening with AI at AISA — the AI Literacy curriculum starts September 21, the teacher readiness module is due September 20, how often you'll teach it, Level 1 deadlines, and the Growth Test window.</p>
                     </div>
-                    <a href="sep18.html" data-dl-show="oct30" style="display:none" class="block text-left text-xs text-gray-500 hover:text-blue-900 transition-colors">
-                        <span class="font-semibold">Previous &middot; September 18 — Issue No. 5:</span> What's happening with AI at AISA — the AI Literacy rollout, the readiness module, the AI Growth Test and Level 1.
-                    </a>
-                    <a href="jun17.html" class="block text-left text-xs text-gray-500 hover:text-blue-900 transition-colors">
-                        <span class="font-semibold"><span data-dl-hide="oct30">Previous &middot; </span>June 17 — Issue No. 4:</span> Hub sign-in and saved progress, auto-generated certificates, Gemini in Calendar, ADEK dates for August &amp; September.
-                    </a>
-                    <a href="may18.html" class="block text-left text-xs text-gray-500 hover:text-blue-900 transition-colors">
-                        <span class="font-semibold">May 18 — Issue No. 3:</span> Class visit schedule, Classroom AI Integration Snapshot, AI &amp; Innovation survey, MAP testing hub.
-                    </a>
-                    <a href="may11.html" class="block text-left text-xs text-gray-500 hover:text-blue-900 transition-colors">
-                        <span class="font-semibold">May 11 — Issue No. 2:</span> Head of AI note, Wired Wednesdays launches, Workspace Studio module, Gemini in Gmail &amp; Drive.
-                    </a>
-                    <a href="may4.html" class="block mb-5 text-left text-xs text-gray-500 hover:text-blue-900 transition-colors">
-                        <span class="font-semibold">May 4 — Issue No. 1:</span> Chalkie.ai trial, IB Exam Format Generator, Hub-wide search.
-                    </a>
-                    <a href="oct30.html" data-dl-show="oct30" style="display:none" class="mt-auto block">
-                        <button class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:from-amber-600 hover:to-orange-600 transition-transform hover:scale-105 shadow-md flex items-center justify-center mx-auto w-full">
-                            <span class="mr-2">📰</span> Read Latest Newsletter
-                        </button>
-                    </a>
-                    <a href="sep18.html" data-dl-hide="oct30" class="mt-auto block">
-                        <button class="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-8 py-3 rounded-full text-lg font-semibold hover:from-amber-600 hover:to-orange-600 transition-transform hover:scale-105 shadow-md flex items-center justify-center mx-auto w-full">
-                            <span class="mr-2">📰</span> Read Latest Newsletter
-                        </button>
-                    </a>
-                </div>
+                    <a href="oct30.html" data-dl-show="oct30" style="display:none" class="lh-btn lh-btn--primary lh-btn--block">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg>
+                        Read the latest issue</a>
+                    <a href="sep18.html" data-dl-hide="oct30" class="lh-btn lh-btn--primary lh-btn--block">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8z"/></svg>
+                        Read the latest issue</a>
+                    <div class="mh-past">
+                        <p class="mh-past-head">Previous issues</p>
+                        <a href="sep18.html" data-dl-show="oct30" style="display:none">
+                            <span class="mh-past-title">September 18 &middot; Issue No. 5:</span> What's happening with AI at AISA — the AI Literacy rollout, the readiness module, the AI Growth Test and Level 1.
+                        </a>
+                        <a href="jun17.html">
+                            <span class="mh-past-title">June 17 &middot; Issue No. 4:</span> Hub sign-in and saved progress, auto-generated certificates, Gemini in Calendar, ADEK dates for August &amp; September.
+                        </a>
+                        <a href="may18.html">
+                            <span class="mh-past-title">May 18 &middot; Issue No. 3:</span> Class visit schedule, Classroom AI Integration Snapshot, AI &amp; Innovation survey, MAP testing hub.
+                        </a>
+                        <a href="may11.html">
+                            <span class="mh-past-title">May 11 &middot; Issue No. 2:</span> Head of AI note, Wired Wednesdays launches, Workspace Studio module, Gemini in Gmail &amp; Drive.
+                        </a>
+                        <a href="may4.html">
+                            <span class="mh-past-title">May 4 &middot; Issue No. 1:</span> Chalkie.ai trial, IB Exam Format Generator, Hub-wide search.
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Podcasts -->
+                <article class="lh-card mh-card">
+                    <span class="lh-icon lh-icon--lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v3"/></svg></span>
+                    <h2>T&amp;L podcasts</h2>
+                    <p>Interviews, strategies and insights from the Teaching &amp; Learning Department, with the full library of episodes in one archive.</p>
+                    <div class="lh-card__foot">
+                        <a href="#" class="lh-btn lh-btn--secondary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>
+                            Podcast archive</a>
+                    </div>
+                </article>
 
             </div>
 
             <!-- Coming Soon note -->
-            <div class="max-w-3xl mx-auto mt-16 text-center bg-white rounded-2xl shadow-md border border-purple-100 p-8">
-                <div class="text-4xl mb-3">🚧</div>
-                <h4 class="text-xl font-heading font-bold text-purple-900 mb-2">More Content Coming Soon</h4>
-                <p class="text-gray-600 max-w-xl mx-auto text-sm">Podcast episodes and newsletter archives will be linked here as they're published. Check back soon!</p>
+            <div class="lh-card mh-soon">
+                <span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></span>
+                <div>
+                    <h2>More content coming soon</h2>
+                    <p>Podcast episodes and newsletter archives will be linked here as they're published.</p>
+                </div>
             </div>
         </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-purple-900 text-purple-100 mt-auto">
-        <div class="container mx-auto px-6 py-8 text-center">
-            <div class="flex items-center justify-center gap-3 mb-3">
-                <img src="../assets/brand/aisa-seal-white.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
-                <span class="font-heading font-bold text-lg tracking-wide">AISA Media Hub</span>
-            </div>
-            <p class="text-xs text-purple-200/80">American International School in Abu Dhabi &middot; Teaching &amp; Learning Department</p>
+    <footer class="lh-footer">
+        <div class="lh-footer__inner">
+            <span class="lh-footer__brand">
+                <img src="../AISA_logo.png" alt="" width="28" height="28">
+                American International School in Abu Dhabi
+            </span>
+            <span>Built by AI Integration &amp; Educational Innovation &middot; &copy; 2026</span>
         </div>
     </footer>
 

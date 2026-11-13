@@ -7,14 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         if (window.tailwind) {
             tailwind.config = {
                 theme: {
                     extend: {
-                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                        fontFamily: { heading: ['DM Sans', 'sans-serif'] },
                         colors: { primary: '#4f46e5', secondary: '#2563eb', accent: '#06b6d4' },
                         animation: { 'blob': 'blob 7s infinite', 'gradient-x': 'gradient-x 6s ease infinite' },
                         keyframes: {
@@ -34,9 +34,10 @@
             }
         }
     </script>
+    <script src="../auth/tw-brand.js?v=1"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
+        body { font-family: 'DM Sans', sans-serif; }
+        .font-heading { font-family: 'DM Sans', sans-serif; }
         .bg-dot-pattern {
             background-color: #f8fafc;
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
@@ -61,24 +62,31 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
-    <link rel="stylesheet" href="../auth/training.css?v=5">
-    <script src="../auth/gate.js?v=43"></script>
+    <link rel="stylesheet" href="../auth/training.css?v=6">
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
     <script src="../auth/training.js?v=6"></script>
 </head>
-<body class="bg-dot-pattern text-gray-800 min-h-screen">
+<body class="bg-white text-gray-800 min-h-screen">
+
+
+    <section class="lh-hero aisa-mod-hero">
+        <div class="lh-hero__inner">
+            <div class="lh-hero__row">
+                <div class="lh-hero__main">
+                    <p class="lh-hero__eyebrow">PD module</p>
+                    <h1 class="lh-hero__title">Crafting AI Presentations with NotebookLM</h1>
+                    <p class="lh-hero__lede">Transform Lesson Planning with AI Presentations</p>
+                    <div class="lh-hero__meta"><span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span>4 chapters</span></span><span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg><span>1 PD hour</span></span><span class="lh-chip"><span>PD Masterclass</span></span><span class="lh-chip"><span>AI Tool</span></span></div>
+                </div>
+                
+            </div>
+        </div>
+    </section>
 
 <!-- Main Content -->
     <div class="max-w-5xl mx-auto px-4 lg:px-6 pt-8 pb-20">
 
-        <!-- Module Header -->
-        <div class="mb-8">
-            <div class="flex items-center gap-2 mb-3">
-                <span class="inline-block bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full">PD Masterclass</span>
-                <span class="inline-block bg-cyan-100 text-cyan-800 text-xs font-bold px-3 py-1 rounded-full">AI Tool</span>
-            </div>
-            <h1 class="text-2xl lg:text-3xl font-heading font-black text-slate-900 leading-tight">Crafting AI Presentations with NotebookLM</h1>
-            <p class="text-indigo-700 font-medium mt-1">Transform Lesson Planning with AI Presentations</p>
-        </div>
 
         <!-- Progress Bar (hidden by the training framework, kept for the wireModule pipeline) -->
         <div class="bg-white/85 backdrop-blur-xl border border-slate-200/80 rounded-2xl shadow-sm mb-10 p-4 flex items-center justify-between gap-4">
@@ -433,7 +441,7 @@
 
         <!-- Completion Banner -->
         <div id="completion-banner" data-cert-title="NotebookLM Masterclass — Crafting AI Presentations" data-cert-hours="1" class="hidden bg-gradient-to-r from-indigo-600 via-purple-600 to-cyan-600 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
-            <div class="text-4xl mb-2">🎉</div>
+            <span class="aisa-banner-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></svg></span>
             <h3 class="font-heading text-2xl font-black mb-1">Masterclass Complete!</h3>
             <p class="text-indigo-50 font-medium">You're ready to turn lesson plans into world-class AI presentations.</p>
         </div>

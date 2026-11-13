@@ -7,17 +7,18 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script>
         if (window.tailwind) {
             tailwind.config = {
-                theme: { extend: { fontFamily: { heading: ['Poppins', 'sans-serif'] },
+                theme: { extend: { fontFamily: { heading: ['DM Sans', 'sans-serif'] },
                     colors: { primary: '#4338ca', secondary: '#6d28d9', accent: '#7c3aed' } } }
             }
         }
     </script>
+    <script src="../auth/tw-brand.js?v=1"></script>
     <style>
         :root {
             --ob-from: #4338ca; --ob-via: #6d28d9; --ob-to: #7c3aed;
@@ -27,8 +28,8 @@
             --ob-orb1: rgba(139, 92, 246, .20); --ob-orb2: rgba(67, 56, 202, .15);
             --ob-orb1b: rgba(221, 214, 254, .60); --ob-orb2b: rgba(124, 58, 237, .45);
         }
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
+        body { font-family: 'DM Sans', sans-serif; }
+        .font-heading { font-family: 'DM Sans', sans-serif; }
         .bg-dot-pattern {
             background-color: #f5f5fb;
             background-image: radial-gradient(#ddd6fe 1px, transparent 1px);
@@ -54,41 +55,32 @@
         ::-webkit-scrollbar-thumb { background: #6d28d9; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #4c1d95; }
     </style>
-    <link rel="stylesheet" href="../auth/training.css?v=5">
-    <link rel="stylesheet" href="onboarding.css?v=4">
-    <script src="../auth/gate.js?v=43"></script>
+    <link rel="stylesheet" href="../auth/training.css?v=6">
+    <link rel="stylesheet" href="onboarding.css?v=5">
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
     <script src="../auth/training.js?v=6"></script>
 </head>
-<body class="bg-dot-pattern text-gray-800 min-h-screen ob-scope">
+<body class="bg-white text-gray-800 min-h-screen ob-scope">
+
+
+    <section class="lh-hero aisa-mod-hero ob-hero">
+        <div class="lh-hero__inner">
+            <div class="lh-hero__row">
+                <div class="lh-hero__main">
+                    <p class="lh-hero__eyebrow"><span data-ar="تدريب حماية الطفل الإلزامي">Required Safeguarding Training</span></p>
+                    <h1 class="lh-hero__title">Child Protection, Safeguarding, and Drug Prevention</h1>
+                    <p class="lh-hero__lede">Safeguarding is everyone's responsibility. Learn to recognise concerns, respond well, and report them — the welfare of the child is always paramount.</p>
+                    <div class="lh-hero__meta"><span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span data-ar="≈ 30 دقيقة">~30 min</span></span><span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-ar="12 فصلًا">12 chapters</span></span><span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg><span data-ar="3 اختبارات فهم">3 knowledge checks</span></span><span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 10 12 5 2 10l10 5 10-5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg><span data-ar="ساعتا تطوير مهني">2 PD hours</span></span><span class="lh-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg><span data-ar="إلزامي سنويًا">Required annually</span></span></div>
+                    <p class="aisa-mod-hero__note">Safeguarding Committee · reviewed annually</p>
+                </div>
+                <div class="lh-hero__actions ob-actions"><a href="https://docs.google.com/forms/d/e/1FAIpQLSdXVYaYcQXupc0LLH7ZR3UE9Ca5k9Xm2AG3Scft8NC65YuWIQ/viewform?usp=header" target="_blank" rel="noopener noreferrer" class="lh-btn lh-btn--gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg><span data-ar="أكمل نموذج الإقرار الإلزامي">Complete the mandatory acknowledgment form</span></a></div>
+            </div>
+        </div>
+    </section>
 
     <div class="max-w-5xl mx-auto px-4 lg:px-6 pt-8 pb-20">
 
-        <!-- Hero -->
-        <header class="ob-hero">
-            <span class="ob-hero-orb a"></span>
-            <span class="ob-hero-orb b"></span>
-            <div class="ob-hero-inner">
-                <span class="ob-eyebrow"><span class="ob-pulse"></span>AISA · Required Safeguarding Training</span>
-                <div class="ob-hero-row">
-                    <div class="ob-hero-icon">🛡️</div>
-                    <div>
-                        <h1 class="ob-hero-title">Child Protection, Safeguarding, and Drug Prevention</h1>
-                        <p class="ob-hero-sub">Safeguarding is everyone's responsibility. Learn to recognise concerns, respond well, and report them — the welfare of the child is always paramount.</p>
-                    </div>
-                </div>
-                <div class="ob-meta">
-                    <span class="ob-chip">⏱ ~30 min</span>
-                    <span class="ob-chip">📚 12 chapters</span>
-                    <span class="ob-chip">✓ 3 knowledge checks</span>
-                    <span class="ob-chip">🎓 2 PD hours</span>
-                    <span class="ob-chip">🔴 Required annually</span>
-                </div>
-                <div class="ob-actions">
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdXVYaYcQXupc0LLH7ZR3UE9Ca5k9Xm2AG3Scft8NC65YuWIQ/viewform?usp=header" target="_blank" rel="noopener noreferrer" class="ob-link">📝 Complete the mandatory acknowledgment form</a>
-                    <span class="ob-note">Safeguarding Committee · reviewed annually</span>
-                </div>
-            </div>
-        </header>
 
         <!-- Progress Bar -->
         <div class="bg-white/85 backdrop-blur-xl border border-violet-200/80 rounded-2xl shadow-sm mb-10 p-4 flex items-center justify-between gap-4">
@@ -802,7 +794,7 @@
 
         <!-- Completion Banner -->
         <div id="completion-banner" data-cert-title="Child Protection, Safeguarding, and Drug Prevention — Annual Staff Training" data-cert-hours="2" class="ob-complete hidden bg-gradient-to-r from-indigo-600 via-violet-600 to-purple-600 rounded-2xl p-8 text-white text-center shadow-xl mb-10 fade-in">
-            <span class="text-5xl mb-4 block">🛡️</span>
+            <span class="aisa-banner-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="6"/><path d="M15.48 12.89 17 22l-5-3-5 3 1.52-9.11"/></svg></span>
             <h3 class="text-2xl font-heading font-black mb-2">Training Complete!</h3>
             <p class="text-violet-100 max-w-lg mx-auto">Thank you for protecting our students. If you haven't yet, complete the mandatory acknowledgment form — and remember: when in doubt, report to your DSL. Safeguarding is everyone's responsibility.</p>
         </div>
@@ -817,11 +809,10 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-violet-900 text-violet-200 py-10">
-        <div class="container mx-auto px-6 text-center">
-            <p class="font-bold text-white mb-1 font-heading">AISA — American International School in Abu Dhabi</p>
-            <p class="text-sm text-violet-300">Required Training | Child Protection, Safeguarding, and Drug Prevention · Safeguarding Committee</p>
-            <p class="text-xs text-violet-400 mt-4">If a child is in immediate danger, call 999. Report all safeguarding concerns to your DSL within 24 hours.</p>
+    <footer class="lh-footer aisa-mod-footer">
+        <div class="lh-footer__inner">
+            <span class="lh-footer__brand"><img src="../AISA_logo.png" alt="" width="28" height="28"><span data-ar="المدرسة الأمريكية الدولية في أبوظبي">American International School in Abu Dhabi</span></span>
+            <span class="aisa-mod-footer__meta"><span>Required Training | Child Protection, Safeguarding, and Drug Prevention · Safeguarding Committee</span><span>If a child is in immediate danger, call 999. Report all safeguarding concerns to your DSL within 24 hours.</span></span>
         </div>
     </footer>
 

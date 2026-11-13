@@ -7,15 +7,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
     <script>
         if (window.tailwind) {
-            tailwind.config = { theme: { extend: { fontFamily: { heading: ['Poppins', 'sans-serif'] } } } };
+            tailwind.config = { theme: { extend: { fontFamily: { heading: ['DM Sans', 'sans-serif'] } } } };
         }
     </script>
+    <script src="auth/tw-brand.js?v=1"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
+        body { font-family: 'DM Sans', sans-serif; }
+        .font-heading { font-family: 'DM Sans', sans-serif; }
         .bg-dot-pattern {
             background-color: #f8fafc;
             background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
@@ -50,7 +51,8 @@
         .target-chip.tag   { background:#eef2ff; color:#3730a3; border-color:#c7d2fe; }
         .target-chip.email { background:#fef3c7; color:#854d0e; border-color:#fde68a; }
     </style>
-    <script src="auth/gate.js?v=43"></script>
+    <link rel="stylesheet" href="auth/hub.css?v=1">
+    <script src="auth/gate.js?v=44"></script>
 </head>
 <body class="bg-dot-pattern text-gray-800 min-h-screen">
 

@@ -7,14 +7,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800;1,9..40,400&display=swap" rel="stylesheet">
     <script>
         if (window.tailwind) {
             tailwind.config = {
                 theme: {
                     extend: {
-                        fontFamily: { heading: ['Poppins', 'sans-serif'] },
-                        colors: { primary: '#0f766e', secondary: '#15803d', accent: '#14b8a6' },
+                        fontFamily: { heading: ['DM Sans', 'sans-serif'] },
+                        colors: { primary: '#21076C', secondary: '#3A1F94', accent: '#D8B664' },
                         animation: { 'blob': 'blob 7s infinite' },
                         keyframes: {
                             blob: {
@@ -29,13 +29,14 @@
             }
         }
     </script>
+    <script src="../auth/tw-brand.js?v=1"></script>
     <style>
         html { scroll-behavior: smooth; }
-        body { font-family: 'Inter', sans-serif; }
-        .font-heading { font-family: 'Poppins', sans-serif; }
+        body { font-family: 'DM Sans', sans-serif; }
+        .font-heading { font-family: 'DM Sans', sans-serif; }
         .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 20px 40px -10px rgba(15, 118, 110, 0.25); }
-        .hero-gradient { background: linear-gradient(135deg, #064e3b 0%, #0f766e 45%, #14b8a6 100%); }
+        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 2px 4px rgba(22,4,73,.06), 0 16px 40px -12px rgba(22,4,73,.22); }
+        .hero-gradient { background: #21076C; }
         .hero-overlay {
             background-image:
                 radial-gradient(circle at 20% 30%, rgba(255,255,255,0.12) 0, transparent 40%),
@@ -44,35 +45,31 @@
         /* Type badges shown on each tool card */
         .type-badge {
             position: absolute;
-            top: 0.625rem;
-            right: 0.625rem;
+            top: 1rem;
+            inset-inline-end: 1rem;
             display: inline-flex;
             align-items: center;
             gap: 0.25rem;
             padding: 0.125rem 0.5rem;
             border-radius: 9999px;
-            font-size: 9px;
-            font-weight: 800;
-            letter-spacing: 0.08em;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.06em;
             text-transform: uppercase;
             line-height: 1.4;
             border-width: 1px;
             z-index: 1;
             pointer-events: none;
         }
-        .type-badge-gem { background: linear-gradient(90deg, #faf5ff 0%, #fdf4ff 100%); color: #6b21a8; border-color: #e9d5ff; }
-        .type-badge-web { background: #f0fdfa; color: #0f766e; border-color: #99f6e4; }
-        .type-badge-module { background: #eef2ff; color: #4338ca; border-color: #c7d2fe; }
-        .type-badge-login { background: #fdf2f8; color: #be185d; border-color: #fbcfe8; }
-        .type-badge-form  { background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe; }
-        .type-badge-guide { background: #fff7ed; color: #9a3412; border-color: #fed7aa; }
+        .type-badge-gem { background: #FBF5E6; color: #7A5C14; border-color: rgba(216, 182, 100, .55); }
+        .type-badge-web, .type-badge-module, .type-badge-login, .type-badge-form, .type-badge-guide { background: #F2EFFA; color: #3A1F94; border-color: transparent; }
         /* Scroll offset so the topbar + sticky browse bar never cover a
            section heading that has just been jumped to. */
         .tool-category { scroll-margin-top: 12rem; }
         /* Gemini Gems showcase section accent */
         .gems-showcase {
-            background: linear-gradient(135deg, rgba(250, 245, 255, 0.6) 0%, rgba(243, 232, 255, 0.45) 100%);
-            border: 1px solid #ede9fe;
+            background: #F8F6FD;
+            border: 1px solid #E7E2F4;
             border-radius: 1.25rem;
             padding: 1.5rem 1.5rem 2rem;
         }
@@ -96,10 +93,10 @@
             z-index: 30;
             margin: 0 -1.5rem 2.5rem;
             padding: 0.875rem 1.5rem 0.9rem;
-            background: rgba(240, 253, 250, 0.94);
+            background: rgba(255, 255, 255, 0.94);
             -webkit-backdrop-filter: saturate(180%) blur(12px);
             backdrop-filter: saturate(180%) blur(12px);
-            border-bottom: 1px solid #ccfbf1;
+            border-bottom: 1px solid #E7E2F4;
         }
         .browse-bar input, .browse-bar select, .browse-bar button { box-sizing: border-box; }
         .browse-inner { max-width: 72rem; margin: 0 auto; display: flex; flex-direction: column; gap: 0.7rem; min-width: 0; }
@@ -109,23 +106,23 @@
         .browse-search { position: relative; flex: 1 1 18rem; min-width: 0; }
         .browse-search input {
             width: 100%;
-            padding: 0.7rem 5rem 0.7rem 2.85rem;
+            padding-block: 0.7rem; padding-inline: 2.85rem 5rem;
             border-radius: 9999px;
-            border: 1px solid #99f6e4;
+            border: 1px solid #C8BEE8;
             background: #ffffff;
-            color: #0f172a;
+            color: #1A1A1A;
             font-size: 0.9375rem;
-            box-shadow: 0 1px 2px rgba(15, 118, 110, 0.06);
+            box-shadow: 0 1px 2px rgba(22, 4, 73, 0.06);
             transition: border-color .15s ease, box-shadow .15s ease;
         }
         .browse-search input::placeholder { color: #94a3b8; font-weight: 400; }
-        .browse-search input:focus { outline: none; border-color: #14b8a6; box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18); }
-        .browse-search .s-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); width: 1.1rem; height: 1.1rem; color: #14b8a6; pointer-events: none; }
-        .browse-search .s-actions { position: absolute; right: 0.55rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.3rem; }
+        .browse-search input:focus { outline: none; border-color: #5B3FD0; box-shadow: 0 0 0 3px rgba(91, 63, 208, 0.18); }
+        .browse-search .s-icon { position: absolute; inset-inline-start: 1rem; top: 50%; transform: translateY(-50%); width: 1.1rem; height: 1.1rem; color: #5B3FD0; pointer-events: none; }
+        .browse-search .s-actions { position: absolute; inset-inline-end: 0.55rem; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 0.3rem; }
         .browse-kbd {
             font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-            font-size: 0.6875rem; font-weight: 700; color: #5eead4;
-            background: #f0fdfa; border: 1px solid #ccfbf1; border-radius: 0.375rem;
+            font-size: 0.6875rem; font-weight: 700; color: #7B66D9;
+            background: #F8F6FD; border: 1px solid #E7E2F4; border-radius: 0.375rem;
             padding: 0.15rem 0.4rem; line-height: 1;
         }
         @media (max-width: 640px) { .browse-kbd { display: none; } }
@@ -135,38 +132,38 @@
             color: #94a3b8; background: transparent; transition: all .15s ease;
         }
         .browse-clear.is-visible { display: inline-flex; }
-        .browse-clear:hover { background: #f1f5f9; color: #0f766e; }
+        .browse-clear:hover { background: #F2EFFA; color: #21076C; }
 
         /* --- secondary "Format" select: deliberately NOT a pill, so it can
                never be mistaken for the primary category row. --- */
         .browse-select-wrap { position: relative; flex: 0 0 auto; }
         .browse-select-wrap > label {
-            position: absolute; left: 0.95rem; top: 50%; transform: translateY(-50%);
+            position: absolute; inset-inline-start: 0.95rem; top: 50%; transform: translateY(-50%);
             font-size: 0.625rem; font-weight: 800; letter-spacing: 0.08em;
-            text-transform: uppercase; color: #5eead4; pointer-events: none;
+            text-transform: uppercase; color: #7B66D9; pointer-events: none;
         }
         .browse-select {
             appearance: none; -webkit-appearance: none;
-            padding: 0.7rem 2.1rem 0.7rem 4.4rem;
-            border-radius: 9999px; border: 1px solid #99f6e4; background: #ffffff;
-            color: #0f766e; font-size: 0.8125rem; font-weight: 700; cursor: pointer;
-            box-shadow: 0 1px 2px rgba(15, 118, 110, 0.06);
+            padding-block: 0.7rem; padding-inline: 4.4rem 2.1rem;
+            border-radius: 9999px; border: 1px solid #C8BEE8; background: #ffffff;
+            color: #21076C; font-size: 0.8125rem; font-weight: 700; cursor: pointer;
+            box-shadow: 0 1px 2px rgba(22, 4, 73, 0.06);
         }
-        .browse-select:focus { outline: none; border-color: #14b8a6; box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18); }
-        .browse-select-wrap .chev { position: absolute; right: 0.85rem; top: 50%; transform: translateY(-50%); width: 0.85rem; height: 0.85rem; color: #0f766e; pointer-events: none; }
+        .browse-select:focus { outline: none; border-color: #5B3FD0; box-shadow: 0 0 0 3px rgba(91, 63, 208, 0.18); }
+        .browse-select-wrap .chev { position: absolute; inset-inline-end: 0.85rem; top: 50%; transform: translateY(-50%); width: 0.85rem; height: 0.85rem; color: #21076C; pointer-events: none; }
 
         /* --- result count / reset --- */
-        .browse-status { margin-left: auto; display: flex; align-items: center; gap: 0.6rem; flex: 0 0 auto; }
-        .browse-count { font-size: 0.8125rem; font-weight: 700; color: #0f766e; white-space: nowrap; }
-        .browse-count .num { font-weight: 800; color: #134e4a; }
+        .browse-status { margin-inline-start: auto; display: flex; align-items: center; gap: 0.6rem; flex: 0 0 auto; }
+        .browse-count { font-size: 0.8125rem; font-weight: 700; color: #21076C; white-space: nowrap; }
+        .browse-count .num { font-weight: 800; color: #21076C; }
         .browse-reset {
             display: none; align-items: center; gap: 0.3rem;
             font-size: 0.75rem; font-weight: 800; letter-spacing: 0.04em;
-            color: #0f766e; background: #ccfbf1; border-radius: 9999px;
+            color: #21076C; background: #E4DEF5; border-radius: 9999px;
             padding: 0.35rem 0.7rem; transition: all .15s ease; white-space: nowrap;
         }
         .browse-reset.is-visible { display: inline-flex; }
-        .browse-reset:hover { background: #99f6e4; color: #115e59; }
+        .browse-reset:hover { background: #C8BEE8; color: #21076C; }
 
         /* --- the single pill row (categories) --- */
         /* min-width:0 is load-bearing. A nowrap flex row's min-content width is
@@ -178,51 +175,38 @@
         .browse-pill {
             display: inline-flex; align-items: center; gap: 0.4rem;
             padding: 0.45rem 0.9rem; border-radius: 9999px;
-            background: #ffffff; border: 1px solid #ccfbf1; color: #115e59;
-            font-size: 0.8125rem; font-weight: 700; white-space: nowrap;
+            background: #ffffff; border: 1px solid #E7E2F4; color: #3A1F94;
+            font-size: 0.8125rem; font-weight: 600; white-space: nowrap;
             cursor: pointer; transition: all .15s ease;
         }
-        .browse-pill:hover { background: #f0fdfa; border-color: #5eead4; transform: translateY(-1px); }
+        .browse-pill:hover { background: #F2EFFA; border-color: #A99BE0; }
         .browse-pill.is-active {
-            background: linear-gradient(135deg, #0f766e, #14b8a6);
+            background: #21076C;
             border-color: transparent; color: #ffffff;
-            box-shadow: 0 4px 12px -4px rgba(15, 118, 110, 0.55);
         }
         .browse-pill .n {
             font-size: 0.6875rem; font-weight: 800; line-height: 1;
-            background: #f0fdfa; color: #0f766e;
+            background: #F2EFFA; color: #3A1F94;
             border-radius: 9999px; padding: 0.2rem 0.4rem; min-width: 1.35rem; text-align: center;
         }
         .browse-pill.is-active .n { background: rgba(255,255,255,0.22); color: #ffffff; }
-        /* Gems keep their violet identity in the pill row too. */
-        .browse-pill[data-cat="cat-gems"] { border-color: #ddd6fe; color: #6b21a8; }
-        .browse-pill[data-cat="cat-gems"] .n { background: #f5f3ff; color: #6b21a8; }
-        .browse-pill[data-cat="cat-gems"]:hover { background: #faf5ff; border-color: #c4b5fd; }
-        .browse-pill[data-cat="cat-gems"].is-active { background: linear-gradient(135deg, #6d28d9, #a855f7); border-color: transparent; color: #ffffff; }
-        .browse-pill[data-cat="cat-gems"].is-active .n { background: rgba(255,255,255,0.22); color: #ffffff; }
-
-        /* --- page header --- */
-        .page-head { max-width: 72rem; margin: 0 auto 1.75rem; }
-        .page-head .eyebrow { font-size: 0.6875rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #0d9488; }
-        .page-head h1 { font-size: clamp(1.75rem, 4vw, 2.5rem); font-weight: 800; color: #134e4a; line-height: 1.1; margin: 0.3rem 0 0.5rem; }
-        .page-head p { color: #475569; font-size: 0.9375rem; max-width: 46rem; }
 
         /* Empty state */
         .empty-state {
             text-align: center;
             padding: 3rem 1.5rem;
             background: #ffffff;
-            border: 2px dashed #ccfbf1;
-            border-radius: 1.25rem;
+            border: 1px dashed #C8BEE8;
+            border-radius: 16px;
             color: #475569;
         }
-        .empty-state .empty-emoji { font-size: 3rem; margin-bottom: 0.5rem; line-height: 1; }
-        .empty-state h3 { font-size: 1.125rem; font-weight: 800; color: #134e4a; margin-bottom: 0.375rem; }
+        .empty-state .lh-icon { margin-bottom: 0.75rem; }
+        .empty-state h3 { font-size: 1.125rem; font-weight: 700; color: #1A1A1A; margin-bottom: 0.375rem; }
         .empty-state p { font-size: 0.875rem; max-width: 28rem; margin: 0 auto; }
 
         /* ===== All Things MAP page polish ===== */
         .map-hero {
-            background: linear-gradient(135deg, #0c4a6e 0%, #0e7490 45%, #0891b2 100%);
+            background: #21076C;
             position: relative;
             overflow: hidden;
         }
@@ -231,8 +215,8 @@
             position: absolute;
             inset: 0;
             background-image:
-                radial-gradient(circle at 15% 25%, rgba(255,255,255,0.15) 0, transparent 35%),
-                radial-gradient(circle at 85% 75%, rgba(251, 191, 36, 0.12) 0, transparent 40%);
+                radial-gradient(60rem 30rem at 85% -20%, rgba(91, 63, 208, .55), transparent 60%),
+                radial-gradient(40rem 20rem at -10% 120%, rgba(216, 182, 100, .14), transparent 60%);
             pointer-events: none;
         }
         .map-phase-nav {
@@ -266,12 +250,8 @@
             font-size: 0.7rem;
             font-weight: 900;
         }
-        .map-phase-tab.tab-before:hover { background: #dbeafe; color: #1e3a8a; }
-        .map-phase-tab.tab-before .num { color: #1e3a8a; }
-        .map-phase-tab.tab-day:hover { background: #ede9fe; color: #5b21b6; }
-        .map-phase-tab.tab-day .num { color: #5b21b6; }
-        .map-phase-tab.tab-after:hover { background: #d1fae5; color: #065f46; }
-        .map-phase-tab.tab-after .num { color: #065f46; }
+        .map-phase-tab:hover { background: #F2EFFA; color: #21076C; }
+        .map-phase-tab .num { color: #21076C; }
 
         /* Phase banners */
         .map-phase-banner {
@@ -291,9 +271,8 @@
             display: inline-flex; align-items: center; justify-content: center;
             font-weight: 900; font-size: 1.25rem;
         }
-        .map-phase-banner.phase-before { background: linear-gradient(120deg, #1e3a8a 0%, #2563eb 100%); }
-        .map-phase-banner.phase-day    { background: linear-gradient(120deg, #5b21b6 0%, #8b5cf6 100%); }
-        .map-phase-banner.phase-after  { background: linear-gradient(120deg, #065f46 0%, #10b981 100%); }
+        .map-phase-banner { background: #21076C; box-shadow: 0 16px 40px -16px rgba(22, 4, 73, .4); }
+        .map-phase-banner .badge { color: #D8B664; border-color: rgba(216, 182, 100, .55); background: rgba(255, 255, 255, .08); }
 
         /* Cards */
         .map-card {
@@ -306,9 +285,7 @@
         }
         @media (min-width: 768px) { .map-card { padding: 1.75rem; } }
         .map-card:hover { transform: translateY(-2px); box-shadow: 0 12px 28px -16px rgba(15, 23, 42, 0.25); }
-        .map-card.phase-before:hover { border-color: #93c5fd; }
-        .map-card.phase-day:hover    { border-color: #c4b5fd; }
-        .map-card.phase-after:hover  { border-color: #6ee7b7; }
+        .map-card:hover { border-color: #C8BEE8; }
         .map-card-header {
             display: flex; align-items: center; gap: 0.75rem;
             margin-bottom: 1rem;
@@ -319,9 +296,13 @@
             display: inline-flex; align-items: center; justify-content: center;
             font-size: 1.2rem;
         }
-        .map-card.phase-before .map-card-icon { background: #dbeafe; color: #1e3a8a; }
-        .map-card.phase-day .map-card-icon    { background: #ede9fe; color: #5b21b6; }
-        .map-card.phase-after .map-card-icon  { background: #d1fae5; color: #065f46; }
+        .map-card .map-card-icon { background: #F2EFFA; color: #21076C; }
+        .map-card-icon svg, .map-callout .icon svg { width: 1.25rem; height: 1.25rem; }
+        .map-callout .icon svg { width: 1.1rem; height: 1.1rem; }
+        .map-mini-icon { display: inline-flex; color: #21076C; }
+        .map-mini-icon svg { width: 1.5rem; height: 1.5rem; }
+        .map-mini-icon--lg svg { width: 2.25rem; height: 2.25rem; }
+        .map-feature-icon svg { width: 2.75rem; height: 2.75rem; color: #D8B664; }
         .map-card-title { font-size: 1.0625rem; font-weight: 800; color: #0f172a; line-height: 1.3; }
 
         /* Resource-link rows: chunkier, hoverable, with external arrow */
@@ -337,13 +318,9 @@
             transition: all 0.16s ease;
             margin-bottom: 0.375rem;
         }
-        .map-link:hover { background: #eff6ff; border-color: #bfdbfe; transform: translateX(3px); }
+        .map-link:hover { background: #F8F6FD; border-color: #E7E2F4; }
         .map-link .arrow { color: #94a3b8; flex-shrink: 0; transition: transform 0.18s ease, color 0.18s ease; }
-        .map-link:hover .arrow { color: #2563eb; transform: translate(2px, -2px); }
-        .map-link.phase-day:hover    { background: #f5f3ff; border-color: #ddd6fe; }
-        .map-link.phase-day:hover .arrow { color: #7c3aed; }
-        .map-link.phase-after:hover  { background: #ecfdf5; border-color: #a7f3d0; }
-        .map-link.phase-after:hover .arrow { color: #059669; }
+        .map-link:hover .arrow { color: #5B3FD0; transform: translate(2px, -2px); }
         .map-link-title { font-weight: 600; color: #0f172a; }
         .map-link-desc { font-size: 0.75rem; color: #64748b; margin-top: 0.1rem; }
 
@@ -360,9 +337,8 @@
         .window-card .label { font-size: 0.625rem; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase; }
         .window-card .date  { font-size: 1.0625rem; font-weight: 800; line-height: 1.15; margin-top: 0.2rem; }
         .window-card .note  { font-size: 0.7rem; opacity: 0.85; margin-top: 0.25rem; }
-        .window-card.fall   { background: #fff7ed; border-color: #fdba74; color: #9a3412; }
-        .window-card.winter { background: #ecfeff; border-color: #67e8f9; color: #155e75; }
-        .window-card.spring { background: #ecfdf5; border-color: #6ee7b7; color: #065f46; }
+        .window-card.fall, .window-card.winter, .window-card.spring { background: #ffffff; border-color: #E7E2F4; color: #21076C; border-width: 1px; }
+        .window-card:hover { border-color: #C8BEE8; }
 
         /* Tables */
         .map-table-wrap {
@@ -372,11 +348,11 @@
             background: #fff;
         }
         .map-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
-        .map-table thead { background: linear-gradient(90deg, #1e40af 0%, #2563eb 100%); color: #fff; }
+        .map-table thead { background: #21076C; color: #fff; }
         .map-table th { text-align: left; padding: 0.7rem 0.9rem; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; }
         .map-table td { padding: 0.75rem 0.9rem; border-top: 1px solid #f1f5f9; color: #334155; vertical-align: top; }
         .map-table tbody tr:nth-child(even) { background: #f8fafc; }
-        .map-table tbody tr:hover { background: #eff6ff; }
+        .map-table tbody tr:hover { background: #F2EFFA; }
         .map-table .subj { font-weight: 700; color: #0f172a; }
         .map-table .dash { color: #cbd5e1; font-weight: 500; }
         .badge-action { display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.15rem 0.55rem; border-radius: 9999px; font-weight: 700; font-size: 0.65rem; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -396,8 +372,8 @@
         .map-callout.warn .icon { background: #fee2e2; color: #b91c1c; }
         .map-callout.tip  { background: #fffbeb; border-left: 4px solid #f59e0b; color: #7c2d12; }
         .map-callout.tip .icon  { background: #fef3c7; color: #92400e; }
-        .map-callout.info { background: #eff6ff; border-left: 4px solid #3b82f6; color: #1e3a8a; }
-        .map-callout.info .icon { background: #dbeafe; color: #1e40af; }
+        .map-callout.info { background: #F8F6FD; border-left: 4px solid #5B3FD0; color: #21076C; }
+        .map-callout.info .icon { background: #F2EFFA; color: #21076C; }
 
         /* Steps list */
         .map-steps { counter-reset: step; list-style: none; padding: 0; margin: 0; }
@@ -416,15 +392,12 @@
             left: 0; top: 0;
             width: 2rem; height: 2rem;
             border-radius: 9999px;
-            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            background: #21076C;
             color: #fff;
             display: inline-flex; align-items: center; justify-content: center;
             font-weight: 800;
             font-size: 0.8rem;
-            box-shadow: 0 4px 10px -2px rgba(59, 130, 246, 0.35);
         }
-        .map-steps.phase-day > li::before    { background: linear-gradient(135deg, #5b21b6, #8b5cf6); box-shadow: 0 4px 10px -2px rgba(124, 58, 237, 0.35); }
-        .map-steps.phase-after > li::before  { background: linear-gradient(135deg, #065f46, #10b981); box-shadow: 0 4px 10px -2px rgba(16, 185, 129, 0.35); }
         .map-steps[start="8"] { counter-reset: step 7; }
         .map-steps[start="9"] { counter-reset: step 8; }
 
@@ -452,41 +425,74 @@
             font-size: 0.75rem;
             font-weight: 600;
         }
-    </style>
-    <script src="../auth/gate.js?v=43"></script>
-</head>
-<body class="bg-teal-50 text-gray-800 min-h-screen flex flex-col">
 
-<!-- Floating: Request a Tool or Resource.
-     Anchored to the BOTTOM right. It used to be top-24, which now sits
-     inside the sticky browse bar and covered the result count. -->
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeN_BO2PljIaKgvU-Khn-Zzr0mHsuyXTSamizOU3bV3rWhm-w/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer"
-       class="group fixed bottom-5 right-4 md:right-6 z-40 inline-flex items-center gap-2 bg-gradient-to-r from-teal-700 to-emerald-600 text-white pl-3 pr-4 py-2.5 rounded-full shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all font-semibold text-sm whitespace-nowrap"
-       title="Request a Tool or Resource">
-        <span class="w-7 h-7 rounded-full bg-white/15 border border-white/20 flex items-center justify-center text-base leading-none group-hover:rotate-12 transition-transform">&#10024;</span>
-        <span class="hidden sm:inline">Request a Tool or Resource</span>
-        <span class="hidden md:inline-flex items-center text-[10px] font-bold bg-white/15 border border-white/20 rounded-full px-2 py-0.5 uppercase tracking-wider">New</span>
-    </a>
+        /* ===== Redesign, 10 Nov 2026: the page on the Hub's design system
+           (auth/hub.css), the same layer as PD Modules/pd.html. One card
+           style for every tool: white, a hairline border, the icon or logo
+           top-left, text left-aligned, the type as a small chip. ===== */
+        #main-view main > .container { max-width: 1248px; }
+        .browse-bar { margin-top: 0; }
+        .category-header .lh-icon { width: 2.25rem; height: 2.25rem; border-radius: 10px; }
+        .category-header .lh-icon svg { width: 1.15rem; height: 1.15rem; }
+        .category-header h3 { font-size: 1.375rem !important; color: #1A1A1A !important; letter-spacing: -.015em; }
+        .category-header + p { color: #5E5A6B !important; }
+        .tool-item > div {
+            border: 1px solid #E7E2F4 !important; border-radius: 16px !important;
+            box-shadow: 0 1px 2px rgba(22,4,73,.06) !important;
+            text-align: start !important; align-items: stretch !important;
+        }
+        .tool-item > div.card-hover:hover, .tool-item > div:hover {
+            border-color: #C8BEE8 !important;
+            box-shadow: 0 2px 4px rgba(22,4,73,.06), 0 16px 40px -12px rgba(22,4,73,.22) !important;
+            transform: translateY(-2px);
+        }
+        .tool-item > div > a.flex-grow { text-align: start !important; align-items: flex-start !important; }
+        .tool-item > div > a.flex-grow:hover { background: transparent !important; }
+        .tool-item .tc-icon, .tool-item .mb-3.h-12 { height: 2.75rem !important; margin-bottom: 1rem !important; justify-content: flex-start !important; display: flex; align-items: center; }
+        .tool-item .mb-3.h-12 img { height: 2.5rem; width: auto; max-width: 6rem; }
+        .tool-item h4 { font-size: 1.0625rem !important; font-weight: 700 !important; color: #1A1A1A; line-height: 1.3; letter-spacing: -.01em; }
+        .tool-item p { color: #5E5A6B !important; line-height: 1.55; }
+        .tool-item > div > a:not(.flex-grow) { border-top-style: solid !important; border-top-color: #E7E2F4 !important; background: #F8F6FD !important; }
+        .tool-item > div > a:not(.flex-grow):hover { background: #F2EFFA !important; }
+        @media (prefers-reduced-motion: reduce) { .tool-item > div:hover { transform: none; } }
+        @media (max-width: 640px) {
+            .gems-showcase { padding: 1.25rem 1rem 1.25rem; margin-inline: -0.25rem; }
+            .category-header { flex-wrap: wrap; row-gap: .5rem; }
+            .category-header h3 { white-space: nowrap; }
+            .category-header > .flex-grow { display: none; }
+        }
+    </style>
+    <link rel="stylesheet" href="../auth/hub.css?v=1">
+    <script src="../auth/gate.js?v=44"></script>
+</head>
+<body class="bg-white text-gray-800 min-h-screen flex flex-col">
 
     <!-- MAIN VIEW: Tools grid -->
     <div id="main-view">
+        <!-- Page header (auth/hub.css .lh-hero). The request button used to
+             float bottom-right; it lives here now, beside the title. -->
+        <section class="lh-hero">
+            <div class="lh-hero__inner">
+                <div class="lh-hero__row">
+                    <div class="lh-hero__main">
+                        <p class="lh-hero__eyebrow">Teaching &amp; learning</p>
+                        <h1 class="lh-hero__title">Tools &amp; Resources</h1>
+                        <p class="lh-hero__lede">Everything staff can pick up and use today: custom Gemini Gems, AI assistants,
+                           assessment guides, curriculum material and the school&rsquo;s forms.
+                           Filter by category, or search if you already know what you want.</p>
+                    </div>
+                    <div class="lh-hero__actions">
+                        <a class="lh-btn lh-btn--gold" href="https://docs.google.com/forms/d/e/1FAIpQLSeN_BO2PljIaKgvU-Khn-Zzr0mHsuyXTSamizOU3bV3rWhm-w/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><path d="M12 7v6M9 10h6"/></svg>
+                            Request a tool or resource</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Main -->
         <main class="flex-grow">
-            <div class="container mx-auto px-6 py-14">
-
-                <!-- =====================================================
-                     Page header. Both hub index pages (this and pd.html)
-                     open with the same three lines: eyebrow, H1, one
-                     sentence of orientation. Before this the page began
-                     cold with a search box and no title at all.
-                     ===================================================== -->
-                <header class="page-head">
-                    <p class="eyebrow">AISA Learning Hub</p>
-                    <h1 class="font-heading">Tools &amp; Resources</h1>
-                    <p>Everything staff can pick up and use today — custom Gemini Gems, AI assistants,
-                       assessment guides, curriculum material and the school’s forms.
-                       Filter by category, or search if you already know what you want.</p>
-                </header>
+            <div class="container mx-auto px-6 pb-14">
 
                 <!-- =====================================================
                      BROWSE BAR — one bar, one taxonomy.
@@ -519,12 +525,12 @@
                             <label for="tools-format">Format</label>
                             <select id="tools-format" class="browse-select">
                                 <option value="all">Any</option>
-                                <option value="gem">✨ Gems</option>
-                                <option value="web">🌐 Web tools</option>
-                                <option value="module">📦 Modules &amp; templates</option>
-                                <option value="guide">📖 Guides</option>
-                                <option value="form">📋 Forms</option>
-                                <option value="login">🔐 Needs a login</option>
+                                <option value="gem">Gems</option>
+                                <option value="web">Web tools</option>
+                                <option value="module">Modules &amp; templates</option>
+                                <option value="guide">Guides</option>
+                                <option value="form">Forms</option>
+                                <option value="login">Needs a login</option>
                             </select>
                             <svg class="chev" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/></svg>
                         </div>
@@ -542,19 +548,19 @@
 
                     <div class="browse-pills" role="group" aria-label="Filter by category">
                         <button type="button" class="browse-pill is-active" data-cat="all" aria-pressed="true">All <span class="n" data-count="all">0</span></button>
-                        <button type="button" class="browse-pill" data-cat="cat-gems" aria-pressed="false"><span aria-hidden="true">✨</span> Gemini Gems <span class="n" data-count="cat-gems">0</span></button>
-                        <button type="button" class="browse-pill" data-cat="cat-ai" aria-pressed="false"><span aria-hidden="true">🪄</span> AI Assistants <span class="n" data-count="cat-ai">0</span></button>
-                        <button type="button" class="browse-pill" data-cat="cat-interactive" aria-pressed="false"><span aria-hidden="true">🤖</span> Interactive Learning <span class="n" data-count="cat-interactive">0</span></button>
-                        <button type="button" class="browse-pill" data-cat="cat-assessment" aria-pressed="false"><span aria-hidden="true">📊</span> Assessment &amp; Test Prep <span class="n" data-count="cat-assessment">0</span></button>
-                        <button type="button" class="browse-pill" data-cat="cat-curriculum" aria-pressed="false"><span aria-hidden="true">📚</span> Curriculum <span class="n" data-count="cat-curriculum">0</span></button>
-                        <button type="button" class="browse-pill" data-cat="cat-forms" aria-pressed="false"><span aria-hidden="true">📋</span> Forms &amp; Documents <span class="n" data-count="cat-forms">0</span></button>
+                        <button type="button" class="browse-pill" data-cat="cat-gems" aria-pressed="false">Gemini Gems <span class="n" data-count="cat-gems">0</span></button>
+                        <button type="button" class="browse-pill" data-cat="cat-ai" aria-pressed="false">AI Assistants <span class="n" data-count="cat-ai">0</span></button>
+                        <button type="button" class="browse-pill" data-cat="cat-interactive" aria-pressed="false">Interactive Learning <span class="n" data-count="cat-interactive">0</span></button>
+                        <button type="button" class="browse-pill" data-cat="cat-assessment" aria-pressed="false">Assessment &amp; Test Prep <span class="n" data-count="cat-assessment">0</span></button>
+                        <button type="button" class="browse-pill" data-cat="cat-curriculum" aria-pressed="false">Curriculum <span class="n" data-count="cat-curriculum">0</span></button>
+                        <button type="button" class="browse-pill" data-cat="cat-forms" aria-pressed="false">Forms &amp; Documents <span class="n" data-count="cat-forms">0</span></button>
                     </div>
                   </div>
                 </div>
 
                 <!-- Empty state (shown when nothing matches) -->
                 <div id="tools-search-empty" class="empty-state hidden max-w-xl mx-auto mb-10">
-                    <div class="empty-emoji" aria-hidden="true">🔎</div>
+                    <span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
                     <h3 class="font-heading">Nothing matches that</h3>
                     <p>Try a different keyword, pick another category, or hit Reset to see everything again.</p>
                 </div>
@@ -565,7 +571,7 @@
                     <!-- Category: Gemini Gems (Showcase) -->
                     <section id="cat-gems" class="tool-category mb-12 gems-showcase">
                         <div class="category-header flex items-center gap-3 mb-5">
-                            <span class="text-2xl">✨</span>
+                            <span class="lh-icon cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0l1.58 6.14a2 2 0 0 0 1.44 1.44l6.14 1.58a.5.5 0 0 1 0 .96l-6.14 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4"/></svg></span>
                             <h3 class="text-2xl font-heading font-bold text-violet-900">Gemini Gems</h3>
                             <span class="text-[10px] font-bold uppercase tracking-widest text-violet-600 bg-violet-100 border border-violet-200 rounded-full px-2 py-0.5">Custom AI Tools</span>
                             <div class="flex-grow h-px bg-gradient-to-r from-violet-200 to-transparent"></div>
@@ -577,8 +583,8 @@
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-violet-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-gem">Gem</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
-                                        <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="Gemini Gem Logo" class="h-10 w-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <span style="display:none;" class="text-4xl">🤖</span>
+                                        <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="Gemini Gem Logo" class="h-10 w-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                        <span style="display:none;" class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M12 8V4H8M2 14h2M20 14h2M15 13v2M9 13v2"/></svg></span>
                                     </div>
                                     <h4 class="text-lg font-semibold mb-2">EduSim</h4>
                                     <p class="text-sm text-gray-600">An advanced AI agent that instantly codes high-quality, interactive educational simulations tailored to your curriculum.</p>
@@ -589,8 +595,8 @@
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-violet-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-gem">Gem</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
-                                        <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="Gemini Gem Logo" class="h-10 w-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <span style="display:none;" class="text-4xl">📝</span>
+                                        <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="Gemini Gem Logo" class="h-10 w-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                        <span style="display:none;" class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v10"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10.4 12.6a2 2 0 1 1 3 3L8 21l-4 1 1-4Z"/></svg></span>
                                     </div>
                                     <h4 class="text-lg font-semibold mb-2">IB Exam Format Generator</h4>
                                     <p class="text-sm text-gray-600">A Gemini Gem that turns any content into a downloadable PDF styled like an authentic IB exam paper — perfect for familiarizing students with the format.</p>
@@ -601,8 +607,8 @@
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-violet-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-gem">Gem</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
-                                        <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="Gemini Gem Logo" class="h-10 w-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <span style="display:none;" class="text-4xl">🗂️</span>
+                                        <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="Gemini Gem Logo" class="h-10 w-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                        <span style="display:none;" class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span>
                                     </div>
                                     <h4 class="text-lg font-semibold mb-2">Scope &amp; Sequence Auditor</h4>
                                     <p class="text-sm text-gray-600">A Gemini Gem that reviews your scope and sequence and generates a printable PDF audit report — perfect for refining curriculum alignment and coherence.</p>
@@ -615,7 +621,7 @@
                     <!-- Category: AI Teaching Assistants -->
                     <section id="cat-ai" class="tool-category mb-12">
                         <div class="category-header flex items-center gap-3 mb-5">
-                            <span class="text-2xl">🪄</span>
+                            <span class="lh-icon cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/><path d="m14 7 3 3M5 6v4M19 14v4M10 2v2M7 8H3M21 16h-4M11 3H9"/></svg></span>
                             <h3 class="text-2xl font-heading font-bold text-teal-900">AI Teaching Assistants</h3>
                             <div class="flex-grow h-px bg-gradient-to-r from-teal-200 to-transparent"></div>
                         </div>
@@ -626,7 +632,7 @@
                                 <div class="relative bg-white rounded-lg shadow-lg card-hover transition-all duration-300 h-full border border-purple-100 flex flex-col items-stretch overflow-hidden">
                                     <span class="type-badge type-badge-guide">Guide</span>
                                     <a href="flint-guide.html" class="flex-grow p-6 flex flex-col items-center justify-start text-center hover:bg-purple-50/40 transition-colors">
-                                        <div class="text-4xl mb-3">🔥</div>
+                                        <div class="tc-icon"><span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></span></div>
                                         <h4 class="text-lg font-semibold mb-2">Flint Master Guide</h4>
                                         <p class="text-sm text-gray-600">Plan lessons, differentiate, give feedback and build student AI chatbots in Flint, with step-by-step screenshots and copy-ready prompts for the tools AISA teachers use most.</p>
                                     </a>
@@ -662,8 +668,8 @@
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-blue-50 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-web">Web Tool</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
-                                        <img src="https://www.google.com/s2/favicons?domain=notebooklm.google&sz=128" alt="NotebookLM Logo" class="h-10 w-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <span style="display:none;" class="text-4xl text-blue-600">📓</span>
+                                        <img src="https://www.google.com/s2/favicons?domain=notebooklm.google&sz=128" alt="NotebookLM Logo" class="h-10 w-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                        <span style="display:none;" class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
                                     </div>
                                     <h4 class="text-lg font-semibold mb-2">NotebookLM</h4>
                                     <p class="text-sm text-gray-600">Your personalized AI research assistant and study companion.</p>
@@ -674,8 +680,8 @@
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-purple-50 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-web">Web Tool</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
-                                        <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="Gemini Storybooks Logo" class="h-10 w-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <span style="display:none;" class="text-4xl text-blue-600">✨</span>
+                                        <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="Gemini Storybooks Logo" class="h-10 w-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                        <span style="display:none;" class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.94 15.5a2 2 0 0 0-1.44-1.44l-6.13-1.58a.5.5 0 0 1 0-.96L8.5 9.94A2 2 0 0 0 9.94 8.5l1.58-6.14a.5.5 0 0 1 .96 0l1.58 6.14a2 2 0 0 0 1.44 1.44l6.14 1.58a.5.5 0 0 1 0 .96l-6.14 1.58a2 2 0 0 0-1.44 1.44l-1.58 6.14a.5.5 0 0 1-.96 0z"/><path d="M20 3v4M22 5h-4"/></svg></span>
                                     </div>
                                     <h4 class="text-lg font-semibold mb-2">Gemini Storybooks</h4>
                                     <p class="text-sm text-gray-600">Create engaging, personalized stories for your students with AI.</p>
@@ -687,7 +693,7 @@
                                 <div class="relative bg-white rounded-lg shadow-lg card-hover transition-all duration-300 h-full border border-indigo-100 flex flex-col items-stretch overflow-hidden">
                                     <span class="type-badge type-badge-guide">Guide</span>
                                     <a href="../PD%20Day/assets/october-2026/ai-adventure/AISA-AI-PD-Station-Guides.zip" download class="flex-grow p-6 flex flex-col items-center justify-start text-center hover:bg-indigo-50/40 transition-colors">
-                                        <div class="text-4xl mb-3">🦁</div>
+                                        <div class="tc-icon"><span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg></span></div>
                                         <h4 class="text-lg font-semibold mb-2">AI PD Station Guides</h4>
                                         <p class="text-sm text-gray-600">Step-by-step guides with screenshots for the seven AI PD stations, in English and Arabic: Gemini in Classroom, Slides, Vids, Canvas, the Data Anonymizer and AI &amp; assessment. One .zip of PDFs to print or keep offline (31 MB).</p>
                                     </a>
@@ -708,7 +714,7 @@
                     <!-- Category: Interactive Learning -->
                     <section id="cat-interactive" class="tool-category mb-12">
                         <div class="category-header flex items-center gap-3 mb-5">
-                            <span class="text-2xl">🤖</span>
+                            <span class="lh-icon cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M12 8V4H8M2 14h2M20 14h2M15 13v2M9 13v2"/></svg></span>
                             <h3 class="text-2xl font-heading font-bold text-teal-900">Interactive Learning</h3>
                             <div class="flex-grow h-px bg-gradient-to-r from-teal-200 to-transparent"></div>
                         </div>
@@ -717,7 +723,7 @@
                             <a href="https://gemini.google.com/gem/11QD4AkTJjpXVgEGw8SJ74nq99ntDfv8V?usp=sharing" target="_blank" rel="noopener noreferrer" class="block tool-item" data-canonical="false" data-type="gem" data-keywords="edusim simulation ai agent coding generator interactive experiences gemini gem">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-yellow-100">
                                     <span class="type-badge type-badge-gem">Gem</span>
-                                    <div class="text-4xl text-blue-600 mb-3">🤖</div>
+                                    <div class="tc-icon"><span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="12" rx="2"/><path d="M12 8V4H8M2 14h2M20 14h2M15 13v2M9 13v2"/></svg></span></div>
                                     <h4 class="text-lg font-semibold mb-2">EduSim</h4>
                                     <p class="text-sm text-gray-600">An advanced AI agent that instantly codes high-quality, interactive educational simulations tailored to your curriculum.</p>
                                 </div>
@@ -726,7 +732,7 @@
                             <a href="https://app.magicschool.ai/magic-student/rooms?room-sharing-id=a86b4fad-e4a2-45d6-a23e-b463082d27a7" target="_blank" rel="noopener noreferrer" class="block tool-item" data-type="web" data-keywords="pbl project based learning chatbot ai magicschool student room inquiry">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-orange-100">
                                     <span class="type-badge type-badge-web">Web Tool</span>
-                                    <div class="text-4xl mb-3">💬</div>
+                                    <div class="tc-icon"><span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg></span></div>
                                     <h4 class="text-lg font-semibold mb-2">PBL Chatbot</h4>
                                     <p class="text-sm text-gray-600">An AI-powered chatbot to guide students through Project-Based Learning activities and inquiry.</p>
                                 </div>
@@ -738,7 +744,7 @@
                     <!-- Category: Assessment & Test Prep -->
                     <section id="cat-assessment" class="tool-category mb-12">
                         <div class="category-header flex items-center gap-3 mb-5">
-                            <span class="text-2xl">📊</span>
+                            <span class="lh-icon cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg></span>
                             <h3 class="text-2xl font-heading font-bold text-teal-900">Assessment &amp; Test Prep</h3>
                             <div class="flex-grow h-px bg-gradient-to-r from-teal-200 to-transparent"></div>
                         </div>
@@ -747,7 +753,7 @@
                             <a href="ai-growth-test-guide.html" class="block tool-item" data-type="guide" data-keywords="aigt ai growth test adek instructwin baseline assessment proctor ai lead grades 4-12 access code roster timetable incident invigilate proctoring guide september october window">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-orange-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-guide">Guide</span>
-                                    <div class="text-4xl mb-3">🧭</div>
+                                    <div class="tc-icon"><span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36z"/></svg></span></div>
                                     <h4 class="text-lg font-bold mb-2">AI Growth Test — AI Lead &amp; Proctor Guide</h4>
                                     <p class="text-sm text-gray-600">ADEK's Baseline AI Growth Test on InstrucTwin, Grades 4&ndash;12. Set-up, access codes, roster checks, test-day monitoring and incident reporting &mdash; filtered to your role.</p>
                                 </div>
@@ -757,8 +763,8 @@
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-pink-100 flex flex-col items-center justify-center">
                                     <span class="type-badge type-badge-module">Module</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
-                                        <img src="nwea_MAP_logo.jpg" alt="NWEA MAP Logo" class="h-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <span style="display:none;" class="text-4xl">📈</span>
+                                        <img src="nwea_MAP_logo.jpg" alt="NWEA MAP Logo" class="h-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                        <span style="display:none;" class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></svg></span>
                                     </div>
                                     <h4 class="text-lg font-bold mb-2">MAP Testing Hub</h4>
                                     <p class="text-sm text-gray-600">Trainings for teachers on assigning MAP tests, accommodations, and understanding RIT scores.</p>
@@ -768,7 +774,7 @@
                             <a href="https://brandonabaki-design.github.io/PIRLS-pal/" target="_blank" rel="noopener noreferrer" class="block tool-item" data-type="web" data-keywords="pirls test reading literacy pal students parents teachers expectations">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-indigo-100">
                                     <span class="type-badge type-badge-web">Web Tool</span>
-                                    <div class="text-4xl mb-3">📚</div>
+                                    <div class="tc-icon"><span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14M12 6v14M8 8v12M4 4v16"/></svg></span></div>
                                     <h4 class="text-lg font-semibold mb-2">PIRLSpal</h4>
                                     <p class="text-sm text-gray-600">A guide to help students, teachers, and parents prepare for the PIRLS test.</p>
                                 </div>
@@ -778,8 +784,8 @@
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-blue-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-gem">Gem</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
-                                        <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="Gemini Gem Logo" class="h-10 w-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <span style="display:none;" class="text-4xl">📝</span>
+                                        <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="Gemini Gem Logo" class="h-10 w-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                        <span style="display:none;" class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v10"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10.4 12.6a2 2 0 1 1 3 3L8 21l-4 1 1-4Z"/></svg></span>
                                     </div>
                                     <h4 class="text-lg font-semibold mb-2">IB Exam Format Generator</h4>
                                     <p class="text-sm text-gray-600">A Gemini Gem that turns any content into a downloadable PDF styled like an authentic IB exam paper — perfect for familiarizing students with the format.</p>
@@ -792,7 +798,7 @@
                     <!-- Category: Curriculum Resources -->
                     <section id="cat-curriculum" class="tool-category mb-12">
                         <div class="category-header flex items-center gap-3 mb-5">
-                            <span class="text-2xl">📚</span>
+                            <span class="lh-icon cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
                             <h3 class="text-2xl font-heading font-bold text-teal-900">Curriculum Resources</h3>
                             <div class="flex-grow h-px bg-gradient-to-r from-teal-200 to-transparent"></div>
                         </div>
@@ -801,7 +807,7 @@
                             <a href="#module-twinkl" class="block tool-item" data-type="login" data-keywords="twinkl resources worksheets lesson plans assessment materials uae teachers login">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-pink-200">
                                     <span class="type-badge type-badge-login">Login</span>
-                                    <div class="text-4xl mb-3">⭐</div>
+                                    <div class="tc-icon"><span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg></span></div>
                                     <h4 class="text-lg font-semibold mb-2">Twinkl Resources</h4>
                                     <p class="text-sm text-gray-600">Access Twinkl UAE plus the school login credentials and a quick-start video guide.</p>
                                 </div>
@@ -811,8 +817,8 @@
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-emerald-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-gem">Gem</span>
                                     <div class="mb-3 h-12 w-full flex items-center justify-center">
-                                        <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="Gemini Gem Logo" class="h-10 w-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <span style="display:none;" class="text-4xl">🗂️</span>
+                                        <img src="https://www.google.com/s2/favicons?domain=gemini.google.com&sz=128" alt="Gemini Gem Logo" class="h-10 w-10 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-flex';">
+                                        <span style="display:none;" class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span>
                                     </div>
                                     <h4 class="text-lg font-semibold mb-2">Scope &amp; Sequence Auditor</h4>
                                     <p class="text-sm text-gray-600">A Gemini Gem that reviews your scope and sequence and generates a printable PDF audit report — perfect for refining curriculum alignment and coherence.</p>
@@ -822,7 +828,7 @@
                             <a href="lesson-planning-tool.html" class="block tool-item" data-type="module" data-keywords="lesson planning tool template excellent teaching learning checklist high impact strategies differentiation critical thinking printable pdf domains adek standards rubric">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-teal-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-module">Template</span>
-                                    <div class="text-4xl mb-3">📝</div>
+                                    <div class="tc-icon"><span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v10"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10.4 12.6a2 2 0 1 1 3 3L8 21l-4 1 1-4Z"/></svg></span></div>
                                     <h4 class="text-lg font-semibold mb-2">Lesson Planning Tool</h4>
                                     <p class="text-sm text-gray-600">A printable planning template aligned to high-impact teaching strategies — tick your focus areas, document implementation, and capture the behind-the-scenes planning.</p>
                                 </div>
@@ -834,7 +840,7 @@
                     <!-- Category: Forms & Documents -->
                     <section id="cat-forms" class="tool-category mb-12">
                         <div class="category-header flex items-center gap-3 mb-5">
-                            <span class="text-2xl">📋</span>
+                            <span class="lh-icon cat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg></span>
                             <h3 class="text-2xl font-heading font-bold text-violet-900">Forms &amp; Documents</h3>
                             <div class="flex-grow h-px bg-gradient-to-r from-violet-200 to-transparent"></div>
                         </div>
@@ -844,7 +850,7 @@
                             <a href="secondary-teacher-goal.html" class="block tool-item" data-type="form" data-keywords="personal goal goals secondary teacher 2026 2027 appraisal self assessment professional growth focus area if then plan smart goal objective target principal mid year end of year check in required online form survey">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-violet-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-form">Online Form</span>
-                                    <div class="text-4xl mb-3">🎯</div>
+                                    <div class="tc-icon"><span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span></div>
                                     <h4 class="text-lg font-semibold mb-2">My Personal Goal 2026&ndash;27 <span class="text-violet-600">(Secondary)</span></h4>
                                     <p class="text-sm text-gray-600">Set your one professional goal for the year. Pick your focus area and you get guidance, real strategies and what counts as evidence for that area &mdash; then write the goal and your if-then plan.</p>
                                 </div>
@@ -853,7 +859,7 @@
                             <a href="../Media%20Hub/Classroom%20AI%20Integration%20Snapshot.pdf" target="_blank" rel="noopener noreferrer" download class="block tool-item" data-type="form" data-keywords="classroom ai integration snapshot observation form pdf class visit anonymous violet adek aias non evaluative phase one">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-violet-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-form">PDF Form</span>
-                                    <div class="text-4xl mb-3">📋</div>
+                                    <div class="tc-icon"><span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg></span></div>
                                     <h4 class="text-lg font-semibold mb-2">Classroom AI Integration Snapshot</h4>
                                     <p class="text-sm text-gray-600">The exact 1-page form used during class visits — anonymous, non-evaluative, focused on what AI looks like in the room. Shared in full so there's no mystery.</p>
                                 </div>
@@ -862,7 +868,7 @@
                             <a href="teacher-assistant-performance-report.html" class="block tool-item" data-type="form" data-keywords="teacher assistant ta performance report evaluation appraisal review form 2025 2026 fillable printable pdf ratings professional behavior instructional support health safety personnel">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-violet-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-form">Eval Form</span>
-                                    <div class="text-4xl mb-3">📊</div>
+                                    <div class="tc-icon"><span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg></span></div>
                                     <h4 class="text-lg font-semibold mb-2">Teacher Assistant Performance Report</h4>
                                     <p class="text-sm text-gray-600">Fill in the annual TA performance review on screen — rate each indicator, add comments and growth goals, then print or save as PDF.</p>
                                 </div>
@@ -871,7 +877,7 @@
                             <a href="admin-support-staff-evaluation.html" class="block tool-item" data-type="form" data-keywords="admin support staff performance review evaluation appraisal form 2025 2026 fillable printable pdf customer service ratings professional behavior office secretary receptionist personnel">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-violet-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-form">Eval Form</span>
-                                    <div class="text-4xl mb-3">📊</div>
+                                    <div class="tc-icon"><span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg></span></div>
                                     <h4 class="text-lg font-semibold mb-2">Admin Support Staff Review</h4>
                                     <p class="text-sm text-gray-600">Annual performance review for administrative and support staff — rate each indicator, capture customer-service and growth notes, then print or save as PDF.</p>
                                 </div>
@@ -880,7 +886,7 @@
                             <a href="hallway-bus-monitor-report.html" class="block tool-item" data-type="form" data-keywords="hallway bus monitor performance report evaluation appraisal form 2025 2026 fillable printable pdf supervision ratings professional behavior health safety personnel">
                                 <div class="relative bg-white p-6 rounded-lg shadow-lg card-hover transition-all duration-300 text-center h-full border border-violet-100 flex flex-col items-center justify-start">
                                     <span class="type-badge type-badge-form">Eval Form</span>
-                                    <div class="text-4xl mb-3">📊</div>
+                                    <div class="tc-icon"><span class="lh-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg></span></div>
                                     <h4 class="text-lg font-semibold mb-2">Hallway / Bus Monitor Report</h4>
                                     <p class="text-sm text-gray-600">Performance report for hallway and bus monitors — rate each indicator, add remarks and growth goals, then print or save as PDF.</p>
                                 </div>
@@ -898,12 +904,12 @@
     </div>
 
     <!-- DETAIL: MAP Growth — Training Selection -->
-    <section id="map-details-section" class="hidden min-h-screen bg-gray-100 p-4 lg:p-12">
+    <section id="map-details-section" class="hidden min-h-screen bg-white p-4 lg:p-12">
         <div class="container mx-auto max-w-5xl">
             <div class="mb-8 flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl lg:text-4xl font-extrabold text-teal-900 leading-tight">MAP Growth Training</h1>
-                    <p class="text-orange-600 font-medium text-lg mt-2">Choose a training to get started</p>
+                    <p class="text-gray-500 font-medium text-lg mt-2">Choose a training to get started</p>
                 </div>
                 <button onclick="window.location.hash=''" class="hidden md:flex items-center text-gray-500 hover:text-teal-900 transition-colors">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
@@ -918,21 +924,21 @@
                         <div class="absolute -top-20 -left-16 w-72 h-72 bg-cyan-300/15 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="absolute -bottom-20 -right-16 w-80 h-80 bg-amber-300/15 rounded-full blur-3xl pointer-events-none"></div>
                         <div class="relative flex flex-col md:flex-row md:items-center gap-6">
-                            <div class="shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center text-5xl md:text-6xl shadow-lg backdrop-blur-sm">
-                                📚
+                            <div class="shrink-0 w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-white/15 border border-white/20 flex items-center justify-center shadow-lg backdrop-blur-sm text-yellow-400 map-feature-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex flex-wrap items-center gap-2 mb-2">
-                                    <span class="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest font-extrabold bg-amber-400 text-blue-950 rounded-full px-2.5 py-1">⭐ Featured</span>
+                                    <span class="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest font-extrabold bg-amber-400 text-blue-950 rounded-full px-2.5 py-1">Featured</span>
                                     <span class="inline-flex items-center gap-1 text-[10px] uppercase tracking-widest font-extrabold bg-white/15 border border-white/25 rounded-full px-2.5 py-1">Comprehensive Guide</span>
                                 </div>
                                 <h3 class="text-2xl md:text-3xl font-heading font-extrabold leading-tight mb-2">All Things MAP</h3>
                                 <p class="text-cyan-100 text-sm md:text-base max-w-2xl mb-4">Everything proctors and teachers need for the 2025-2026 MAP Growth windows — schedules, tech check, student prep, session setup, accommodations, parent comms, goal setting, and retakes — with every embedded link in one place.</p>
                                 <div class="flex flex-wrap items-center gap-2 mb-4 text-xs">
-                                    <span class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-2.5 py-1 font-semibold">📋 Before</span>
-                                    <span class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-2.5 py-1 font-semibold">🎯 Day-of</span>
-                                    <span class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-2.5 py-1 font-semibold">📊 After</span>
-                                    <span class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-2.5 py-1 font-semibold">🔗 Live doc linked</span>
+                                    <span class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-2.5 py-1 font-semibold">Before</span>
+                                    <span class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-2.5 py-1 font-semibold">Day-of</span>
+                                    <span class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-2.5 py-1 font-semibold">After</span>
+                                    <span class="inline-flex items-center gap-1.5 bg-white/10 border border-white/20 rounded-full px-2.5 py-1 font-semibold">Live doc linked</span>
                                 </div>
                                 <span class="inline-flex items-center gap-2 bg-amber-400 text-blue-950 py-2.5 px-5 rounded-full font-extrabold text-sm group-hover:bg-amber-300 transition-colors shadow-md">
                                     Open the guide
@@ -950,7 +956,7 @@
                         <div class="bg-white p-6 rounded-2xl shadow-lg border border-teal-100 h-full flex flex-col card-hover transition-all duration-300">
                             <div class="flex items-center gap-3 mb-3">
                                 <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center shrink-0">
-                                    <span class="text-2xl">📝</span>
+                                    <span class="map-mini-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22h6a2 2 0 0 0 2-2V7l-5-5H6a2 2 0 0 0-2 2v10"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10.4 12.6a2 2 0 1 1 3 3L8 21l-4 1 1-4Z"/></svg></span>
                                 </div>
                                 <h4 class="text-lg font-bold text-teal-900 group-hover:text-teal-600 transition-colors leading-tight">Assigning Tests &amp; Accommodations</h4>
                             </div>
@@ -963,15 +969,15 @@
                     </a>
 
                     <a href="#module-map-overview" class="block group">
-                        <div class="bg-white p-6 rounded-2xl shadow-lg border border-orange-100 h-full flex flex-col card-hover transition-all duration-300">
+                        <div class="bg-white p-6 rounded-2xl shadow-lg border border-teal-100 h-full flex flex-col card-hover transition-all duration-300">
                             <div class="flex items-center gap-3 mb-3">
-                                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center shrink-0">
-                                    <span class="text-2xl">📈</span>
+                                <div class="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center shrink-0">
+                                    <span class="map-mini-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 7 13.5 15.5 8.5 10.5 2 17"/><path d="M16 7h6v6"/></svg></span>
                                 </div>
-                                <h4 class="text-lg font-bold text-teal-900 group-hover:text-orange-600 transition-colors leading-tight">MAP Growth Overview</h4>
+                                <h4 class="text-lg font-bold text-teal-900 group-hover:text-teal-600 transition-colors leading-tight">MAP Growth Overview</h4>
                             </div>
                             <p class="text-gray-600 text-sm mb-4 flex-grow">Understand the adaptive nature of MAP Growth, what RIT scores mean, and how the data supports student learning.</p>
-                            <span class="inline-flex items-center text-orange-600 font-semibold text-sm">
+                            <span class="inline-flex items-center text-teal-700 font-semibold text-sm">
                                 Start training
                                 <svg class="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                             </span>
@@ -989,12 +995,12 @@
     </section>
 
     <!-- DETAIL: MAP Growth — Overview Training -->
-    <section id="map-overview-details-section" class="hidden min-h-screen bg-gray-100 p-4 lg:p-12">
+    <section id="map-overview-details-section" class="hidden min-h-screen bg-white p-4 lg:p-12">
         <div class="container mx-auto max-w-5xl">
             <div class="mb-8 flex items-center justify-between">
                 <div>
                     <h1 class="text-3xl lg:text-4xl font-extrabold text-teal-900 leading-tight">MAP Growth Testing</h1>
-                    <p class="text-orange-600 font-medium text-lg mt-2">Measures of Academic Progress</p>
+                    <p class="text-gray-500 font-medium text-lg mt-2">Measures of Academic Progress</p>
                 </div>
                 <a href="#module-map" class="hidden md:flex items-center text-gray-500 hover:text-teal-900 transition-colors">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
@@ -1056,7 +1062,7 @@
     </section>
 
     <!-- DETAIL: MAP Growth — Assigning Tests & Accommodations -->
-    <section id="map-assign-details-section" class="hidden min-h-screen bg-gray-100 p-4 lg:p-12">
+    <section id="map-assign-details-section" class="hidden min-h-screen bg-white p-4 lg:p-12">
         <div class="container mx-auto max-w-5xl">
             <div class="mb-8 flex items-center justify-between">
                 <div>
@@ -1097,7 +1103,7 @@
     </section>
 
     <!-- DETAIL: All Things MAP — comprehensive guide mirroring the live Google Doc -->
-    <section id="map-all-details-section" class="hidden min-h-screen bg-slate-50">
+    <section id="map-all-details-section" class="hidden min-h-screen bg-white">
 
         <!-- Full-width hero -->
         <div class="map-hero text-white">
@@ -1109,7 +1115,7 @@
                 <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8">
                     <div class="max-w-3xl">
                         <p class="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-extrabold bg-white/15 border border-white/25 rounded-full px-3 py-1 mb-4 text-cyan-50">
-                            <span>📚</span> Comprehensive Guide
+                            Comprehensive Guide
                         </p>
                         <h1 class="text-3xl md:text-5xl font-heading font-extrabold leading-tight drop-shadow-md">All Things MAP Testing</h1>
                         <p class="text-cyan-100 text-base md:text-xl mt-3 max-w-2xl">Everything proctors and teachers need for the 2025-2026 MAP Growth windows — from sign-up to score reports, with every embedded link.</p>
@@ -1192,7 +1198,7 @@
                 <!-- Schedule Testing -->
                 <div class="map-card phase-before">
                     <div class="map-card-header">
-                        <span class="map-card-icon">🗓️</span>
+                        <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
                         <h3 class="map-card-title">Schedule Testing</h3>
                     </div>
                     <p class="text-sm text-slate-700 mb-4"><strong>Sign up for a testing block.</strong> Fill in your teacher name and testing date/time on the schedule.</p>
@@ -1215,7 +1221,7 @@
                 <!-- Technology Check -->
                 <div class="map-card phase-before">
                     <div class="map-card-header">
-                        <span class="map-card-icon">📱</span>
+                        <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><path d="M12 18h.01"/></svg></span>
                         <h3 class="map-card-title">Technology Check</h3>
                     </div>
                     <div class="grid sm:grid-cols-3 gap-3">
@@ -1240,7 +1246,7 @@
                 <!-- Preparing Students for MAP -->
                 <div class="map-card phase-before">
                     <div class="map-card-header">
-                        <span class="map-card-icon">🎬</span>
+                        <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 13 5.22 3.48a.5.5 0 0 0 .78-.42V7.89a.5.5 0 0 0-.76-.43L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg></span>
                         <h3 class="map-card-title">Preparing Students for MAP</h3>
                     </div>
 
@@ -1292,7 +1298,7 @@
                 <!-- Parent Communication — before testing -->
                 <div class="map-card phase-before">
                     <div class="map-card-header">
-                        <span class="map-card-icon">✉️</span>
+                        <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
                         <h3 class="map-card-title">Parent Communication <span class="text-sm font-medium text-slate-500">— before testing</span></h3>
                     </div>
                     <p class="text-sm text-slate-600 mb-4">Administration's letters to parents. Teachers also include reminders in weekly newsletters.</p>
@@ -1315,7 +1321,7 @@
                     </div>
 
                     <div class="map-callout tip mb-3">
-                        <div class="icon">🎧</div>
+                        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/></svg></div>
                         <div><strong>Headphones:</strong> remind parents that students should bring their <strong>own</strong> earbuds/headphones — any Bluetooth pairing should be done at home.</div>
                     </div>
 
@@ -1332,12 +1338,12 @@
                 <!-- Setting Up Testing Sessions -->
                 <div class="map-card phase-before">
                     <div class="map-card-header">
-                        <span class="map-card-icon">⚙️</span>
+                        <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span>
                         <h3 class="map-card-title">Setting Up Testing Sessions</h3>
                     </div>
 
                     <div class="map-callout info mb-5">
-                        <div class="icon">ℹ️</div>
+                        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></div>
                         <div>Admin needs to first make sure the IT team has rosters ready and teachers are able to set up testing sessions.</div>
                     </div>
 
@@ -1419,7 +1425,7 @@
                 <!-- Goal Setting -->
                 <div class="map-card phase-before">
                     <div class="map-card-header">
-                        <span class="map-card-icon">🎯</span>
+                        <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></span>
                         <h3 class="map-card-title">Goal Setting</h3>
                     </div>
                     <p class="text-sm text-slate-700 mb-4">Setting goals with students before benchmark testing helps them take ownership of their learning, focus on specific areas of growth, and approach the assessment with a clear purpose. It builds motivation, reduces anxiety, and gives students a sense of direction — transforming the test from a measure of performance into an opportunity for progress and reflection.</p>
@@ -1477,7 +1483,7 @@
                 <div class="grid lg:grid-cols-5 gap-5 mb-5">
                     <div class="map-card phase-day lg:col-span-2 !mb-0">
                         <div class="map-card-header">
-                            <span class="map-card-icon">🪑</span>
+                            <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2M19 18v2"/></svg></span>
                             <h3 class="map-card-title">Testing Environment</h3>
                         </div>
                         <p class="text-sm text-slate-700">Ensure the testing environment is appropriate.</p>
@@ -1499,7 +1505,7 @@
                 <!-- Before Testing Begins -->
                 <div class="map-card phase-day">
                     <div class="map-card-header">
-                        <span class="map-card-icon">🚦</span>
+                        <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 17 2 2 4-4M3 7l2 2 4-4M13 6h8M13 12h8M13 18h8"/></svg></span>
                         <h3 class="map-card-title">Before Testing Begins</h3>
                     </div>
                     <div class="grid sm:grid-cols-2 gap-3 mb-5">
@@ -1530,7 +1536,7 @@
                 <div class="grid md:grid-cols-2 gap-5 mb-5">
                     <div class="map-card phase-day !mb-0">
                         <div class="map-card-header">
-                            <span class="map-card-icon">👀</span>
+                            <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.06 12.35a1 1 0 0 1 0-.7 10.75 10.75 0 0 1 19.88 0 1 1 0 0 1 0 .7 10.75 10.75 0 0 1-19.88 0"/><circle cx="12" cy="12" r="3"/></svg></span>
                             <h3 class="map-card-title">During Testing</h3>
                         </div>
                         <ul class="space-y-2 text-sm text-slate-700">
@@ -1540,7 +1546,7 @@
                     </div>
                     <div class="map-card phase-day !mb-0">
                         <div class="map-card-header">
-                            <span class="map-card-icon">📚</span>
+                            <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
                             <h3 class="map-card-title">After Testing</h3>
                         </div>
                         <ul class="space-y-2 text-sm text-slate-700">
@@ -1552,12 +1558,12 @@
                 <!-- Important to Know -->
                 <div class="map-card phase-day">
                     <div class="map-card-header">
-                        <span class="map-card-icon">💡</span>
+                        <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5M9 18h6M10 22h4"/></svg></span>
                         <h3 class="map-card-title">Important to Know</h3>
                     </div>
 
                     <div class="map-callout info mb-5">
-                        <div class="icon">📍</div>
+                        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 4.99-5.54 10.19-7.4 11.8a1 1 0 0 1-1.2 0C9.54 20.19 4 14.99 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div>
                         <div>If students are guessing or answering rapidly, the system will alert you and you'll need to type the <strong>proctor PIN</strong> on the student's iPad.</div>
                     </div>
 
@@ -1581,7 +1587,7 @@
                     </div>
 
                     <div class="map-callout tip">
-                        <div class="icon">🛠️</div>
+                        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
                         <div>
                             <p class="font-bold text-base mb-1">If the iPad app freezes</p>
                             Exit the app and restart. If pressing the Home button fails to exit, press Home + Power at the same time until the iPad restarts. On your <strong>proctor computer</strong>, let the student back into the test. Restart the app and ask the student to sign in again.
@@ -1592,7 +1598,7 @@
                 <!-- Make-Up Testing -->
                 <div class="map-card phase-day">
                     <div class="map-card-header">
-                        <span class="map-card-icon">🔁</span>
+                        <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></span>
                         <h3 class="map-card-title">Make-Up Testing</h3>
                     </div>
 
@@ -1626,7 +1632,7 @@
                 <div class="grid md:grid-cols-2 gap-5 mb-5">
                     <div class="map-card phase-after !mb-0">
                         <div class="map-card-header">
-                            <span class="map-card-icon">📊</span>
+                            <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18 17V9M13 17V5M8 17v-3"/></svg></span>
                             <h3 class="map-card-title">Review Goals &amp; Discuss Results</h3>
                         </div>
                         <p class="text-sm text-slate-700 mb-3">Teachers meet individually with students to record MAP results on goal sheets. We refer back to these scores before the next testing window.</p>
@@ -1637,7 +1643,7 @@
                     </div>
                     <div class="map-card phase-after !mb-0">
                         <div class="map-card-header">
-                            <span class="map-card-icon">🧮</span>
+                            <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M16 14v4M16 10h.01M12 10h.01M8 10h.01M12 14h.01M8 14h.01M12 18h.01M8 18h.01"/></svg></span>
                             <h3 class="map-card-title">IXL Skill Plans</h3>
                         </div>
                         <p class="text-sm text-slate-700 mb-3">All IXL skill plans should be updated with new MAP scores.</p>
@@ -1651,7 +1657,7 @@
                 <!-- Parent Communication — after -->
                 <div class="map-card phase-after">
                     <div class="map-card-header">
-                        <span class="map-card-icon">✉️</span>
+                        <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
                         <h3 class="map-card-title">Parent Communication <span class="text-sm font-medium text-slate-500">— after testing</span></h3>
                     </div>
 
@@ -1680,7 +1686,7 @@
                 <!-- Retaking MAP Testing -->
                 <div class="map-card phase-after">
                     <div class="map-card-header">
-                        <span class="map-card-icon">🔄</span>
+                        <span class="map-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></span>
                         <h3 class="map-card-title">Retaking MAP Testing</h3>
                     </div>
                     <p class="text-sm text-slate-700 mb-4">The Leadership Team will pull a report after the first week of testing is complete, and share this with your entire team.</p>
@@ -1736,7 +1742,7 @@
     </section>
 
     <!-- DETAIL: Twinkl -->
-    <section id="twinkl-details-section" class="hidden min-h-screen bg-pink-50 p-4 lg:p-12">
+    <section id="twinkl-details-section" class="hidden min-h-screen bg-white p-4 lg:p-12">
         <div class="container mx-auto max-w-4xl">
             <div class="mb-12 flex items-center justify-between">
                 <div>
@@ -1752,7 +1758,7 @@
             <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-pink-100 mb-10">
                 <div class="p-10 text-center">
                     <div class="w-20 h-20 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <span class="text-4xl">⭐</span>
+                        <span class="map-mini-icon map-mini-icon--lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg></span>
                     </div>
                     <h2 class="text-2xl font-bold text-gray-900 mb-4">What is Twinkl?</h2>
                     <p class="text-gray-600 leading-relaxed mb-8 max-w-2xl mx-auto">
@@ -2092,14 +2098,13 @@
         })();
     </script>
 
-    <!-- Footer -->
-    <footer class="bg-teal-900 text-teal-100 mt-auto">
-        <div class="container mx-auto px-6 py-8 text-center">
-            <div class="flex items-center justify-center gap-3 mb-3">
-                <img src="../assets/brand/aisa-seal-white.png" alt="AISA Logo" class="h-8 w-8 object-contain opacity-90" onerror="this.style.display='none'">
-                <span class="font-heading font-bold text-lg tracking-wide">AISA Tools &amp; Resources</span>
-            </div>
-            <p class="text-xs text-teal-200/80">American International School in Abu Dhabi &middot; Teaching &amp; Learning Department</p>
+    <footer class="lh-footer">
+        <div class="lh-footer__inner">
+            <span class="lh-footer__brand">
+                <img src="../AISA_logo.png" alt="" width="28" height="28">
+                American International School in Abu Dhabi
+            </span>
+            <span>Built by AI Integration &amp; Educational Innovation &middot; &copy; 2026</span>
         </div>
     </footer>
 
