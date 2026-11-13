@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AISA | Flint Class Setup</title>
+<meta name="description" content="Set up your own Flint class and get your students into it: nine steps with screenshots. AISA's Flint pilot.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap">
+<style>
+/* Brandon's Flint Class Setup guide, fitted into the Hub (see CLAUDE.md, "Flint Class Setup guide").
+   Layout: single centered column; a stepper card (one step at a time) with an "all steps" view, then help. AISA purple + gold.
+   Every rule is scoped to .fcs, so nothing restyles menu.js's bar, search, drawer or sign-in screen
+   (menu.js puts bare classes such as .open on them). menu.js gives <body> its padding-top. */
+:root{
+  --bg:#FFFFFF; --surface:#F6F4FB; --line:#E3DEF0; --fg:#1A1A1A; --muted:#5A566A;
+  --accent:#21076C; --accent-ink:#FFFFFF; --gold:#D8B664; --gold-ink:#6B5418; --tint:#F2EFFA;
+  --shot-bg:#FBFAF7;
+  --font:'DM Sans', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+
+body{background:var(--bg);margin:0}
+.fcs,.fcs *{box-sizing:border-box}
+.fcs [hidden]{display:none!important}
+.fcs{color:var(--fg);font-family:var(--font);font-size:16px;line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:32px 48px}
+.fcs .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:28px}
+.fcs a{color:var(--accent);text-underline-offset:3px}
+.fcs a:focus-visible,.fcs button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.fcs b,.fcs strong{font-weight:700}
+
+.fcs .facts{display:flex;flex-wrap:wrap;gap:8px}
+.fcs .fact{font-size:13px;padding:4px 10px;border-radius:999px;background:var(--tint);color:var(--fg)}
+
+.fcs .tabs{display:flex;gap:4px;padding:4px;background:var(--surface);border-radius:10px;width:fit-content}
+.fcs .tabs button{font:inherit;font-size:14px;font-weight:500;border:0;background:transparent;color:var(--muted);padding:8px 14px;border-radius:7px;cursor:pointer}
+.fcs .tabs button[aria-selected="true"]{background:var(--bg);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+
+.fcs .card{border:1px solid var(--line);border-radius:14px;background:var(--bg);overflow:hidden}
+.fcs .progress{display:flex;gap:4px;padding:14px 20px 0}
+.fcs .progress span{flex:1;height:4px;border-radius:2px;background:var(--line)}
+.fcs .progress span.on{background:var(--accent)}
+.fcs .step{padding:18px 20px 22px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.fcs .meta{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.fcs .part{font-weight:700;color:var(--gold-ink);letter-spacing:.06em;text-transform:uppercase;font-size:12px}
+.fcs .step h2{font-family:var(--font);margin:0;font-size:22px;font-weight:700;line-height:1.25;color:var(--fg);text-wrap:balance}
+.fcs .step ol,.fcs .step ul{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px}
+.fcs .step ol{list-style:decimal} .fcs .step ul{list-style:disc}
+.fcs .step p{margin:0}
+.fcs figure{margin:4px 0 0;display:flex;flex-direction:column;gap:6px}
+.fcs figure img{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:8px;background:var(--shot-bg)}
+.fcs figcaption{font-size:13px;color:var(--muted)}
+.fcs .note{background:var(--tint);border-left:4px solid var(--gold);padding:10px 14px;border-radius:0 8px 8px 0;font-size:15px}
+.fcs .note.warn{border-left-color:var(--accent)}
+.fcs .note b:first-child{color:var(--accent)}
+
+.fcs .nav{display:flex;justify-content:space-between;gap:10px;padding:14px 20px;border-top:1px solid var(--line);background:var(--surface)}
+.fcs .btn{font:inherit;font-weight:700;font-size:15px;border-radius:9px;padding:10px 18px;cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+.fcs .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.fcs .btn:disabled{opacity:.4;cursor:default}
+
+.fcs #all{display:flex;flex-direction:column;gap:16px}
+.fcs #all .card .step{padding-top:20px}
+
+.fcs section.help{display:flex;flex-direction:column;gap:12px}
+.fcs section.help h2{font-family:var(--font);margin:0;font-size:20px;font-weight:700;color:var(--accent)}
+.fcs .qa{display:flex;flex-direction:column;gap:10px}
+.fcs .qa div{padding:12px 14px;border:1px solid var(--line);border-radius:10px}
+.fcs .qa b{display:block;margin-bottom:2px}
+.fcs footer{font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
+@media (prefers-reduced-motion: no-preference){ .fcs .step.enter{animation:fcs-in .22s ease-out} @keyframes fcs-in{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}} }
+</style>
+<link rel="stylesheet" href="../auth/hub.css?v=1">
+<script src="../auth/gate.js?v=44"></script>
+</head>
+<body>
+<!-- English only. menu.js's language toggle sets dir="rtl" on <html>, so the guide pins ltr. -->
+<header class="lh-hero" dir="ltr">
+  <div class="lh-hero__inner">
+    <ol class="lh-crumbs"><li><a href="tools.html">Tools &amp; Resources</a></li><li>Flint class setup</li></ol>
+    <div class="lh-hero__row">
+      <div class="lh-hero__main">
+        <p class="lh-hero__eyebrow">AISA Staff Guide · Flint</p>
+        <h1 class="lh-hero__title">Set up your own Flint class</h1>
+        <p class="lh-hero__lede">Create a class for each section you teach, then get your students into it. It takes about five minutes.</p>
+        <div class="lh-hero__actions">
+          <a class="lh-btn lh-btn--gold" href="https://app.flintk12.com/" target="_blank" rel="noopener">Open Flint <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a>
+          <a class="lh-btn lh-btn--on-dark" href="flint-guide.html">Flint Master Guide</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<div class="fcs">
+<div class="wrap" dir="ltr">
+  <div class="facts" aria-label="At a glance"><span class="fact">9 steps</span><span class="fact">Open <a href="https://app.flintk12.com/" target="_blank" rel="noopener">app.flintk12.com</a> beside this guide</span></div>
+
+  <div class="tabs" role="tablist" aria-label="View">
+    <button id="tab-step" role="tab" aria-selected="true">Step by step</button>
+    <button id="tab-all" role="tab" aria-selected="false">All steps</button>
+  </div>
+
+  <div id="stepper" class="card">
+    <div class="progress" id="bar"></div>
+    <div id="slot"></div>
+    <div class="nav">
+      <button class="btn" id="prev">Back</button>
+      <button class="btn primary" id="next">Next</button>
+    </div>
+  </div>
+  <div id="all" hidden></div>
+
+  <section class="help">
+    <h2>If something goes wrong</h2>
+    <div class="qa">
+      <div><b>I can't see + Add a class.</b>Check you're signed in with your AISA account. If it's still missing, contact the AI &amp; Innovation team.</div>
+      <div><b>A student says the link doesn't work.</b>Make sure they're signed in to Flint with their AISA school account. If it still fails, open your class <b style="display:inline">Settings</b> and check access isn't set to <b style="display:inline">Private</b>.</div>
+      <div><b>A student joined the wrong class.</b>Contact the AI &amp; Innovation team for help removing them.</div>
+      <div><b>My students need help getting started.</b>Share Flint's <a href="https://help.flintk12.com/articles/get-started-as-a-student-in-flint" target="_blank" rel="noopener">Get started as a student</a> article.</div>
+    </div>
+  </section>
+
+  <footer>Questions? Contact the AI &amp; Innovation team (Brandon Baki). The full guide to Flint: <a href="flint-guide.html">Flint Master Guide</a>. More from Flint: <a href="https://help.flintk12.com/articles/get-started-with-flint-for-teachers" target="_blank" rel="noopener">Get started for teachers</a> · <a href="https://help.flintk12.com/" target="_blank" rel="noopener">Flint Help Center</a></footer>
+</div>
+</div>
+
+<script>
+const IMG = {"add": {"src": "assets/flint/class-setup/add.jpg", "w": 620, "h": 170}, "name": {"src": "assets/flint/class-setup/name.jpg", "w": 580, "h": 430}, "access": {"src": "assets/flint/class-setup/access.jpg", "w": 575, "h": 265}, "people": {"src": "assets/flint/class-setup/people.jpg", "w": 530, "h": 150}, "overview": {"src": "assets/flint/class-setup/overview.jpg", "w": 665, "h": 142}, "code": {"src": "assets/flint/class-setup/code.jpg", "w": 486, "h": 347}, "addppl": {"src": "assets/flint/class-setup/addppl.jpg", "w": 655, "h": 430}};
+const L = (href, t) => `<a href="${href}" target="_blank" rel="noopener">${t}</a>`;
+const fig = (k, cap, alt) => `<figure><img src="${IMG[k].src}" loading="lazy" width="${IMG[k].w}" height="${IMG[k].h}" alt="${alt}"><figcaption>${cap}</figcaption></figure>`;
+const STEPS = [
+ {part:"Part 1 · Create your class", title:"Open Flint",
+  body:`<p>Go to ${L("https://app.flintk12.com/","app.flintk12.com")} and sign in with your AISA school account.</p>`},
+ {part:"Part 1 · Create your class", title:"Click + Add a class",
+  body:`<ol><li>In the left sidebar, under <b>Classes</b>, click <b>+ Add a class</b>.</li><li>Choose <b>Create in school</b>.</li></ol>`+
+   fig("add","The menu opens next to the sidebar. Choose Create in school.","Add a class menu with Create in school highlighted")},
+ {part:"Part 1 · Create your class", title:"Name your class",
+  body:`<p>Type a <b>Name</b> students will recognize, for example <b>G9 English – Section 2</b>. Logo and color are optional.</p>`+
+   fig("name","Only the Name is required.","Create Class form with the Name field highlighted")+
+   `<div class="note"><b>Tip:</b> Make one Flint class for each section you teach.</div>`},
+ {part:"Part 1 · Create your class", title:"Check who can join",
+  body:`<ol><li>Click <b>Moderation and access</b> in the left sidebar.</li><li>Leave <b>Access permissions</b> as <b>Anyone with the link</b>, and <b>Status</b> as <b>Published</b>.</li></ol>`+
+   fig("access","Anyone with the link lets students join with your link or code.","Access permissions options")+
+   `<div class="note warn"><b>Watch out:</b> Private classes are open only to people you add yourself, so links and codes won't let students in.</div>`},
+ {part:"Part 1 · Create your class", title:"Click Create",
+  body:`<p>Click <b>Create</b> (top-right). Your new class opens on its <b>People</b> page, ready for students.</p>`+
+   `<div class="note"><b>Co-teaching?</b> Before creating a class, click <b>+ Add a class</b> → <b>Browse classes</b> to check your colleague hasn't already made it.</div>`},
+ {part:"Part 2 · Add your students", title:"Option A: Share the class link",
+  body:`<p>Quickest for most classes.</p><ol><li>In your class, click <b>People</b> (left sidebar).</li><li>Click the copy icon next to the link under <b>Students join with this link</b>.</li><li>Paste it into Google Classroom, an email, or your slides. Students click it and sign in.</li></ol>`+
+   fig("people","Each class has its own link.","Students join with this link, with the copy button highlighted")},
+ {part:"Part 2 · Add your students", title:"Option B: Show the join code",
+  body:`<p>Good for day one in the room.</p><ol><li>On your class <b>Overview</b> page, click <b>View join code</b>.</li></ol>`+
+   fig("overview","View join code sits under your class name.","Class overview with View join code highlighted")+
+   `<ol start="2"><li>Project the code on the board. Students enter it in Flint to join.</li></ol>`+
+   fig("code","Your class has its own six-character code.","Join code window")+
+   `<div class="note warn"><b>Watch out:</b> If the code ends up somewhere it shouldn't, click <b>Regenerate code</b> to get a new one.</div>`},
+ {part:"Part 2 · Add your students", title:"Option C: Add students by email",
+  body:`<ol><li>On the <b>People</b> page, click <b>+ Add people</b>.</li><li>Paste student email addresses separated by commas, or click <b>Upload CSV</b> (a file with an <b>email</b> column).</li><li>Click <b>Next</b> and follow the prompts.</li></ol>`+
+   fig("addppl","Paste emails or upload a CSV of your class list.","Add people window")},
+ {part:"Done", title:"Check everyone is in",
+  body:`<p>On your class <b>Overview</b>, <b>Students enrolled</b> (right side) should match your class size. If anyone is missing, resend the link or add them by email.</p><p>That's it. Your class is ready for Flint activities.</p>`}
+];
+const slot=document.getElementById('slot'), bar=document.getElementById('bar'), prev=document.getElementById('prev'), next=document.getElementById('next');
+const all=document.getElementById('all'), stepper=document.getElementById('stepper');
+bar.innerHTML = STEPS.map(()=>'<span></span>').join('');
+const render=(s,i)=>`<div class="step"><div class="meta"><span class="part">${s.part}</span><span>Step ${i+1} of ${STEPS.length}</span></div><h2>${s.title}</h2>${s.body}</div>`;
+all.innerHTML = STEPS.map((s,i)=>`<div class="card">${render(s,i)}</div>`).join('');
+let i=0;
+function show(n){
+  i=Math.max(0,Math.min(STEPS.length-1,n));
+  slot.innerHTML=render(STEPS[i],i); slot.firstElementChild.classList.add('enter');
+  [...bar.children].forEach((b,k)=>b.classList.toggle('on',k<=i));
+  prev.disabled=i===0; next.textContent=i===STEPS.length-1?'Start again':'Next';
+}
+prev.onclick=()=>show(i-1);
+next.onclick=()=>{ show(i===STEPS.length-1?0:i+1); stepper.scrollIntoView({block:'nearest',behavior:'smooth'}); };
+document.addEventListener('keydown',e=>{ if(stepper.hidden || e.target.closest('input,textarea,select,[contenteditable]')) return; if(e.key==='ArrowRight') show(i+1); if(e.key==='ArrowLeft') show(i-1); });
+const tS=document.getElementById('tab-step'), tA=document.getElementById('tab-all');
+function view(a){ stepper.hidden=a; all.hidden=!a; tS.setAttribute('aria-selected',!a); tA.setAttribute('aria-selected',a); }
+tS.onclick=()=>view(false); tA.onclick=()=>view(true);
+show(0);
+
+// Hub analytics: gate.js logs a click on any [data-track] element.
+(function(){
+  function slug(t){ return String(t||'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60); }
+  function tag(root){ root.querySelectorAll('a[href*="flintk12.com"]').forEach(function(a){ a.setAttribute('data-track','flint-class-setup:open:'+slug(a.textContent)); }); }
+  tag(document); new MutationObserver(function(){ tag(slot); }).observe(slot,{childList:true});
+  tS.setAttribute('data-track','flint-class-setup:view:step-by-step'); tA.setAttribute('data-track','flint-class-setup:view:all-steps');
+})();
+</script>
+
+</body>
+</html>
