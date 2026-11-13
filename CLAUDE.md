@@ -2315,8 +2315,9 @@ link (a changed fact, as with Issue No. 5's session audience). Not in
 `search-index.js` or `menu.js` yet (that is the `?v=` cascade; add it
 with the next one). Not a PD module.
 
-Fitted into the Hub as the Master Guide was: the `gate.js` include, a
-back link, `dir="ltr"` on its wrapper, the artifact meta and safe-area
+Fitted into the Hub as the Master Guide was: since the redesign (merged
+before it) the standard `.lh-hero` header with crumbs, `hub.css`, no dark
+scheme; the `gate.js` include, `dir="ltr"` on its wrapper, the artifact meta and safe-area
 padding removed (menu.js owns the top), and **every rule scoped to
 `.fcs`** — its `header`, `footer`, `.card`, `.btn`, `.nav`, `.tabs` and
 `figure` rules were bare. Its arrow-key stepping ignores keys typed in

@@ -19,12 +19,6 @@
   --shot-bg:#FBFAF7;
   --font:'DM Sans', system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
 }
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#14121C; --surface:#1D1A29; --line:#332F45; --fg:#ECEAF3; --muted:#A9A4BC;
-  --accent:#B9A6F5; --accent-ink:#14121C; --gold:#D8B664; --gold-ink:#E6CC8A; --tint:#231F34; --shot-bg:#FBFAF7; color-scheme:dark } }
-:root[data-theme="dark"]{
-  --bg:#14121C; --surface:#1D1A29; --line:#332F45; --fg:#ECEAF3; --muted:#A9A4BC;
-  --accent:#B9A6F5; --accent-ink:#14121C; --gold:#D8B664; --gold-ink:#E6CC8A; --tint:#231F34; --shot-bg:#FBFAF7; color-scheme:dark }
 
 body{background:var(--bg);margin:0}
 .fcs,.fcs *{box-sizing:border-box}
@@ -36,13 +30,7 @@ body{background:var(--bg);margin:0}
 .fcs a:focus-visible,.fcs button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
 .fcs b,.fcs strong{font-weight:700}
 
-.fcs header{display:flex;flex-direction:column;gap:8px}
-.fcs .back{width:fit-content;font-size:14px;font-weight:700;text-decoration:none;color:var(--muted);margin-bottom:4px}
-.fcs .back:hover{color:var(--accent)}
-.fcs .eyebrow{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-ink)}
-.fcs h1{font-family:var(--font);font-size:clamp(28px,5vw,38px);font-weight:700;line-height:1.15;margin:0;color:var(--accent);text-wrap:balance}
-.fcs .lede{margin:0;color:var(--muted);max-width:60ch}
-.fcs .facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.fcs .facts{display:flex;flex-wrap:wrap;gap:8px}
 .fcs .fact{font-size:13px;padding:4px 10px;border-radius:999px;background:var(--tint);color:var(--fg)}
 
 .fcs .tabs{display:flex;gap:4px;padding:4px;background:var(--surface);border-radius:10px;width:fit-content}
@@ -83,19 +71,30 @@ body{background:var(--bg);margin:0}
 .fcs footer{font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px}
 @media (prefers-reduced-motion: no-preference){ .fcs .step.enter{animation:fcs-in .22s ease-out} @keyframes fcs-in{from{opacity:.4;transform:translateY(4px)}to{opacity:1;transform:none}} }
 </style>
-<script src="../auth/gate.js?v=43"></script>
+<link rel="stylesheet" href="../auth/hub.css?v=1">
+<script src="../auth/gate.js?v=44"></script>
 </head>
 <body>
 <!-- English only. menu.js's language toggle sets dir="rtl" on <html>, so the guide pins ltr. -->
+<header class="lh-hero" dir="ltr">
+  <div class="lh-hero__inner">
+    <ol class="lh-crumbs"><li><a href="tools.html">Tools &amp; Resources</a></li><li>Flint class setup</li></ol>
+    <div class="lh-hero__row">
+      <div class="lh-hero__main">
+        <p class="lh-hero__eyebrow">AISA Staff Guide · Flint</p>
+        <h1 class="lh-hero__title">Set up your own Flint class</h1>
+        <p class="lh-hero__lede">Create a class for each section you teach, then get your students into it. It takes about five minutes.</p>
+        <div class="lh-hero__actions">
+          <a class="lh-btn lh-btn--gold" href="https://app.flintk12.com/" target="_blank" rel="noopener">Open Flint <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></a>
+          <a class="lh-btn lh-btn--on-dark" href="flint-guide.html">Flint Master Guide</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
 <div class="fcs">
 <div class="wrap" dir="ltr">
-  <header>
-    <a class="back" href="tools.html">&larr; Tools &amp; Resources</a>
-    <div class="eyebrow">AISA Staff Guide · Flint</div>
-    <h1>Set up your own Flint class</h1>
-    <p class="lede">Create a class for each section you teach, then get your students into it. It takes about five minutes.</p>
-    <div class="facts"><span class="fact">9 steps</span><span class="fact">Open <a href="https://app.flintk12.com/" target="_blank" rel="noopener">app.flintk12.com</a> beside this guide</span></div>
-  </header>
+  <div class="facts" aria-label="At a glance"><span class="fact">9 steps</span><span class="fact">Open <a href="https://app.flintk12.com/" target="_blank" rel="noopener">app.flintk12.com</a> beside this guide</span></div>
 
   <div class="tabs" role="tablist" aria-label="View">
     <button id="tab-step" role="tab" aria-selected="true">Step by step</button>
